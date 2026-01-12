@@ -1,18 +1,18 @@
-# Mastering Ethereum: 2nd Edition
+# Mastering Ethereum: 第2版
 
-This is the second edition of the book "Mastering Ethereum". You can access the book in the following ways:
+これは書籍「Mastering Ethereum」の第2版です。以下の方法でこの書籍にアクセスできます。
 
-- [Buy the book on Amazon](https://www.amazon.com/_/dp/1098168429?smid=ATVPDKIKX0DER&_encoding=UTF8&tag=oreilly20-20)
-- [Read the online version](https://masteringethereum.xyz)
+- [Amazonで書籍を購入](https://www.amazon.com/_/dp/1098168429?smid=ATVPDKIKX0DER&_encoding=UTF8&tag=oreilly20-20)
+- [オンライン版を読む](https://masteringethereum.xyz)
 
-## Authors
+## 著者
 
-- [Andreas M. Antonopoulos](https://github.com/aantonop)
-- [Gavin Wood](https://github.com/gavofyork)
-- [Carlo Parisi](https://github.com/ManInBlackie)
-- [Alessandro Mazza](https://github.com/alessandromazza98)
-- [Niccolò Pozzolini](https://github.com/choco-cupcake)
+- [アンドレアス・M・アントノプロス](https://github.com/aantonop)
+- [ギャヴィン・ウッド](https://github.com/gavofyork)
+- [カルロ・パリージ](https://github.com/ManInBlackie)
+- [アレッサンドロ・マッツァ](https://github.com/alessandromazza98)
+- [ニッコロ・ポッツォリーニ](https://github.com/choco-cupcake)
 
-## License
+## ライセンス
 
-This work is licensed under Creative Commons. For the first 12 months after publication, it is available under the [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) license (Attribution-NonCommercial-NoDerivatives). After that period, it becomes available under the [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) license (Attribution-ShareAlike).
+この作品はクリエイティブ・コモンズ・ライセンスの下で提供されています。出版後最初の12ヶ月間は、[CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)ライセンス（表示-非営利-改変禁止）で利用できます。その期間が終了すると、[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)ライセンス（表示-継承）で利用できるようになります。
