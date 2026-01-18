@@ -46,11 +46,11 @@ Figure 14-1. EVM architecture and execution context
 
 ## Comparison with Existing Technology
 
-## 既存技術との比較
+## 既存の技術との比較
 
 The term *virtual machine* is often applied to the virtualization of a real computer, typically by a hypervisor such as VirtualBox or QEMU, or of an entire operating system instance, such as Linux's KVM. These must provide a software abstraction, respectively, of actual hardware and of system calls and other kernel functionality.
 
-*仮想マシン*という用語は、VirtualBoxやQEMUなどのハイパーバイザーによる実際のコンピュータの仮想化、またはLinuxのKVMのようなオペレーティングシステムインスタンス全体の仮想化に対してよく使われます。これらは、それぞれ実際のハードウェアと、システムコールやその他のカーネル機能のソフトウェア抽象化を提供する必要があります。
+*仮想マシン*という用語は、通常、VirtualBoxやQEMUなどのハイパーバイザーや、LinuxのKVMなどのオペレーティングシステムのインスタンス全体の仮想化など、現実のコンピュータの仮想化に用いられます。実際のハードウェア、システムコール、そしてその他のカーネル機能それぞれに対して、ソフトウェアとしての抽象化を定める必要があります。
 
 The EVM operates in a much more limited domain: it is just a computation engine and as such, provides an abstraction of just computation and storage, similar to the Java virtual machine (JVM) specification, for example. From a high-level viewpoint, the JVM is designed to provide a runtime environment that is agnostic of the underlying host OS or hardware, enabling compatibility across a wide variety of systems. High-level programming languages such as Java or Scala (which use the JVM) or C# (which uses .NET) are compiled into the bytecode instruction set of their respective virtual machines. In the same way, the EVM executes its own bytecode instruction set (described in the next section), which higher-level smart contract programming languages such as Solidity, Vyper, and Yul are compiled into.
 
