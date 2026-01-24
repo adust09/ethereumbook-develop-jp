@@ -29,7 +29,7 @@ EVMは*スタックベースアーキテクチャ*を持っており、一時的
 
 - 実行されるスマートコントラクトのバイトコードが読み込まれた、不変のプログラムコードROM
 - すべての領域が明示的にゼロに初期化された揮発性のメモリ
-- 単一のトランザクションの期間中のみ持続する一時ストレージ（イーサリアムの状態の一部ではない）
+- 単一のトランザクションの処理中にのみ保持する（イーサリアムのstateの一部ではない）一時ストレージ
 - メモリと同様にゼロに初期化されたイーサリアムの状態の一部である永続ストレージ
 
 There is also a set of environment variables and data that is available during execution. We will go through these in more detail later in this chapter.
@@ -54,7 +54,8 @@ The term *virtual machine* is often applied to the virtualization of a real comp
 
 The EVM operates in a much more limited domain: it is just a computation engine and as such, provides an abstraction of just computation and storage, similar to the Java virtual machine (JVM) specification, for example. From a high-level viewpoint, the JVM is designed to provide a runtime environment that is agnostic of the underlying host OS or hardware, enabling compatibility across a wide variety of systems. High-level programming languages such as Java or Scala (which use the JVM) or C# (which uses .NET) are compiled into the bytecode instruction set of their respective virtual machines. In the same way, the EVM executes its own bytecode instruction set (described in the next section), which higher-level smart contract programming languages such as Solidity, Vyper, and Yul are compiled into.
 
-EVMはより限定された領域で動作します。計算エンジンに過ぎず、例えばJava仮想マシン（JVM）の仕様と同様に、計算とストレージの抽象化のみを提供します。高レベルの視点から見ると、JVMは基盤となるホストOSやハードウェアに依存しないランタイム環境を提供し、幅広いシステム間での互換性を可能にするよう設計されています。Java、Scala（JVMを使用）、C#（.NETを使用）などの高水準プログラミング言語は、それぞれの仮想マシンのバイトコード命令セットにコンパイルされます。同様に、EVMは独自のバイトコード命令セット（次のセクションで説明）を実行し、Solidity、Vyper、Yulなどの高水準スマートコントラクトプログラミング言語がこれにコンパイルされます。
+現実のコンピュータの仮想化に比べると、EVMははるかに限られた領域で動作します。EVMは単なる計算処理エンジンなので、たとえばJVM（Java Virtual Machine：Java仮想マシン）の仕様と同じように、計算処理とストレージの抽象化を規定します。全体的な観点から見ると、JVMは、基盤となるホストOSやハードウェアに依存しない実行環境を規定するように設計されており、異なるシステ
+ム間で互換性を保つことができます。JavaやScala（JVMを使用する）やC#（.NETを使用する）などの高級プログラミング言語は、それぞれの仮想マシンのバイトコード命令セットにコンパイルされます。同様に、EVMは独自のバイトコードで記述された命令セット（次の項で説明します）を実行します。バイトコードで記述された命令セットは、Solidity、Vyper、Yulなどの高級スマートコントラクトプログラミング言語をコンパイルすることで生成されます。
 
 The EVM, therefore, has no scheduling capability because execution ordering is organized externally to it: Ethereum clients run through verified block transactions to determine which smart contracts need executing and in which order. In this sense, the Ethereum world computer is single threaded, like JavaScript. Neither does the EVM have any "system interface" handling or "hardware support"—there is no physical machine to interface with. The Ethereum world computer is completely virtual.
 
