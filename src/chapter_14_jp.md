@@ -59,7 +59,7 @@ The EVM operates in a much more limited domain: it is just a computation engine 
 
 The EVM, therefore, has no scheduling capability because execution ordering is organized externally to it: Ethereum clients run through verified block transactions to determine which smart contracts need executing and in which order. In this sense, the Ethereum world computer is single threaded, like JavaScript. Neither does the EVM have any "system interface" handling or "hardware support"—there is no physical machine to interface with. The Ethereum world computer is completely virtual.
 
-したがって、EVMにはスケジューリング機能がありません。実行順序はEVMの外部で組織されるためです。イーサリアムクライアントは検証済みのブロックトランザクションを処理して、どのスマートコントラクトをどの順序で実行する必要があるかを決定します。この意味で、イーサリアムワールドコンピュータはJavaScriptのようにシングルスレッドです。EVMには「システムインターフェース」処理や「ハードウェアサポート」もありません。インターフェースする物理マシンが存在しないためです。イーサリアムワールドコンピュータは完全に仮想的です。
+EVMはスケジューリング機能を持ちません。なぜなら、実行順序の決定はEVMの外部で取りまとめられているからです。イーサリアムクライアントは、検証されたブロックトランザクションを一通り見て、どのスマートコントラクトをどの順序で実行する必要があるかを決定します。この意味で、イーサリアムワールドコンピュータはJavaScriptのようにシングルスレッドです。また、EVMには、「システムインターフェイス」の処理や「ハードウェアのサポート」はどちらもありません。お互いにやり取りする物理的なマシンは存在しないのです。イーサリアムワールドコンピュータは完全に仮想的なものです。
 
 ## What Are Other Blockchains Doing?
 
