@@ -1,123 +1,123 @@
-# Chapter 17. Zero-Knowledge Proofs
+# 第17章 ゼロ知識証明
 
-In this chapter, we'll explore the fascinating world of *zero-knowledge cryptography* and see how it perfectly applies to the Ethereum roadmap, making it possible to really scale and accommodate mass-adoption demand for block space. Zero-knowledge technology is a very complex topic and relies on lots of mathematical rules that we won't be able to explain in detail. The goal of this chapter is to make sure you can understand why zero-knowledge cryptography offers a unique opportunity for Ethereum and fits well into the scaling roadmap. By the end of the chapter, you'll know how zero-knowledge cryptography works on a high level, what its useful properties are, and how Ethereum is going to use it to improve the protocol.
+　この章では、*ゼロ知識暗号*の魅力的な世界を探求し、Ethereumのロードマップにどのように完璧に適用されるかを見ていきます。ゼロ知識技術により、ブロック スペースに対する大量導入の需要に対応した真のスケーリングが可能になります。ゼロ知識技術は非常に複雑なテーマであり、詳細に説明しきれない多くの数学的規則に依存しています。この章の目的は、ゼロ知識暗号がEthereumにとってなぜ独自の機会を提供し、スケーリング ロードマップにうまく適合するのかを理解できるようにすることです。この章を読み終える頃には、ゼロ知識暗号の高レベルな仕組み、有用な特性、そしてEthereumがプロトコルの改善にどのように活用しようとしているかを理解しているでしょう。
 
-## History
+## 歴史
 
-*Zero-knowledge proofs* were introduced in the paper ["The Knowledge Complexity of Interactive Proof-Systems"](https://oreil.ly/a6KH6) by Shafi Goldwasser, Silvio Micali, and Charles Rackoff in 1985, where they describe a zero-knowledge proof as a way to prove to another party that you know something is true without revealing any information besides the fact that your statement is actually true.
-Even though zero-knowledge proofs were discovered in the 1980s, their practical use cases were very limited. Everything changed in 2011 with the arrival of the [BIT+11](https://oreil.ly/C6HvM) paper that introduced *SNARKs* (*succinct noninteractive arguments of knowledge*) as a theoretical framework for creating zero-knowledge proofs for arbitrary computations. Two years later, in 2013, the [Pinocchio PGHR13](https://oreil.ly/4uU6x) paper provided the first practical implementation of a general-purpose SNARK, making SNARKs feasible for real-world applications. For the first time, it was possible to prove that a generic program had been executed correctly without having to reexecute it and without revealing the actual computation details.
+　*ゼロ知識証明*は、1985年にシャフィ・ゴールドワッサー、シルビオ・ミカリ、チャールズ・ラコフの3人が発表した論文["The Knowledge Complexity of Interactive Proof-Systems"](https://oreil.ly/a6KH6)で初めて提唱されました。この論文では、ゼロ知識証明を、あるステートメントが真であるという事実以外の情報を一切明かすことなく、相手にそのステートメントの真実性を証明する方法として記述しています。
+　ゼロ知識証明は1980年代に発見されましたが、実用的なユースケースは非常に限られていました。すべてが変わったのは2011年で、[BIT+11](https://oreil.ly/C6HvM)論文の登場により、任意の計算に対するゼロ知識証明を作成するための理論的フレームワークとして*SNARK*（*succinct noninteractive arguments of knowledge*）が導入されました。2年後の2013年には、[Pinocchio PGHR13](https://oreil.ly/4uU6x)論文が汎用SNARKの最初の実用的な実装を提供し、SNARKを現実世界のアプリケーションで使用可能にしました。汎用プログラムが正しく実行されたことを、再実行することなく、かつ実際の計算の詳細を明かすことなく証明できるようになったのは、このときが初めてです。
 
-The revolution had started. From that moment on, the field of zero-knowledge proofs evolved at an impressively rapid pace. In 2016, the [Groth16 algorithm](https://oreil.ly/rxlOL) significantly improved the efficiency of zk-SNARKs by reducing proof size and verification time. Because of its exceptional succinctness, Groth16 remains widely used today, despite the availability of newer systems. For example, Tornado Cash, a decentralized mixer application, uses it to implement zero-knowledge proofs on chain.
+　革命が始まりました。その瞬間から、ゼロ知識証明の分野は驚異的なスピードで進化しました。2016年には、[Groth16アルゴリズム](https://oreil.ly/rxlOL)が証明サイズと検証時間を削減し、zk-SNARKの効率を大幅に改善しました。その卓越した簡潔性から、新しいシステムが利用可能であるにもかかわらず、Groth16は現在でも広く使用されています。例えば、分散型ミキサー アプリケーションであるTornado Cashは、オンチェーンでのゼロ知識証明の実装にGroth16を使用しています。
 
-In 2017, [Bulletproofs](https://oreil.ly/ZUeIe) introduced a groundbreaking advancement by eliminating the need for a *trusted setup* (in later sections, we'll do a deep dive into what a trusted setup actually is), though at the cost of larger proof sizes. This was followed in 2018 by [*zk-STARKs*](https://oreil.ly/TCnTT), which not only removed the requirement for trusted setups but also provided postquantum security—meaning their cryptographic foundations are resistant to attacks from quantum computers. The former is used nowadays in the cryptocurrency project Monero to obfuscate transaction amounts, while the latter forms the cryptographic basis of Starknet, an Ethereum L2.
+　2017年には、[Bulletproofs](https://oreil.ly/ZUeIe)が*トラステッド セットアップ*の必要性を排除するという画期的な進歩をもたらしました（トラステッド セットアップの実際の意味については、後のセクションで詳しく解説します）。ただし、証明サイズが大きくなるというトレードオフがありました。2018年には[*zk-STARK*](https://oreil.ly/TCnTT)が登場し、トラステッド セットアップの要件を排除しただけでなく、ポスト量子セキュリティも提供しました。ポスト量子セキュリティとは、暗号基盤が量子コンピュータからの攻撃に対して耐性を持つことを意味します。前者は現在、暗号通貨プロジェクトMoneroでトランザクション金額の秘匿化に使用されており、後者はEthereum L2であるStarknetの暗号基盤となっています。
 
-In 2019, [PLONK](https://oreil.ly/3453_) and [Sonic](https://oreil.ly/f6_Sq) made significant contributions by introducing universal and updatable trusted setups, which made SNARKs more flexible and practical for general-purpose applications. These innovations continue to influence modern zero-knowledge systems.
+　2019年には、[PLONK](https://oreil.ly/3453_)と[Sonic](https://oreil.ly/f6_Sq)がユニバーサルかつ更新可能なトラステッド セットアップを導入し、大きな貢献を果たしました。SNARKをより柔軟かつ汎用的なアプリケーションに対して実用的なものにしました。これらのイノベーションは、現在のゼロ知識システムにも引き続き影響を与えています。
 
-Zero-knowledge proofs remain in active development, with recent advances bringing improvements in proving time, recursion efficiency, and practical applications like zk-EVMs and modern zk-VMs. New constructions and optimizations continue to emerge regularly, pushing the boundaries of what's possible with zero-knowledge technology.
+　ゼロ知識証明は現在も活発に開発が続いています。最近の進歩では、証明時間、再帰効率、そしてzk-EVMやモダンなzk-VMといった実用的なアプリケーションの改善がもたらされています。新しい構築法や最適化が定期的に登場し続けており、ゼロ知識技術で可能なことの限界を押し広げています。
 
-That's a reality mostly thanks to the money brought by the cryptocurrency space. The Ethereum Foundation itself has contributed (and still contributes) by providing multiple grants and having dedicated teams research the topic.
+　これは主に、暗号通貨分野がもたらした資金のおかげで実現した現実です。Ethereum Foundation自体も、複数の助成金を提供し、このテーマを研究する専門チームを擁することで、貢献してきました（そして現在も貢献し続けています）。
 
-## Definition and Properties
+## 定義と性質
 
-Now, let's be more specific and define what a zero-knowledge proof is and which properties it must have. We've already said that a zero-knowledge proof is a protocol that lets a party—usually called the *prover*, P—prove to another party—usually called the *verifier*, V—that a statement is true without revealing anything apart from the fact that that specific statement is true.
+　ここからは、ゼロ知識証明とは何か、どのような性質を満たさなければならないかを、より具体的に定義しましょう。すでに述べたように、ゼロ知識証明とは、一方の当事者（通常*証明者*、Pと呼ばれる）が、もう一方の当事者（通常*検証者*、Vと呼ばれる）に対して、あるステートメントが真であるという事実以外の情報を一切明かすことなく、そのステートメントが真であることを証明するプロトコルです。
 
-Let's formalize some important definitions:
+　いくつかの重要な定義を形式化しましょう。
 
-**Statement**
+**ステートメント**
 
-The claim being proven. The statement is public and verifiable by anyone, and it doesn't include private information.
+証明される主張である。ステートメントは公開されており、誰でも検証可能で、秘密情報を含まない。
 
-**Witness**
+**ウィットネス**
 
-The secret information that proves the statement is true. The witness is known only by the prover.
+ステートメントが真であることを証明する秘密情報である。ウィットネスは証明者のみが知っている。
 
-**Proof**
+**証明**
 
-The cryptographic object that convinces a verifier that the statement is true without revealing the witness.
+ウィットネスを明かすことなく、ステートメントが真であることを検証者に納得させる暗号オブジェクトである。
 
-All zero-knowledge proof systems must adhere to the following three properties:
+　すべてのゼロ知識証明システムは、以下の3つの性質に従わなければなりません。
 
-**Completeness**
+**完全性**
 
-If the prover P holds a true statement, then it must be able to compute a valid zero-knowledge proof by following the protocol rules. There cannot be a case where a prover is not able to produce a valid proof if it's following all the rules correctly.
+証明者Pが真のステートメントを保持している場合、プロトコルの規則に従って有効なゼロ知識証明を計算できなければならない。証明者がすべての規則に正しく従っているのに、有効な証明を生成できないケースがあってはならない。
 
-**Soundness**
+**健全性**
 
-It must be infeasible for any malicious prover to forge a valid proof for a false statement. If a zero-knowledge proof is accepted by a verifier, the only way the prover must have created it is by following all the protocol rules accordingly, starting with a true statement.
+悪意のある証明者が偽のステートメントに対して有効な証明を偽造することは、実行不可能でなければならない。ゼロ知識証明が検証者に受理された場合、証明者がその証明を作成できた唯一の方法は、真のステートメントから始めてすべてのプロトコル規則に適切に従ったことによるものでなければならない。
 
-**Zero knowledge**
+**ゼロ知識性**
 
-As the name suggests, a verifier shouldn't get to know anything other than the validity of the initial statement while following the protocol.
+名前が示す通り、検証者はプロトコルに従っている間、最初のステートメントの有効性以外の情報を知ることができてはならない。
 
-## How Ethereum Uses Zero-Knowledge Proofs
+## Ethereumにおけるゼロ知識証明の活用
 
-You may wonder why this very new piece of cryptography is important for the future development and roadmap of Ethereum. The answer is actually pretty straightforward.
+　この非常に新しい暗号技術が、Ethereumの将来の開発とロードマップにとってなぜ重要なのか、疑問に思うかもしれません。答えは実にシンプルです。
 
-The real power of zero-knowledge proof systems, in the context of Ethereum, is that they enable the possibility of verifying the validity of a statement without having to perform all the computations needed to get to that final statement. First, a prover computes a certain statement and attaches a zero-knowledge proof to it; then, all verifiers can simply use the zero-knowledge protocol and trustlessly take that statement as true, without needing to do the same computation that the prover did.
+　Ethereumの文脈におけるゼロ知識証明システムの真の力は、最終的なステートメントに到達するために必要なすべての計算を実行せずとも、そのステートメントの妥当性を検証できるようにすることにあります。まず、証明者がある計算を実行してステートメントを算出し、ゼロ知識証明を添付します。次に、すべての検証者はゼロ知識プロトコルを使用するだけで、証明者と同じ計算を行うことなく、そのステートメントをトラストレスに真として受け入れることができます。
 
-A careful reader may have already spotted where this perfectly applies to Ethereum: block execution and state updates—in other words, the *EVM state transition function*. Every new block updates the current state by processing all transactions included into it. Figure 17-1 shows a good representation of this.
+　注意深い読者は、これがEthereumのどこに完璧に適用されるか、すでに気づいているかもしれません。ブロックの実行とステートの更新、つまり*EVMステート遷移関数*です。新しいブロックごとに、そのブロックに含まれるすべてのトランザクションを処理して現在のステートを更新します。図17-1はこの様子をよく表しています。
 
-![EVM state transition function](images/ch17/maet_1701.png)
+![EVMステート遷移関数](images/ch17/maet_1701.png)
 
-Figure 17-1. EVM state transition function
+図17-1 EVMステート遷移関数
 
-You can think of the EVM as a black box that takes in as input the current state of the blockchain and the new received block full of transactions, and then returns the new, updated state of the chain. Right now, when an Ethereum full node receives a new block, it reexecutes all the transactions contained in that block so that it can trustlessly update the state without having to rely on any trusted third party.
-The main issue with this approach is that block execution becomes a potential bottleneck because it's very load intensive. You end up having to balance the hardware requirements that a full node must adhere to in order to work fine and be up to date with the tip of the chain with the level of decentralization that you want to have in the network. The more you want to scale by pushing the requirements of a full node higher, the more you compromise decentralization because less sophisticated actors cannot economically sustain running a full node anymore. And vice versa: the lower you keep hardware requirements so that anyone can run a node, the more you're limited in terms of maximal throughput that your blockchain can handle. Ethereum has always preferred the decentralization branch of this trade-off, keeping hardware requirements low enough to allow for solo stakers and full node runners to exist.
+　EVMは、ブロックチェーンの現在のステートとトランザクションが詰まった新しいブロックを入力として受け取り、チェーンの新しい更新されたステートを返すブラック ボックスと考えることができます。現在、Ethereumのフル ノードは新しいブロックを受信すると、信頼できる第三者に頼ることなくトラストレスにステートを更新するために、そのブロックに含まれるすべてのトランザクションを再実行します。
+　このアプローチの主な問題は、ブロックの実行が非常に負荷の高い処理であるため、潜在的なボトルネックになることです。フル ノードが正常に動作しチェーンの先端に追従するために満たすべきハードウェア要件と、ネットワークで達成したい分散化のレベルとのバランスを取る必要があります。フル ノードの要件を引き上げてスケーリングしようとすればするほど、資金的に余裕のないアクターがフル ノードを維持できなくなるため、分散化が損なわれます。逆に、誰でもノードを運用できるようにハードウェア要件を低く抑えると、ブロックチェーンが処理できる最大スループットが制限されます。Ethereumは常にこのトレードオフの分散化側を選択し、ソロ ステーカーやフル ノード運用者が存在できるようにハードウェア要件を十分に低く保ってきました。
 
-Here is where zero-knowledge proof systems come into play. What if there is a way for a full node to trustlessly update its state without having to execute any transaction—basically not having to perform the heavy computation of the EVM state transition function? This idea can be summarized in the following example:
+　ここでゼロ知識証明システムが活躍します。フル ノードがトランザクションを一切実行せずに、つまりEVMステート遷移関数の重い計算を行わずに、トラストレスにステートを更新できる方法があるとしたらどうでしょうか。このアイデアは次の例で要約できます。
 
-1. Some actors perform the actual EVM computation by executing all transactions included into a new block and producing the updated state of the chain.
-2. These actors create a zero-knowledge proof that attests to the validity of the state and share it, together with the new updated state, to all full nodes.
-3. When all other full nodes receive the new state of the chain and the zero-knowledge proof, they just verify the validity of the proof, and if it's valid, they can trustlessly update their own states of the chain with the new state they have just received.
+1. 一部のアクターが、新しいブロックに含まれるすべてのトランザクションを実行し、チェーンの更新されたステートを生成する実際のEVM計算を行う。
+2. これらのアクターがステートの妥当性を証明するゼロ知識証明を作成し、新しい更新されたステートとともにすべてのフル ノードに共有する。
+3. 他のすべてのフル ノードは、チェーンの新しいステートとゼロ知識証明を受信した際、証明の妥当性を検証するだけでよい。証明が有効であれば、受け取った新しいステートで自身のチェーンのステートをトラストレスに更新できる。
 
-This way, you still need to have nodes—probably maintained by heavily financed companies—that do need to execute all transactions, but all other nodes can be cheap since they only need to verify a proof. You can bump hardware requirements really high for the first type of nodes so that you can handle a much bigger throughput and still have a high level of decentralization thanks to the "magic" of zero-knowledge proofs.
+　この方法では、すべてのトランザクションを実行する必要があるノード（おそらく潤沢な資金を持つ企業が維持する）は依然として必要ですが、その他のすべてのノードは証明を検証するだけでよいため、安価に済みます。最初のタイプのノードのハードウェア要件を非常に高く引き上げて、はるかに大きなスループットを処理しつつも、ゼロ知識証明の「魔法」のおかげで高い分散化レベルを維持できます。
 
-As of now, we have always assumed that generating a zero-knowledge proof and verifying it is fast and straightforward. In fact, the previous steps only make sense if verifying a zero-knowledge proof is faster than reexecuting all of the transactions contained in an average Ethereum block. And it turns out that today, it's quite hard to achieve such a property. But that's an optimization problem: it's just a matter of when, not if. We'll soon reach the point where it will be feasible to generate and verify a zero-knowledge proof for an Ethereum block in real time. Ethproofs is a very cool website to follow if you're interested in the development of this topic.
+　これまでの説明では、ゼロ知識証明の生成と検証は高速で簡単であると常に仮定してきました。実際には、前述のステップは、ゼロ知識証明の検証が平均的なEthereumブロックに含まれるすべてのトランザクションの再実行よりも高速である場合にのみ意味をなします。そして現時点では、この特性を達成するのは非常に困難です。しかしこれは最適化の問題であり、「できるかどうか」ではなく「いつできるか」の問題にすぎません。Ethereumブロックのゼロ知識証明をリアルタイムで生成・検証することが可能になる時点に、間もなく到達するでしょう。このトピックの開発に興味がある方は、Ethproofsという非常に有益なウェブサイトをフォローすることをお勧めします。
 
-## L2s Also Benefit from ZK
+## L2もZKの恩恵を受ける
 
-The Ethereum mainnet is not the only thing that benefits from zero-knowledge proof technology. In fact, as you may have already read in Chapter 16, there is a category of rollups called *ZK rollups*. As the name suggests, they use zero-knowledge proof systems to prove the EVM execution so that they can post state updates of their chains, attached with a zero-knowledge proof that ensures that the new state has been computed correctly.
+　ゼロ知識証明技術の恩恵を受けるのは、Ethereumメインネットだけではありません。実際、第16章ですでに読まれたかもしれませんが、*ZKロールアップ*と呼ばれるロールアップのカテゴリが存在します。名前が示す通り、ZKロールアップはEVM実行を証明するためにゼロ知識証明システムを使用しています。チェーンのステート更新を、新しいステートが正しく計算されたことを保証するゼロ知識証明とともにポストできるようにしています。
 
-You may wonder how ZK rollups are able to use zero-knowledge technology if, as we previously said, it's currently not possible to achieve real-time proving for average Ethereum blocks. The answer is that they don't; they don't even need to do real-time proving for each block of the L2. Usually, they post an aggregate zero-knowledge proof once every hour or so that proves that all the state updates that happened between the last one and the most recent one have been executed correctly.
+　前述のように、現在の平均的なEthereumブロックのリアルタイム証明が達成できないのに、ZKロールアップはどうやってゼロ知識技術を使用できるのかと疑問に思うかもしれません。答えは、リアルタイム証明は行っていないということです。L2の各ブロックに対してリアルタイム証明を行う必要すらありません。通常、1時間ほどの間隔で集約されたゼロ知識証明をポストし、前回の証明から最新のものまでの間に行われたすべてのステート更新が正しく実行されたことを証明します。
 
-The time elapsed between every zero-knowledge proof only affects the time to finality of the rollup itself. If a proof is posted once every hour, that means that on average, you need to wait 30 minutes to be able to consider your transaction really finalized (on the L1).
+　ゼロ知識証明の間隔はロールアップ自体のファイナリティまでの時間にのみ影響します。証明が1時間ごとにポストされる場合、トランザクションが（L1上で）本当にファイナライズされたと見なせるまで、平均して30分待つ必要があることを意味します。
 
-## A Small Example
+## 小さな例
 
-To become more familiar with how zero-knowledge proof systems work, let's start with a simple and small example: the *partition problem*. This is a well-known problem that consists of the task of "deciding whether a given multiset S of positive integers can be partitioned into two subsets S1 and S2 such that the sum of the numbers in S1 equals the sum of the numbers in S2."
+　ゼロ知識証明システムの動作をより身近に理解するために、シンプルで小さな例から始めましょう。*分割問題*です。これは「与えられた正の整数の多重集合Sを、S1とS2の2つの部分集合に分割して、S1の数の合計とS2の数の合計が等しくなるようにできるか」を判定するタスクとしてよく知られた問題です。
 
-> **Note**  
+> **Note**
 >
-> The partition problem is a decision problem, whereas Ethereum relies on zero-knowledge proofs to verify computation traces. Although Ethereum's primary use case for zero-knowledge proofs is execution-trace verification, working through the partition problem is still an excellent way to build your intuition about how zero-knowledge proof systems work.
+> 分割問題は決定問題であるのに対し、Ethereumは計算トレースの検証にゼロ知識証明を使用する。Ethereumにおけるゼロ知識証明の主要なユースケースは実行トレースの検証であるが、分割問題を通じて学ぶことは、ゼロ知識証明システムの仕組みに対する直感を養う上で優れた方法である。
 
 
-If we have S = [1, 1, 5, 7], we can satisfy the problem by partitioning it into S1 = [1, 1, 5] and S2 = [7]. But it's not always possible to generate a correct solution to this problem; in fact, if S = [1, 1, 5, 8], then it's impossible to partition it into two subsets that sum up to the same number.
+　S = [1, 1, 5, 7]の場合、S1 = [1, 1, 5]とS2 = [7]に分割することで問題を満たすことができます。しかし、この問題に対して常に正しい解を生成できるわけではありません。例えば、S = [1, 1, 5, 8]の場合、同じ数に合計される2つの部分集合に分割することは不可能です。
 
-The partition problem is NP-complete, meaning that an algorithm doesn't exist that can solve it in polynomial time—that is, providing a solution if there is one or proving the solution doesn't exist in a small amount of time.
+　分割問題はNP完全です。つまり、多項式時間で解くアルゴリズム（解が存在する場合にそれを提示するか、解が存在しないことを短い時間で証明するアルゴリズム）は存在しません。
 
-### Let's Prove It
+### 証明してみよう
 
-The structure of the partition problem perfectly applies to the properties of zero-knowledge proof systems we have seen so far. In fact, since it's hard to find a solution, it could be interesting to delegate the computational power of finding it to a rich prover, equipped with a supercomputer, and then use zero-knowledge technology to prove that it found a valid solution without having everyone else perform the same heavy computation but also without actually revealing that solution.
+　分割問題の構造は、これまで見てきたゼロ知識証明システムの性質に完璧に当てはまります。解を見つけることが困難であるため、解を探すための計算能力をスーパーコンピュータを備えたリッチな証明者に委任し、ゼロ知識技術を使って有効な解を見つけたことを証明することは興味深いアプローチです。他の全員が同じ重い計算を行う必要がなく、かつ実際の解を明かすこともありません。
 
-To make the partition problem suitable for zero-knowledge proof systems, we need to tweak it a little bit. Suppose we have a list `s` of positive integers. We'll say that another list `a` is a *satisfying assignment* if:
+　分割問題をゼロ知識証明システムに適した形にするために、少し調整を加える必要があります。正の整数のリスト`s`があるとします。別のリスト`a`が*充足割り当て*であるとは、以下の条件を満たす場合を指します。
 
 1. `len(s) == len(a)`
-2. All elements of `a` are 1 or –1
-3. The dot product between `s` and `a` is 0
+2. `a`のすべての要素が1または-1である
+3. `s`と`a`の内積が0である
 
-Note that this construction is completely analogous to the partition problem. If we take our previous initial list S = [1, 1, 5, 7], then the satisfying assignment `a` is equal to:
+　この構成は分割問題と完全に同等であることに注意してください。前の例の初期リストS = [1, 1, 5, 7]を取ると、充足割り当て`a`は次のようになります。
 
 ```
 a = [1, 1, 1, –1]
 ```
 
-You can manually check that all three conditions are true:
+　3つの条件がすべて真であることを手動で確認できます。
 
 1. `len(s) = 4 == len(a) = 4`
-2. All elements of `a` are 1 or –1
-3. Dot product: 1 × 1 + 1 × 1 + 1 × 5 + (–1) × 7 = 1 + 1 + 5 – 7 = 0
+2. `a`のすべての要素が1または-1である
+3. 内積: 1 × 1 + 1 × 1 + 1 × 5 + (–1) × 7 = 1 + 1 + 5 – 7 = 0
 
-The *dot product* between two lists of equal length is computed by multiplying each member of the first list with the corresponding element of the second one and then summing all the results. More technically, if we have lists `s = [s0, s1, s2, sn]` and `a = [a0, a1, a2, an]` of equal length `n`, the dot product is calculated as follows:
+　*内積*は、等しい長さの2つのリストについて、最初のリストの各メンバーと2番目のリストの対応する要素を掛け合わせ、すべての結果を合計することで計算されます。より技術的に言えば、等しい長さ`n`のリスト`s = [s0, s1, s2, sn]`と`a = [a0, a1, a2, an]`がある場合、内積は次のように計算されます。
 
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mi mathcolor="#000000">s</mi>
@@ -234,29 +234,29 @@ The *dot product* between two lists of equal length is computed by multiplying e
   </msub>
 </math>
 
-Of course, we could immediately provide `a` to the verifier, and they could easily check that it is a valid solution, but that would violate the zero-knowledge assumption of not revealing the solution.
+　もちろん、`a`を検証者にそのまま提供して有効な解であることを簡単に確認させることもできますが、それでは解を明かさないというゼロ知識の前提に違反してしまいます。
 
-Let's start generating a different list `w` by creating the *partial-sum list*—that is, `w[i]` is equal to the partial dot product between `s` and `a` up to `i`. In the context of zero-knowledge proof systems, `w` is also called the *witness*. Following our example, we can compute `w`:
+　*部分和リスト*を作成して、別のリスト`w`を生成しましょう。`w[i]`は`s`と`a`の`i`までの部分内積に等しくなります。ゼロ知識証明システムの文脈では、`w`は*ウィットネス*とも呼ばれます。先の例に従って、`w`を計算できます。
 
 ```
 w = [1, 2, 7, 0]
 ```
 
-Note that if `a` is a valid satisfying assignment, then `w` always ends with a 0.
+　`a`が有効な充足割り当てであれば、`w`は常に0で終わることに注意してください。
 
-To make the proof system work better, let's apply a small modification to the proof `p` we have built so far. In particular, we'll put the last item of the list `w` in the first position, so our previous `w` now becomes:
+　証明システムをうまく機能させるために、これまで構築してきた証明`p`に小さな変更を加えましょう。具体的には、リスト`w`の最後の要素を最初の位置に移動します。先ほどの`w`は次のようになります。
 
 ```
 w = [0, 1, 2, 7]
 ```
 
-Sweet! This list `w` has a very cool property:
+　このリスト`w`には非常に便利な性質があります。
 
 ```
 |s[i]| = |w[i + 1] – w[i]|
 ```
 
-You can check the validity of this statement yourself:
+　このステートメントの妥当性を自分で確認できます。
 
 ```
 |s[0]| = |w[0 + 1] – w[0]| = |w[1] – w[0]| = |1 – 0| = |1| = 1
@@ -265,25 +265,25 @@ You can check the validity of this statement yourself:
 |s[3]| = |w[3 + 1] – w[3]| = |w[4] – w[3]| = |w[0] – w[3]| = |0 – 7| = |–7| = 7
 ```
 
-Note that to compute `s[3]`, we would need to access `w[4]`, which does not exist since `w` has only four items (and we start indexing from zero). Still, there is a very easy solution: you just need to go back to the first element of `w` as if `w` were cyclical.
+　`s[3]`を計算するには`w[4]`にアクセスする必要がありますが、`w`は4つの要素しかないため（インデックスはゼロから始まる）、`w[4]`は存在しません。しかし、非常に簡単な解決策があります。`w`が巡回的であるかのように、最初の要素に戻ればよいのです。
 
-A verifier could ask for two consecutive elements of `w` and check that the previous relation holds. Remember that the verifier has access to `s` because that is publicly available; it represents the input of this problem but has no access to `a`, the satisfying assignment, which represents the solution. If the equation holds, it means the prover knows a satisfying assignment `a` for this problem.
+　検証者は`w`の連続する2つの要素を要求し、前述の関係式が成り立つかどうかを確認できます。検証者は`s`にアクセスできることを覚えておいてください。`s`は公開されており、この問題の入力を表しています。しかし、検証者は解を表す充足割り当て`a`にはアクセスできません。等式が成り立てば、証明者がこの問題の充足割り当て`a`を知っていることを意味します。
 
-### Issues
+### 問題点
 
-What we have built so far is a very naive proof system. In fact, there are three big issues with it:
+　ここまで構築してきたのは、非常に素朴な証明システムです。実際には、3つの大きな問題があります。
 
-1. Previously, we said that once the verifier has asked for two consecutive elements of `w` and the equation holds true, then they have verified that the prover knows a solution to this problem. This is not true. With only one query, the verifier cannot be completely sure; they have to make several queries of consecutive elements of `w` before being sure of it with a really high probability.
-2. While it's true that the verifier can indeed verify that the prover has a solution to the problem, this proof system relies on the integrity of the prover. What if the prover is malevolent and lies? When the verifier asks for two consecutive elements of `w`, the prover could provide two random numbers that still satisfy the equation.
-3. Furthermore, this proof system is not zero knowledge. In fact, by asking for consecutive elements of `w`, the verifier gets to know a lot about the satisfying assignment `a`. The verifier knows how `w` has been constructed, so the more they know about `w`, the more they know about the solution `a`.
+1. 前述のように、検証者が`w`の連続する2つの要素を要求し等式が成り立てば、証明者がこの問題の解を知っていることが検証されたと述べた。しかしこれは正確ではない。1回のクエリだけでは、検証者は完全に確信を持てない。本当に高い確率で確信を得るまで、`w`の連続する要素に対して複数回のクエリを行う必要がある。
+2. 検証者が証明者の解の保有を確認できることは確かであるが、この証明システムは証明者の誠実性に依存している。証明者が悪意を持ち、嘘をつくとどうなるか。検証者が`w`の連続する2つの要素を要求した際、証明者は等式を満たすランダムな2つの数を提供する可能性がある。
+3. さらに、この証明システムはゼロ知識ではない。`w`の連続する要素を要求することで、検証者は充足割り当て`a`について多くの情報を得てしまう。検証者は`w`がどのように構築されたかを知っているため、`w`について知れば知るほど、解`a`についても知ることになる。
 
-Let's address these issues now and try to build a better proof system.
+　これらの問題に対処し、より良い証明システムの構築を試みましょう。
 
-### Zero Knowledge
+### ゼロ知識性の実現
 
-Let's add zero knowledge to the system. The main issue with the protocol we've built so far is that we send the real values of `w` to the verifier, and that lets the verifier understand a lot of information about `a`. To see this in practice, let's do two simple steps of interaction between prover and verifier.
+　システムにゼロ知識性を追加しましょう。これまで構築してきたプロトコルの主な問題は、`w`の実際の値を検証者に送信していることで、検証者が`a`について多くの情報を理解できてしまうことです。実際に確認するために、証明者と検証者の間の2つの簡単なインタラクション ステップを行いましょう。
 
-The verifier asks for `w[1]` and `w[2]` and checks that `|w[2] – w[1]| = |s[1]|`, so the prover provides `w[1] = 1` and `w[2] = 2`, and the verifier can confirm that the equation holds true:
+　検証者は`w[1]`と`w[2]`を要求し、`|w[2] – w[1]| = |s[1]|`を確認します。証明者は`w[1] = 1`と`w[2] = 2`を提供し、検証者は等式が成り立つことを確認できます。
 
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mfenced open="|" close="" separators="|">
@@ -328,7 +328,7 @@ The verifier asks for `w[1]` and `w[2]` and checks that `|w[2] – w[1]| = |s[1]
   </mfenced>
 </math>
 
-Then, the verifier asks for another query: `w[2]` and `w[3]`. The prover provides `w[2] = 2` and `w[3] = 7`, and the verifier checks the equation:
+　次に、検証者はもう1つのクエリを要求します。`w[2]`と`w[3]`です。証明者は`w[2] = 2`と`w[3] = 7`を提供し、検証者は等式を確認します。
 
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mfenced open="|" close="" separators="|">
@@ -373,7 +373,7 @@ Then, the verifier asks for another query: `w[2]` and `w[3]`. The prover provide
   </mfenced>
 </math>
 
-With these two interactions, the verifier gets to know three elements of w:
+　この2回のインタラクションで、検証者はwの3つの要素を知ることになります。
 
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mtable>
@@ -413,17 +413,17 @@ With these two interactions, the verifier gets to know three elements of w:
   </mtable>
 </math>
 
-Since the verifier already knows `s = [1, 1, 5, 7]` and knows how `w` has been computed, they can derive that the initial part of the solution `a` is equal to `[1, 1, 1]` because that's the only way to get `w[3] = 7`, `w[2] = 2`, and `w[1] = 1`.
+　検証者はすでに`s = [1, 1, 5, 7]`を知っており、`w`がどのように計算されたかも知っているため、解`a`の最初の部分が`[1, 1, 1]`であることを導出できます。`w[3] = 7`、`w[2] = 2`、`w[1] = 1`を得る唯一の方法がこれだからです。
 
-We need to find a way to mask the real values of `w` but still manage to satisfy the relation between the new `w` and the input list `s`. To achieve that, we need to add some level of randomness in a very specific way.
+　`w`の実際の値をマスクしつつ、新しい`w`と入力リスト`s`の間の関係式を満たし続ける方法を見つける必要があります。これを実現するには、非常に特定の方法でランダム性のレベルを追加する必要があります。
 
-First, instead of `a`, we flip a coin, and if it's heads, we leave it as it is; otherwise, we change the signs for all elements, so all 1s becomes –1s, and vice versa. Note that this change doesn't break the three main properties of the satisfying assignment `a` for the problem.
+　まず、`a`の代わりにコインを投げます。表が出ればそのままにし、裏が出ればすべての要素の符号を変更して、すべての1を-1に、すべての-1を1にします。この変更は、充足割り当て`a`の3つの主要な性質を壊さないことに注意してください。
 
-Then, we get a new random integer value `r`. We calculate `w` in the same way as before, but we add `r` to every element of it. Even this change doesn't break the key relation between `s` and `w`.
+　次に、新しいランダムな整数値`r`を取得します。`w`を以前と同じ方法で計算しますが、すべての要素に`r`を加えます。この変更も、`s`と`w`の間の重要な関係式を壊しません。
 
-Every time the verifier asks for a new query, we have to flip a coin and compute a different random value `r`. This way, while the verifier is still able to verify the validity of the equation, they are not able to understand anything about `a` because all `w` values will look random to them.
+　検証者が新しいクエリを要求するたびに、コインを投げて異なるランダム値`r`を計算する必要があります。こうすることで、検証者は依然として等式の妥当性を検証できますが、すべての`w`の値がランダムに見えるため、`a`について何も理解することができません。
 
-Let's do a small demonstration. Remember, the prover (us, in this example) starts with both `s` and `a`:
+　小さなデモンストレーションを行いましょう。証明者（この例では私たち）は`s`と`a`の両方を持っていることを思い出してください。
 
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mtable>
@@ -463,9 +463,9 @@ Let's do a small demonstration. Remember, the prover (us, in this example) start
   </mtable>
 </math>
 
-Now, the verifier asks for `w[1]` and `w[2]` to check that `|w[2] – w[1]| = |s[1]|`.
+　ここで、検証者が`w[1]`と`w[2]`を要求し、`|w[2] – w[1]| = |s[1]|`を確認しようとします。
 
-First, we need to flip a coin to eventually change all values of `a`. It's tails, so we need to flip all signs, and `a` becomes:
+　まず、`a`のすべての値を変更するかどうかを決めるためにコインを投げる必要があります。裏が出たので、すべての符号を反転させ、`a`は次のようになります。
 
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mi mathcolor="#000000">a</mi>
@@ -485,7 +485,7 @@ First, we need to flip a coin to eventually change all values of `a`. It's tails
   <mo stretchy="false" mathcolor="#000000">]</mo>
 </math>
 
-Then, we compute a random value `r = 4`. We calculate `w` and add `r` to each element:
+　次に、ランダム値`r = 4`を計算します。`w`を計算し、各要素に`r`を加えます。
 
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mtable>
@@ -529,7 +529,7 @@ Then, we compute a random value `r = 4`. We calculate `w` and add `r` to each el
   </mtable>
 </math>
 
-And we provide <math xmlns="http://www.w3.org/1998/Math/MathML">
+　そして、<math xmlns="http://www.w3.org/1998/Math/MathML">
   <msup>
     <mrow>
       <mi mathcolor="#000000">w</mi>
@@ -543,7 +543,7 @@ And we provide <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mo stretchy="false" mathcolor="#000000">]</mo>
   <mo mathcolor="#000000">=</mo>
   <mn mathcolor="#000000">3</mn>
-</math> and <math xmlns="http://www.w3.org/1998/Math/MathML">
+</math>と<math xmlns="http://www.w3.org/1998/Math/MathML">
   <msup>
     <mrow>
       <mi mathcolor="#000000">w</mi>
@@ -557,9 +557,9 @@ And we provide <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mo stretchy="false" mathcolor="#000000">]</mo>
   <mo mathcolor="#000000">=</mo>
   <mn mathcolor="#000000">2</mn>
-</math>.
+</math>を提供します。
 
-The verifier can still confirm the validity of the equation:
+　検証者は依然として等式の妥当性を確認できます。
 
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mfenced open="|" close="|" separators="|">
@@ -621,9 +621,9 @@ The verifier can still confirm the validity of the equation:
   </mfenced>
 </math>
 
-Now, the verifier runs another query, asking for `w[2]` and `w[3]`. Again, we need to flip a coin to eventually change all values of `a`. This time, it's heads, so we don't change signs:
+　ここで、検証者はもう1つのクエリを実行し、`w[2]`と`w[3]`を要求します。再び、`a`のすべての値を変更するかどうかを決めるためにコインを投げる必要があります。今回は表なので、符号は変更しません。
 
-Then, we compute a random value `r = 1`. We calculate `w` and add `r` to each element:
+　次に、ランダム値`r = 1`を計算します。`w`を計算し、各要素に`r`を加えます。
 
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mi mathcolor="#000000">a</mi>
@@ -640,7 +640,7 @@ Then, we compute a random value `r = 1`. We calculate `w` and add `r` to each el
   <mo stretchy="false" mathcolor="#000000">]</mo>
 </math>
 
-And we provide <math xmlns="http://www.w3.org/1998/Math/MathML">
+　そして、<math xmlns="http://www.w3.org/1998/Math/MathML">
   <msup>
     <mrow>
       <mi mathcolor="#000000">w</mi>
@@ -654,7 +654,7 @@ And we provide <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mo stretchy="false" mathcolor="#000000">]</mo>
   <mo mathcolor="#000000">=</mo>
   <mn mathcolor="#000000">3</mn>
-</math> and <math xmlns="http://www.w3.org/1998/Math/MathML">
+</math>と<math xmlns="http://www.w3.org/1998/Math/MathML">
   <msup>
     <mrow>
       <mi mathcolor="#000000">w</mi>
@@ -668,8 +668,8 @@ And we provide <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mo stretchy="false" mathcolor="#000000">]</mo>
   <mo mathcolor="#000000">=</mo>
   <mn mathcolor="#000000">8</mn>
-</math>.
-The verifier can still confirm the validity of the equation:
+</math>を提供します。
+　検証者は依然として等式の妥当性を確認できます。
 
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mfenced open="|" close="|" separators="|">
@@ -730,7 +730,7 @@ The verifier can still confirm the validity of the equation:
   </mfenced>
 </math>
 
-But now, the verifier cannot understand much about the satisfying assignment a. In fact, they now have the following information:
+　しかし今回、検証者は充足割り当てaについてあまり理解できません。実際、検証者が持っている情報は以下の通りです。
 
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mtable>
@@ -809,19 +809,19 @@ But now, the verifier cannot understand much about the satisfying assignment a. 
   </mtable>
 </math>
 
-The `w` values on the different queries look random to them, and they are not able to reconstruct the assignment `a`.
+　異なるクエリの`w`値は検証者にとってランダムに見え、割り当て`a`を復元することはできません。
 
-Nice! We managed to add zero knowledge to the proof system. Let's now address a malevolent prover.
+　証明システムにゼロ知識性を追加することができました。次は、悪意のある証明者の問題に対処しましょう。
 
-### Prover Commitment
+### 証明者のコミットメント
 
-The problem we need to address is that the prover can lie to the verifier, providing completely made-up numbers instead of the real values of the computed witness `w`. This is really bad because the prover would be able to provide a valid proof of a false statement—that is, even though the prover doesn't actually have a satisfying assignment `a`, they are able to potentially trick the verifier into believing that they do.
+　対処すべき問題は、証明者が計算されたウィットネス`w`の実際の値ではなく、完全にでっち上げた数値を検証者に提供して嘘をつけることです。これは非常に深刻な問題です。偽のステートメントに対して有効な証明を提供できてしまうことを意味します。つまり、証明者が実際には充足割り当て`a`を持っていなくても、検証者を騙して持っていると信じ込ませる可能性があるのです。
 
-We need to find a way to make sure the prover cannot lie without being caught. Essentially, we need the prover to do a *commitment* of all `w` values before providing them to the verifier.
+　証明者が見つからずに嘘をつけないようにする方法を見つける必要があります。本質的に、証明者は`w`のすべての値を検証者に提供する前に*コミットメント*を行う必要があります。
 
-This is where Merkle trees help us again. We introduced them in Chapter 14, so we won't go into much detail on how they work here.
+　ここでマークル ツリーが再び役立ちます。第14章で紹介しましたので、仕組みの詳細にはここでは立ち入りません。
 
-Let's do a new example to see the new construction in practice. We (the prover) have:
+　新しい例で、新しい構成を実際に見てみましょう。証明者（私たち）は以下を持っています。
 
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mtable>
@@ -863,7 +863,7 @@ Let's do a new example to see the new construction in practice. We (the prover) 
   </mtable>
 </math>
 
-We flip a coin, and it's heads, so we don't need to change all the signs of the assignment `a`. We then compute `w` as the dot product between `a` and `s` (with a swap between the first and last elements):
+　コインを投げると表なので、割り当て`a`のすべての符号を変更する必要はありません。次に、`a`と`s`の内積として`w`を計算します（最初と最後の要素を入れ替えます）。
 
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mi mathcolor="#000000">w</mi>
@@ -879,7 +879,7 @@ We flip a coin, and it's heads, so we don't need to change all the signs of the 
   <mo stretchy="false" mathcolor="#000000">]</mo>
 </math>
 
-We compute a random value `r = 8` and we add it to each element of `w`:
+　ランダム値`r = 8`を計算し、`w`の各要素に加えます。
 
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mi mathcolor="#000000">w</mi>
@@ -896,15 +896,15 @@ We compute a random value `r = 8` and we add it to each element of `w`:
   <mo stretchy="false" mathcolor="#000000">]</mo>
 </math>
 
-Now we need to commit to all values of `w′` and send the commitment to the verifier so that we ensure that if we ever cheat by providing fake values of `w′`, then it's trivial to spot it. Figure 17-2 shows the Merkle tree built using all `w′` values as leaves.
+　ここで、`w′`のすべての値にコミットし、そのコミットメントを検証者に送信する必要があります。これにより、`w′`の偽の値を提供して不正を行った場合、簡単に発見できるようにします。図17-2は、`w′`のすべての値をリーフとして使用して構築されたマークル ツリーを示しています。
 
-![Merkle tree commitment](images/ch17/maet_1702.png)
+![マークル ツリーによるコミットメント](images/ch17/maet_1702.png)
 
-Figure 17-2. Merkle tree built using `w′` values
+図17-2 `w′`の値を使用して構築されたマークル ツリー
 
-The Merkle root is the final commitment that is sent to the verifier.
+　マークル ルートは、検証者に送信される最終的なコミットメントです。
 
-At this point, the verifier starts asking for the first query: <math xmlns="http://www.w3.org/1998/Math/MathML">
+　この時点で、検証者は最初のクエリを要求し始めます。<math xmlns="http://www.w3.org/1998/Math/MathML">
   <msup>
     <mrow>
       <mi mathcolor="#000000">w</mi>
@@ -916,7 +916,7 @@ At this point, the verifier starts asking for the first query: <math xmlns="http
   <mo stretchy="false" mathcolor="#000000">[</mo>
   <mn mathcolor="#000000">1</mn>
   <mo stretchy="false" mathcolor="#000000">]</mo>
-</math> and <math xmlns="http://www.w3.org/1998/Math/MathML">
+</math>と<math xmlns="http://www.w3.org/1998/Math/MathML">
   <msup>
     <mrow>
       <mi mathcolor="#000000">w</mi>
@@ -928,7 +928,7 @@ At this point, the verifier starts asking for the first query: <math xmlns="http
   <mo stretchy="false" mathcolor="#000000">[</mo>
   <mn mathcolor="#000000">2</mn>
   <mo stretchy="false" mathcolor="#000000">]</mo>
-</math>. We can provide <math xmlns="http://www.w3.org/1998/Math/MathML">
+</math>です。<math xmlns="http://www.w3.org/1998/Math/MathML">
   <msup>
     <mrow>
       <mi mathcolor="#000000">w</mi>
@@ -942,7 +942,7 @@ At this point, the verifier starts asking for the first query: <math xmlns="http
   <mo stretchy="false" mathcolor="#000000">]</mo>
   <mo mathcolor="#000000">=</mo>
   <mn mathcolor="#000000">9</mn>
-</math> and <math xmlns="http://www.w3.org/1998/Math/MathML">
+</math>と<math xmlns="http://www.w3.org/1998/Math/MathML">
   <msup>
     <mrow>
       <mi mathcolor="#000000">w</mi>
@@ -956,7 +956,7 @@ At this point, the verifier starts asking for the first query: <math xmlns="http
   <mo stretchy="false" mathcolor="#000000">]</mo>
   <mo mathcolor="#000000">=</mo>
   <mn mathcolor="#000000">10</mn>
-</math> to the verifier, and they can check:
+</math>を検証者に提供し、検証者は以下を確認できます。
 
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <mfenced open="|" close="|" separators="|">
@@ -1017,154 +1017,154 @@ At this point, the verifier starts asking for the first query: <math xmlns="http
   </mfenced>
 </math>
 
-Now, the verifier needs to make sure that we didn't cheat, so they also ask the prover for the *verification path*, which contains all the data they need to re-create the Merkle tree on its own in order to check that the Merkle root is the same as the commitment we sent. If that's the case, then they are sure we didn't cheat; otherwise, they immediately know we did cheat.
+　ここで、検証者は証明者が不正をしていないことを確認する必要があります。そのため、検証者は証明者に*検証パス*も要求します。検証パスには、マークル ルートが送信されたコミットメントと同じであることを確認するために、マークル ツリーを自身で再構築するために必要なすべてのデータが含まれています。一致すれば不正がなかったことが確実になり、一致しなければ不正があったことが即座にわかります。
 
-Specifically, the verification path for this query contains:
+　具体的に、このクエリの検証パスには以下が含まれます。
 
 - Hash 8
 - Hash 15
 
-This way, the verifier can re-create the Merkle tree up to the root and verify the commitment. So, we send hash 8 and hash 15 to the verifier, the verifier checks the validity of the commitment, and finally, this query is over.
+　こうすることで、検証者はマークル ルートまでマークル ツリーを再構築し、コミットメントを検証できます。Hash 8とHash 15を検証者に送信し、検証者がコミットメントの妥当性を確認して、このクエリは終了します。
 
-You may have spotted a new issue, though. In fact, due to the verification-path requirement, we ended up sending some additional data about `w′`: hash 8 and hash 15. While it's true that it should be computationally infeasible to revert a hash function—that is, to get the actual values 8 and 15 from their hashes—a malevolent verifier could try a brute-force attack and may succeed in finding out a part of the Merkle tree that we didn't intend to reveal. Luckily for us, there is a simple and nice tweak that solves this problem.
+　しかし、新たな問題に気づいたかもしれません。検証パスの要件により、`w′`に関する追加データ（Hash 8とHash 15）を送信することになりました。ハッシュ関数を逆算すること（つまり、ハッシュから実際の値8と15を取得すること）は計算上実行不可能であるはずですが、悪意のある検証者がブルートフォース攻撃を試み、意図していなかったマークル ツリーの一部を明らかにすることに成功する可能性があります。幸いにも、この問題を解決するシンプルで優れた調整があります。
 
-### Adding Randomness to the Commitment
+### コミットメントへのランダム性の追加
 
-The idea is analogous to what we have previously done to add the zero-knowledge property to our proof system. This time, we need to add randomness to the commitment so that we don't reveal any information about `w` (or `w′`) in the verification path.
+　このアイデアは、証明システムにゼロ知識性を追加するために以前行ったことと類似しています。今回は、検証パスで`w`（または`w′`）に関する情報を明かさないようにするため、コミットメントにランダム性を追加する必要があります。
 
-When we create the Merkle tree, instead of using only the hash of the exact value of each element of `w′` for the leaves of the tree, we add a random string that we won't provide to the verifier. Figure 17-3 shows the new Merkle tree built with this new methodology.
+　マークル ツリーを作成する際、ツリーのリーフに`w′`の各要素の正確な値のハッシュだけを使用するのではなく、検証者に提供しないランダムな文字列を追加します。図17-3は、この新しい方法で構築された新しいマークル ツリーを示しています。
 
-![Merkle tree with randomness](images/ch17/maet_1703.png)
+![ランダム性を追加したマークル ツリー](images/ch17/maet_1703.png)
 
-Figure 17-3. Merkle tree with added randomness for zero-knowledge property
+図17-3 ゼロ知識性のためにランダム性を追加したマークル ツリー
 
-For this example, we used the string "eth" to mask each item of the witness `w′`. Note that if you don't have this secret string, it's impossible to decode the actual values. Now, when we send hash* 8 and hash* 15 to the verifier in the verification path, they really have no clue about the concrete `w′` values behind the hash. Even if they try to brute-force attack, they don't know the secret string we used to hide the `w′` items even further.
+　この例では、ウィットネス`w′`の各項目をマスクするために文字列「eth」を使用しました。この秘密の文字列がなければ、実際の値をデコードすることは不可能であることに注意してください。検証パスでHash* 8とHash* 15を検証者に送信しても、検証者はハッシュの背後にある具体的な`w′`の値について全くわかりません。ブルートフォース攻撃を試みても、`w′`の項目をさらに隠すために使用した秘密の文字列を知りません。
 
-### Conclusion? Or Not…
+### 結論？ それとも…
 
-We did it! We managed to create a (very naive and basic) zero-knowledge proof system for our initial partition problem!
+　ゼロ知識証明システムの構築に成功しました。最初の分割問題に対する（非常に素朴で基本的な）ゼロ知識証明システムを作成できたのです。
 
-You may still think: "That's a great proof system, but it still requires a lot of interaction between the prover and the verifier. They need to be online at the same time to make sure the protocol succeeds. Is there a way to fix it and transform this interactive zero-knowledge proof system into a noninteractive zero-knowledge proof system?"
+　「素晴らしい証明システムだが、証明者と検証者の間にまだ多くのインタラクションが必要だ。プロトコルを成功させるために同時にオンラインである必要がある。この対話型ゼロ知識証明システムを非対話型ゼロ知識証明システムに変換する方法はないだろうか」と思われるかもしれません。
 
-And you would be so right. It's true that our system requires interaction between prover and verifier to work correctly, and that's really annoying for most use cases. We are lucky again (so much luck here, eh?). There is a scientific paper that could help us.
+　まさにその通りです。この証明システムが正しく機能するには証明者と検証者のインタラクションが必要であり、ほとんどのユースケースにとって非常に不便です。幸いにも（本当に幸運が多いですね）、助けとなる科学論文があります。
 
-## Fiat-Shamir Heuristic
+## Fiat-Shamirヒューリスティック
 
-In 1986, two well-known cryptographers, Amos Fiat and Adi Shamir, published the paper ["How to Prove Yourself: Practical Solutions to Identification and Signature Problems"](https://oreil.ly/TGfa-), in which they invented the transformation protocol that is still widely used today and has their name: the *Fiat-Shamir heuristic* or transformation.
+　1986年、著名な暗号学者であるアモス・フィアットとアディ・シャミアが論文["How to Prove Yourself: Practical Solutions to Identification and Signature Problems"](https://oreil.ly/TGfa-)を発表しました。この論文で、現在も広く使用されている変換プロトコルを発明しました。それが*Fiat-Shamirヒューリスティック*（または変換）と呼ばれるものです。
 
-> **Note**  
+> **Note**
 >
-> Adi Shamir is a real legend in cryptography: he's the S in the RSA algorithm, one of the first and most widely used public key cryptosystems. Amos Fiat was his colleague at the Weizmann Institute of Science in Israel.
+> アディ・シャミアは暗号学の真のレジェンドである。RSAアルゴリズムのSであり、最初かつ最も広く使用されている公開鍵暗号方式の1つである。アモス・フィアットはイスラエルのワイツマン科学研究所におけるシャミアの同僚であった。
 
 
-The Fiat-Shamir heuristic is a protocol that can transform an interactive zero-knowledge proof system into a noninteractive one by replacing the verifier's random challenges with a cryptographic hash function.
+　Fiat-Shamirヒューリスティックは、検証者のランダムなチャレンジを暗号学的ハッシュ関数に置き換えることで、対話型ゼロ知識証明システムを非対話型に変換できるプロトコルです。
 
-If you think about what the verifier has to do in the system we have built so far, you will notice that it's essentially giving the prover some random numbers—the queries—that the prover has to use to generate the correspondent proof.
+　これまで構築してきたシステムで検証者が何をしているかを考えると、本質的には証明者にいくつかのランダムな数値（クエリ）を与え、証明者がそれに対応する証明を生成するために使用するだけであることに気づくでしょう。
 
-Remember, we used to say, "Now the verifier asks for `w[1]` and `w[2]`." This can be translated into the verifier giving the prover the numbers 1 and 2 to create the proof for `w[1]` and `w[2]`.
+　以前、「検証者が`w[1]`と`w[2]`を要求する」と述べたことを思い出してください。これは、検証者が証明者に数値1と2を与えて、`w[1]`と`w[2]`の証明を作成させることと言い換えられます。
 
-We can summarize the original interactive protocol in the following way, skipping the part where the prover creates the witness `w` and tweaks it into `w′`:
+　証明者がウィットネス`w`を作成して`w′`に変換する部分を省略すると、元の対話型プロトコルは以下のように要約できます。
 
-1. The prover generates a commitment to `w′` and sends it to the verifier.
-2. The verifier sends a random challenge—a query.
-3. The prover sends a response to the challenge—a proof.
-4. The verifier verifies the validity of the proof.
-This process is repeated for every different query the verifier asks. And it all works fine because the prover doesn't know in advance which queries the verifier is going to ask—they're random to the prover. So if we find a way to make the prover itself generate all the queries in a random but predictable way, we are able to transform the entire process into a noninteractive protocol.
+1. 証明者が`w′`へのコミットメントを生成し、検証者に送信する。
+2. 検証者がランダムなチャレンジ（クエリ）を送信する。
+3. 証明者がチャレンジに対するレスポンス（証明）を送信する。
+4. 検証者が証明の妥当性を検証する。
+このプロセスは、検証者が行う異なるクエリごとに繰り返されます。そしてこれがうまく機能するのは、証明者が検証者がどのクエリを行うか事前に知らないからです。クエリは証明者にとってランダムです。したがって、証明者自身がランダムだが予測可能な方法ですべてのクエリを生成する方法を見つけることができれば、プロセス全体を非対話型プロトコルに変換できます。
 
-In their 1986 paper, Fiat and Shamir propose using a hash function to act as a "random oracle" that simulates the verifier's random challenges. Let's do a quick example with only two rounds of the protocol.
+　1986年の論文で、フィアットとシャミアは、検証者のランダムなチャレンジをシミュレートする「ランダム オラクル」としてハッシュ関数を使用することを提案しました。プロトコルの2ラウンドのみの簡単な例を行いましょう。
 
-In the first round:
+　第1ラウンドでは以下のようになります。
 
-1. The prover generates a commitment.
-2. The prover takes the commitment and the public inputs of the problem, and concatenates and hashes them. The result is going to be the first challenge:
+1. 証明者がコミットメントを生成する。
+2. 証明者がコミットメントと問題の公開入力を連結してハッシュする。結果が最初のチャレンジとなる。
 
     ```
     challenge = hash(commitment || public inputs)
     ```
 
-3. The prover computes a response to the challenge—a proof.
+3. 証明者がチャレンジに対するレスポンス（証明）を計算する。
 
-In the second round:
+　第2ラウンドでは以下のようになります。
 
-1. The prover generates a new commitment.
-2. The prover takes the new commitment and everything computed so far in the protocol (the old commitment, the proof, and the public inputs), and concatenates and hashes them. The result is going to be the new challenge:
+1. 証明者が新しいコミットメントを生成する。
+2. 証明者が新しいコミットメントと、プロトコルでこれまで計算されたすべて（古いコミットメント、証明、公開入力）を連結してハッシュする。結果が新しいチャレンジとなる。
 
     ```
     new challenge = hash(commitment || proof || new_commitment || public inputs)
     ```
 
-3. The prover computes a response to the new challenge—a new proof.
+3. 証明者が新しいチャレンジに対するレスポンス（新しい証明）を計算する。
 
-At this point, the prover can send the entire transcript of the protocol to the verifier. The verifier needs to:
+　この時点で、証明者はプロトコルのトランスクリプト全体を検証者に送信できます。検証者は以下を行う必要があります。
 
-1. Make sure that all challenges have been computed correctly by using the hash function and all valid inputs. This is to ensure that the prover didn't try to cheat with made-up challenges.
-2. Verify the validity of all the proofs in the same way they did before in the interactive protocol. This is to ensure that the prover actually knows a solution to the initial problem.
+1. すべてのチャレンジがハッシュ関数とすべての有効な入力を使用して正しく計算されたことを確認する。これは、証明者がでっち上げのチャレンジで不正を試みなかったことを保証するためである。
+2. 対話型プロトコルで行っていたのと同じ方法で、すべての証明の妥当性を検証する。これは、証明者が実際に最初の問題の解を知っていることを保証するためである。
 
-Figure 17-4 shows the process of the verifier making sure that the challenge has been computed correctly before verifying the validity of the zero-knowledge proof.
+　図17-4は、検証者がゼロ知識証明の妥当性を検証する前に、チャレンジが正しく計算されたことを確認するプロセスを示しています。
 
-![Verifier verification process](images/ch17/maet_1704.png)
+![検証者の検証プロセス](images/ch17/maet_1704.png)
 
-Figure 17-4. Fiat-Shamir heuristic makes the protocol noninteractive
+図17-4 Fiat-Shamirヒューリスティックによるプロトコルの非対話型化
 
-And that's it! Thanks to the Fiat-Shamir heuristic, we now have a noninteractive zero-knowledge proof system. The cool feature that comes for free is that a prover is now able to generate a valid proof that anyone can verify. So we need only one honest party that verifies the proof to detect if the prover is trying to cheat or not.
+　以上です。Fiat-Shamirヒューリスティックのおかげで、非対話型ゼロ知識証明システムが実現しました。無償で得られる優れた特徴は、証明者が誰でも検証可能な有効な証明を生成できるようになったことです。証明者が不正を試みているかどうかを検出するには、証明を検証する正直な当事者が1人いるだけで十分です。
 
-### Conclusion?
+### 結論？
 
-In this section, we built our first noninteractive zero-knowledge proof system for the partition problem. Modern zero-knowledge architectures are much more complex, and this book is definitely not going to explain all of that (even though you can find some very good papers at the end of the chapter for further reading). Still, what we've discussed thus far is the basis of all new zero-knowledge technology. If you understand that, you can fall into the zero-knowledge rabbit hole and start exploring all the nitty-gritty details behind it.
+　このセクションでは、分割問題に対する最初の非対話型ゼロ知識証明システムを構築しました。最新のゼロ知識アーキテクチャははるかに複雑であり、本書ではそのすべてを説明することはできません（ただし、章末にさらに読み進めるための優れた論文がいくつか紹介されています）。それでも、ここまで議論してきたことが、すべての新しいゼロ知識技術の基盤となっています。これを理解していれば、ゼロ知識のラビット ホールに飛び込んで、背後にある細かい詳細をすべて探求し始めることができるでしょう。
 
-In the next section, we'll look at two of the most widely used real frameworks for building a zero-knowledge proof system: SNARK and STARK.
+　次のセクションでは、ゼロ知識証明システムを構築するための最も広く使用されている2つの実際のフレームワーク、SNARKとSTARKについて見ていきます。
 
-## SNARK Versus STARK
+## SNARKとSTARKの比較
 
-Previously, we were able to create a zero-knowledge proof system for our initial partition problem. That's a good start. Now, what if we want to create a zero-knowledge proof system for a completely different computation? Can we reuse the same architecture that we built before for the partition problem?
+　前のセクションでは、最初の分割問題に対するゼロ知識証明システムを作成することができました。良いスタートです。では、まったく異なる計算に対してゼロ知識証明システムを作成したい場合、分割問題用に構築したのと同じアーキテクチャを再利用できるでしょうか。
 
-It turns out that we can't: the commitment `w` and its properties—for example, `|s[i]| = |w[i+1] – w[i]|`—are too specific to the partition problem to be applied to other problems. However, this isn't a big drawback: we can use what we learned from building this zero-knowledge proof system to develop a more general approach.
-And here's where SNARK comes onto the scene. As we already discussed in "History", SNARK was introduced in 2011 in the BIT+11 paper as a general framework for building zero-knowledge proofs for arbitrary computations. Only two years later, the Pinocchio paper created the first implementation that was usable in real-world applications.
+　答えは「できない」です。コミットメント`w`とその性質（例えば`|s[i]| = |w[i+1] – w[i]|`）は分割問題に特化しすぎており、他の問題には適用できません。しかし、これは大きな欠点ではありません。このゼロ知識証明システムの構築から学んだことを活用して、より一般的なアプローチを開発できます。
+　ここでSNARKが登場します。「歴史」セクションですでに述べた通り、SNARKは2011年のBIT+11論文で、任意の計算に対するゼロ知識証明を構築するための汎用フレームワークとして導入されました。わずか2年後には、Pinocchio論文が現実世界のアプリケーションで使用可能な最初の実装を作成しました。
 
-SNARK systems rely on a cryptographic secret called *trusted setup* to work in a noninteractive way. You can see it as a common knowledge base shared with all the participants of a cryptographic protocol: a sort of initialization phase where you need to generate some secrets and use them to compute some other values—proving and verification keys—that are going to be needed for the correct execution of the SNARK protocol.
+　SNARKシステムは、非対話型で機能するために*トラステッド セットアップ*と呼ばれる暗号学的な秘密に依存しています。トラステッド セットアップは、暗号プロトコルのすべての参加者が共有する共通の知識基盤と捉えることができます。いくつかの秘密を生成し、それらを使用してSNARKプロトコルの正しい実行に必要な他の値（証明鍵と検証鍵）を計算する、一種の初期化フェーズです。
 
-Usually, the trusted setup is obtained through the use of *multiparty computation*: lots of actors each generate a different secret (also called *toxic waste*), compute the proving and verification keys, and delete their initial secrets. Then, those keys are added together to obtain two final keys that will be used in the SNARK protocol. The main benefit of this is that you need only a single benevolent entity to delete its toxic waste to be sure that anyone cannot cheat and the trusted setup has been generated in a tamper-proof way. In Chapter 4, we covered this in the discussion on KZG commitments.
+　通常、トラステッド セットアップは*マルチパーティ計算*を使用して取得されます。多くのアクターがそれぞれ異なる秘密（*トキシック ウェイスト*とも呼ばれる）を生成し、証明鍵と検証鍵を計算した後、初期の秘密を削除します。その後、これらの鍵を合算して、SNARKプロトコルで使用される2つの最終的な鍵を得ます。この方法の主な利点は、1つのエンティティがトキシック ウェイストを削除するだけで、誰も不正ができず、トラステッド セットアップが改ざん防止された方法で生成されたことを確信できることです。第4章のKZGコミットメントの議論で、この内容を取り上げました。
 
-Even though SNARK protocols work perfectly fine, the 1-of-N trust assumption of the trusted setup, together with the difficulty of creating a very resilient initial ceremony to generate the final public keys, has always created lots of discussion and brought several researchers and companies to look into trustless zero-knowledge proof systems that could work completely without it. Furthermore, SNARK systems rely on elliptic curve cryptography that is not quantum resistant, another critical aspect that people pointed out.
+　SNARKプロトコルは完全に機能しますが、トラステッド セットアップの1-of-N信頼仮定と、最終的な公開鍵を生成する非常に堅牢な初期セレモニーの作成の困難さは、常に多くの議論を生んできました。トラステッド セットアップなしで完全に動作するトラストレスなゼロ知識証明システムを研究する動機を、複数の研究者や企業に与えてきました。さらに、SNARKシステムは耐量子性のない楕円曲線暗号に依存しており、これもまた指摘されている重要な課題です。
 
-In 2018, a paper written by Eli Ben-Sasson, Iddo Bentov, Yinon Horesh, and Michael Riabzev called ["Scalable, Transparent, and Post-Quantum Secure Computational Integrity"](https://oreil.ly/TCnTT) introduced a new trustless framework for building general zero-knowledge proof systems: zk-STARK.
-STARK stands for "*scalable transparent argument of knowledge*." In particular, *transparent* refers to the groundbreaking property of not needing a trusted setup. It also relies on collision-resistant hash functions instead of elliptic curve cryptography, making it even quantum resistant.
+　2018年、エリ・ベンサッソン、イド・ベントフ、イノン・ホレシュ、マイケル・リアブゼフによる論文["Scalable, Transparent, and Post-Quantum Secure Computational Integrity"](https://oreil.ly/TCnTT)が、汎用ゼロ知識証明システムを構築するための新しいトラストレスなフレームワーク、zk-STARKを導入しました。
+　STARKは「*scalable transparent argument of knowledge*」の略です。特に、*transparent*はトラステッド セットアップを必要としないという画期的な特性を指します。また、楕円曲線暗号の代わりに衝突耐性ハッシュ関数に依存しているため、耐量子性も備えています。
 
-These advantages explain why most people now consider STARK to be the most modern zero-knowledge proof system. However, SNARKs are not an obsolete technology. They do have some advantages in certain contexts, mostly in the proof size, which can be fundamental in bandwidth-constrained environments such as blockchains. Moreover, several mixed approaches have been developed that try to take the best from both worlds.
+　これらの利点から、現在ほとんどの人がSTARKを最もモダンなゼロ知識証明システムと見なしています。しかし、SNARKは時代遅れの技術ではありません。特定のコンテキスト、主に証明サイズにおいて利点があり、ブロックチェーンのような帯域幅が制約される環境では基本的に重要です。さらに、両方の長所を取り入れようとする複数の混合アプローチも開発されています。
 
-## Zk-EVM and zk-VM
+## zk-EVMとzk-VM
 
-Now that we've done a technical deep dive into how zero-knowledge proof systems work, we can finally go back to Ethereum and see how the tech has evolved in recent years.
+　ゼロ知識証明システムの仕組みについて技術的な深掘りを行ったので、ようやくEthereumに戻り、近年の技術の進化を見ていきましょう。
 
-We've already explained how we can use zero-knowledge proof systems to improve Ethereum—that is, prove the EVM execution of a block so that full nodes don't have to reexecute all transactions included into that block to trustlessly update their states. Instead, they can just verify a zero-knowledge proof, and if it's valid, they know the new state has been computed correctly. We also saw a basic example of how to create a zero-knowledge proof system for a very specific computation—the partition problem—and then we introduced SNARK and STARK frameworks, which let us generalize the architecture and apply it to any arbitrary computation.
-So we can immediately wonder: can we use a SNARK or STARK zero-knowledge proof system to correctly prove the EVM block execution? Yes, we definitely can, but there are a couple of choices we have to make.
+　ゼロ知識証明システムを使用してEthereumを改善する方法、つまりブロックのEVM実行を証明してフル ノードがステートをトラストレスに更新するためにブロックに含まれるすべてのトランザクションを再実行する必要がないようにする方法については、すでに説明しました。代わりに、ゼロ知識証明を検証するだけで、有効であれば新しいステートが正しく計算されたことがわかります。また、非常に特定の計算（分割問題）に対するゼロ知識証明システムの作成方法の基本的な例も見てから、SNARKおよびSTARKフレームワークを紹介しました。これらのフレームワークにより、アーキテクチャを一般化し、任意の計算に適用できるようになります。
+　そこで、すぐに疑問が湧くかもしれません。SNARKまたはSTARKのゼロ知識証明システムを使用して、EVMブロック実行を正しく証明できるでしょうか。はい、確実にできますが、いくつかの選択を行う必要があります。
 
-In the partition-problem example, we had to slightly transform the initial proposition—that is, whether you can divide a set of integers into two subsets so that the sum of the numbers in the two subsets is equal—into something that was easier to prove with the system that we later built—that is, we added the satisfying assignment `a` and three constraints that it must satisfy to be valid. The transformation is necessary in order to be able to tackle the problem in a mathematical way. And it applies to SNARK and STARK frameworks.
+　分割問題の例では、最初の命題（整数の集合を2つの部分集合に分割して合計が等しくなるかどうか）を、後に構築したシステムで証明しやすい形に少し変換する必要がありました。つまり、充足割り当て`a`と、それが有効であるために満たすべき3つの制約を追加しました。この変換は、問題を数学的に取り扱えるようにするために必要です。そしてSNARKおよびSTARKフレームワークにも同様に適用されます。
 
-In fact, even though it's true that you can zero-knowledge prove any arbitrary computation using a SNARK or STARK framework, you first need to transform the computation into a form that the framework is able to correctly digest and process, usually called a *circuit*. It turns out that's a very hard task. In particular, it's really error prone to transform a complex computation such as the EVM state transition function into a zero-knowledge circuit, and it's also difficult to debug if there are any errors or problems. If the circuit is not correct or there are bugs, then you cannot trust the zero-knowledge proof that is later generated because it doesn't reflect the actual computation that has been done, so it could even be possible to generate a valid zero-knowledge proof for a fake statement—that is, saying that the new EVM state is "state1" while the correct one should be "state2."
+　実際、SNARKまたはSTARKフレームワークを使用して任意の計算をゼロ知識で証明できることは確かですが、まずフレームワークが正しく処理・実行できる形式（通常*回路*と呼ばれる）に計算を変換する必要があります。これは非常に困難なタスクであることがわかっています。特に、EVMステート遷移関数のような複雑な計算をゼロ知識回路に変換することは非常にエラーを起こしやすく、エラーや問題がある場合のデバッグも困難です。回路が正しくないかバグがある場合、後から生成されるゼロ知識証明は実際に行われた計算を反映していないため、信頼できません。偽のステートメントに対して有効なゼロ知識証明を生成する（つまり、正しいEVMステートが「state2」であるべきなのに、新しいEVMステートが「state1」であると主張する）ことすら可能になりかねません。
 
-An EVM implementation that also includes a zero-knowledge proof-generation system is called a *zk-EVM*. You can find a concrete zk-EVM in the ZKsync repository.
+　ゼロ知識証明生成システムを含むEVM実装は*zk-EVM*と呼ばれます。具体的なzk-EVMはZKsyncリポジトリで見ることができます。
 
-Initially, every project that wanted to build a ZK rollup had to tackle the hard work of creating the correct zero-knowledge circuit for the EVM state transition function. This is why at the time of writing (June 2025), we have far more optimistic rollups than ZK rollups. But things are changing really fast, thanks to the arrival of zk-VMs.
-*Zk-VMs* drastically change the perspective of building a ZK rollup and, more generally, a zero-knowledge proof system for the EVM state transition function. The idea is quite straightforward: instead of having to create a custom circuit for every different computation in order to then apply a SNARK or STARK framework, what if we could create a universal circuit that can be used for all kinds of computations? It would be a sort of general-purpose zero-knowledge computer that could handle any arbitrary computation. This layer of abstraction is really powerful: "one circuit to rule them all."
+　当初、ZKロールアップを構築しようとするすべてのプロジェクトは、EVMステート遷移関数の正しいゼロ知識回路を作成するという困難な作業に取り組む必要がありました。これが、執筆時点（2025年6月）でオプティミスティック ロールアップの方がZKロールアップよりもはるかに多い理由です。しかし、zk-VMの登場により、状況は急速に変化しています。
+　*zk-VM*は、ZKロールアップの構築、そしてより一般的にはEVMステート遷移関数のゼロ知識証明システムの構築に対する視点を劇的に変えます。アイデアは非常にシンプルです。SNARKまたはSTARKフレームワークを適用するために、異なる計算ごとにカスタム回路を作成する必要があるのではなく、あらゆる種類の計算に使用できるユニバーサル回路を作成できるとしたらどうでしょうか。任意の計算を処理できる、一種の汎用ゼロ知識コンピュータのようなものです。この抽象化レイヤーは非常に強力です。「1つの回路がすべてを支配する」のです。
 
-This way, you only need to focus on the computation you want to prove, and the zk-VM handles all the hard work of generating a proof. The most famous zk-VMs right now are [SP1](https://oreil.ly/kgVYY) and [RISC Zero](https://oreil.ly/z6v2l).
+　この方法により、証明したい計算にのみ集中すればよく、zk-VMが証明生成のすべての困難な作業を処理します。現在最も有名なzk-VMは[SP1](https://oreil.ly/kgVYY)と[RISC Zero](https://oreil.ly/z6v2l)です。
 
-Figure 17-5 offers a streamlined visualization that captures the core elements of both zk-EVM and zk-VM frameworks.
+　図17-5は、zk-EVMとzk-VMの両方のフレームワークの核心的な要素を捉えた簡潔な視覚化を提供しています。
 
-![zk-EVM and zk-VM comparison](images/ch17/maet_1705.png)
+![zk-EVMとzk-VMの比較](images/ch17/maet_1705.png)
 
-Figure 17-5. Comparison of zk-EVM and zk-VM frameworks
+図17-5 zk-EVMとzk-VMフレームワークの比較
 
-## Conclusion
+## まとめ
 
-In this final chapter, we explored the basics of zero-knowledge technology: from its invention in 1985 to the groundbreaking innovations of the Bit+11 and Pinocchio papers that truly brought it to real-world applications, particularly in the blockchain world. We used the small partition problem as an example to gain intuition on how these complex systems work under the hood, and we later examined more generalized approaches, such as SNARK and STARK frameworks, that make it possible to apply a standard methodology to build a zero-knowledge proof system for any arbitrary computation. Finally, we introduced a very recent development: zk-VMs, which are quickly revolutionizing the sector thanks to their significant advantage of having a single circuit capable of handling arbitrary computations, which eliminates the need for developers to spend time creating custom circuits tied to specific computations they want to prove.
+　この最終章では、ゼロ知識技術の基本を探求しました。1985年の発明から、ゼロ知識技術を現実世界のアプリケーション、特にブロックチェーンの世界に真にもたらしたBIT+11論文とPinocchio論文の画期的なイノベーションまでを辿りました。小さな分割問題を例に用いて、これらの複雑なシステムがどのように内部で機能するかについての直感を養いました。その後、SNARKやSTARKフレームワークのようなより一般化されたアプローチを検討しました。これらのフレームワークにより、任意の計算に対してゼロ知識証明システムを構築するための標準的な方法論を適用できるようになります。最後に、非常に最近の開発であるzk-VMを紹介しました。zk-VMは、単一の回路で任意の計算を処理できるという大きな利点により、開発者が証明したい特定の計算に結びついたカスタム回路を作成する時間を費やす必要がなくなり、このセクターを急速に革新しています。
 
-The future of Ethereum will undoubtedly intersect with zero-knowledge technology, both at the L2 level and directly on the L1 level. The concrete solution that will ultimately prevail remains unknown; perhaps it will be a combination of different approaches to ensure greater resilience against bugs or failures. Only time will tell...
+　Ethereumの未来は、L2レベルでもL1上で直接的にも、ゼロ知識技術と間違いなく交差するでしょう。最終的に優位に立つ具体的なソリューションはまだ不明です。おそらく、バグや障害に対するより大きな耐性を確保するために、さまざまなアプローチの組み合わせになるでしょう。時が経てばわかるはずです…
 
-For further reading on this subject, please see the following:
+　このテーマについてさらに読むには、以下を参照してください。
 
 - [A simple example](https://oreil.ly/jVNdu)
-- ["You Could Have Invented SNARKs"](https://oreil.ly/jiaOa) by Ethan Buchman
-- ["Why and How zk-SNARK Works: Definitive Explanation"](https://oreil.ly/EUUzt) by Maksym Petkus
+- ["You Could Have Invented SNARKs"](https://oreil.ly/jiaOa) by イーサン・ブックマン
+- ["Why and How zk-SNARK Works: Definitive Explanation"](https://oreil.ly/EUUzt) by マクシム・ペトクス
 - [The RareSkills Book of Zero Knowledge](https://oreil.ly/tpHrl)
