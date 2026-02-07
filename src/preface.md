@@ -1,104 +1,104 @@
-# Preface
+# はじめに
 
-This book is a collaboration between me (Carlo Parisi, aka Blackie), Alessandro Mazza, and Niccolò Pozzolini. The first edition, which of course heavily influenced our work, was written between 2016 and 2019 by Andreas M. Antonopoulos and Dr. Gavin Wood.
+本書は、私（カルロ・パリージ、別名Blackie）、アレッサンドロ・マッツァ、ニッコロ・ポッツォリーニの共同作業です。もちろん私たちの仕事に大きな影響を与えた初版は、2016年から2019年にかけてアンドレアス・M・アントノプロスとギャヴィン・ウッド博士によって書かれました。
 
-In November 2023, a series of very fortunate coincidences brought Andreas and me together in Glasgow. There, after a few beers and a few autographs, I asked him if he had any intention of writing a second edition of *Mastering Ethereum*. This was because, even though the first edition is a masterpiece, it hasn't aged well; it was published in 2019, back when Ethereum was still using proof of work and had a very different roadmap.
+2023年11月、いくつかの幸運な偶然が重なり、私とアンドレアスはグラスゴーで会うことになりました。そこで、ビールを飲みながらサインを交わした後、私は彼に『Mastering Ethereum』の第2版を執筆する意図があるかどうか尋ねました。というのも、初版は傑作であるにもかかわらず、時間の経過とともに古くなっていたからです。2019年に出版された当時は、イーサリアムはまだプルーフ・オブ・ワークを使用しており、ロードマップも大きく異なっていました。
 
-Andreas's response was that he wasn't planning to write a second edition, but our conversation ended up sparking the idea that led me to take on this project. Less than a day after our meeting in Glasgow, I was talking with O'Reilly about the possibility of writing a second edition.
+アンドレアスの返答は、第2版を執筆する予定はないというものでしたが、私たちの会話は、私がこのプロジェクトを引き受けるきっかけとなるアイデアを刺激することになりました。グラスゴーでの会合から1日も経たないうちに、私はオライリーと第2版執筆の可能性について話し合っていました。
 
-I immediately knew this would be a big and important task. While I was honored by the opportunity, I was also afraid I might not be able to do a good enough job. I've been a fan of Andreas's work for years; he's the reason I was able to understand Bitcoin as deeply as I did back in 2014–2015, so I knew I needed help.
+私はすぐに、これが大きく重要な仕事になることを悟りました。この機会に光栄に思う一方で、十分に良い仕事ができるか不安でもありました。私は長年アンドレアスの作品のファンでした。彼のおかげで、2014年から2015年にかけてビットコインを深く理解することができたので、助けが必要だとわかっていました。
 
-The first person who came to mind was Alessandro. He was involved in the project within the first few hours. As soon as the opportunity became real, I texted and asked if he wanted to join me. He instantly and happily said yes (without knowing any of the conditions or even whether it was a paid job).
+最初に頭に浮かんだのはアレッサンドロでした。彼は最初の数時間のうちにプロジェクトに参加してくれました。機会が現実的になるとすぐに、私は彼にテキストメッセージを送り、私と一緒に参加したいか尋ねました。彼は条件や報酬のある仕事であるかどうかも知らずに、即座に喜んでイエスと答えました。
 
-Niccolò was a bit harder to convince. It took a full month of rejections to get him on board. Luckily, I'm very stubborn and wasn't willing to take no for an answer. After one month, he finally agreed. With that, our full team was ready, and the *Mastering Ethereum: Second Edition* project was officially launched.
+ニッコロを説得するのは少し大変でした。彼を参加させるまでに1ヶ月もの拒否を経験しました。幸いなことに、私は非常に頑固で、ノーという返事を受け入れるつもりはありませんでした。1ヶ月後、彼はついに同意してくれました。そうして、私たちのチーム全員が揃い、『Mastering Ethereum: Second Edition』プロジェクトが正式に開始されました。
 
-I hope that every reader of this book gains at least a bit of knowledge from it. *Mastering Ethereum* was a book that taught me—and thousands of others—so much, and we worked hard to maintain that same level of quality. It took two years of research and writing to complete, and I'd be lying if I said it was easy.
+この本を読んだすべての読者が、少なくとも少しでも知識を得ることを願っています。『Mastering Ethereum』は、私や何千人もの人々に多くのことを教えてくれた本であり、私たちは同じレベルの品質を維持するために懸命に努力しました。完成までに2年間の調査と執筆を要し、簡単だったと言えば嘘になります。
 
-We're also very proud to be an all-Italian team on this project. Hopefully, that brings some pride to the Italian crypto community as well.
+また、このプロジェクトが全員イタリア人チームであることを非常に誇りに思っています。これがイタリアの暗号コミュニティにも誇りをもたらすことを願っています。
 
-## How to Use This Book
+## 本書の利用方法
 
-The book is intended to serve both as a reference manual and as a cover-to-cover exploration of Ethereum. The first two chapters offer a gentle introduction, suitable for novice users, and the examples in those chapters can be completed by anyone with a bit of technical skill. Those two chapters will give you a good grasp of the basics and allow you to use the fundamental tools of Ethereum. Parts of Chapter 3 and beyond are intended for programmers and include many technical topics and programming examples, but they still should be understandable by anyone, for the most part.
+本書は、イーサリアムのリファレンスマニュアルとして、また一からイーサリアムを探求するためのものとして、両方の役割を果たすことを意図しています。最初の2章では、初心者ユーザーに適した優しい入門を提供し、これらの章の例は、少し技術的なスキルがあれば誰でも完了することができます。これらの2章で、イーサリアムの基本的な理解を深め、基本的なツールを使用できるようになります。第3章以降はプログラマーを対象としており、多くの技術的なトピックとプログラミングの例が含まれていますが、ほとんどの部分で誰でも理解できるはずです。
 
-To serve as both a reference manual and a cover-to-cover narrative about Ethereum, the book inevitably contains some duplication. Some topics, such as gas, have to be introduced early enough for the rest of the topics to make sense but are also examined in depth in their own sections.
+リファレンスマニュアルとして、またイーサリアムに関する包括的な物語として機能するため、本書には必然的に重複が含まれています。ガスなどのいくつかのトピックは、他のトピックが理解できるほど十分に早く導入される必要がありますが、それらの独自のセクションでも深く掘り下げられています。
 
-Finally, the book's index allows readers to find very specific topics and the relevant sections with ease, by keyword.
+最後に、本書の索引は、読者がキーワードを使って非常に具体的なトピックと関連セクションを簡単に見つけられるようにします。
 
-## Intended Audience
+## 対象読者
 
-This book is mostly intended for everyone. This book will teach you how smart contract blockchains work, how to use them, and how to develop smart contracts and decentralized applications with them. The first few chapters are also suitable as an in-depth introduction to Ethereum for beginners.
+本書は主にすべての人を対象としています。スマートコントラクトブロックチェーンがどのように機能するか、それらを使用する方法、そしてスマートコントラクトと分散型アプリケーションを開発する方法を学ぶことができます。最初の数章は、イーサリアム初心者向けの深い入門としても適しています。
 
-## Code Examples
+## コード例
 
-The examples are illustrated in Solidity, Vyper, and JavaScript, using the command line of a Unix-like operating system. All the code snippets can be replicated on most operating systems with a minimal installation of compilers, interpreters, and libraries for the corresponding languages. Where necessary, we provide basic installation instructions and step-by-step examples of the output of those instructions.
+例は、Solidity、Vyper、JavaScriptで、Unixライクなオペレーティングシステムのコマンドラインを使用して説明されています。すべてのコードスニペットは、対応する言語のコンパイラ、インタープリタ、およびライブラリを最小限にインストールすることで、ほとんどのオペレーティングシステムで再現できます。必要に応じて、基本的なインストール手順と、それらの手順の出力のステップバイステップの例を提供します。
 
-All the code snippets use real values and calculations where possible, so you can build from example to example and see the same results in any code you write to calculate the same values. For example, the private keys and corresponding public keys and addresses are all real. The sample transactions, contracts, blocks, and blockchain references have all been introduced to the actual Ethereum blockchain and are part of the public ledger, so you can review them.
+すべてのコードスニペットは、可能な限り実際の値と計算を使用しているため、例から例へと構築し、同じ値を計算するために記述するすべてのコードで同じ結果を確認できます。たとえば、秘密鍵とそれに対応する公開鍵およびアドレスはすべて実在するものです。サンプルのトランザクション、コントラクト、ブロック、およびブロックチェーン参照はすべて実際のイーサリアムブロックチェーンに導入されており、公開台帳の一部であるため、確認できます。
 
-## Ethereum Addresses and Transactions in this Book
+## 本書におけるイーサリアムアドレスとトランザクション
 
-The Ethereum addresses, transactions, keys, QR codes, and blockchain data used in this book are, for the most part, real. That means you can browse the blockchain, look at the transactions offered as examples, retrieve them with your own scripts or programs, and so forth.
+本書で使用されているイーサリアムアドレス、トランザクション、鍵、QRコード、およびブロックチェーンデータは、ほとんどの部分で実在するものです。これは、ブロックチェーンを閲覧したり、例として提供されているトランザクションを確認したり、独自のスクリプトやプログラムでそれらを取得したりできることを意味します。
 
-However, note that the private keys used to construct the addresses printed in this book have been "burned." This means that if you send money to any of these addresses, the money will be either lost forever or (more likely) appropriated, since anyone who reads the book can take it using the private keys printed herein.
+ただし、本書に記載されているアドレスを構築するために使用された秘密鍵は「焼却」されていることに注意してください。これは、これらのアドレスのいずれかに送金した場合、その資金が永遠に失われるか、あるいは（より可能性が高いですが）流用されることを意味します。なぜなら、本書を読んだ人なら誰でも、ここに記載されている秘密鍵を使用して資金を引き出すことができるからです。
 
-> **Warning**  
+> **警告**
 >
-> Do not send money to any of the addresses in this book. Your money will be taken by another reader or lost forever.
+> 本書に記載されているいずれのアドレスにも送金しないでください。あなたのお金は他の読者に奪われるか、永遠に失われます。
 
-## Conventions Used in This Book
+## 本書で使用されている表記規則
 
-The following typographical conventions are used in this book:
+本書では以下の表記規則を使用しています。
 
-*Italic*
+*イタリック体*
 
-Indicates new terms, URLs, email addresses, filenames, and file extensions.
+新しい用語、URL、メールアドレス、ファイル名、ファイル拡張子を示す。
 
-`Constant width`
+`等幅フォント`
 
-Used for program listings, as well as within paragraphs to refer to program elements such as variable or function names, databases, data types, environment variables, statements, and keywords.
+プログラムリスト、および段落内で変数名や関数名、データベース、データ型、環境変数、ステートメント、キーワードなどのプログラム要素を参照するために使用される。
 
-**`Constant width bold`**
+**`太字等幅フォント`**
 
-Shows commands or other text that should be typed literally by the user.
+ユーザーが文字通り入力すべきコマンドやその他のテキストを示す。
 
-*`Constant width italic`*
+*`イタリック体等幅フォント`*
 
-Shows text that should be replaced with user-supplied values or by values determined by context.
+ユーザーが提供する値、またはコンテキストによって決定される値に置き換えるべきテキストを示す。
 
-> **Tip**  
+> **ヒント**
 >
-> This element signifies a tip or suggestion.
+> この要素はヒントまたは提案を示す。
 
-> **Note**  
+> **注**
 >
-> This element signifies a general note.
+> この要素は一般的な注記を示す。
 
-> **Warning**  
+> **警告**
 >
-> This element indicates a warning or caution.
+> この要素は警告または注意を示す。
 
-## Using Code Examples
+## コード例の使用
 
-In our commitment to collaboration, we worked with O'Reilly Media to make this book available under a Creative Commons license.
+コラボレーションへのコミットメントとして、私たちはオライリー・メディアと協力し、本書をクリエイティブ・コモンズ・ライセンスの下で利用できるようにしました。
 
-If you have a technical question or a problem using the code examples, please send an email to <support@oreilly.com>.
+技術的な質問やコード例の使用に関する問題がある場合は、<support@oreilly.com>までメールをお送りください。
 
-This book is here to help you get your job done. In general, if example code is offered with this book, you may use it in your programs and documentation. You do not need to contact us for permission unless you're reproducing a significant portion of the code. For example, writing a program that uses several chunks of code from this book does not require permission. Selling or distributing examples from O'Reilly books does require permission. Answering a question by citing this book and quoting example code does not require permission. Incorporating a significant amount of example code from this book into your product's documentation does require permission.
+本書は、皆様の仕事の達成を支援するためにここにあります。一般に、本書で提供されているサンプルコードは、皆様のプログラムやドキュメントで自由に使用できます。コードの大部分を複製する場合を除き、許可を得る必要はありません。例えば、本書のコードをいくつか使用するプログラムを作成する場合、許可は不要です。オライリーの書籍からのサンプルを販売または配布する場合は、許可が必要です。本書を引用してサンプルコードを引用することで質問に答える場合、許可は不要です。本書のサンプルコードの大部分を製品のドキュメントに組み込む場合は、許可が必要です。
 
-We appreciate, but generally do not require, attribution. An attribution usually includes the title, author, publisher, and ISBN. For example: "*Mastering Ethereum*, 2nd ed., by Andreas M. Antonopoulos, Gavin Wood, Carlo Parisi, Alessandro Mazza, and Niccolò Pozzolini (O'Reilly). Copyright 2026 Carlo Parisi, Alessandro Mazza, and Niccolò Pozzolini, 978-1-098-16842-1."
+私たちは、帰属表示を評価しますが、一般的には必要としません。帰属表示には通常、タイトル、著者、出版社、ISBNが含まれます。例えば、「*Mastering Ethereum*、第2版、アンドレアス・M・アントノプロス、ギャヴィン・ウッド、カルロ・パリージ、アレッサンドロ・マッツァ、ニッコロ・ポッツォリーニ著（オライリー）。Copyright 2026 カルロ・パリージ、アレッサンドロ・マッツァ、ニッコロ・ポッツォリーニ、978-1-098-16842-1。」
 
-If you feel your use of code examples falls outside fair use or the permission given above, feel free to contact us at permissions@oreilly.com.
+コード例の使用が公正使用の範囲外である、または上記の許可の範囲外であると感じる場合は、permissions@oreilly.comまでお気軽にお問い合わせください。
 
-## O'Reilly Online Learning
+## オライリー・オンライン・ラーニング
 
-> **Note**  
+> **注**
 >
-> For more than 40 years, O'Reilly Media has provided technology and business training, knowledge, and insight to help companies succeed.
+> 40年以上にわたり、オライリー・メディアは、企業の成功を支援するために、テクノロジーとビジネスのトレーニング、知識、洞察を提供してきた。
 
-Our unique network of experts and innovators share their knowledge and expertise through books, articles, and our online learning platform. O'Reilly's online learning platform gives you on-demand access to live training courses, in-depth learning paths, interactive coding environments, and a vast collection of text and video from O'Reilly and 200+ other publishers. For more information, visit [oreilly.com](https://oreilly.com).
+私たちの専門家とイノベーターのユニークなネットワークは、書籍、記事、およびオンライン学習プラットフォームを通じて、彼らの知識と専門知識を共有しています。オライリーのオンライン学習プラットフォームは、ライブトレーニングコース、詳細な学習パス、インタラクティブなコーディング環境、およびオライリーと200以上の他の出版社からのテキストとビデオの膨大なコレクションへのオンデマンドアクセスを提供します。詳細については、[oreilly.com](https://oreilly.com)をご覧ください。
 
-## How to Contact Us
+## お問い合わせ
 
-Please address comments and questions concerning this book to the publisher:
+本書に関するご意見やご質問は、出版社までお寄せください。
 
 O'Reilly Media, Inc.
 
@@ -106,97 +106,97 @@ O'Reilly Media, Inc.
 
 Santa Rosa, CA 95401
 
-800-889-8969 (in the United States or Canada)
+800-889-8969（米国またはカナダ）
 
-707-827-7019 (international or local)
+707-827-7019（国際または現地）
 
-707-829-0104 (fax)
+707-829-0104（ファックス）
 
 <support@oreilly.com>
 
 [oreilly.com/about/contact.html](https://oreilly.com/about/contact.html)
 
-We have a web page for this book, where we list errata and any additional information. You can access this page at [https://oreil.ly/MasteringEthereum2e](https://oreil.ly/MasteringEthereum2e).
+本書のウェブページがあり、正誤表や追加情報が掲載されています。このページには、[https://oreil.ly/MasteringEthereum2e](https://oreil.ly/MasteringEthereum2e)でアクセスできます。
 
-For news and information about our books and courses, visit [https://oreilly.com](https://oreilly.com).
+私たちの書籍やコースに関するニュースや情報については、[https://oreilly.com](https://oreilly.com)をご覧ください。
 
-Find us on [LinkedIn](https://linkedin.com/company/oreilly-media)
+[LinkedIn](https://linkedin.com/company/oreilly-media)で私たちを見つける
 
-Watch us on [YouTube](https://youtube.com/oreillymedia)
+[YouTube](https://youtube.com/oreillymedia)で私たちを見る
 
-## Contacting Carlo
+## Carloへの連絡先
 
-Subscribe to Carlo's channel on [YouTube](https://www.youtube.com/@BlackieCrypto)
+Carloの[YouTubeチャンネル](https://www.youtube.com/@BlackieCrypto)を購読する
 
-Follow Carlo on [Twitter/X]( https://x.com/ManInBlackie)
+Carloを[Twitter/X]( https://x.com/ManInBlackie)でフォローする
 
-Connect with Carlo on [LinkedIn](https://www.linkedin.com/in/carloparisis)
+Carloと[LinkedIn](https://www.linkedin.com/in/carloparisis)で繋がる
 
-Email: <carlo.parisi01234@gmail.com>
+メール: <carlo.parisi01234@gmail.com>
 
-## Contacting Alessandro
+## Alessandroへの連絡先
 
-Follow Alessandro on [GitHub](https://github.com/alessandromazza98)
+Alessandroを[GitHub](https://github.com/alessandromazza98)でフォローする
 
-Connect with Alessandro on [LinkedIn](https://www.linkedin.com/in/alessandro-mazza-a8b181320)
+Alessandroと[LinkedIn](https://www.linkedin.com/in/alessandro-mazza-a8b181320)で繋がる
 
-Follow Alessandro on [Twitter/X (Italian profile)](https://x.com/alessandromazza)
+Alessandroを[Twitter/X (イタリア語プロフィール)](https://x.com/alessandromazza)でフォローする
 
-Follow Alessandro on [Twitter/X (English profile)](https://x.com/alemaz98)
+Alessandroを[Twitter/X (英語プロフィール)](https://x.com/alemaz98)でフォローする
 
-Subscribe to Alessandro's [YouTube channel](https://www.youtube.com/@alessandro-mazza)
+Alessandroの[YouTubeチャンネル](https://www.youtube.com/@alessandro-mazza)を購読する
 
-## Contacting Niccolò
+## Niccolòへの連絡先
 
-Follow Niccolò on [Twitter/X](https://x.com/idrocortisone)
+Niccolòを[Twitter/X](https://x.com/idrocortisone)でフォローする
 
-Connect with Niccolò on [LinkedIn](https://www.linkedin.com/in/niccolo-pozzolini)
+Niccolòと[LinkedIn](https://www.linkedin.com/in/niccolo-pozzolini)で繋がる
 
-## Acknowledgments by Carlo
+## Carloからの謝辞
 
-I owe a lot of what has happened in my career and personal life to Andreas's work. Thanks to the first edition of *Mastering Bitcoin*, I was able, back in 2014 and 2015, to truly understand the potential of Bitcoin. Because of that, I decided to pursue a career in crypto. At the time, there weren't many complete resources available, so *Mastering Bitcoin* was an incredible gift to the entire community. I wouldn't have the career I have today and probably my life would be very different if it weren't for that incredible work. The same goes for *Mastering Ethereum*. For this reason, Andreas, thank you so much.
+私のキャリアと個人的な生活で起こった多くのことは、アンドレアスの功績に負っています。『Mastering Bitcoin』の初版のおかげで、2014年から2015年にかけて、ビットコインの可能性を真に理解することができました。その結果、私は暗号通貨のキャリアを追求することを決意しました。当時、完全なリソースはあまりなく、『Mastering Bitcoin』はコミュニティ全体にとって信じられないほどの贈り物でした。もしあの素晴らしい作品がなければ、今のキャリアも、おそらく私の人生も大きく異なっていたでしょう。『Mastering Ethereum』についても同様です。この理由から、アンドレアス、本当にありがとうございます。
 
-Thank you to Nicola Luigi Guglielmo Di Nanna, my high school computer science professor. Without you, I probably would not have discovered my passion for programming and, subsequently, for blockchains. They say a good professor can change a student's life; you certainly did. Thank you for sharing your passion for computer science and for being such an inspiring role model.
+高校のコンピュータサイエンスの先生であったニコラ・ルイージ・グリエルモ・ディ・ナンナ先生、ありがとうございます。先生がいなければ、私はプログラミング、そしてその後のブロックチェーンへの情熱を発見することはなかったでしょう。良い先生は生徒の人生を変えると言いますが、先生は確かにそうでした。コンピュータサイエンスへの情熱を共有し、素晴らしい模範となってくださったことに感謝します。
 
-Thank you also to Alessandro and Niccolò, who helped so much in writing this book, and to all of our incredible tech reviewers.
+また、本書の執筆に多大な協力をいただいたアレッサンドロとニッコロ、そして素晴らしいテクニカルレビューアの皆様にも感謝いたします。
 
-Thank you to Michelle Smith and Shira Evans from O'Reilly, who supported us every step of the way.
+あらゆる段階で私たちをサポートしてくださったオライリーのミシェル・スミスとシーラ・エヴァンスに感謝いたします。
 
-Thank you to the Italian community, particularly my own community on Discord, YouTube, and Twitter, which gave me the confidence to take on this and many other projects.
+イタリアのコミュニティ、特にDiscord、YouTube、Twitterの私のコミュニティに感謝します。このプロジェクトや他の多くのプロジェクトを引き受ける自信を与えてくれました。
 
-Thank you to the amazing Ethereum community. We wouldn't have been able to do as much research—or write as deeply—without your ongoing support and contributions.
+素晴らしいイーサリアムコミュニティに感謝いたします。皆様の継続的なサポートと貢献がなければ、これほど多くの研究を行い、深く執筆することはできませんでした。
 
-And last but not least, thank you to my wonderful family, who supported me in everything I did and allowed me to freely explore my passions and interests.
+最後に、私のすべての活動をサポートし、私の情熱と興味を自由に探求させてくれた素晴らしい家族に感謝します。
 
-## Acknowledgments by Alessandro
+## Alessandroからの謝辞
 
-There are so many things I'm grateful for. First of all, I'd like to thank Carlo for reaching out to me and giving me the amazing opportunity to write this book. I still remember the first time we met in person, in Catanzaro, Italy.
+感謝すべきことがたくさんあります。まず第一に、カルロが私に連絡をくれ、この本を執筆するという素晴らしい機会を与えてくれたことに感謝します。イタリアのカタツァーロで初めて直接会った時のことを今でも覚えています。
 
-Thank you to my university professor, Dr. Luca Giuzzi, for allowing me to dedicate my thesis to Bitcoin and the Schnorr digital signature algorithm. That was the beginning of my career in the cryptocurrency space.
+私の大学の教授であるルカ・ジュッツィ博士に感謝します。ビットコインとシュノアデジタル署名アルゴリズムに論文を捧げることを許可してくださったおかげで、私の暗号通貨分野でのキャリアが始まりました。
 
-A heartfelt thank you to my Italian community, who gave me confidence and indirectly brought me to where I am today. I probably wouldn't have met Carlo if it weren't for their support.
+私に自信を与え、間接的に今の私を導いてくれたイタリアのコミュニティに心からの感謝を。彼らのサポートがなければ、私はおそらくカルロに会うことはなかったでしょう。
 
-Thank you to O'Reilly, and in particular to Shira Evans and Michelle Smith, who guided us throughout this journey. Their meticulous coordination and support, along with the help of all the reviewers, made this book possible.
+オライリー、特にこの旅を通して私たちを導いてくれたシーラ・エヴァンスとミシェル・スミスに感謝します。彼らの細やかな調整とサポート、そしてすべてのレビューアの協力が、この本の実現を可能にしました。
 
-Finally, I want to thank my family and my girlfriend, Alessandra, for always supporting and loving me.
+最後に、常に私を支え、愛してくれている家族とガールフレンドのアレッサンドラに感謝します。
 
-## Acknowledgments by Niccolò
+## Niccolòからの謝辞
 
-I want to thank Carlo for giving me the chance to write this book with him. Over the past two years, we've worked on many projects together and shared plenty of laughs, trips abroad, and now this book. Working with you has made this journey both fun and rewarding.
+カルロに、彼と一緒にこの本を書く機会を与えてくれたことに感謝します。この2年間、私たちは多くのプロジェクトで協力し、たくさんの笑い、海外旅行、そして今、この本を共有してきました。彼と一緒に仕事ができたことで、この旅は楽しくやりがいのあるものになりました。
 
-I'm grateful to Andreas and Gavin for creating the first version of *Mastering Ethereum*. Their book opened my eyes to the world of blockchain and has done the same for so many others. Their work helped build and grow this amazing blockchain community that we're all part of today.
+『Mastering Ethereum』の初版を作成してくれたアンドレアスとギャヴィンに感謝しています。彼らの本は、私のブロックチェーンの世界への目を開かせ、他の多くの人々にも同じことをしてくれました。彼らの仕事は、今日私たちが皆属しているこの素晴らしいブロックチェーンコミュニティを構築し、成長させるのに役立ちました。
 
-A big thank you to Michelle Smith and Shira Evans from O'Reilly for supporting us from start to finish. You helped us with all the paperwork, kept us on schedule, and guided us through the whole process of making this book a reality.
+最初から最後まで私たちをサポートしてくれたオライリーのミシェル・スミスとシーラ・エヴァンスに心から感謝します。書類作成のすべてを手伝ってくれ、スケジュール通りに進め、この本を実現するプロセス全体を導いてくれました。
 
-To my family, my friends, and my girlfriend, Giuditta, I can't thank you enough for always being there for me. During the many months of writing, you put up with my busy schedule and stress. You listened when I needed to talk through ideas, you understood when I couldn't make it to gatherings because of deadlines, and you kept encouraging me when things got tough. Your constant support gave me the strength and focus to keep going. The book you're holding isn't just my work; it exists because of the love and support you've always shown me.
+私の家族、友人、そしてガールフレンドのジュディッタ、いつもそばにいてくれてありがとう。執筆の数ヶ月間、あなたは私の忙しいスケジュールとストレスに耐えてくれました。私がアイデアを話す必要があったときには耳を傾け、締め切りで集まりに参加できなかったときには理解してくれ、困難なときには励まし続けてくれました。あなたの絶え間ないサポートが、私に続ける強さと集中力を与えてくれました。あなたが手にしているこの本は、単に私の作品ではありません。それはあなたがいつも私に示してくれた愛とサポートのおかげで存在します。
 
-## Contributions
+## 貢献者
 
-We'd all like to thank our tech reviewers:
+私たちは皆、テクニカルレビュアーに感謝したいと思います。
 
-- Ben Edgington
-- Caleb Lent
-- Brian Wu
-- Gonçalo Magalhães
+- ベン・エジントン
+- カレブ・レント
+- ブライアン・ウー
+- ゴンサロ・マガリャンイス
 
-They have helped us immensely in improving the quality of the book. Thank you so much to our wonderful tech reviewers.
+彼らは本書の品質向上に多大な貢献をしてくれました。素晴らしいテクニカルレビュアーの皆様に心から感謝いたします。
