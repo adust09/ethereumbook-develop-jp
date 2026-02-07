@@ -72,3 +72,4 @@
 | Caleb Lent | カレブ・レント |  |  |  |
 | Brian Wu | ブライアン・ウー |  |  |  |
 | Gonçalo Magalhães | ゴンサロ・マガリャンイス |  |  |  |
+| Alan Turing | アラン・チューリング |  |  |  |
