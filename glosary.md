@@ -236,3 +236,10 @@
 | Repository | レポジトリ |
 | polling | ポーリング？定期的なデータ監視？ |
 | Thaddeus Dryja | タデウス・ドライジャ |
+| Mastercoin | Mastercoin |
+| Verkle trees | Verkleツリー |
+| Beacon Chain | ビーコン チェーン |
+| sharding | シャーディング |
+| Gasper | Gasper |
+| validator | バリデーター |
+| finality | ファイナリティ |
