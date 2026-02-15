@@ -21,8 +21,8 @@ SHEETS = {
 }
 
 AUTO_GENERATED_NOTICE = (
-    "> このファイルは Google Spreadsheet から自動生成されています。\n"
-    "> 手動で編集した内容は次回の同期時に上書きされます。\n"
+    "> このファイルは Google Spreadsheet と双方向同期されています。\n"
+    "> 手動で編集した内容はスプレッドシートにも反映されます。\n"
     f"> ソース: https://docs.google.com/spreadsheets/d/{SHEET_ID}/\n"
 )
 
