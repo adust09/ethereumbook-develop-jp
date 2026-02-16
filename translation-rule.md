@@ -1,7 +1,7 @@
 # 翻訳ルール
 
-> このファイルは Google Spreadsheet から自動生成されています。
-> 手動で編集した内容は次回の同期時に上書きされます。
+> このファイルは Google Spreadsheet と双方向同期されています。
+> 手動で編集した内容はスプレッドシートにも反映されます。
 > ソース: https://docs.google.com/spreadsheets/d/19Dh5V0LsO23DPH6uwqIRPz7koQwNfN_TuJjUvPVSZDo/
 
 ## JTF日本語標準ガイドに基づくルール
