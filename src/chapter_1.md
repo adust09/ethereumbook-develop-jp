@@ -1,263 +1,264 @@
-# Chapter 1. What Is Ethereum?
+# 第1章　イーサリアムとは何か
 
-Ethereum is often described as the “world computer.” But what does that mean? Let’s start with a computer science–focused description and then try to decipher that with a more practical analysis of Ethereum’s capabilities and characteristics while comparing it to Bitcoin and other decentralized information exchange platforms (or *blockchains*, to be precise).
+　イーサリアムはしばしば「ワールド コンピューター」と呼ばれます。しかし、それはどういう意味でしょうか。まずはコンピューター サイエンスの観点から説明し、次にイーサリアムの機能や特徴をより実践的に分析しながら、ビットコインやその他の非中央集権的な情報交換プラットフォーム（正確には*ブロックチェーン*）と比較してみましょう。
 
-From a computer science perspective, Ethereum is a deterministic but practically unbounded state machine, consisting of a globally accessible singleton state and a virtual machine that applies changes to that state.
+　コンピューター サイエンスの観点から見ると、イーサリアムは決定論的でありながら事実上無限の状態マシンであり、グローバルにアクセス可能なグローバル シングルトン状態と、その状態に変更を適用する仮想マシンで構成されています。
 
-From a more practical perspective, Ethereum is an open source, globally decentralized computing infrastructure that executes programs called *smart contracts*. It uses a blockchain to synchronize and store the system’s state changes, along with a cryptocurrency called *ether* to meter and constrain execution resource costs.
+　より実践的な観点から見ると、イーサリアムは*スマート コントラクト*と呼ばれるプログラムを実行する、オープンソースでグローバルに非中央集権化されたコンピューティング基盤です。ブロックチェーンを使用してシステムの状態変更を同期・保存し、*ether*と呼ばれる暗号通貨を使用して実行リソースのコストを計測・制限します。
 
-The Ethereum platform enables developers to build powerful decentralized applications with built-in economic functions. It provides high availability, auditability, transparency, and neutrality while reducing or eliminating censorship and reducing certain counterparty risks.
+　イーサリアム プラットフォームにより、開発者は経済的な機能が組み込まれた強力な分散アプリケーションを構築できます。高可用性、監査可能性、透明性、中立性を提供しながら、検閲を削減または排除し、特定のカウンターパーティ リスクを軽減します。
 
-## Ethereum Compared to Bitcoin
+## イーサリアムとビットコインの比較
 
-Many people approach Ethereum with some prior experience of cryptocurrencies, specifically Bitcoin. Ethereum shares many elements with other open blockchains: a peer-to-peer (P2P) network connecting participants; a Byzantine, fault-tolerant consensus algorithm for synchronization of state updates; the use of cryptographic primitives, such as digital signatures and hashes; and a digital currency (ether). Yet in many ways, both the purpose and construction of Ethereum are strikingly different from those of the open blockchains that preceded it, including Bitcoin.
+　多くの人が暗号通貨、特にビットコインの経験を持ってイーサリアムに接します。イーサリアムは他のオープン ブロックチェーンと多くの要素を共有しています。参加者を接続するピア ツー ピア（P2P）ネットワーク、状態更新の同期のためのビザンチン耐障害性コンセンサス アルゴリズム、デジタル署名やハッシュ値などの暗号プリミティブの使用、そしてデジタル通貨（ether）がそれにあたります。しかし多くの点で、イーサリアムの目的と構造は、ビットコインを含む先行するオープン ブロックチェーンとは大きく異なっています。
 
-Ethereum’s purpose is not primarily to be a digital currency payment network. While the digital currency ether is both integral to and necessary for the operation of Ethereum, ether is intended as a *utility currency* to pay for use of the Ethereum platform as the world computer.
+　イーサリアムの主な目的は、デジタル通貨の決済ネットワークになることではありません。デジタル通貨であるetherはイーサリアムの運用に不可欠であり必要なものですが、etherはワールド コンピューターとしてのイーサリアム プラットフォームの利用料を支払うための*ユーティリティ通貨*として意図されています。
 
-Unlike Bitcoin, which has a very limited scripting language, Ethereum is designed to be a general-purpose, programmable blockchain that runs a virtual machine capable of executing code of arbitrary and unbounded complexity. Where Bitcoin’s Script language is intentionally constrained to simple true/false evaluation of spending conditions, Ethereum’s language is *Turing complete*, meaning that Ethereum can function as a general-purpose computer.
+　非常に限定されたスクリプト言語を持つビットコインとは異なり、イーサリアムは任意かつ無制限の複雑さを持つコードを実行できる仮想マシンを実行する、汎用的でプログラム可能なブロックチェーンとして設計されています。ビットコインのScript言語が使用条件の単純な真偽評価に意図的に制約されているのに対し、イーサリアムの言語は*チューリング完全*であり、イーサリアムは汎用コンピューターとして機能できることを意味します。
 
-In September 2022, Ethereum further distinguished itself from Bitcoin with The Merge upgrade, transitioning its consensus model from proof of work (PoW) to proof of stake (PoS). This important change not only underlines Ethereum’s commitment to reducing its environmental impact—aligning with its innovative vision—but also enhances its scalability and security features.
+　2022年9月、イーサリアムはThe Mergeアップグレードによってコンセンサス モデルをproof-of-work（PoW）からproof-of-stake（PoS）に移行し、ビットコインとの差別化をさらに進めました。この重要な変更は、環境負荷の削減に対するイーサリアムのコミットメントを示すだけでなく、革新的なビジョンに沿ったものであり、スケーラビリティとセキュリティの機能も強化しています。
 
-## Components of a Blockchain
+## ブロックチェーンの構成要素
 
-The components of an open, public blockchain are (usually) as follows:
+　オープンなパブリック ブロックチェーンの構成要素は（通常）以下の通りである：
 
-- A P2P network connecting participants and propagating transactions and blocks of verified transactions, based on a standardized “gossip” protocol
-- Messages, in the form of transactions, representing state transitions
-- A set of consensus rules governing what constitutes a transaction and what makes for a valid state transition
-- A state machine that processes transactions according to the consensus rules
-- A chain of cryptographically secured blocks that acts as a journal of all the verified and accepted state transitions
-- A consensus algorithm that decentralizes control over the blockchain by forcing participants to cooperate in the enforcement of the consensus rules
-- A game-theory-sound incentivization scheme (e.g., PoW costs plus block rewards) to economically secure the state machine in an open environment
-- One or more open source software implementations of these components (“clients”)
+- 参加者を接続し、標準化された「ゴシップ」プロトコルに基づいてトランザクションと検証済みトランザクションのブロックを伝播するP2Pネットワークである
+- 状態遷移を表すメッセージ（トランザクションの形式）である
+- トランザクションの構成要件と有効な状態遷移の条件を規定するコンセンサス ルールの集合である
+- コンセンサス ルールに従ってトランザクションを処理する状態マシンである
+- 検証・承認されたすべての状態遷移のジャーナルとして機能する、暗号学的に保護されたブロックの連鎖である
+- コンセンサス ルールの執行に参加者の協力を強制することで、ブロックチェーンに対する制御を非中央集権化するコンセンサス アルゴリズムである
+- オープンな環境で状態マシンを経済的に保護するための、ゲーム理論に基づいたインセンティブ設計（例：PoWコスト＋ブロック リワード）である
+- これらの構成要素の1つ以上のオープンソース ソフトウェア実装（「クライアント」）である
 
-All or most of these components are usually combined in a single software client. For example, in Bitcoin, the reference implementation is developed by the Bitcoin Core open source project and implemented as the Bitcoin client. Initially, Ethereum also required a single client before its transition to PoS. However, Ethereum now utilizes two distinct clients: one for consensus and another for execution. Instead of a reference implementation, Ethereum relies on a reference specification: a mathematical description detailed in the [“Yellow Paper”](https://oreil.ly/IJ7_B), which has been consistently updated throughout Ethereum’s development. The Ethereum community is currently transitioning toward a reference specification written in Python for both the [consensus](https://oreil.ly/yjU6s) and the [execution](https://oreil.ly/ggODg) clients. A number of clients have been built according to the reference specification. We will dive deeper into this topic in Chapter 3.
+　これらの構成要素のすべて、または大部分は、通常は単一のソフトウェア クライアントに統合されています。例えばビットコインでは、リファレンス実装はビットコイン コアのオープンソース プロジェクトによって開発され、ビットコイン クライアントとして実装されています。当初、イーサリアムもPoSへの移行前は単一のクライアントを必要としていました。しかし現在、イーサリアムはコンセンサス用と実行用の2つの異なるクライアントを利用しています。リファレンス実装の代わりに、イーサリアムはリファレンス仕様に依拠しています。これは[「イエローペーパー」](https://oreil.ly/IJ7_B)に詳述されている数学的記述であり、イーサリアムの開発を通じて一貫して更新されてきました。イーサリアム コミュニティは現在、[コンセンサス](https://oreil.ly/yjU6s)と[実行](https://oreil.ly/ggODg)の両クライアントについて、Pythonで記述されたリファレンス仕様への移行を進めています。リファレンス仕様に基づいて多数のクライアントが構築されています。このトピックについては第3章で詳しく掘り下げます。
 
-Figure 1-1 shows a graphical representation of the blockchain components.
+　図1-1はブロックチェーンの構成要素をグラフィカルに表現したものです。
 
-![Components of a blockchain](images/ch1/maet_0101.png)
+![ブロックチェーンの構成要素](images/ch1/maet_0101.png)
 
-**Figure 1-1.** Components of a blockchain
+**図1-1.** ブロックチェーンの構成要素
 
-In the past, we used the term *blockchain* to represent all the components listed as a shorthand reference to the combination of technologies that encompass all the characteristics described. Today, however, there are a huge variety of blockchains with different properties. We need qualifiers to help us understand the characteristics of the blockchain in question, such as *open,**public, global, decentralized, neutral,* and *censorship resistant*, to identify the important emergent characteristics of a “blockchain” system that these components allow.
+　過去には、*ブロックチェーン*という用語を、上記の構成要素すべてを包含する技術の組み合わせを指す簡略表現として使用していました。しかし今日では、異なる特性を持つ非常に多様なブロックチェーンが存在します。対象のブロックチェーンの特徴を理解するための修飾語が必要であり、*オープン、パブリック、グローバル、非中央集権、中立*、*検閲耐性*といった言葉を使って、これらの構成要素が可能にする「ブロックチェーン」システムの重要な創発的特性を特定する必要があります。
 
-Not all blockchains are created equal. Despite the huge amount of property they show, we can broadly categorize blockchains into permissioned versus permissionless and public versus private:
+　すべてのブロックチェーンが同じように作られているわけではありません。多くの特性を示すにもかかわらず、ブロックチェーンはパーミッションレスかパーミッションドか、パブリックかプライベートかで大きく分類できます：
 
-**Permissionless**
+**パーミッションレス**
 
-Permissionless blockchains, like Bitcoin and Ethereum, are accessible to anyone. These decentralized networks allow anyone to join, participate in the consensus process, and read and write data, promoting trust through transparency.
+　ビットコインやイーサリアムのようなパーミッションレス ブロックチェーンは、誰でもアクセスできる。これらの非中央集権ネットワークでは、誰でも参加し、コンセンサス プロセスに関与し、データの読み書きができ、透明性を通じて信頼を促進している。
 
-**Permissioned**
+**パーミッションド**
 
-Permissioned blockchains restrict access, allowing only authorized participants to join the network and perform certain actions.
+　パーミッションド ブロックチェーンはアクセスを制限し、認可された参加者のみがネットワークに参加して特定のアクションを実行できる。
 
-**Public**
+**パブリック**
 
-Public blockchains are decentralized and open to everyone, allowing broad participation in network activities and ensuring transparency through widespread distribution and consensus mechanisms.
+　パブリック ブロックチェーンは非中央集権的であり、すべての人に開放されている。ネットワーク活動への幅広い参加を可能にし、広範な分散とコンセンサス メカニズムを通じて透明性を確保している。
 
-**Private**
+**プライベート**
 
-Private blockchains limit access to a specific group of participants, often within organizations or among trusted partners.
+　プライベート ブロックチェーンは、特定の参加者グループ（多くの場合、組織内または信頼できるパートナー間）にアクセスを制限している。
 
-## The Birth of Ethereum
+## イーサリアムの誕生
 
-All great innovations solve real problems, and Ethereum is no exception. Ethereum was conceived at a time when people recognized the power of the Bitcoin model and were trying to move beyond cryptocurrency applications. But developers faced a conundrum: they either needed to build on top of Bitcoin or start a new blockchain. Building on Bitcoin meant living within the intentional constraints of the network and trying to find workarounds. The limited set of transaction types, data types, and sizes of data storage seemed to restrict the kinds of applications that could run directly on Bitcoin; anything else needed additional off-chain layers, and that immediately negated many of the advantages of using a public blockchain. For projects that required more freedom and flexibility while staying on chain, a new blockchain was the only option. But that meant a lot of work: bootstrapping all the infrastructure elements, exhaustive testing, and so on.
+　すべての偉大なイノベーションは現実の問題を解決するものであり、イーサリアムも例外ではありません。イーサリアムは、人々がビットコイン モデルの力を認識し、暗号通貨のアプリケーションを超えようとしていた時期に着想されました。しかし開発者たちはジレンマに直面していました。ビットコインの上に構築するか、新しいブロックチェーンを始めるかの選択です。ビットコインの上に構築するということは、ネットワークの意図的な制約の中で生きることであり、回避策を見つけようとすることを意味しました。限定されたトランザクション タイプ、データ タイプ、データ ストアのサイズは、ビットコイン上で直接実行できるアプリケーションの種類を制限しているように見えました。それ以外のものにはオフチェーン レイヤーが必要となり、パブリック ブロックチェーンを使用する利点の多くが即座に失われてしまいます。オンチェーンで自由度と柔軟性を求めるプロジェクトにとって、新しいブロックチェーンが唯一の選択肢でした。しかしそれは、すべてのインフラ要素のbootstrap、徹底的なテストなど、多大な作業を意味していました。
 
-Toward the end of 2013, Vitalik Buterin, a young programmer and Bitcoin enthusiast, started thinking about further extending the capabilities of Bitcoin and Mastercoin (an overlay protocol that extended Bitcoin to offer rudimentary smart contracts). In October of that year, Buterin proposed a more generalized approach to the Mastercoin team, one that allowed flexible and scriptable (but not Turing complete) contracts to replace the specialized contract language of Mastercoin. Although the Mastercoin team was impressed, this proposal was too radical a change to fit into their development roadmap.
+　2013年末、若いプログラマーでビットコイン愛好家のヴィタリック・ブテリンは、ビットコインとMastercoin（初歩的なスマート コントラクトを提供するためにビットコインを拡張するオーバーレイ プロトコル）の機能をさらに拡張することを考え始めました。同年10月、ブテリンはMastercoinチームに対し、Mastercoinの専用コントラクト言語を、柔軟でスクリプト可能な（ただしチューリング完全ではない）コントラクトに置き換える、より一般化されたアプローチを提案しました。Mastercoinチームは感銘を受けたものの、この提案は開発ロードマップに組み込むにはあまりにも急進的な変更でした。
 
-In December 2013, Buterin started sharing a whitepaper that outlined the idea behind Ethereum: a Turing-complete, general-purpose blockchain. A few dozen people saw this early draft and offered feedback, helping Buterin evolve the proposal.
+　2013年12月、ブテリンはイーサリアムの背後にあるアイデアを概説したホワイトペーパーを共有し始めました。チューリング完全な汎用ブロックチェーンというアイデアです。数十人がこの初期草稿を目にしてフィードバックを提供し、ブテリンの提案を進化させる手助けをしました。
 
-Both of the original authors of this book, Andreas M. Antonopoulos and Dr. Gavin Wood, received an early draft of the whitepaper and commented on it. Antonopoulos was intrigued by the idea and asked Buterin many questions about the use of a separate blockchain to enforce consensus rules on smart contract execution and the implications of a Turing-complete language. Antonopoulos continued to follow Ethereum’s progress with great interest but was in the early stages of writing his book *Mastering Bitcoin* and did not participate directly in Ethereum until much later. Wood, however, was one of the first people to reach out to Buterin and offer to help with his C++ programming skills. Wood became Ethereum’s cofounder, co-designer, and CTO.
+　本書の原著者であるアンドレアス・M・アントノプロスとギャヴィン・ウッド博士の両名は、ホワイトペーパーの初期草稿を受け取りコメントしました。アントノプロスはこのアイデアに興味を持ち、スマート コントラクトの実行に関するコンセンサス ルールを強制するために別のブロックチェーンを使用することや、チューリング完全言語の意味について、ブテリンに多くの質問をしました。アントノプロスは大きな関心を持ってイーサリアムの進捗を追い続けましたが、著書*Mastering Bitcoin*の執筆初期段階にあったため、イーサリアムに直接参加するのはずっと後のことになりました。一方、ウッドはブテリンに連絡を取り、C++プログラミングのスキルで協力を申し出た最初の人物の一人でした。ウッドはイーサリアムの共同創設者、共同設計者、CTOとなりました。
 
-Buterin recounts in his [“A Prehistory of the Ethereum Protocol” post](https://oreil.ly/kEjpX):
+　ブテリンは[「A Prehistory of the Ethereum Protocol」の投稿](https://oreil.ly/kEjpX)で次のように回想しています：
 
-> This was the time when the Ethereum protocol was entirely my own creation. From here on, however, new participants started to join the fold. By far the most prominent on the protocol side was Gavin Wood.
+> これはイーサリアム プロトコルが完全に自分自身の創作物であった時期であった。しかし、ここから新たな参加者が加わり始めた。プロトコル側で最も傑出していたのはギャヴィン・ウッドである。
 
-Wood can also be largely credited for the subtle change in vision from seeing Ethereum as a platform for building programmable money, with blockchain-based contracts that can hold digital assets and transfer them according to preset rules, to viewing it as a general-purpose computing platform. This started with subtle changes in emphasis and terminology, and later this influence became stronger with the increasing emphasis on the “Web3” ensemble, which saw Ethereum as one piece of a suite of decentralized technologies, with the other two being Whisper and Swarm. Starting in December 2013, Buterin and Wood refined and evolved the idea, together building the protocol layer that became Ethereum.
+　ウッドは、イーサリアムをプログラム可能なマネーを構築するためのプラットフォーム（デジタル資産を保持し、あらかじめ設定されたルールに従ってそれらを転送するブロックチェーン ベースのコントラクト）として捉えることから、汎用コンピューティング プラットフォームとして捉えることへの微妙なビジョンの変化において大きな功績があります。この変化は、強調点と用語の微妙な変化から始まり、やがて「Web3」構想への注目の高まりとともに、その影響はより強くなっていきました。Web3はイーサリアムを、WhisperとSwarmという他の2つの非中央集権技術とともに、一連の非中央集権技術の一部として捉えるものです。2013年12月から、ブテリンとウッドはそのアイデアを洗練・発展させ、イーサリアムのプロトコル層を共に構築していきました。
 
-Ethereum’s founders were thinking about a blockchain without a specific purpose, which could support a broad variety of applications by being *programmed*. The idea was that by using a general-purpose blockchain like Ethereum, a developer could program their particular application without having to implement the underlying mechanisms of P2P networks, blockchains, consensus algorithms, and the like. Ethereum abstracts away those details and offers a deterministic, secure environment for writing decentralized applications. This shift in thinking didn’t just make development easier; it fundamentally expanded what blockchains could do. It laid the groundwork for entirely new sectors like decentralized finance, NFTs, and decentralized autonomous organizations (DAOs), which wouldn’t have been feasible with earlier single-purpose blockchains.
+　イーサリアムの創設者たちは、特定の目的を持たないブロックチェーンを考えていました。*プログラム*されることで、幅広い種類のアプリケーションをサポートできるものです。イーサリアムのような汎用ブロックチェーンを使用することで、開発者はP2Pネットワーク、ブロックチェーン、コンセンサス アルゴリズムなどの基盤メカニズムを実装することなく、自身の特定のアプリケーションをプログラムできるというアイデアでした。イーサリアムはこれらの詳細を抽象化し、分散アプリケーションを記述するための決定論的で安全な環境を提供します。この考え方の転換は、開発を容易にしただけではありませんでした。ブロックチェーンにできることを根本的に拡大したのです。分散金融、NFT、分散自律組織（DAO）といった全く新しいセクターの基盤を築きました。これらは以前の単一目的のブロックチェーンでは実現不可能だったものです。
 
-Much like Satoshi Nakamoto (the pseudonymous developer of Bitcoin), Buterin and Wood didn’t just invent a new technology; they combined new inventions with existing technologies in a novel way and delivered the prototype code to prove their ideas to the world.
+　ビットコインの匿名開発者であるサトシ・ナカモトと同様に、ブテリンとウッドは単に新しい技術を発明しただけではありません。新しい発明と既存の技術を斬新な方法で組み合わせ、自らのアイデアを世界に証明するためのプロトタイプ コードを提供しました。
 
-The founders worked for years to build and refine their vision. And on July 30, 2015, the first Ethereum block was mined. The world’s computer started serving the world.
+　創設者たちはビジョンの構築と洗練に何年も費やしました。そして2015年7月30日、最初のイーサリアム ブロックがマイニングされました。ワールド コンピューターは世界にサービスを提供し始めたのです。
 
-> **Note**
+> **注記**
 >
-> Vitalik Buterin’s article [“A Prehistory of the Ethereum Protocol”](https://oreil.ly/kEjpX) was published in September 2017 and provides a fascinating first-person view of Ethereum’s earliest moments.
+> ヴィタリック・ブテリンの記事[「A Prehistory of the Ethereum Protocol」](https://oreil.ly/kEjpX)は2017年9月に公開され、イーサリアムの最初期の時代について魅力的な一人称視点の記述を提供しています。
 
-## Ethereum’s Stages of Development
+## イーサリアムの開発段階
 
-Ethereum’s development was planned over four distinct stages, with major changes occurring at each stage. A stage may include subreleases, known as *hard forks*, that change functionality in a way that is not backward compatible.
+　イーサリアムの開発は4つの異なる段階にわたって計画され、各段階で大きな変更が行われました。段階には、後方互換性のない方法で機能を変更する*ハードフォーク*と呼ばれるサブリリースが含まれることがあります。
 
-The four main development stages are codenamed Frontier, Homestead, Metropolis, and Serenity. At the time of writing, we are in the last stage: Serenity. The Serenity stage has been further broken down into six substages codenamed The Merge, The Surge, The Scourge, The Verge, The Purge, and The Splurge.
+　4つの主要な開発段階は、フロンティア、ホームステッド、メトロポリス、セレニティというコードネームが付けられています。執筆時点では、最後の段階であるセレニティにあります。セレニティ段階はさらに6つのサブステージに分けられ、The Merge、The Surge、The Scourge、The Verge、The Purge、The Splurgeというコードネームが付けられています。
 
-Let’s now dive into the four development stages and describe their main purposes:
+　それでは4つの開発段階について、その主な目的を説明しましょう：
 
-**Frontier (July 30, 2015)**
+**フロンティア（2015年7月30日）**
 
-Launched at Genesis (when the first Ethereum block was mined), Frontier prepared the foundation for miners and developers by enabling the setup of mining rigs, the initiation of ETH token trading, and the testing of decentralized applications (DApps) in a minimal network setting. Initially, blocks had a gas limit of five thousand, but that was lifted in September 2015, allowing for transactions and introducing the “difficulty bomb.” Ethereum’s *difficulty bomb* is a mechanism designed to exponentially increase the difficulty of mining over time, ultimately making it infeasible. This incentivizes the transition from the original PoW consensus to the more energy-efficient PoS model currently in use.
+　ジェネシス（最初のイーサリアム ブロックがマイニングされた時）にローンチされたフロンティアは、マイニング リグのセットアップ、ETHトークンの取引開始、最小限のネットワーク環境でのDAppのテストを可能にすることで、マイナーと開発者のための基盤を準備しました。当初、ブロックにはガス リミットが5000に設定されていましたが、2015年9月にこの制限が解除され、トランザクションが可能となり「ディフィカルティ ボム」が導入されました。イーサリアムの*ディフィカルティ ボム*は、時間の経過とともにマイニングのディフィカルティを指数関数的に増加させ、最終的にマイニングを実行不可能にするよう設計されたメカニズムです。これは、元のPoWコンセンサスから現在使用されている、よりエネルギー効率の高いPoSモデルへの移行を促進するものです。
 
-**Homestead (March 14, 2016)**
+**ホームステッド（2016年3月14日）**
 
-Initiated at block 1,150,000, Homestead made Ethereum safer and more stable through key protocol updates (EIP-2, EIP-7, and EIP-8). These upgrades enhanced developer friendliness and paved the way for further protocol improvements, although the network remained in the beta phase.
+　ブロック1,150,000で開始されたホームステッドは、主要なプロトコル更新（EIP-2、EIP-7、EIP-8）を通じてイーサリアムをより安全で安定させました。これらのアップグレードは開発者フレンドリーさを向上させ、さらなるプロトコル改善への道を開きましたが、ネットワークはベータ フェーズのままでした。
 
-**Metropolis (October 16, 2017)**
+**メトロポリス（2017年10月16日）**
 
-Starting at block 4,370,000, Metropolis aimed to increase network functionality, fostering DApp creation and overall network utility. Significant forks like Byzantium, Constantinople, and Istanbul during this phase optimized gas costs, enhanced security, and introduced layer-2 (L2) scaling solutions. Byzantium reduced mining rewards and implemented cryptographic provisions, while Constantinople further optimized gas costs and allowed interactions with uncreated addresses. Istanbul made the network more resilient against distributed denial of service (DDoS) attacks and introduced zero-knowledge cryptographic proofs (zk-SNARKs and STARKs) for improved scalability and privacy. These enhancements collectively set the stage for Ethereum 2.0, representing the final phase of Ethereum 1.0.
+　ブロック4,370,000から始まったメトロポリスは、ネットワーク機能の向上を目指し、DAppの作成とネットワーク全体のユーティリティを促進しました。このフェーズでのビザンチウム、コンスタンティノープル、イスタンブールなどの重要なフォークは、ガスコストの最適化、セキュリティの強化、レイヤー2（L2）スケーリング ソリューションの導入を行いました。ビザンチウム フォークはマイニング リワードを削減し、暗号学的な仕組みを実装しました。コンスタンティノープル フォークはガスコストをさらに最適化し、未作成のアドレスとの相互作用を可能にしました。イスタンブールはDoS攻撃に対するネットワークの耐性を高め、スケーラビリティとプライバシーを向上させるためのゼロ知識暗号証明（zk-SNARKsとSTARKs）を導入しました。これらの強化は総合的にEthereum 2.0への道を整え、Ethereum 1.0の最終フェーズを表しています。
 
-**Serenity (September 15, 2022)**
+**セレニティ（2022年9月15日）**
 
-Serenity, commonly known as *Ethereum 2.0*, represents a major upgrade aimed at transforming Ethereum from a PoW to a PoS consensus mechanism. Serenity focuses on making Ethereum more sustainable and capable of handling a growing number of users and applications. This stage addresses critical issues like high energy consumption and network congestion, clearing the way for a more robust and efficient blockchain.
+　セレニティは一般に*Ethereum 2.0*として知られ、イーサリアムをPoWからPoSコンセンサス メカニズムに変革することを目的とした大規模なアップグレードです。セレニティはイーサリアムをより持続可能にし、増大するユーザーとアプリケーションに対応できるようにすることに焦点を当てています。この段階は、高いエネルギー消費とネットワーク輻輳という重要な問題に対処し、より堅牢で効率的なブロックチェーンへの道を開きます。
 
-The Serenity upgrade is divided into several substages, each addressing specific aspects of the network’s evolution. While the main four development stages have been implemented sequentially, the five Serenity substages are being developed at the same time. This parallel approach is a strategic departure from the previous development method and is made possible because the foundational work laid down by the initial four stages was necessary for the simultaneous development of the Serenity substages. Each of these substages improves the Ethereum chain in a different aspect, unrelated to the others, enabling a more flexible and dynamic upgrade process:
+　セレニティのアップグレードは、ネットワークの進化の特定の側面に対処するいくつかのサブステージに分けられています。主要な4つの開発段階は順次実装されてきましたが、セレニティの5つのサブステージは同時に開発されています。この並行アプローチは従来の開発手法からの戦略的な転換であり、最初の4つの段階で築かれた基盤的な作業がセレニティのサブステージの同時開発を可能にしたために実現しました。各サブステージはイーサリアム チェーンの異なる側面を改善するものであり、互いに無関係であるため、より柔軟でダイナミックなアップグレード プロセスが可能になっています：
 
 **The Merge**
 
-The Merge combines Ethereum’s mainnet with the Beacon Chain (the sidechain handling the PoS consensus), officially transitioning the network to PoS and reducing energy consumption significantly.
+　The Mergeはイーサリアムのメインネットとビーコン チェーン（PoSコンセンサスを処理するサイドチェーン）を統合し、ネットワークを正式にPoSに移行させ、エネルギー消費を大幅に削減しました。
 
 **The Surge**
 
-The Surge introduces sharding, increasing Ethereum’s scalability by splitting the network into smaller, manageable pieces, which allows for more transactions per second.
+　The Surgeはシャーディングを導入し、ネットワークをより小さく管理可能な部分に分割することでイーサリアムのスケーラビリティを向上させ、1秒あたりのトランザクション数を増やすことを可能にします。
 
 **The Scourge**
 
-The Scourge addresses issues of centralization and censorship resistance, ensuring that Ethereum remains a decentralized and open network.
+　The Scourgeは中央集権化と検閲耐性の問題に取り組み、イーサリアムが非中央集権的でオープンなネットワークであり続けることを確保します。
 
 **The Verge**
 
-The Verge implements Verkle trees, reducing the data storage required for nodes and thus improving network efficiency and scalability.
+　The VergeはVerkleツリーを実装し、ノードに必要なデータ ストアを削減することで、ネットワークの効率性とスケーラビリティを向上させます。
 
 **The Purge**
 
-The Purge aims to reduce the historical data stored on Ethereum, simplifying node operation and lowering network congestion.
+　The Purgeはイーサリアムに保存される履歴データを削減し、ノード運用を簡素化し、ネットワークの輻輳を低減することを目指します。
 
 **The Splurge**
 
-The Splurge includes various minor upgrades and optimizations to ensure that Ethereum runs smoothly and efficiently after all major changes are implemented.
+　The Splurgeは、すべての主要な変更が実装された後、イーサリアムがスムーズかつ効率的に動作することを確保するための、さまざまなマイナー アップグレードと最適化を含みます。
 
-## Ethereum: A General-Purpose Blockchain
+## イーサリアム：汎用ブロックチェーン
 
-The original blockchain—namely, Bitcoin’s blockchain—tracks the state of units of Bitcoin and their ownership. You can think of Bitcoin as a distributed-consensus *state machine*, where transactions cause a global *state transition*, altering the ownership of coins. The state transitions are constrained by the rules of consensus, allowing all participants to (eventually) converge on a common (consensus) state of the system, after several blocks are mined.
+　元祖ブロックチェーン、すなわちビットコインのブロックチェーンは、ビットコインの単位とその所有権の状態を追跡します。ビットコインは分散コンセンサス*状態マシン*と考えることができ、トランザクションがコインの所有権を変更するグローバルな*状態遷移*を引き起こします。状態遷移はコンセンサス ルールによって制約され、数ブロックがマイニングされた後、すべての参加者が（最終的には）システムの共通の（コンセンサス）状態に収束することを可能にします。
 
-Ethereum is also a distributed state machine. But instead of tracking only the state of currency ownership, Ethereum tracks the state transitions of a general-purpose data store—that is, a store that can hold any data expressible as a *key-value tuple*. A key-value data store holds arbitrary values, each referenced by some key: for example, the value “Mastering Ethereum” referenced by the key “Book Title.” In some ways, this serves the same purpose as the data-storage model of random-access memory (RAM) used by most general-purpose computers.
+　イーサリアムも分散状態マシンです。しかし、通貨の所有権の状態のみを追跡するのではなく、イーサリアムは汎用データ ストアの状態遷移を追跡します。つまり、*キーバリュー タプル*として表現可能な任意のデータを保持できるデータ ストアです。キーバリュー データ ストアは、それぞれが何らかのキーによって参照される任意の値を保持します。例えば、「Book Title」というキーによって参照される「Mastering Ethereum」という値です。ある意味で、これはほとんどの汎用コンピューターが使用するランダム アクセス メモリ（RAM）のデータ ストア モデルと同じ目的を果たします。
 
-Ethereum has memory that stores both code and data, and it uses the Ethereum blockchain to track how this memory changes over time. Like a general-purpose, stored-program computer, Ethereum can load code into its state machine and *run* that code, storing the resulting state changes in its blockchain. Two of the critical differences from most general-purpose computers are that Ethereum state changes are governed by the rules of consensus and the state is distributed globally. Ethereum answers the question “What if we could track any arbitrary state and program the state machine to create a worldwide computer operating under consensus?”
+　イーサリアムはコードとデータの両方を格納するメモリを持ち、このメモリが時間とともにどのように変化するかをイーサリアム ブロックチェーンを使用して追跡します。汎用のストアド プログラム コンピューターと同様に、イーサリアムは自身の状態マシンにコードをロードしてそのコードを*実行*し、結果として生じる状態変更をブロックチェーンに保存できます。ほとんどの汎用コンピューターとの2つの重要な違いは、イーサリアムの状態変更がコンセンサス ルールによって支配されていることと、状態がグローバルに分散されていることです。イーサリアムは「任意の状態を追跡し、状態マシンをプログラムして、コンセンサスの下で動作するワールド コンピューターを作成できたらどうだろうか」という問いに答えます。
 
-## Ethereum’s Components
+## イーサリアムの構成要素
 
-In Ethereum, the components of a blockchain system (described in “Components of a Blockchain”) are, more specifically, as follows:
+　イーサリアムでは、ブロックチェーン システムの構成要素（「ブロックチェーンの構成要素」で説明したもの）は、より具体的には以下の通りです：
 
-**P2P network**
+**P2Pネットワーク**
 
-Ethereum runs on the *Ethereum main network*, which is addressable on TCP port 30303, and runs a protocol called [*ÐΞVp2p*](https://oreil.ly/pUfGC).
+　イーサリアムは*イーサリアム メイン ネットワーク*上で動作し、TCPポート30303でアドレス指定可能であり、[*ÐΞVp2p*](https://oreil.ly/pUfGC)と呼ばれるプロトコルを実行します。
 
-**Consensus rules**
+**コンセンサス ルール**
 
-Ethereum’s original consensus protocol was Ethash, a PoW model defined in the reference specification: the “Yellow Paper.” It then evolved to PoS in September 2022 during The Merge upgrade (see Chapter 15).
+　イーサリアムの元のコンセンサス プロトコルは、リファレンス仕様である「イエローペーパー」で定義されたPoWモデルのEthashでした。その後、2022年9月のThe Mergeアップグレードの際にPoSに進化しました（第15章参照）。
 
-**Transactions**
+**トランザクション**
 
-Ethereum transactions are network messages that include (among other things) a sender, a recipient, a value, and a data payload.
+　イーサリアムのトランザクションは、（とりわけ）送信者、受信者、バリュー、データ ペイロードを含むネットワーク メッセージです。
 
-**State machine**
+**状態マシン**
 
-Ethereum state transitions are processed by the *Ethereum Virtual Machine* (EVM), a stack-based virtual machine that executes *bytecode* (machine-language instructions). EVM programs called *smart contracts* are written in high-level languages (e.g., Solidity) and compiled to bytecode for execution on the EVM.
+　イーサリアムの状態遷移は、*イーサリアム仮想マシン*（EVM）によって処理されます。EVMはバイトコード（機械語命令）を実行するスタック ベースの仮想マシンです。*スマート コントラクト*と呼ばれるEVMプログラムは、高水準言語（例：Solidity）で記述され、EVM上で実行するためにバイトコードにコンパイルされます。
 
-**Data structures**
+**データ構造**
 
-Ethereum’s state is stored locally on each node as a *database* (usually Google’s LevelDB), which contains the transactions and system state in a serialized hashed data structure called a *Merkle-Patricia trie*.
+　イーサリアムの状態は各ノードにローカルに*データベース*（通常はGoogleのLevelDB）として保存され、*マークル パトリシア ツリー*と呼ばれるシリアライズされたハッシュ データ構造にトランザクションとシステム状態が格納されています。
 
-**Consensus algorithm**
+**コンセンサス アルゴリズム**
 
-Ethereum transitioned from a PoW to a PoS consensus mechanism to enhance energy efficiency and scalability. In PoS, validators stake their cryptocurrency to earn the right to validate transactions, create new blocks, and maintain network security. Ethereum’s PoS is the fusion of two distinct algorithms: Casper the Friendly Finality Gadget (FFG) and GHOST (Greedy Heaviest Observed Subtree) with latest message driven (LMD) updates (more on this in Chapter 15).
+　イーサリアムはエネルギー効率とスケーラビリティを向上させるために、PoWからPoSコンセンサス メカニズムに移行しました。PoSでは、バリデーターが暗号通貨をステークして、トランザクションの検証、新しいブロックの作成、ネットワーク セキュリティの維持を行う権利を獲得します。イーサリアムのPoSは2つの異なるアルゴリズムの融合です。Casper the Friendly Finality Gadget（FFG）とGHOST（Greedy Heaviest Observed Subtree）のlatest message driven（LMD）更新版です（詳細は第15章で説明します）。
 
-**Economic security**
+**経済的セキュリティ**
 
-Ethereum uses a PoS algorithm called Gasper that provides economic security to the blockchain. We’ll explore how Gasper works in detail in Chapter 15, including its role in finality and validator coordination.
+　イーサリアムはGasperと呼ばれるPoSアルゴリズムを使用して、ブロックチェーンに経済的セキュリティを提供します。Gasperの仕組みについては、ファイナリティとバリデーターの協調における役割を含め、第15章で詳しく説明します。
 
-**Clients**
+**クライアント**
 
-Ethereum has several interoperable implementations of its execution and consensus client software, the most prominent of which are *go-ethereum* (Geth) and Nethermind for execution and Prysm and Lighthouse for consensus.
+　イーサリアムには、実行クライアントとコンセンサス クライアントの相互運用可能な複数の実装があり、最も著名なものとして、実行用の*go-ethereum*（Geth）とNethermind、コンセンサス用のPrysmとLighthouseがあります。
 
-These references provide additional information on the technologies mentioned here:
+　ここで言及した技術に関する追加情報は以下の参考文献で得られます：
 
-- [Ethereum “Yellow Paper”](https://oreil.ly/IJ7_B)
-- [Consensus client Python specifications](https://oreil.ly/yjU6s)
-- [Execution client Python specifications](https://oreil.ly/ggODg)
+- [イーサリアム「イエローペーパー」](https://oreil.ly/IJ7_B)
+- [コンセンサス クライアントのPython仕様](https://oreil.ly/yjU6s)
+- [実行クライアントのPython仕様](https://oreil.ly/ggODg)
 
-## Ethereum and Turing Completeness
+## イーサリアムとチューリング完全性
 
-As soon as you start reading about Ethereum, you will encounter the term *Turing complete*. Ethereum, they say, is Turing complete, unlike Bitcoin. What exactly does that mean?
+　イーサリアムについて読み始めるとすぐに、*チューリング完全*という用語に出会うでしょう。イーサリアムはビットコインとは異なりチューリング完全であると言われます。これは正確にはどういう意味でしょうか。
 
-The term refers to English mathematician Alan Turing, who is considered the father of computer science. In 1936, he created a mathematical model of a computer consisting of a state machine that manipulates symbols by reading and writing them on sequential memory (resembling an infinite-length paper tape). With this construct, Turing went on to provide a mathematical foundation to answer (in the negative) questions about *universal computability*, meaning whether all problems are solvable. He proved that there are classes of problems that are uncomputable. Specifically, he proved that the *halting problem* (whether it is possible, given an arbitrary program and its input, to determine whether the program will eventually stop running) is not solvable.
+　この用語は、コンピューター サイエンスの父と見なされているイギリスの数学者アラン・チューリングにちなんでいます。1936年、チューリングはシーケンシャル メモリ（無限長の紙テープに似たもの）上のシンボルを読み書きすることで操作する状態マシンで構成されるコンピューターの数学的モデルを作成しました。この構成により、チューリングは*普遍的計算可能性*、すなわちすべての問題が解決可能かどうかに関する問い（否定的な回答）に数学的基盤を提供しました。チューリングは計算不可能な問題のクラスが存在することを証明しました。具体的には、*停止問題*（任意のプログラムとその入力が与えられた場合に、そのプログラムが最終的に実行を停止するかどうかを判定することが可能か）が解決不能であることを証明しました。
 
-Turing further defined a system to be *Turing complete* if it can be used to simulate any Turing machine. Such a system is called a *universal Turing machine* (UTM).
+　チューリングはさらに、任意のチューリング マシンをシミュレートするために使用できるシステムを*チューリング完全*と定義しました。このようなシステムは*ユニバーサル チューリング マシン*（UTM）と呼ばれます。
 
-Ethereum’s ability to execute a stored program—in a state machine called the EVM—while reading and writing data to memory makes it a Turing-complete system and therefore a UTM. Ethereum can compute any algorithm that can be computed by any Turing machine, given the limitations of finite memory.
+　EVMと呼ばれる状態マシンでストアド プログラムを実行し、メモリにデータを読み書きするイーサリアムの能力は、イーサリアムをチューリング完全なシステム、すなわちUTMにしています。イーサリアムは、有限メモリの制約はあるものの、任意のチューリング マシンで計算可能なあらゆるアルゴリズムを計算できます。
 
-Ethereum’s groundbreaking innovation is to combine the general-purpose computing architecture of a stored-program computer with a decentralized blockchain, thereby creating a distributed single-state (singleton) world computer. Ethereum programs run “everywhere” yet produce a common state that is secured by the rules of consensus.
+　イーサリアムの画期的な革新は、ストアド プログラム コンピューターの汎用コンピューティング アーキテクチャと非中央集権ブロックチェーンを組み合わせ、分散単一状態（シングルトン）ワールド コンピューターを作り出したことです。イーサリアム プログラムは「あらゆる場所で」実行されながら、コンセンサス ルールによって保護された共通の状態を生成します。
 
-## Turing Completeness as a “Feature”
+## 「機能」としてのチューリング完全性
 
-Hearing that Ethereum is Turing complete, you might arrive at the conclusion that this is a *feature* that is somehow lacking in a system that is Turing incomplete. Rather, it is the opposite. Turing completeness is very easy to achieve; in fact, [the simplest Turing-complete state machine known](https://oreil.ly/JhL2o) has four states and uses six symbols, with a state definition that is only 22 instructions long. Indeed, sometimes systems are found to be “accidentally Turing complete” (here’s a [fun reference of such systems](https://oreil.ly/7pt2q)).
+　イーサリアムがチューリング完全であると聞くと、チューリング不完全なシステムに何らかの形で欠けている*機能*であるという結論に至るかもしれません。しかし実際にはその逆です。チューリング完全性は非常に容易に達成できます。実際、[既知の最も単純なチューリング完全状態マシン](https://oreil.ly/JhL2o)は4つの状態と6つのシンボルを持ち、その状態定義はわずか22命令の長さです。実のところ、システムが「偶然にチューリング完全」であることが発見される場合もあります（[そのようなシステムの面白い参考資料はこちら](https://oreil.ly/7pt2q)）。
 
-However, Turing completeness is very dangerous, particularly in open-access systems like public blockchains, because of the halting problem described in the previous section. For example, modern printers are Turing complete and can be given files to print that send them into a frozen state. The fact that Ethereum is Turing complete means that any program of any complexity can be computed by Ethereum. But that flexibility brings some thorny security and resource management problems. An unresponsive printer can be turned off and turned back on again. That is not possible with a public blockchain.
+　しかし、チューリング完全性は非常に危険です。特に、前のセクションで説明した停止問題があるため、パブリック ブロックチェーンのようなオープン アクセス システムでは問題となります。例えば、現代のプリンターはチューリング完全であり、フリーズ状態に陥らせるファイルを印刷用に与えることができます。イーサリアムがチューリング完全であるということは、任意の複雑さのプログラムがイーサリアムで計算できることを意味します。しかし、その柔軟性はやっかいなセキュリティとリソース管理の問題をもたらします。応答しないプリンターは電源を切って再度入れることができます。しかし、パブリック ブロックチェーンではそれは不可能です。
 
-## Implications of Turing Completeness
+## チューリング完全性の意味するもの
 
-Turing proved that you cannot predict whether a program will terminate by simulating it on a computer. In simple terms, we cannot predict the path of a program without running it. Turing-complete systems can run in *infinite loops*, a term used (in oversimplification) to describe a program that does not terminate. It is trivial to create a program that runs a loop that never ends. But unintended never-ending loops can arise without warning due to complex interactions between the starting conditions and the code. In Ethereum, this poses a challenge: every participating node (client) must validate every transaction, running any smart contracts it calls. But as Turing proved, Ethereum can’t predict if a smart contract will terminate or how long it will run without actually running it (possibly running forever). Whether by accident or on purpose, a smart contract can be created such that it runs forever when a node attempts to validate it. This is effectively a denial-of-service (DoS) attack. And of course, between a program that takes a millisecond to validate and one that runs forever is an infinite range of nasty, resource-hogging, memory-bloating, CPU-overheating programs that simply waste resources. In a world computer, a program that abuses resources gets to abuse the world’s resources. How does Ethereum constrain the resources used by a smart contract if it cannot predict resource use in advance?
+　チューリングは、プログラムをコンピューター上でシミュレートすることによって、そのプログラムが終了するかどうかを予測できないことを証明しました。簡単に言えば、プログラムを実行せずにその経路を予測することはできません。チューリング完全なシステムは*無限ループ*で実行される可能性があります。無限ループとは（簡略化して言えば）終了しないプログラムを指す用語です。終了しないループを実行するプログラムを作成することは簡単です。しかし、意図しない終了しないループは、開始条件とコードの間の複雑な相互作用により、警告なしに発生する可能性があります。イーサリアムでは、これが課題となります。すべての参加ノード（クライアント）はすべてのトランザクションを検証し、呼び出されたスマート コントラクトを実行しなければなりません。しかしチューリングが証明したように、イーサリアムはスマート コントラクトが終了するかどうか、またはどれだけの時間実行されるかを、実際に実行せずに（おそらく永遠に実行される可能性があっても）予測することはできません。偶然にせよ意図的にせよ、ノードが検証を試みる際に永遠に実行されるスマート コントラクトを作成することができます。これは事実上DoS攻撃です。そしてもちろん、検証に1ミリ秒かかるプログラムと永遠に実行されるプログラムの間には、リソースを浪費し、メモリを膨張させ、CPUを過熱させる厄介なプログラムの無限の範囲が存在します。ワールド コンピューターでは、リソースを濫用するプログラムは世界のリソースを濫用することになります。イーサリアムは、リソース使用を事前に予測できないのに、スマート コントラクトが使用するリソースをどのように制約するのでしょうか。
 
-To answer this challenge, Ethereum introduced a metering mechanism called *gas*. As the EVM executes a smart contract, it carefully accounts for every instruction (computation, data access, etc.). Each instruction has a predetermined cost in units of gas. When a transaction triggers the execution of a smart contract, it must include an amount of gas that sets the upper limit of what can be consumed running the smart contract. The EVM will terminate execution if the amount of gas consumed by computation exceeds the gas available in the transaction. Gas is the mechanism Ethereum uses to allow Turing-complete computation while limiting the resources that any program can consume.
+　この課題に対処するために、イーサリアムは*ガス*と呼ばれる計量メカニズムを導入しました。EVMがスマート コントラクトを実行する際、すべての命令（計算、データ アクセスなど）を慎重に計上します。各命令にはガス単位で事前に決められたコストがあります。トランザクションがスマート コントラクトの実行をトリガーする際、スマート コントラクトの実行中に消費できる上限を設定するガス量を含める必要があります。計算によって消費されるガス量がトランザクションで利用可能なガスを超えた場合、EVMは実行を終了します。ガスは、イーサリアムがチューリング完全な計算を可能にしつつ、プログラムが消費できるリソースを制限するために使用するメカニズムです。
 
-The next question is: how does one get gas to pay for computation on the Ethereum world computer? You won’t find gas on any exchanges. It can only be purchased as part of a transaction and can only be bought with ether. Ether needs to be sent along with a transaction, and it needs to be explicitly earmarked for the purchase of gas, along with an acceptable gas price. Just like at the pump, the price of gas is not fixed. Gas is purchased for the transaction, the computation is executed, and any unused gas is refunded back to the sender of the transaction.
+　次の疑問は、イーサリアム ワールド コンピューターでの計算の対価としてガスをどのように入手するかということです。ガスはどの取引所でも見つかりません。トランザクションの一部としてのみ購入でき、etherでのみ購入できます。etherはトランザクションとともに送信される必要があり、許容可能なガス プライスとともにガスの購入用として明示的に割り当てられる必要があります。ガソリン スタンドと同様に、ガスの価格は固定されていません。ガスはトランザクション用に購入され、計算が実行され、未使用のガスはトランザクションの送信者に返金されます。
 
-## From General-Purpose Blockchains to DApps
+## 汎用ブロックチェーンからDAppへ
 
-Ethereum started as a way to make a general-purpose blockchain that could be programmed for a variety of uses. But very quickly, Ethereum’s vision expanded to become a platform for programming DApps. DApps represent a broader perspective than smart contracts. A DApp is, at the very least, a smart contract and a web user interface. More broadly, a DApp is a web application that is built on top of open, decentralized, P2P infrastructure services.
+　イーサリアムは、さまざまな用途にプログラムできる汎用ブロックチェーンを作る方法として始まりました。しかし非常に速く、イーサリアムのビジョンはDAppをプログラムするためのプラットフォームへと拡大しました。DAppはスマート コントラクトよりも広い視点を持っています。DAppは、最低限、スマート コントラクトとウェブ ユーザー インターフェースで構成されます。より広い意味では、DAppはオープンで非中央集権的なP2Pインフラ サービスの上に構築されたウェブ アプリケーションです。
 
-A DApp is composed of at least:
+　DAppは少なくとも以下で構成されます：
 
-- Smart contracts on a blockchain
-- A web frontend user interface
+- ブロックチェーン上のスマート コントラクトである
+- ウェブ フロントエンド ユーザー インターフェースである
 
-In addition, many DApps include other decentralized components, such as:
+　さらに、多くのDAppには以下のような他の非中央集権コンポーネントが含まれます：
 
-- A decentralized (P2P) storage protocol and platform
-- A decentralized (P2P) messaging protocol and platform
+- 非中央集権（P2P）ストレージ プロトコルとプラットフォームである
+- 非中央集権（P2P）メッセージング プロトコルとプラットフォームである
 
-From a practical perspective, the Ethereum web3.js JavaScript library bridges JavaScript applications that run in your browser with the Ethereum blockchain. It originally included a P2P storage network called Swarm and a P2P messaging service called Whisper—tools that made it possible to develop fully decentralized Web3 DApps. Despite the appeal of this fully decentralized DApp design, it did not gain much traction in the years following. Compromises had to be accepted to improve the user experience and boost user adoption, and a centralized Web2 website interacting with smart contracts is nowadays the standard for a DApp.
+　実践的な観点から見ると、イーサリアムのweb3.js JavaScriptライブラリーは、ブラウザで実行されるJavaScriptアプリケーションとイーサリアム ブロックチェーンを橋渡しします。当初はSwarmと呼ばれるP2Pストレージ ネットワークとWhisperと呼ばれるP2Pメッセージング サービスを含んでおり、完全に非中央集権化されたWeb3 DAppの開発を可能にするツールでした。この完全に非中央集権化されたDApp設計の魅力にもかかわらず、その後の数年間であまり普及しませんでした。ユーザー エクスペリエンスを向上させ、ユーザーの採用を促進するために妥協が必要となり、スマート コントラクトとやり取りする中央集権型のWeb2ウェブサイトが現在ではDAppの標準となっています。
 
-## The Third Age of the Internet
-In 2004, the term *Web 2.0* came to prominence as a label of the evolution of the web toward user-generated content, responsive interfaces, and interactivity. Web 2.0 is not a technical specification but rather a term describing the new focus of web applications.
+## インターネットの第三の時代
 
-The concept of DApps is meant to take the Web to its next natural evolutionary stage, introducing decentralization with P2P protocols into every aspect of a web application. The term used to describe this evolution is *Web3*, meaning the third “version” of the web. First proposed by Gavin Wood, Web3 represents a new vision and focus for web applications: from centrally owned and managed applications to applications built on decentralized protocols.
+　2004年、*Web 2.0*という用語が、ユーザー生成コンテンツ、レスポンシブなインターフェース、インタラクティビティへのウェブの進化を示すラベルとして注目を集めました。Web 2.0は技術仕様ではなく、ウェブ アプリケーションの新たな焦点を表す用語です。
 
-## Ethereum’s Development Culture
+　DAppの概念は、ウェブ アプリケーションのあらゆる側面にP2Pプロトコルによる非中央集権化を導入し、ウェブを次の自然な進化段階に進めることを目的としています。この進化を表すために使用される用語が*Web3*であり、ウェブの第三の「バージョン」を意味します。ギャヴィン・ウッドによって最初に提案されたWeb3は、ウェブ アプリケーションの新しいビジョンと焦点を表しています。中央で所有・管理されるアプリケーションから、非中央集権プロトコル上に構築されたアプリケーションへの転換です。
 
-So far, we’ve talked about how Ethereum’s goals and technology differ from those of other blockchains that preceded it, like Bitcoin. Ethereum also has a very different development culture.
+## イーサリアムの開発文化
 
-In Bitcoin, development is guided by conservative principles: all changes are carefully studied to ensure that none of the existing systems are disrupted. For the most part, changes are only implemented if they are backward compatible. Existing clients are allowed to opt in but will continue to operate if they decide not to upgrade. This cautious approach aligns with Bitcoin’s governance model, where changes go through the Bitcoin Improvement Proposal (BIP) process, an intentionally slow and consensus-driven pipeline designed to preserve stability.
+　ここまで、イーサリアムの目標と技術が、ビットコインのような先行するブロックチェーンとどのように異なるかについて話してきました。イーサリアムはまた、非常に異なる開発文化を持っています。
 
-In Ethereum, by comparison, the community’s development culture is focused on the future rather than the past. The (not entirely serious) mantra is “move fast and break things.” If a change is needed, it is implemented, even if that means invalidating prior assumptions, breaking compatibility, or forcing clients to update. Ethereum’s governance reflects this more hands-on style, with coordination happening publicly through frequent AllCoreDevs calls where researchers, client teams, and ecosystem stakeholders discuss and align on upcoming changes. It’s a more agile and iterative process that trades some stability for a faster pace of innovation.
+　ビットコインでは、開発は保守的な原則に導かれています。すべての変更は既存のシステムが破壊されないよう慎重に検討されます。ほとんどの場合、変更は後方互換性がある場合にのみ実装されます。既存のクライアントはオプトインが許可されており、アップグレードしないことを選択しても引き続き動作します。この慎重なアプローチはビットコインのガバナンス モデルと整合しており、変更はBitcoin Improvement Proposal（BIP）プロセスを経ます。BIPプロセスは安定性を維持するために意図的に遅く、コンセンサス駆動のパイプラインとして設計されています。
 
-What this means to you as a developer is that you must remain flexible and be prepared to rebuild your infrastructure as some of the underlying assumptions change. One of the big challenges facing developers in Ethereum is the inherent contradiction between deploying code to an immutable system and a development platform that is still evolving. You can’t simply “upgrade” your smart contracts. You must be prepared to deploy new ones; migrate users, apps, and funds; and start over.
+　対照的に、イーサリアムのコミュニティの開発文化は過去ではなく未来に焦点を当てています。（完全に本気ではありませんが）「素早く動いて壊せ」というマントラがあります。変更が必要な場合、それまでの仮定を無効にしたり、互換性を破壊したり、クライアントに更新を強制することになっても実装されます。イーサリアムのガバナンスはこのより実践的なスタイルを反映しており、研究者、クライアント チーム、エコシステムの利害関係者が今後の変更について議論し、調整する頻繁なAllCoreDevsコールを通じて公開的に調整が行われます。これは安定性の一部を犠牲にして、より速いイノベーションのペースを得る、よりアジャイルで反復的なプロセスです。
 
-Ironically, this also means that the goal of building systems with more autonomy and less centralized control is still not fully realized. Autonomy and decentralization require a bit more stability in the platform than you’re likely to get in Ethereum in the next few years. To “evolve” the platform, you have to be ready to scrap and restart your smart contracts, which means you have to retain a certain degree of control over them.
+　開発者にとってこれが意味するのは、基盤となる前提の一部が変更されたときにインフラを再構築する準備を常にし、柔軟性を維持する必要があるということです。イーサリアムの開発者が直面する大きな課題の一つは、イミュータブルなシステムにコードをデプロイすることと、まだ進化中の開発プラットフォームとの間にある本質的な矛盾です。スマート コントラクトを単に「アップグレード」することはできません。新しいコントラクトをデプロイし、ユーザー、アプリ、資金を移行し、最初からやり直す準備が必要です。
 
-But on the positive side, Ethereum is moving forward very quickly. There is little opportunity for *bike-shedding*: an expression that means holding up development by arguing over minor details, such as how to build the bicycle shed at the back of a nuclear power station. If you start bike-shedding, you might suddenly discover that while you were distracted, the rest of the development team changed the plan and ditched bicycles in favor of autonomous hovercraft.
+　皮肉なことに、これはまた、より多くの自律性とより少ない中央集権的な制御を持つシステムを構築するという目標がまだ完全には実現されていないことも意味します。自律性と非中央集権化には、今後数年間にイーサリアムで得られるよりも、もう少しプラットフォームの安定性が必要です。プラットフォームを「進化」させるためには、スマート コントラクトを破棄して再スタートする準備が必要であり、それはスマート コントラクトに対して一定程度の制御を保持しなければならないことを意味します。
 
-Eventually, the development of the Ethereum platform will slow, and its interfaces will become fixed. But in the meantime, innovation is the driving principle. You’d better keep up because no one will slow down for you.
+　しかし良い面もあります。イーサリアムは非常に速く前進しています。*バイクシェディング*の余地はほとんどありません。バイクシェディングとは、原子力発電所の裏の自転車置き場をどう建てるかといった些細な詳細について議論して開発を止めてしまうことを表す言葉です。バイクシェディングを始めると、気を取られている間に、開発チームの残りのメンバーが計画を変更し、自転車を捨てて自律型ホバークラフトに乗り換えていたことに突然気づくかもしれません。
 
-## Why Learn Ethereum?
+　最終的に、イーサリアム プラットフォームの開発は減速し、インターフェースは固定されるでしょう。しかしそれまでの間、イノベーションが指導原則です。誰もあなたのために減速してくれないので、ついていく方がよいでしょう。
 
-Blockchains have a very steep learning curve because they combine multiple disciplines into one domain: programming, information security, cryptography, economics, distributed systems, P2P networks, and so on. Ethereum makes this learning curve a lot less steep, so you can get started quickly. But just below the surface of a deceptively simple environment lies a lot more. As you learn and start looking deeper, there’s always another layer of complexity and wonder.
+## なぜイーサリアムを学ぶのか
 
-Ethereum is a great platform for learning about blockchains, and it’s building a massive community of developers, faster than any other blockchain platform. More than any other, Ethereum is a *developer’s blockchain*: built by developers for developers. A developer familiar with JavaScript applications can drop into Ethereum and start producing working code very quickly. For the first few years of Ethereum’s life, it was common to see T-shirts announcing that you can create a token in just five lines of code. Of course, this is a double-edged sword. It’s easy to write code, but it’s very hard to write *good* and *secure* code.
+　ブロックチェーンは非常に急な学習曲線を持っています。プログラミング、情報セキュリティ、暗号学、経済学、分散システム、P2Pネットワークなど、複数の分野を1つの領域に組み合わせているためです。イーサリアムはこの学習曲線をかなり緩やかにしてくれるので、すぐに始めることができます。しかし、一見シンプルな環境の表面のすぐ下には、もっと多くのことが隠れています。学び、より深く見ていくと、常に別の複雑さと驚きのレイヤーが存在します。
 
-Many blockchain projects, like L2s, are based on Ethereum. Learning Ethereum helps you understand these projects better and gives you the tools to explore further developments in the blockchain world. This knowledge is key for anyone looking to get involved with the latest in blockchain technology.
+　イーサリアムはブロックチェーンについて学ぶための素晴らしいプラットフォームであり、他のどのブロックチェーン プラットフォームよりも速く、膨大な開発者コミュニティを構築しています。他のどのプラットフォームよりも、イーサリアムは*開発者のためのブロックチェーン*です。開発者による、開発者のための構築です。JavaScriptアプリケーションに精通した開発者であれば、イーサリアムに飛び込んで、非常に早く動作するコードを作り始めることができます。イーサリアムの最初の数年間は、わずか5行のコードでトークンを作成できると書かれたTシャツをよく見かけました。もちろん、これは諸刃の剣です。コードを書くことは簡単ですが、*良い*コードや*安全な*コードを書くことは非常に難しいのです。
 
-## Conclusion
+　L2のような多くのブロックチェーン プロジェクトは、イーサリアムをベースにしています。イーサリアムを学ぶことで、これらのプロジェクトをより深く理解し、ブロックチェーン世界のさらなる発展を探求するためのツールを得ることができます。この知識は、最新のブロックチェーン技術に関わりたいすべての人にとって鍵となるものです。
 
-Ethereum stands out as a groundbreaking platform in the blockchain landscape. Its design as a Turing-complete system allows for the creation of decentralized applications with sophisticated, programmable logic, going beyond the simpler functionality of Bitcoin.
+## まとめ
 
-For developers and technologists, understanding Ethereum opens doors to a deeper comprehension of blockchain technology and its potential applications. By mastering Ethereum, you gain the tools to participate in and contribute to the ongoing evolution of the internet, putting yourself at the cutting edge of this exciting field.
+　イーサリアムはブロックチェーンの世界において画期的なプラットフォームとして際立っています。チューリング完全なシステムとしての設計により、ビットコインのよりシンプルな機能を超えた、洗練されたプログラム可能なロジックを持つ分散アプリケーションの作成が可能です。
+
+　開発者や技術者にとって、イーサリアムを理解することは、ブロックチェーン技術とその潜在的なアプリケーションのより深い理解への扉を開きます。イーサリアムを習得することで、インターネットの継続的な進化に参加し貢献するためのツールを得て、このエキサイティングな分野の最先端に立つことができます。
