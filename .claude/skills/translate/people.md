@@ -1,3 +1,6 @@
+# People - Name to Katakana
+
+| Name | カタカナ表記 | カナふり方法 | 参考URL1 | 参考URL2 |
 # People
 
 | Name | Katakana | Method | Reference URL 1 | Reference URL 2 |
@@ -8,6 +11,9 @@
 | Alessandro Mazza | アレッサンドロ・マッツァ | | | |
 | Niccolò Pozzolini | ニッコロ・ポッツォリーニ | | | |
 | Vitalik Buterin | ヴィタリック・ブテリン | | | |
+| Thaddeus Dryja | サデウス・ドライヤ | | | |
+| Satoshi Nakamoto | サトシ・ナカモト | | | |
+| Ben Edgington | ベン・エジントン | | | |
 | Martin Hellman | マーティン・ヘルマン | | | |
 | Whitfield Diffie | ウィットフィールド・ディフィー | | | |
 | Ralph Merkle | ラルフ・マークル | | | |
