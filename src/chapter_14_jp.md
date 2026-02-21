@@ -1,31 +1,14 @@
-# Chapter 14. The Ethereum Virtual Machine
-
-# 第14章 イーサリアム仮想マシン
-
-At the heart of the Ethereum protocol and operation is the *Ethereum Virtual Machine*, or the *EVM* for short. As you might guess from the name, it is a computation engine, not hugely dissimilar to the virtual machines of Microsoft's .NET framework or interpreters of other bytecode-compiled programming languages, such as Java. In this chapter, we take a detailed look at the EVM, including its instruction set, structure, and operation, within the context of Ethereum state updates.
+# 第14章 イーサリアム仮想マシン(EVM)
 
 イーサリアムプロトコルとその運用の中心には、*イーサリアム仮想マシン*(Ethereum Virtual Machine)、つまり*EVM*があります。名前から推測できるように、それは計算処理エンジンであり、Microsoftの.NET Frameworkの仮想マシンやJavaなどの他のバイトコードでコンパイルされたプログラミング言語のインタプリタと大きく異なるものではありません。この章ではEVMの詳細を見ていきます。特に、イーサリアムのステート（状態）更新に関わる命令セット、構造、操作などを見ていきます。
 
-## What Is the EVM?
-
 ## EVMとは何か？
-
-The EVM is the part of Ethereum that handles smart contract deployment and execution. Simple value-transfer transactions from one EOA to another don't need to involve it, practically speaking, but everything else will involve a state update computed by the EVM. At a high level, the EVM running on the Ethereum blockchain can be thought of as a global decentralized computer containing millions of executable objects, each with its own permanent data store.
 
 EVMはイーサリアムの構成要素の１つで、スマートコントラクトをデプロイあるいは実行します。あるEOA（外部所有アカウント）から別のEOAへの単純な送金トランザクションは、実際のところEVMを関与させる必要はありませんが、それ以外のすべてのトランザクションに関してはEVMによって計算がなされた状態への更新を伴います。おおまかに言うと、イーサリアムブロックチェーン上で実行されるEVMは、それぞれ永続的なデータストアを伴い、多くの実行可能オブジェクトを格納した、グローバル分散コンピュータとみなせます。
 
-The EVM is a *quasi-Turing-complete* state machine: "quasi" because all execution processes are limited to a finite number of computational steps by the amount of gas available for any given smart contract execution. As such, the *halting problem* is "solved" (all program executions will halt), and the situation where execution might (accidentally or maliciously) run forever, thus bringing the Ethereum platform to a halt in its entirety, is avoided. We'll explore the halting problem in more detail in later sections.
-
 EVMは*準チューリング完全*状態マシンです。どのようなスマートコントラクトに対しても、すべての実行過程は、実行のために利用可能なガスの量によって有限の計算ステップ数に制限されるため、「準」と呼んでいます。このようにして、*停止性問題*は「解決」し（すべてのプログラムは、実行した場合にいつかは停止する）、実行が（意図せず、あるいは悪意をもって）永遠に実行され、イーサリアムプラットフォームが完全に停止する状況が回避されます。停止性問題については、後のセクションで詳しく説明します。
 
-The EVM has a *stack-based architecture*, storing all in-memory values on a stack. It works with a word size of 256 bits, mainly to facilitate native hashing and elliptic curve operations, and it has several addressable data components:
-
 EVMは*スタックベースアーキテクチャ*を持っており、一時的な値はすべてスタックに格納されます。EVMは主に組み込みのハッシングや楕円曲線演算を容易にするために、256ビットのワードサイズで動作し、以下に示す、アドレスを指定してアクセスが可能ないくつかのデータコンポーネントも持っています。
-
-- An immutable program code ROM, loaded with the bytecode of the smart contract to be executed
-- A volatile memory, with every location explicitly initialized to zero
-- A transient storage that lasts only for the duration of a single transaction (and is not part of the Ethereum state)
-- A permanent storage that is part of the Ethereum state, also zero initialized
 
 - 実行されるスマートコントラクトのバイトコードが読み込まれた、不変のプログラムコードROM
 - すべての領域が明示的にゼロに初期化された揮発性のメモリ
@@ -44,66 +27,40 @@ Figure 14-1. EVM architecture and execution context
 
 図14-1. EVMアーキテクチャと実行コンテクスト
 
-## Comparison with Existing Technology
-
 ## 既存の技術との比較
 
-The term *virtual machine* is often applied to the virtualization of a real computer, typically by a hypervisor such as VirtualBox or QEMU, or of an entire operating system instance, such as Linux's KVM. These must provide a software abstraction, respectively, of actual hardware and of system calls and other kernel functionality.
-
 *仮想マシン*という用語は、通常、VirtualBoxやQEMUなどのハイパーバイザーや、LinuxのKVMなどのオペレーティングシステムのインスタンス全体の仮想化など、現実のコンピュータの仮想化に用いられます。実際のハードウェア、システムコール、そしてその他のカーネル機能それぞれに対して、ソフトウェアとしての抽象化を定める必要があります。
-
-The EVM operates in a much more limited domain: it is just a computation engine and as such, provides an abstraction of just computation and storage, similar to the Java virtual machine (JVM) specification, for example. From a high-level viewpoint, the JVM is designed to provide a runtime environment that is agnostic of the underlying host OS or hardware, enabling compatibility across a wide variety of systems. High-level programming languages such as Java or Scala (which use the JVM) or C# (which uses .NET) are compiled into the bytecode instruction set of their respective virtual machines. In the same way, the EVM executes its own bytecode instruction set (described in the next section), which higher-level smart contract programming languages such as Solidity, Vyper, and Yul are compiled into.
 
 現実のコンピュータの仮想化に比べると、EVMははるかに限られた領域で動作します。EVMは単なる計算処理エンジンなので、たとえばJVM（Java Virtual Machine：Java仮想マシン）の仕様と同じように、計算処理とストレージの抽象化を規定します。全体的な観点から見ると、JVMは、基盤となるホストOSやハードウェアに依存しない実行環境を規定するように設計されており、異なるシステ
 ム間で互換性を保つことができます。JavaやScala（JVMを使用する）やC#（.NETを使用する）などの高級プログラミング言語は、それぞれの仮想マシンのバイトコード命令セットにコンパイルされます。同様に、EVMは独自のバイトコードで記述された命令セット（次の項で説明します）を実行します。バイトコードで記述された命令セットは、Solidity、Vyper、Yulなどの高級スマートコントラクトプログラミング言語をコンパイルすることで生成されます。
 
-The EVM, therefore, has no scheduling capability because execution ordering is organized externally to it: Ethereum clients run through verified block transactions to determine which smart contracts need executing and in which order. In this sense, the Ethereum world computer is single threaded, like JavaScript. Neither does the EVM have any "system interface" handling or "hardware support"—there is no physical machine to interface with. The Ethereum world computer is completely virtual.
-
 EVMはスケジューリング機能を持ちません。なぜなら、実行順序の決定はEVMの外部で取りまとめられているからです。イーサリアムクライアントは、検証されたブロックトランザクションを一通り見て、どのスマートコントラクトをどの順序で実行する必要があるかを決定します。この意味で、イーサリアムワールドコンピュータはJavaScriptのようにシングルスレッドです。また、EVMには、「システムインターフェイス」の処理や「ハードウェアのサポート」はどちらもありません。お互いにやり取りする物理的なマシンは存在しないのです。イーサリアムワールドコンピュータは完全に仮想的なものです。
-
-## What Are Other Blockchains Doing?
 
 ## 他のブロックチェーンは何をしているか？
 
-The EVM is definitely the most widely used virtual machine in the cryptocurrency space. Most alternative L1 and L2 blockchains use the EVM to maintain compatibility with all the existing tools and frameworks and to attract projects and developers directly from the Ethereum community.
-
 EVMは間違いなく暗号通貨分野で最も広く使用されている仮想マシンです。ほとんどの代替L1およびL2ブロックチェーンは、既存のすべてのツールやフレームワークとの互換性を維持し、イーサリアムコミュニティから直接プロジェクトや開発者を引き付けるためにEVMを使用しています。
-
-Nevertheless, a bunch of different virtual machines have emerged in recent years: Solana VM, Wasm VM, Cairo VM, and Move VM are probably the most famous and interesting ones, each with its own advantages and disadvantages. They take different approaches to smart contract development:
 
 それにもかかわらず、近年、多くの異なる仮想マシンが登場しています。Solana VM、Wasm VM、Cairo VM、Move VMはおそらく最も有名で興味深いものであり、それぞれに独自の利点と欠点があります。これらはスマートコントラクト開発に対して異なるアプローチを取っています：
 
-**Custom languages**
-
 **カスタム言語**
-
-Some platforms, like Cairo and Move, have created specialized programming languages specifically for writing smart contracts. This is similar to how Ethereum uses Solidity and Vyper for its virtual machine, the EVM.
 
 CairoやMoveのような一部のプラットフォームは、スマートコントラクトを書くために特別に設計されたプログラミング言語を作成しています。これは、イーサリアムがその仮想マシンであるEVMのためにSolidityやVyperを使用しているのと同様です。
 
-**Standard languages**
-
 **標準言語**
 
-Others, such as Solana and those using WebAssembly (Wasm), allow developers to write smart contracts with widely used programming languages. For example, these platforms often support Rust for smart contract development.
+そのほかのSolanaや WebAssembly（Wasm）を使用するプラットフォームなどは、広く使用されているプログラミング言語でスマートコントラクトを書くことを可能にしています。例えば、これらのプラットフォームはスマートコントラクト開発にRustをサポートしていることが多いです。
 
-Solanaや WebAssembly（Wasm）を使用するプラットフォームなど、他のものは開発者が広く使用されているプログラミング言語でスマートコントラクトを書くことを可能にしています。例えば、これらのプラットフォームはスマートコントラクト開発にRustをサポートしていることが多いです。
+これらの代替仮想マシンがEVMと異なるもう一つの領域は、トランザクションの*並列化*です。EVMは並列化なしにトランザクションを順次処理することはすでに述べました。いくつかのプロジェクトはこの欠点を取り上げ、改善しようとしました。例えば、Solana VMとMove VMの両方がトランザクションを並列に実行できますが、常に可能というわけではありません。たとえば、2つのトランザクションが同じコントラクトとやり取りして同じストレージを変更する場合、それらは並列に実行できません。
 
-Another area where these alternative virtual machines differ from the EVM is the *parallelization* of transactions. We've already said that the EVM processes transactions sequentially, without any kind of parallelization. Some projects took this downside and tried to improve it. For example, both Solana VM and Move VM can handle parallel execution of transactions, even though it's not always possible—that is, when two transactions modify the same piece of storage by interacting with the same contracts, they cannot be executed in parallel.
-
-これらの代替仮想マシンがEVMと異なるもう一つの領域は、トランザクションの*並列化*です。EVMは並列化なしにトランザクションを順次処理することはすでに述べました。いくつかのプロジェクトはこの欠点を取り上げ、改善しようとしました。例えば、Solana VMとMove VMの両方がトランザクションの並列実行を処理できますが、常に可能というわけではありません。つまり、2つのトランザクションが同じコントラクトとやり取りして同じストレージを変更する場合、それらは並列に実行できません。
-
-We must say that these efforts to improve the virtual machine's performance are not being made only outside of Ethereum. In fact, lots of teams are working on breaking the current limits of the EVM by trying to add parallelization and other cool features such as *ahead-of-time* (AOT) or *just-in-time* (JIT) compilation from EVM bytecode to native machine code.
-
-仮想マシンのパフォーマンスを向上させるこれらの取り組みは、イーサリアムの外部だけで行われているわけではないことを言わなければなりません。実際、多くのチームが並列化やEVMバイトコードからネイティブマシンコードへの*事前コンパイル*（AOT）や*実行時コンパイル*（JIT）などのクールな機能を追加することで、EVMの現在の制限を打破しようと取り組んでいます。
+仮想マシンのパフォーマンスを向上させるこれらの取り組みは、イーサリアムの外部だけで行われているわけではないことを言わなければなりません。実際、多くのチームが並列化やEVMバイトコードからネイティブマシンコードへの*事前コンパイル(ahead-of-time)*（AOT）や*実行時コンパイル(just-in-time)*（JIT）などのクールな機能を追加することで、EVMの現在の制限を打破しようと取り組んでいます。
 
 ## The EVM Instruction Set (Bytecode Operations)
 
-## EVM命令セット（バイトコード操作）
+## EVM命令セット（バイトコード演算）
 
 The EVM instruction set offers most of the operations you might expect, including:
 
-EVM命令セットは、以下を含む期待される操作のほとんどを提供します：
+EVM命令セットでは、次のような多くの操作が用意されています。
 
 - Arithmetic and bitwise logic operations
 - Execution context inquiries
@@ -111,276 +68,137 @@ EVM命令セットは、以下を含む期待される操作のほとんどを�
 - Control flow operations
 - Logging, calling, and other operators
 
-- 算術およびビット論理演算
-- 実行コンテキストの照会
+- 算術演算とビット単位の論理演算
+- 実行コンテクストに関する問い合わせ
 - スタック、メモリ、ストレージへのアクセス
-- 制御フロー操作
-- ロギング、呼び出し、その他の演算子
+- 制御フローに関する操作
+- ロギング、関数コール、その他の演算子
 
-In addition to the typical bytecode operations, the EVM has access to account information (e.g., address and balance) and block information (e.g., block number and current gas price).
+一般的なバイトコード操作に加えて、EVMはアカウント情報（アドレスや残高）やブロック情報（ブロック番号や現在のガス価格）にアクセスする操作も用意されています。
+利用可能なオペコードとその動作に着目してEVMを詳細に調べてみましょう。想定どおりかもしれませんが、オペランドはすべてスタックから取得され、その結果（適用可能な場合は）がしばしば、スタックの先頭に書き戻されます。
 
-典型的なバイトコード操作に加えて、EVMはアカウント情報（例：アドレスと残高）とブロック情報（例：ブロック番号と現在のガス価格）にアクセスできます。
-
-Let's start our exploration of the EVM in more detail by looking at the available *opcodes* and what they do. As you might expect, all operands are taken from the stack, and the result (where applicable) is often put back on the top of the stack.
-
-利用可能な*オペコード*とその機能を見ることで、EVMの詳細な探索を始めましょう。予想されるように、すべてのオペランドはスタックから取得され、結果（該当する場合）はしばしばスタックのトップに戻されます。
-
-The available opcodes can be divided into the following categories:
-
-利用可能なオペコードは以下のカテゴリに分類できます：
-
-### Arithmetic operations
+使用可能なオペコードは、次のカテゴリーに分類できます。
 
 ### 算術演算
 
-The arithmetic opcode instructions include:
-
-算術オペコード命令には以下が含まれます：
+算術演算命令には以下が含まれます：
 
 ```
-ADD        //Add the top two stack items
-MUL        //Multiply the top two stack items
-SUB        //Subtract the top two stack items
-DIV        //Integer division
-SDIV       //Signed integer division
-MOD        //Modulo (remainder) operation
-SMOD       //Signed modulo operation
-ADDMOD     //Addition modulo any number
-MULMOD     //Multiplication modulo any number
-EXP        //Exponential operation
-SIGNEXTEND //Extend the length of a two's complement signed integer
-SHA3       //Compute the Keccak-256 hash of a block of memory
+ADD        // スタックの上から2つの要素を足し合わせる
+MUL        // スタックの上から2つの要素を掛け合わせる
+SUB        // スタックの上から2つの要素を引き算する
+DIV        // 整数除算
+SDIV       // 符号付き整数除算
+MOD        // モジュロ（剰余）演算
+SMOD       // 符号付きモジュロ演算
+ADDMOD     // 任意の数のモジュロ加算
+MULMOD     // 任意の数を法とする乗法
+EXP        // 指数演算
+SIGNEXTEND // 2の補数符号付き整数の長さを拡張
+SHA3       // メモリブロックの Keccak-256ハッシュを計算
 ```
 
-```
-ADD        //スタックの上位2項目を加算
-MUL        //スタックの上位2項目を乗算
-SUB        //スタックの上位2項目を減算
-DIV        //整数除算
-SDIV       //符号付き整数除算
-MOD        //剰余演算
-SMOD       //符号付き剰余演算
-ADDMOD     //任意の数による加算の剰余
-MULMOD     //任意の数による乗算の剰余
-EXP        //指数演算
-SIGNEXTEND //2の補数符号付き整数の長さを拡張
-SHA3       //メモリブロックのKeccak-256ハッシュを計算
-```
-
-Note that all arithmetic is performed modulo 2256 (unless otherwise noted) and that the zeroth power of zero, 00, is taken to be 1.
-
-すべての算術は2^256を法として実行され（特に記載がない限り）、ゼロのゼロ乗、0^0は1とみなされることに注意してください。
-
-### Stack operations
+すべての算術演算は、特に明記されていない限り、2^256を法として実行され、0^0（ゼロの0乗）は1であるとみなされることに注意してください。
 
 ### スタック操作
-
-Stack, memory, and storage management instructions include:
 
 スタック、メモリ、ストレージ管理命令には以下が含まれます：
 
 ```
-POP     //Remove the top item from the stack
-MLOAD   //Load a word from memory
-MSTORE  //Save a word to memory
-MSTORE8 //Save a byte to memory
-SLOAD   //Load a word from storage
-SSTORE  //Save a word to storage
-TLOAD   //Load a word from transient storage
-TSTORE  //Save a word to transient storage
-MSIZE   //Get the size of the active memory in bytes
-PUSH0   //Place value 0 on the stack
-PUSHx   //Place x byte item on the stack, where x can be any integer from
-        // 1 to 32 (full word) inclusive
-DUPx    //Duplicate the x-th stack item, where x can be any integer from
-        // 1 to 16 inclusive
-SWAPx   //Exchange 1st and (x+1)-th stack items, where x can be any
-        // integer from 1 to 16 inclusive
+POP     // スタックの一番上の項目を削除する
+MLOAD   // メモリからワードをロードする
+MSTORE  // ワードをメモリに保存する
+MSTORE8 // メモリに 1バイトを保存する
+SLOAD   // ストレージからワードをロードする
+SSTORE  // ワードをストレージに保存する
+TLOAD   //一時ストレージからワードをロードする
+TSTORE  //一時ストレージにワードを保存する
+MSIZE   // アクティブなメモリのサイズをバイト数で取得する
+PUSH0   //スタックに値0を配置する
+PUSHx   // xバイトの要素をスタックに置く
+        // xは1～32（フルワード）を含む任意の整数
+DUPx    // スタックの x番目の要素を複製する
+        // xは1～16を含む任意の整数
+SWAPx   // スタックの最初の要素と（x+1）番目の要素を交換する
+        // xは1から16までの任意の整数
 ```
 
-```
-POP     //スタックの最上位項目を削除
-MLOAD   //メモリからワードをロード
-MSTORE  //メモリにワードを保存
-MSTORE8 //メモリにバイトを保存
-SLOAD   //ストレージからワードをロード
-SSTORE  //ストレージにワードを保存
-TLOAD   //一時ストレージからワードをロード
-TSTORE  //一時ストレージにワードを保存
-MSIZE   //アクティブなメモリのサイズをバイト単位で取得
-PUSH0   //スタックに値0を配置
-PUSHx   //スタックにxバイトの項目を配置（xは1から32（フルワード）までの任意の整数）
-DUPx    //x番目のスタック項目を複製（xは1から16までの任意の整数）
-SWAPx   //1番目と(x+1)番目のスタック項目を交換（xは1から16までの任意の整数）
-```
-
-### Process-flow operations
-
-### プロセスフロー操作
-
-Instructions for control flow include:
+### 処理フロー操作
 
 制御フロー命令には以下が含まれます：
 
 ```
-STOP      //Halt execution
-JUMP      //Set the program counter to any value
-JUMPI     //Conditionally alter the program counter
-PC        //Get the value of the program counter (prior to the increment
-          //corresponding to this instruction)
-JUMPDEST  //Mark a valid destination for jumps
+STOP       // 実行を停止する
+JUMP       // プログラムカウンタを任意の値に設定する
+JUMPI      // プログラムカウンタを条件付きで変更する
+PC         // プログラムカウンタの値を取得する（インクリメント前の値）
+           // この命令に対応）
+JUMPDEST   // 有効なジャンプ先としてマークする
 ```
 
-```
-STOP      //実行を停止
-JUMP      //プログラムカウンタを任意の値に設定
-JUMPI     //条件付きでプログラムカウンタを変更
-PC        //プログラムカウンタの値を取得（この命令に対応するインクリメント前）
-JUMPDEST  //ジャンプの有効な宛先をマーク
-```
-
-### System operations
-
-### システム操作
-
-Opcodes for the system executing the program include:
+### システムに関連する操作
 
 プログラムを実行するシステムのオペコードには以下が含まれます：
 
 ```
-LOGx          //Append a log record with x topics, where x is any integer
-              //from 0 to 4 inclusive
-CREATE        //Create a new account with associated code
-CALL          //Message-call into another account, i.e., run another
-              //account's code
-CALLCODE      //Message-call into this account with another
-              //account's code
-RETURN        //Halt execution and return output data
-DELEGATECALL  //Message-call into this account with an alternative
-              //account's code, but persisting the current values for
-              //sender and value
-STATICCALL    //Static message-call into an account, i.e., it cannot change
-              //the state of any account
-REVERT        //Halt execution, reverting state changes but returning
-              //data and remaining gas
-INVALID       //The designated invalid instruction
-SELFDESTRUCT  //Halt execution and, if executed in the same transaction a
-              //contract was created, register account for deletion. Note
-              //that its usage is highly discouraged and the opcode is
-              //considered deprecated
+LOGx          // x個のトピックを持つログレコードを追加（xは0から4までの任意の整数）
+CREATE        // 関連付けられたコードで新しいアカウントを作成する
+CALL          // 別のアカウントへのメッセージコール、つまり別のアカウントのコードの実行
+CALLCODE      // 別のアカウントのコードでこのアカウントにメッセージコールを行う
+RETURN        // 実行を停止して出力データを返す
+DELEGATECALL  // 代替アカウントのコードを使用してこのアカウントにメッセージコールを行うが、
+              // 送信者とバリューの現在の値を保持する
+STATICCALL    // 静的なメッセージコールをこのアカウントへ行うが、どのアカウントの状態も変更できない。
+REVERT        // 実行を停止し、状態変更を元に戻し、データと残りのガスを返す
+INVALID       // 指定された無効な命令
+SELFDESTRUCT  // 実行を停止し、コントラクト作成時のトランザクション中に実行された場合は、
+              // 削除するアカウントとして登録する。使用は強く非推奨であり、
+              // オペコードは非推奨と見なされている
 ```
-
-```
-LOGx          //x個のトピックを持つログレコードを追加（xは0から4までの任意の整数）
-CREATE        //関連コードを持つ新しいアカウントを作成
-CALL          //別のアカウントへのメッセージ呼び出し（別のアカウントのコードを実行）
-CALLCODE      //別のアカウントのコードを使用してこのアカウントへのメッセージ呼び出し
-RETURN        //実行を停止し、出力データを返す
-DELEGATECALL  //代替アカウントのコードを使用してこのアカウントへのメッセージ呼び出し
-              //（senderとvalueの現在の値を保持）
-STATICCALL    //アカウントへの静的メッセージ呼び出し（どのアカウントの状態も変更不可）
-REVERT        //実行を停止し、状態変更を元に戻すがデータと残りのガスを返す
-INVALID       //指定された無効な命令
-SELFDESTRUCT  //実行を停止し、コントラクト作成と同じトランザクションで実行された場合、
-              //アカウントを削除登録。使用は強く非推奨であり、
-              //オペコードは非推奨と見なされている
-```
-
-### Logic operations
 
 ### 論理演算
-
-Opcodes for comparisons and bitwise logic include:
 
 比較とビット論理のオペコードには以下が含まれます：
 
 ```
-LT     //Less-than comparison
-GT     //Greater-than comparison
-SLT    //Signed less-than comparison
-SGT    //Signed greater-than comparison
-EQ     //Equality comparison
-ISZERO //Simple NOT operator
-AND    //Bitwise AND operation
-OR     //Bitwise OR operation
-XOR    //Bitwise XOR operation
-NOT    //Bitwise NOT operation
-BYTE   //Retrieve a single byte from a full-width 256-bit word
+LT         // より小さいかどうかの比較
+GT         // より大きいかどうかの比較
+SLT        // 符号付きの小なり比較
+SGT        // 符号付きの大なり比較
+EQ         // 等価比較
+ISZERO     // 単純NOT演算子
+AND        // ビット単位の AND演算
+OR         // ビット単位の OR演算
+XOR        // ビット単位の XOR演算
+NOT        // ビット単位の NOT演算
+BYTE       // 256ビットワードから 1バイトを取得
 ```
 
-```
-LT     //小なり比較
-GT     //大なり比較
-SLT    //符号付き小なり比較
-SGT    //符号付き大なり比較
-EQ     //等価比較
-ISZERO //単純なNOT演算子
-AND    //ビットAND演算
-OR     //ビットOR演算
-XOR    //ビットXOR演算
-NOT    //ビットNOT演算
-BYTE   //256ビット幅のワードから単一バイトを取得
-```
-
-### Environmental operations
-
-### 環境操作
-
-Opcodes dealing with execution environment information include:
+### 環境に対する操作
 
 実行環境情報を扱うオペコードには以下が含まれます：
 
 ```
-GAS            //Get the amount of available gas (after the reduction for
-               //this instruction)
-ADDRESS        //Get the address of the currently executing account
-BALANCE        //Get the account balance of any given account
-ORIGIN         //Get the address of the EOA that initiated this EVM
-               //execution
-CALLER         //Get the address of the caller immediately responsible
-               //for this execution
-CALLVALUE      //Get the ether amount deposited by the caller responsible
-               //for this execution
-CALLDATALOAD   //Get the input data sent by the caller responsible for
-               //this execution
-CALLDATASIZE   //Get the size of the input data
-CALLDATACOPY   //Copy the input data to memory
-CODESIZE       //Get the size of code running in the current environment
-CODECOPY       //Copy the code running in the current environment to
-               //memory
-GASPRICE       //Get the gas price specified by the originating
-               //transaction
-EXTCODESIZE    //Get the size of an account's code
-EXTCODECOPY    //Copy an account's code to memory
-RETURNDATASIZE //Get the size of the output data from the previous call
-               //in the current environment
-RETURNDATACOPY //Copy data output from the previous call to memory
+GAS            // 利用可能なガスの量を取得する
+               //（この命令に関する支払いが終わったあとのガス）
+ADDRESS        // 現在実行中のアカウントのアドレスを取得する
+BALANCE        // 指定されたアカウントの残高を取得する
+ORIGIN         // この EVMの実行の 起点となった EOAのアドレスを取得する
+CALLER         // この実行の直接の呼び出し元のアドレスを取得する
+CALLLVALUE     // この実行の呼び出し側がデポジットしたイーサ値を取得する
+CALLDATALOAD   // この実行の呼び出し元が送信した入力データを取得する
+CALLDATASIZE   // 入力データのサイズを取得する
+CALLDATACOPY   // 入力データをメモリにコピーする
+CODESIZE       // 現在の環境で実行されているコードのサイズを取得する
+CODECOPY       // 現在の環境で実行されているコードをメモリにコピーする
+GASPRICE       // トランザクションの作成元が指定したガス価格を取得する
+EXTCODESIZE    // アカウントコードのサイズを取得する
+EXTCODECOPY    // アカウントのコードをメモリにコピーする
+RETURNDATASIZE // 現在の環境で、前の呼び出し元の出力データのサイズを取得する
+RETURNDATACOPY // 直前の呼び出しからのデータ出力をメモリにコピーする
 ```
 
-```
-GAS            //利用可能なガス量を取得（この命令による減少後）
-ADDRESS        //現在実行中のアカウントのアドレスを取得
-BALANCE        //任意のアカウントの残高を取得
-ORIGIN         //このEVM実行を開始したEOAのアドレスを取得
-CALLER         //この実行に直接責任を持つ呼び出し元のアドレスを取得
-CALLVALUE      //この実行の責任者である呼び出し元が預けたイーサの量を取得
-CALLDATALOAD   //この実行の責任者である呼び出し元が送信した入力データを取得
-CALLDATASIZE   //入力データのサイズを取得
-CALLDATACOPY   //入力データをメモリにコピー
-CODESIZE       //現在の環境で実行中のコードのサイズを取得
-CODECOPY       //現在の環境で実行中のコードをメモリにコピー
-GASPRICE       //発信トランザクションで指定されたガス価格を取得
-EXTCODESIZE    //アカウントのコードのサイズを取得
-EXTCODECOPY    //アカウントのコードをメモリにコピー
-RETURNDATASIZE //現在の環境での前回の呼び出しからの出力データのサイズを取得
-RETURNDATACOPY //前回の呼び出しからの出力データをメモリにコピー
-```
-
-### Block operations
-
-### ブロック操作
-
-Opcodes for accessing information on the current block include:
+### ブロックに関連する操作
 
 現在のブロックの情報にアクセスするオペコードには以下が含まれます：
 
@@ -396,18 +214,16 @@ GASLIMIT   //Get the block's gas limit
 ```
 
 ```
-BLOCKHASH  //最近完了した256ブロックのうちの1つのハッシュを取得
-COINBASE   //ブロック報酬のブロック受益者アドレスを取得
-TIMESTAMP  //ブロックのタイムスタンプを取得
-NUMBER     //ブロック番号を取得
-PREVRANDAO //前のブロックのRANDAOミックスを取得。このオペコードは
-           //The Mergeハードフォーク以降、DIFFICULTYに代わるもの
-GASLIMIT   //ブロックのガスリミットを取得
+BLOCKHASH      // 最近生成が完了した256のブロックの内の 1つのハッシュを取得する
+COINBASE       // ブロック報酬を受け取るアドレスを取得する
+TIMESTAMP      // ブロックのタイムスタンプを取得する
+NUMBER         // ブロックの番号を取得する
+PREVRANDAO     // 前のブロックのRANDAOミックスを取得。このオペコードは
+               // The Mergeハードフォーク以降、DIFFICULTYに代わるもの
+GASLIMIT       // ブロックのガスリミットを取得する
 ```
 
-## Ethereum State
-
-## イーサリアムの状態
+## イーサリアムのステート（状態）
 
 The job of the EVM is to update the Ethereum state by computing valid state transitions as a result of smart contract code execution, as defined by the Ethereum protocol. This aspect leads to the description of Ethereum as a *transaction-based state machine*, which reflects the fact that external actors (i.e., account holders and validators) initiate state transitions by creating, accepting, and ordering transactions. It is useful at this point to consider what constitutes the Ethereum state.
 
