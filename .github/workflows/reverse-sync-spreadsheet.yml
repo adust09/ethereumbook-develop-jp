@@ -1,0 +1,23 @@
+name: Reverse Sync to Spreadsheet
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'glosary.md'
+      - 'people.md'
+      - 'translation-rule.md'
+
+jobs:
+  reverse-sync:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r scripts/requirements-reverse-sync.txt
+      - env:
+          GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+        run: python3 scripts/reverse_sync_spreadsheet.py
