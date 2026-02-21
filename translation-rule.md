@@ -1,3 +1,4 @@
+# Translation Rules / 翻訳ルール
 # 翻訳ルール
 
 ## 基本ルール
