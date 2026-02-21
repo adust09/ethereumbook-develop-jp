@@ -1,154 +1,153 @@
-# Chapter 4. Cryptography
+# 第4章 暗号技術
 
-One of Ethereum's foundational technologies is *cryptography*, which is a branch of mathematics used extensively in computer security. Cryptography means "secret writing" in Greek, but the study of cryptography encompasses more than just secret writing, which is referred to as *encryption*. Cryptography can, for example, also be used to prove knowledge of a secret without revealing that secret (e.g., with a *digital signature*) or to prove the authenticity of data (e.g., with digital fingerprints, also known as *hashes*). These types of cryptographic proofs are mathematical tools critical to the operation of the Ethereum platform (and, indeed, all blockchain systems) and are also extensively used in Ethereum applications.
+　イーサリアムの基盤技術のひとつが*暗号技術*です。暗号技術はコンピューター セキュリティで広く使われる数学の一分野です。暗号技術はギリシャ語で「秘密の書き物」を意味しますが、暗号技術の研究対象は*暗号化*と呼ばれる秘密の書き物だけにとどまりません。暗号技術は、たとえば秘密を明かすことなくその秘密の知識を証明したり（*デジタル署名*など）、データの真正性を証明したり（デジタル フィンガープリント、いわゆる*ハッシュ*など）するためにも使うことができます。このような暗号学的証明は、イーサリアム プラットフォーム（実際にはすべてのブロックチェーン システム）の運用に不可欠な数学的ツールであり、イーサリアム アプリケーションでも広く利用されています。
 
-Note that, at the time of publication, no part of the Ethereum protocol involves encryption; that is to say all communications with the Ethereum platform and between nodes (including transaction data) are unencrypted and can (necessarily) be read by anyone. This is so everyone can verify the correctness of state updates and consensus can be reached. In the future, advanced cryptographic tools, such as zero-knowledge proofs and homomorphic encryption, will be available that will allow for some encrypted calculations to be recorded on the blockchain while still enabling consensus; however, while provision has been made for them, they have yet to be fully deployed.
+　なお、本書の出版時点では、イーサリアム プロトコルに暗号化は含まれていません。つまり、イーサリアム プラットフォームとの通信やノード間の通信（トランザクション データを含む）はすべて暗号化されておらず、誰でも（必然的に）読むことができます。これは、すべての人が状態更新の正しさを検証でき、コンセンサスに到達できるようにするためです。将来的にはゼロ知識証明や準同型暗号などの高度な暗号ツールが利用可能になり、一部の暗号化された計算をブロックチェーン上に記録しつつコンセンサスを可能にするでしょう。しかし、それらの仕組みは用意されているものの、まだ完全には展開されていません。
 
-In this chapter, we will introduce some of the cryptography used in Ethereum—namely, *public key cryptography* (PKC), which is used to control ownership of funds, in the form of private keys and addresses.
+　この章では、イーサリアムで使われる暗号技術のうち、*公開鍵暗号*（PKC）を紹介します。公開鍵暗号は、秘密鍵とアドレスという形で資金の所有権を管理するために使われています。
 
-## Keys and Addresses
+## 鍵とアドレス
 
-As we learned earlier in this book, Ethereum has two different types of accounts: EOAs and contracts. Ownership of ether by EOAs is established through digital *private keys*, Ethereum *addresses*, and digital *signatures*. The private keys are at the heart of all user interactions with Ethereum. In fact, account addresses are derived directly from private keys: a private key uniquely determines a single Ethereum address, also known as an account.
+　本書の前の章で学んだように、イーサリアムにはEOAとコントラクトの2種類のアカウントがあります。EOAによるイーサの所有権は、デジタル*秘密鍵*、イーサリアム *アドレス*、およびデジタル*署名*によって確立されます。秘密鍵は、ユーザーがイーサリアムと対話するすべての操作の中核にあります。実際、アカウント アドレスは秘密鍵から直接導出されます。ひとつの秘密鍵は、アカウントとも呼ばれるひとつのイーサリアム アドレスを一意に決定します。
 
-Private keys are not used directly in the Ethereum system in any way; they are never transmitted or stored on Ethereum. That is to say that private keys should remain private and should never appear in messages passed to the network, nor should they be stored on chain; only account addresses and digital signatures are ever transmitted and stored on the Ethereum system. For more information on how to keep private keys safe and secure, see "Wallet Best Practices".
+　秘密鍵はイーサリアム システムで直接使用されることはありません。ネットワークに送信されるメッセージに含まれることも、チェーン上に保存されることもありません。つまり、秘密鍵は秘密のままに保たれるべきであり、イーサリアム システム上で送信・保存されるのはアカウント アドレスとデジタル署名のみです。秘密鍵の安全な保管方法についての詳細は、「ウォレットのベスト プラクティス」を参照してください。
 
-Access to and control of funds are achieved with digital signatures, which are also created using the private key. Ethereum transactions require a valid digital signature to be included in the blockchain. Anyone with a copy of a private key has control of the corresponding account and any ether it holds. Assuming a user keeps their private key safe, the digital signatures in Ethereum transactions prove the true owner of the funds, because they prove ownership of the private key.
+　資金へのアクセスと管理は、やはり秘密鍵を使って作成されるデジタル署名によって実現されます。イーサリアムのトランザクションがブロックチェーンに含まれるには、有効なデジタル署名が必要です。秘密鍵のコピーを持つ人は誰でも、対応するアカウントとそのアカウントが保有するイーサを管理できます。ユーザーが秘密鍵を安全に保管している限り、イーサリアムのトランザクションにおけるデジタル署名は、秘密鍵の所有権を証明するため、資金の真の所有者を証明します。
 
-In PKC-based systems, such as that used by Ethereum, keys come in pairs consisting of a private (secret) key and a public key. Think of the public key as similar to a bank account number and the private key as similar to the secret PIN; it is the latter that provides control over the account and the former that identifies it to others. The private keys themselves are very rarely seen by Ethereum users; for the most part, they are stored (in encrypted form) in special files and managed by Ethereum wallet software.
+　イーサリアムが使用するPKCベースのシステムでは、鍵は秘密鍵（シークレット キー）と公開鍵のペアで構成されます。公開鍵は銀行の口座番号に似たもの、秘密鍵は秘密のPINに似たものと考えてください。アカウントを管理するのは秘密鍵であり、他者に対してアカウントを識別するのが公開鍵です。秘密鍵自体はイーサリアム ユーザーの目に触れることはほとんどなく、通常は（暗号化された形式で）特別なファイルに保存され、イーサリアム ウォレット ソフトウェアによって管理されます。
 
-In the payment portion of an Ethereum transaction, the intended recipient is represented by an Ethereum address, which is used in the same way as the beneficiary account details of a bank transfer. As we will see in more detail shortly, an Ethereum address for an EOA is generated from the public key portion of a key pair. However, not all Ethereum addresses represent public–private key pairs; they can also represent contracts, which, as we will see in Chapter 7, are not backed by private keys.
+　イーサリアム トランザクションの支払い部分では、意図された受取人はイーサリアム アドレスで表されます。イーサリアム アドレスは、銀行振込の受取人口座情報と同じように使われます。後ほど詳しく見るように、EOAのイーサリアム アドレスは鍵ペアの公開鍵部分から生成されます。ただし、すべてのイーサリアム アドレスが公開鍵と秘密鍵のペアを表すわけではありません。コントラクトを表すアドレスもあり、第7章で見るように、コントラクトは秘密鍵に裏付けられていません。
 
-In the rest of this chapter, we will:
+　この章の残りでは、以下の内容を取り上げます。
 
-- Dive deeper into the fundamentals of cryptography and explore its mathematical underpinnings within Ethereum
-- Examine the processes of key generation, storage, and management
-- Review the various encoding formats used for private keys, public keys, and addresses
-- Investigate the validator key cryptography and the KZG commitment scheme, which represent the most recent updates to Ethereum's cryptographic infrastructure
+- 暗号技術の基礎とイーサリアムにおける数学的基盤を深く掘り下げる
+- 鍵の生成、保存、管理のプロセスを検討する
+- 秘密鍵、公開鍵、アドレスに使われるさまざまなエンコーディング形式を確認する
+- バリデーター鍵の暗号技術とKZGコミットメント スキームを調査する。これらはイーサリアムの暗号基盤に対する最新の更新である
 
-## PKC and Cryptocurrency
+## PKCと暗号通貨
 
-PKC (also called *asymmetric cryptography*) is a core part of modern-day information security. The *key exchange protocol*, first published in the 1970s by Martin Hellman, Whitfield Diffie, and Ralph Merkle, was a monumental breakthrough that incited the first big wave of public interest in the field of cryptography. Before the 1970s, strong cryptographic knowledge was kept secret by governments.
+　PKC（*非対称暗号*とも呼ばれる）は、現代の情報セキュリティの中核をなす技術です。1970年代にマーティン・ヘルマン、ウィットフィールド・ディフィー、ラルフ・マークルによって最初に発表された*鍵交換プロトコル*は、暗号技術の分野に対する一般の関心の最初の大きな波を引き起こした画期的な発明でした。1970年代以前は、強力な暗号技術の知識は政府によって秘密にされていました。
 
-PKC uses unique keys to secure information. These keys are based on mathematical functions that have a special property: it is easy to calculate them but hard to calculate their inverse. Based on these functions, cryptography enables the creation of digital secrets and unforgeable digital signatures, which are secured by the laws of mathematics.
+　PKCは固有の鍵を使って情報を保護します。これらの鍵は、計算は容易だがその逆関数の計算は困難であるという特別な性質を持つ数学関数に基づいています。これらの関数に基づいて、暗号技術はデジタルの秘密と偽造不可能なデジタル署名の作成を可能にし、数学の法則によって安全性が保証されます。
 
-For example, multiplying two large prime numbers together is trivial. But given the product of two large primes, it is very difficult to find the prime factors (a problem called *prime factorization*). Let's say we present the number 8,018,009 and tell you it is the product of two primes. Finding those two primes is much harder for you than it was for me to multiply them to produce 8,018,009.
+　たとえば、2つの大きな素数を掛け合わせることは簡単です。しかし、2つの大きな素数の積が与えられた場合、素因数を見つけることは非常に困難です（この問題は*素因数分解*と呼ばれます）。8,018,009という数を示し、これが2つの素数の積であると伝えたとしましょう。この2つの素数を見つけることは、私がそれらを掛け合わせて8,018,009を求めるよりもはるかに難しいでしょう。
 
-Some of these mathematical functions can be inverted easily if you know some secret information. In the preceding example, if I tell you that one of the prime factors is 2,003, you can trivially find the other one with simple division: 8,018,009 ÷ 2,003 = 4,003. Such functions are often called *trapdoor functions* because they are very difficult to invert unless you are given a piece of secret information that can be used as a shortcut to reverse the function.
+　これらの数学関数の中には、ある秘密の情報を知っていれば容易に逆算できるものがあります。先ほどの例で、素因数のひとつが2,003であると教えれば、もうひとつは単純な割り算で簡単に見つかります。8,018,009 ÷ 2,003 = 4,003です。このような関数は*トラップドア関数*と呼ばれます。逆算するためのショートカットとなる秘密情報が与えられない限り、逆算が非常に困難だからです。
 
-A more advanced category of mathematical functions that is useful in cryptography is based on arithmetic operations on an *elliptic curve*. In elliptic curve arithmetic, multiplication modulo a prime is simple, but division (the inverse) is practically impossible. This is called the *discrete logarithm problem*, and there are currently no known trapdoors. *Elliptic curve cryptography* is used extensively in modern computer systems and is the basis of Ethereum's (and other cryptocurrencies') use of private keys and digital signatures.
+　暗号技術で役立つ、より高度な種類の数学関数は、*楕円曲線*上の算術演算に基づいています。楕円曲線の算術では、素数を法とする乗算は単純ですが、除算（逆演算）は実質的に不可能です。これは*離散対数問題*と呼ばれ、現在のところ既知のトラップドアは存在しません。*楕円曲線暗号*は現代のコンピューター システムで広く使われており、イーサリアム（および他の暗号通貨）の秘密鍵とデジタル署名の使用の基盤となっています。
 
-> **Note**
+> **注**
 >
-> Take a look at the following resources if you're interested in reading more about cryptography and the mathematical functions that are used in modern cryptography:
+> 暗号技術と現代の暗号技術で使われる数学関数についてさらに読みたい場合は、以下のリソースを参照してください。
 > - [Cryptography](https://oreil.ly/wOT_b)
 > - [Trapdoor function](https://oreil.ly/WrxXr)
 > - [Prime factorization](https://oreil.ly/rxAnN)
 > - [Discrete logarithm](https://oreil.ly/pj8PD)
 > - [Elliptic curve cryptography](https://oreil.ly/RP2QF)
 
-In Ethereum, we use PKC to create the public–private key pair we have been talking about in this chapter. They are considered a "pair" because the public key is derived from the private key. Together, they represent an Ethereum account by providing, respectively, a publicly accessible account handle (the address) and private control over access to any ether in the account and over any authentication the account needs when using smart contracts. The private key controls access by being the unique piece of information needed to create digital signatures, which are required to sign transactions to spend any funds in the account. Digital signatures are also used to authenticate owners or users of contracts, as we will see in Chapter 7.
+　イーサリアムでは、PKCを使ってこの章で説明してきた公開鍵と秘密鍵のペアを作成します。公開鍵は秘密鍵から導出されるため、「ペア」と見なされます。鍵ペアは、一般にアクセス可能なアカウント ハンドル（アドレス）と、アカウント内のイーサへのアクセスおよびスマートコントラクト使用時に必要な認証に対する秘密の制御を提供することで、イーサリアム アカウントを表します。秘密鍵はデジタル署名の作成に必要な唯一の情報であるため、アクセスを制御します。デジタル署名はアカウント内の資金を使用するトランザクションの署名に必要です。デジタル署名は、第7章で見るように、コントラクトの所有者やユーザーの認証にも使われます。
 
-> **Tip**
+> **ヒント**
 >
-> In most wallet implementations, the private and public keys are stored together as a key pair for convenience. However, the public key can be trivially calculated from the private key, so storing only the private key is also possible.
+> ほとんどのウォレット実装では、秘密鍵と公開鍵は利便性のために鍵ペアとして一緒に保存される。ただし、公開鍵は秘密鍵から容易に計算できるため、秘密鍵のみを保存することも可能である。
 
-A digital signature can be created to sign any message. For Ethereum transactions, the details of the transaction itself are used as the message. The mathematics of cryptography—in this case, elliptic curve cryptography—provides a way for the message (i.e., the transaction details) to be combined with the private key to create a code that can be produced only with knowledge of the private key. That code is called the digital signature.
+　デジタル署名はあらゆるメッセージに対して作成できます。イーサリアムのトランザクションでは、トランザクション自体の詳細がメッセージとして使われます。暗号技術の数学——この場合は楕円曲線暗号——は、メッセージ（すなわちトランザクションの詳細）を秘密鍵と組み合わせて、秘密鍵の知識がなければ生成できないコードを作成する方法を提供します。そのコードがデジタル署名です。
 
-Note that an Ethereum transaction is basically a request to access a particular account with a particular Ethereum address. When a transaction is sent to the Ethereum network in order to move funds or interact with smart contracts, it needs to be sent with a digital signature created with the private key corresponding to the Ethereum address in question. Elliptic curve mathematics means that anyone can verify that a transaction is valid, by checking that the digital signature matches the transaction details and the Ethereum address to which access is being requested. The verification doesn't involve the private key at all; that remains private. However, the verification process determines beyond doubt that the transaction could have come only from someone with the private key that corresponds to the public key behind the Ethereum address. This is the "magic" of PKC.
+　イーサリアムのトランザクションは、基本的に特定のイーサリアム アドレスを持つ特定のアカウントへのアクセス要求です。資金を移動したりスマートコントラクトと対話したりするためにイーサリアム ネットワークにトランザクションを送信する場合、そのイーサリアム アドレスに対応する秘密鍵で作成されたデジタル署名と一緒に送信する必要があります。楕円曲線の数学は、デジタル署名がトランザクションの詳細およびアクセスが要求されているイーサリアム アドレスと一致するかどうかを確認することで、誰でもトランザクションが有効であることを検証できることを意味します。検証プロセスに秘密鍵はまったく関与しません。秘密鍵は秘密のままです。しかし、検証プロセスは、そのトランザクションがイーサリアム アドレスの背後にある公開鍵に対応する秘密鍵を持つ人からしか来ることができなかったことを疑いなく判定します。これがPKCの「マジック」です。
 
-> **Tip**
+> **ヒント**
 >
-> There is no encryption as part of the Ethereum protocol—all messages that are sent as part of the operation of the Ethereum network can (necessarily) be read by everyone. As such, private keys are used only to create digital signatures for transaction authentication.
+> イーサリアム プロトコルの一部として暗号化は行われない。イーサリアム ネットワークの運用の一環として送信されるすべてのメッセージは、（必然的に）誰でも読むことができる。したがって、秘密鍵はトランザクション認証のためのデジタル署名の作成にのみ使われる。
+## 秘密鍵
 
-## Private Keys
+　秘密鍵は単純にランダムに選ばれた数値です。秘密鍵の所有と管理が、対応するイーサリアム アドレスに関連するすべての資金に対するユーザーの管理権と、そのアドレスを認可するコントラクトへのアクセスの根幹です。秘密鍵は、トランザクションで使用される資金の所有権を証明することで、イーサの使用に必要な署名を作成するために使われます。秘密鍵は常に秘密にしておかなければなりません。第三者に秘密鍵を明かすことは、その秘密鍵で保護されているイーサとコントラクトの管理権を渡すことと同義だからです。秘密鍵はバックアップを取り、偶発的な紛失から保護する必要もあります。秘密鍵を紛失した場合、回復することはできず、その秘密鍵で保護されていた資金も永久に失われます。
 
-A private key is simply a number, picked at random. Ownership and control of the private key is the root of user control over all funds associated with the corresponding Ethereum address as well as access to contracts that authorize that address. The private key is used to create signatures required to spend ether by proving ownership of funds used in a transaction. The private key must remain secret at all times because revealing it to third parties is equivalent to giving them control over the ether and contracts secured by that private key. The private key must also be backed up and protected from accidental loss. If it's lost, it cannot be recovered, and the funds secured by it are lost forever, too.
-
-> **Tip**
+> **ヒント**
 >
-> The Ethereum private key is just a number. One way to pick your private keys randomly is to simply use a coin, pencil, and paper: toss a coin 256 times and you have the binary digits of a random private key you can use in an Ethereum wallet (probably—see the following paragraphs). The public key and address can then be generated from the private key.
+> イーサリアムの秘密鍵は単なる数値である。秘密鍵をランダムに選ぶひとつの方法は、コイン、鉛筆、紙を使うことである。コインを256回投げれば、イーサリアム ウォレットで使えるランダムな秘密鍵の2進数が得られる（おそらく——以下の段落を参照）。公開鍵とアドレスはその秘密鍵から生成できる。
 
-The first and most important step in generating keys is to find a secure source of *entropy*, or randomness. Creating an Ethereum private key essentially involves picking a number between 1 and 2^256. The exact method you use to pick that number does not matter as long as it is not predictable or deterministic. Ethereum software uses the underlying operating system's *random number generator* (RNG) to produce 256 random bits. Usually, the OS RNG is initialized by a human source of randomness, which is why you may be asked to wiggle your mouse around for a few seconds or to press random keys on your keyboard. An alternative could be cosmic radiation noise on the computer's microphone channel.
+　鍵を生成する最初で最も重要なステップは、安全な*エントロピー*（ランダム性）の源を見つけることです。イーサリアムの秘密鍵の作成は、本質的に1から2^256の間の数値を選ぶことです。その数値を選ぶ正確な方法は、予測可能でなく決定論的でない限り、何でも構いません。イーサリアム ソフトウェアは、基盤となるオペレーティング システムの*乱数生成器*（RNG）を使って256ビットのランダム ビットを生成します。通常、OSのRNGは人間由来のランダム性で初期化されるため、マウスを数秒間動かしたり、キーボードでランダムなキーを押したりするよう求められることがあります。別の方法として、コンピューターのマイクロフォン チャネルの宇宙放射線ノイズを利用することもできます。
 
-More precisely, a private key can be any nonzero number up to a very large number slightly less than 2^256—a huge 78-digit number, roughly 1.158 × 10^77. The exact number shares the first 38 digits with 2^256 and is defined as the order of the elliptic curve used in Ethereum. To create a private key, we randomly pick a 256-bit number and check that it is within the valid range. In programming terms, this is usually achieved by feeding an even larger string of random bits (collected from a cryptographically secure source of randomness) into a 256-bit hash algorithm such as Keccak-256 or SHA-256, both of which will conveniently produce a 256-bit number. If the result is within the valid range, we have a suitable private key. Otherwise, we simply try again with another random number.
+　より正確には、秘密鍵は2^256よりわずかに小さい非常に大きな数以下の、ゼロでない任意の数値にすることができます。この数は78桁の巨大な数で、約1.158 × 10^77です。この正確な数値は2^256と最初の38桁を共有しており、イーサリアムで使用される楕円曲線の位数として定義されています。秘密鍵を作成するには、256ビットの数値をランダムに選び、有効な範囲内にあるか確認します。プログラミングでは通常、暗号学的に安全なランダム性のソースから収集されたさらに大きなランダム ビット列を、Keccak-256やSHA-256などの256ビット ハッシュ アルゴリズムに入力することで実現されます。これらのアルゴリズムは都合よく256ビットの数値を生成します。結果が有効範囲内であれば、適切な秘密鍵が得られます。そうでなければ、別のランダムな数値で再試行します。
 
-> **Note**
+> **注**
 >
-> The size of Ethereum's private-key space—2^256—is an unfathomably large number. It is approximately 10^77 in decimal—that is, a number with 78 digits. For comparison, the visible universe is estimated to contain 10^80 atoms. Thus, there are almost enough private keys to give every atom in the universe an Ethereum account. If you pick a private key randomly, there is no conceivable way anyone will ever guess it or pick it themselves.
+> イーサリアムの秘密鍵空間の大きさ——2^256——は、想像を絶するほど大きな数である。10進数では約10^77——つまり78桁の数である。比較のために、可視宇宙に存在する原子の数は10^80と推定されている。したがって、宇宙のすべての原子にイーサリアム アカウントを割り当てられるほどの秘密鍵が存在する。秘密鍵をランダムに選べば、誰かがそれを推測したり同じものを選んだりすることは考えられない。
 
-Note that the process of generating private keys is an offline one; it does not require any communication with the Ethereum network—or indeed, any communication with anyone at all. As such, to pick a number that no one else will ever pick, it needs to be truly random. If you choose the number yourself, the chance that someone else will try it (and then run off with your ether) is too high. Using a bad RNG (like the pseudorandom `rand` function in most programming languages) is even worse because it is even more obvious and even easier to replicate. Just like with passwords for online accounts, the private key needs to be unguessable. Fortunately, you never need to remember your private key, so you can take the best possible approach for picking it: true randomness.
+　秘密鍵の生成プロセスはオフラインで行われることに注意してください。イーサリアム ネットワークとの通信は一切必要なく、実際のところ、誰とも通信する必要はありません。そのため、他の誰も選ばない数値を選ぶには、本当にランダムでなければなりません。自分で数値を選んだ場合、誰かが同じ数値を試す（そしてあなたのイーサを持ち去る）可能性が高すぎます。悪いRNG（ほとんどのプログラミング言語の疑似ランダムな`rand`関数など）を使うのはさらに悪く、より明白で再現も容易だからです。オンライン アカウントのパスワードと同様に、秘密鍵は推測不可能でなければなりません。幸いなことに、秘密鍵を覚えておく必要は一切ないため、最善のアプローチ——真のランダム性——を取ることができます。
 
-> **Warning**
+> **警告**
 >
-> Do not write your own code to create a random number or use a "simple" RNG offered by your programming language. Note that JavaScript-based RNGs in browser wallets can be insecure unless backed by OS entropy. It is vital that you use a cryptographically secure pseudorandom number generator (such as CSPRNG) with a seed from a source of sufficient entropy. Study the documentation of the RNG library you choose to make sure it is cryptographically secure. Correct implementation of the CSPRNG library is critical to the security of the keys.
+> 自分でランダムな数値を生成するコードを書いたり、プログラミング言語が提供する「単純な」RNGを使ったりしないこと。ブラウザ ウォレットにおけるJavaScriptベースのRNGは、OSのエントロピーに裏付けられていない限り安全でない場合がある。暗号学的に安全な疑似乱数生成器（CSPRNGなど）を、十分なエントロピーのソースからのシードとともに使用することが不可欠である。選択したRNGライブラリのドキュメントを調べて、暗号学的に安全であることを確認すること。CSPRNGライブラリの正しい実装は、鍵のセキュリティにとって極めて重要である。
 
-The following is a randomly generated private key shown in hexadecimal format (256 bits shown as 64 hexadecimal digits, each 4 bits):
+以下は、ランダムに生成された秘密鍵を16進数形式で示したものです（256ビットを64桁の16進数で表示、各桁は4ビット）。
 
 ```
 f8f8a2f43c8376ccb0871305060d7b27b0554d2cc72bccf41b2705608452f315
 ```
 
-## Public Keys
+## 公開鍵
 
-An Ethereum public key is a point on an elliptic curve, meaning it is a set of x and y coordinates that satisfy the elliptic curve equation.
+　イーサリアムの公開鍵は楕円曲線上の点であり、楕円曲線方程式を満たすxとyの座標の組です。
 
-In simpler terms, an Ethereum public key is two numbers, joined together. These numbers are produced from the private key by a calculation that can only go one way. That means that it is trivial to calculate a public key if you have the private key, but you cannot calculate the private key from the public key.
+　より簡単に言えば、イーサリアムの公開鍵は2つの数値を結合したものです。これらの数値は秘密鍵から一方向にしか計算できない演算によって生成されます。つまり、秘密鍵があれば公開鍵の計算は簡単ですが、公開鍵から秘密鍵を逆算することはできません。
 
-> **Warning**
+> **警告**
 >
-> MATH is about to happen! Don't panic. If you start to get lost at any point in the following paragraphs, you can skip the next few sections. There are many tools and libraries that will do the math for you.
+> これから数学の話が始まる。パニックにならないでほしい。以下の段落で迷子になったら、次のいくつかのセクションを飛ばしても構わない。計算を代わりにやってくれるツールやライブラリがたくさんある。
 
-The public key is calculated from the private key using *elliptic curve multiplication*, which is practically irreversible: `K = k * G`, where `k` is the private key, `G` is a constant point called the *generator point*, `K` is the resulting public key, and `*` is the special elliptic curve "multiplication" operator. Note that elliptic curve multiplication is not like normal multiplication. It shares functional attributes with normal multiplication, but that is about it. For example, the reverse operation (which would be division for normal numbers), known as "finding the discrete logarithm"—that is, calculating `k` if you know `K`—is as difficult as trying all possible values of `k` (a brute-force search that will likely take more time than this universe will allow for).
+　公開鍵は*楕円曲線乗算*を使って秘密鍵から計算されます。この演算は実質的に不可逆です。`K = k * G`ここで、`k`は秘密鍵、`G`は*生成点*と呼ばれる定数の点、`K`は結果の公開鍵、`*`は特別な楕円曲線の「乗算」演算子です。楕円曲線乗算は通常の乗算とは異なることに注意してください。通常の乗算と機能的な属性は共有していますが、それだけです。たとえば、逆演算（通常の数値では除算に当たるもの）は「離散対数を見つける」こと——つまり`K`がわかっている場合に`k`を計算すること——であり、`k`のすべての可能な値を試す（この宇宙が許容する以上の時間がかかるであろう総当たり探索）のと同じくらい困難です。
 
-In simpler terms, arithmetic on the elliptic curve is different from "regular" integer arithmetic. A point (`G`) can be multiplied by an integer (`k`) to produce another point (`K`). But there is no such thing as division, so it is not possible to simply "divide" the public key `K` by the point `G` to calculate the private key `k`. This is the one-way mathematical function described in the previous section "PKC and Cryptocurrency".
+　より簡単に言えば、楕円曲線上の算術は「通常の」整数算術とは異なります。点（`G`）を整数（`k`）で乗算して別の点（`K`）を得ることができます。しかし除算は存在しないため、公開鍵`K`を点`G`で単純に「割って」秘密鍵`k`を計算することは不可能です。これは、前のセクション「PKCと暗号通貨」で説明した一方向性の数学関数です。
 
-> **Note**
+> **注**
 >
-> Elliptic curve multiplication is a type of function that cryptographers call a "one-way" function: it is easy to do in one direction (multiplication) and impossible to do in the reverse direction (division). The owner of the private key can easily create the public key and then share it with the world, knowing that no one can reverse the function and calculate the private key from the public key. This mathematical trick becomes the basis for unforgeable and secure digital signatures that prove ownership of Ethereum funds and control of contracts.
+> 楕円曲線乗算は、暗号技術者が「一方向」関数と呼ぶタイプの関数である。一方向（乗算）の計算は容易だが、逆方向（除算）の計算は不可能である。秘密鍵の所有者は公開鍵を容易に作成して世界中と共有でき、誰も公開鍵から秘密鍵を逆算できないことを確信できる。この数学的トリックが、イーサリアムの資金の所有権とコントラクトの管理を証明する、偽造不可能で安全なデジタル署名の基盤となる。
 
-Before we demonstrate how to generate a public key from a private key, let's look at elliptic curve cryptography in a bit more detail.
+　秘密鍵から公開鍵を生成する方法を示す前に、楕円曲線暗号をもう少し詳しく見てみましょう。
 
-### Elliptic Curve Cryptography Explained
+### 楕円曲線暗号の解説
 
-Elliptic curve cryptography is a type of asymmetric or public key cryptography based on the discrete logarithm problem as expressed by addition and multiplication on the points of an elliptic curve. Figure 4-1 is an example of an elliptic curve, similar to that used by Ethereum.
+　楕円曲線暗号は、楕円曲線上の点の加算と乗算によって表される離散対数問題に基づく、非対称暗号（公開鍵暗号）の一種です。図4-1は、イーサリアムで使用されるものに似た楕円曲線の例です。
 
-> **Note**
+> **注**
 >
-> Ethereum uses the exact same elliptic curve, called `secp256k1`, as Bitcoin. That makes it possible to reuse many of the elliptic curve libraries and tools from Bitcoin.
+> イーサリアムはビットコインとまったく同じ楕円曲線`secp256k1`を使用している。これにより、ビットコインの楕円曲線ライブラリやツールの多くを再利用できる。
 
-![An elliptic curve](images/ch4/maet_0401.png)
+![楕円曲線](images/ch4/maet_0401.png)
 
-Figure 4-1. An elliptic curve
+図4-1 楕円曲線
 
-Ethereum uses a specific elliptic curve and set of mathematical constants, as defined in a standard called `secp256k1`, established by the US National Institute of Standards and Technology (NIST). The `secp256k1` curve is defined by the following function, which produces an elliptic curve:
+　イーサリアムは、米国国立標準技術研究所（NIST）が確立した`secp256k1`と呼ばれる標準で定義された、特定の楕円曲線と数学定数のセットを使用します。`secp256k1`曲線は、楕円曲線を生成する以下の関数で定義されます。
 
 ```
 y^2 = (x^3 + 7) over (Fp)
 ```
 
-or:
+または：
 
 ```
 y^2 mod p = (x^3 + 7) mod p
 ```
 
-The `mod p` (modulo prime number p) indicates that this curve is over a *finite field* of prime order p, also written as Fp, where p = 2^256 – 2^32 – 2^9 – 2^8 – 2^7 – 2^6 – 2^4 – 1, which is a very large prime number.
+　`mod p`（素数pを法とする）は、この曲線がFpとも書かれる素数位数pの*有限体*上に定義されていることを示します。ここでp = 2^256 – 2^32 – 2^9 – 2^8 – 2^7 – 2^6 – 2^4 – 1であり、非常に大きな素数です。
 
-Because this curve is defined over a finite field of prime order instead of over the real numbers, it looks like a pattern of dots scattered in two dimensions, which makes it difficult to visualize. However, the math is identical to that of an elliptic curve over real numbers. As an example, Figure 4-2 shows the same elliptic curve over a much smaller finite field of prime order 17, showing a pattern of dots on a grid. The `secp256k1` Ethereum elliptic curve can be thought of as a much more complex pattern of dots on an unfathomably large grid.
+　この曲線は実数上ではなく素数位数の有限体上に定義されているため、2次元に散らばった点のパターンのように見え、視覚化が困難です。しかし、数学は実数上の楕円曲線と同一です。例として、図4-2は同じ楕円曲線をはるかに小さな素数位数17の有限体上で示したもので、グリッド上の点のパターンを表しています。`secp256k1`のイーサリアム楕円曲線は、想像を絶するほど大きなグリッド上のはるかに複雑な点のパターンと考えることができます。
 
-![Elliptic curve over a finite field](images/ch4/maet_0402.png)
+![有限体上の楕円曲線](images/ch4/maet_0402.png)
 
-Figure 4-2. Elliptic curve cryptography: visualizing an elliptic curve over F(p), with p=17
+図4-2 楕円曲線暗号：F(p)上の楕円曲線の可視化（p=17）
 
-So for example, the following is a point Q with coordinates (x, y) that is a point on the `secp256k1` curve:
+　たとえば、以下は座標(x, y)を持つ点Qで、`secp256k1`曲線上の点です。
 
 ```
 Q = (49790390825249384486033144355916864607616083520101638681403973749255924539515, 59574132161899900045862086493921015780032175291755807399284007721050341297360)
 ```
 
-Example 4-1 shows how you can check this yourself using Python. The variables `x` and `y` are the coordinates of the point Q, as in the preceding example. The variable `p` is the prime order of the elliptic curve (the prime that is used for all the modulo operations). The last line of Python is the elliptic curve equation (the `%` operator in Python is the modulo operator). If `x` and `y` are indeed the coordinates of a point on the elliptic curve, then they satisfy the equation and the result is zero. Try it yourself, by typing `python` (or `python3`) on a command line and copying each line (after the prompt `>>>`) from the listing.
+　例4-1は、Pythonを使ってこれを自分で確認する方法を示しています。変数`x`と`y`は前述の例の点Qの座標です。変数`p`は楕円曲線の素数位数（すべての剰余演算に使われる素数）です。Pythonの最後の行は楕円曲線方程式です（Pythonの`%`演算子は剰余演算子です）。`x`と`y`が確かに楕円曲線上の点の座標であれば、方程式を満たし、結果はゼロになります。コマンドラインで`python`（または`python3`）と入力し、リストの各行（プロンプト`>>>`の後）をコピーして試してみてください。
 
-**Example 4-1. Using Python to confirm that this point is on the elliptic curve**
+**例4-1 Pythonを使ってこの点が楕円曲線上にあることを確認する**
 
 ```python
 Python 3.12.4 (main, Jun  6 2024, 18:26:44) [Clang 15.0.0 (clang-1500.3.9.4)] on darwin
@@ -160,441 +159,440 @@ Type "help", "copyright", "credits" or "license" for more information.
 0
 ```
 
-### Elliptic Curve Arithmetic Operations
+### 楕円曲線の算術演算
 
-A lot of elliptic curve math looks and works very much like the integer arithmetic we learned at school. Specifically, we can define an addition operator, which instead of jumping along the number line is jumping to other points on the curve. Once we have the addition operator, we can also define multiplication of a point and a whole number, which is equivalent to repeated addition.
+　楕円曲線の数学の多くは、学校で習う整数算術と非常によく似た外見と動作をしています。具体的には、数直線上をジャンプする代わりに曲線上の他の点にジャンプする加算演算子を定義できます。加算演算子が定義されれば、点と整数の乗算も定義でき、これは加算の繰り返しに相当します。
 
-Elliptic curve addition is defined such that given two points P1 and P2 on the elliptic curve, there is a third point P3 = P1 + P2, also on the elliptic curve.
+　楕円曲線の加算は、楕円曲線上の2つの点P1とP2が与えられたとき、同じく楕円曲線上にある第3の点P3 = P1 + P2が存在するように定義されます。
 
-Geometrically, this third point P3 is calculated by drawing a line between P1 and P2. This line will intersect the elliptic curve in exactly one additional place (amazingly). Call this point P3′ = (x, y). Then reflect in the x-axis to get P3 = (x, –y), as you can see in Figure 4-3.
+　幾何学的には、この第3の点P3はP1とP2の間に直線を引くことで計算されます。この直線は楕円曲線とちょうど1つの追加の点で交差します（驚くべきことに）。この点をP3′ = (x, y)と呼びます。次にx軸に関して反射させ、P3 = (x, –y)を得ます。図4-3に示す通りです。
 
-![Elliptic curve addition](images/ch4/maet_0403.png)
+![楕円曲線の加算](images/ch4/maet_0403.png)
 
-Figure 4-3. Elliptic curve addition: adding two points on an elliptic curve
+図4-3 楕円曲線の加算：楕円曲線上の2点を加算する
 
-If P1 and P2 are the same point, the line "between" P1 and P2 should extend to be the tangent to the curve at this point P1. This tangent will intersect the curve at exactly one new point, as shown in Figure 4-4. You can use techniques from calculus to determine the slope of the tangent line. Curiously, these techniques work, even though we are restricting our interest to points on the curve with two integer coordinates!
+　P1とP2が同じ点の場合、P1とP2の「間」の直線はこの点P1における接線に延長される必要があります。この接線は、図4-4に示すように、曲線とちょうど1つの新しい点で交差します。微積分のテクニックを使って接線の傾きを求めることができます。興味深いことに、曲線上の2つの整数座標を持つ点のみに関心を限定していても、これらのテクニックは機能します。
 
-![Elliptic curve tangent](images/ch4/maet_0404.png)
+![楕円曲線の接線](images/ch4/maet_0404.png)
 
-Figure 4-4. Elliptic curve addition: adding a point to itself
+図4-4 楕円曲線の加算：点をそれ自体に加算する
 
-In elliptic curve math, there is also a point called the *point at infinity*, which roughly corresponds to the role of the number zero in addition. On computers, it's sometimes represented by `x = y = 0` (which doesn't satisfy the elliptic curve equation, but it's an easy separate case that can be checked). There are a couple of special cases that explain the need for the point at infinity.
+　楕円曲線の数学には、加算における数値0の役割にほぼ対応する*無限遠点*と呼ばれる点も存在します。コンピューター上では`x = y = 0`で表されることがあります（これは楕円曲線方程式を満たしませんが、容易にチェックできる別のケースです）。無限遠点が必要となるいくつかの特殊なケースがあります。
 
-In some cases (e.g., if P1 and P2 have the same x values but different y values, as shown in Figure 4-5), the line will be exactly vertical, in which case P3 = the point at infinity.
+　場合によっては（たとえば図4-5に示すようにP1とP2が同じx値で異なるy値を持つ場合）、直線は完全に垂直になり、その場合P3 = 無限遠点となります。
 
-![Point at infinity](images/ch4/maet_0405.png)
+![無限遠点](images/ch4/maet_0405.png)
 
-Figure 4-5. Elliptic curve addition: a special case results in the point at infinity
+図4-5 楕円曲線の加算：無限遠点が結果となる特殊なケース
 
-If P1 is the point at infinity, then P1 + P2 = P2. Similarly, if P2 is the point at infinity, then P1 + P2 = P1. This shows how the point at infinity plays the role that zero plays in "normal" arithmetic.
+　P1が無限遠点の場合、P1 + P2 = P2となります。同様に、P2が無限遠点の場合、P1 + P2 = P1となります。これは、無限遠点が「通常の」算術でゼロが果たす役割を担うことを示しています。
 
-It turns out that `+` is associative, which means that `(A + B) + C = A + (B + C)`. That means we can write `A + B + C` (without parentheses) without ambiguity.
+　`+`は結合法則を満たすことがわかっています。つまり`(A + B) + C = A + (B + C)`です。これは`A + B + C`と（括弧なしで）曖昧さなく書けることを意味します。
 
-Now that we have defined addition, we can define multiplication in the standard way that extends addition. For a point P on the elliptic curve, if k is a whole number, then `k * P = P + P + P + … + P` (k times). Note that k is sometimes (perhaps confusingly) called an exponent in this case.
+　加算を定義したので、加算の拡張としての標準的な方法で乗算を定義できます。楕円曲線上の点Pに対して、kが整数であれば`k * P = P + P + P + … + P`（k回）です。この場合、kは（紛らわしいかもしれませんが）指数と呼ばれることがあります。
 
-### Generating a Public Key
+### 公開鍵の生成
 
-Starting with a private key in the form of a randomly generated number `k`, we multiply it by a predetermined point on the curve called the generator point `G` to produce another point somewhere else on the curve, which is the corresponding public key `K`:
+　ランダムに生成された数値`k`の形式の秘密鍵から始めて、曲線上の所定の点である生成点`G`を乗算し、曲線上の別の場所にある別の点を生成します。これが対応する公開鍵`K`です。
 
 ```
 K = k * G
 ```
 
-The generator point is specified as part of the `secp256k1` standard; it is the same for all implementations of `secp256k1`, and all keys derived from that curve use the same point `G`. Because the generator point is always the same for all Ethereum users, a private key `k` multiplied with `G` will always result in the same public key `K`. The relationship between `k` and `K` is fixed but can only be calculated in one direction, from `k` to `K`. That's why an Ethereum address (derived from `K`) can be shared with anyone and does not reveal the user's private key (`k`).
+　生成点は`secp256k1`標準の一部として指定されており、`secp256k1`のすべての実装で同じです。この曲線から導出されるすべての鍵は同じ点`G`を使用します。生成点はすべてのイーサリアム ユーザーで常に同じであるため、秘密鍵`k`に`G`を乗算すると常に同じ公開鍵`K`になります。`k`と`K`の関係は固定されていますが、`k`から`K`への一方向にしか計算できません。そのため、イーサリアム アドレス（`K`から導出される）は誰とでも共有でき、ユーザーの秘密鍵（`k`）を明かすことはありません。
 
-As we described in the previous section, the multiplication of `k * G` is equivalent to repeated addition, so `G + G + G + … + G`, repeated k times. In summary, to produce a public key `K` from a private key `k`, we add the generator point `G` to itself, k times.
+　前のセクションで説明したように、`k * G`の乗算は加算の繰り返しに相当するため、`G + G + G + … + G`をk回繰り返すことになります。要約すると、秘密鍵`k`から公開鍵`K`を生成するには、生成点`G`をk回自分自身に加算します。
 
-> **Tip**
+> **ヒント**
 >
-> A private key can be converted into a public key, but a public key cannot be converted back into a private key, because the math only works one way.
+> 秘密鍵は公開鍵に変換できるが、公開鍵を秘密鍵に逆変換することはできない。数学が一方向にしか機能しないからである。
 
-Let's apply this calculation to find the public key for the specific private key we showed you in the section "Private Keys":
+　この計算を「秘密鍵」のセクションで示した特定の秘密鍵に適用して公開鍵を求めてみましょう。
 
 ```
 K = f8f8a2f43c8376ccb0871305060d7b27b0554d2cc72bccf41b2705608452f315 * G
 ```
 
-A cryptographic library can help us calculate `K`, using elliptic curve multiplication. The resulting public key `K` is defined as the point:
+　暗号ライブラリを使えば、楕円曲線乗算で`K`を計算できます。結果の公開鍵`K`は次の点として定義されます。
 
 ```
 K = (x, y)
 ```
 
-where:
+ここで：
 
 ```
 x = 6e145ccef1033dea239875dd00dfb4fee6e3348b84985c92f103444683bae07b
 y = 83b5c38e5e2b0c8529d7fa3f64d46daa1ece2d9ac14cab9477d042c84c32ccd0
 ```
-In Ethereum you may see public keys represented as a serialization of 130 hexadecimal characters (65 bytes). This is adopted from a standard serialization format proposed by the industry consortium Standards for Efficient Cryptography Group (SECG), documented in [Standards for Efficient Cryptography (SEC1)](https://oreil.ly/Y_cOQ). The standard defines four possible prefixes that can be used to identify points on an elliptic curve, listed in Table 4-1.
+　イーサリアムでは、公開鍵が130文字の16進数（65バイト）のシリアライゼーションとして表されることがあります。これは、業界コンソーシアムであるStandards for Efficient Cryptography Group（SECG）が提案した標準シリアライゼーション形式に基づいており、[Standards for Efficient Cryptography (SEC1)](https://oreil.ly/Y_cOQ)に文書化されています。この標準では、楕円曲線上の点を識別するために使用できる4つのプレフィックスが定義されています（表4-1）。
 
-**Table 4-1. Serialized elliptic curve public key prefixes**
+**表4-1 シリアライズされた楕円曲線公開鍵のプレフィックス**
 
-| Prefix | Meaning | Length (bytes, including prefix) |
+| プレフィックス | 意味 | 長さ（プレフィックスを含むバイト数） |
 |--------|---------|----------------------------------|
-| 0x00 | Point at infinity | 1 |
-| 0x04 | Uncompressed point | 65 |
-| 0x02 | Compressed point with even y | 33 |
-| 0x03 | Compressed point with odd y | 33 |
+| 0x00 | 無限遠点 | 1 |
+| 0x04 | 非圧縮の点 | 65 |
+| 0x02 | 偶数yの圧縮された点 | 33 |
+| 0x03 | 奇数yの圧縮された点 | 33 |
 
-Ethereum only uses uncompressed public keys, so the only prefix that is relevant is (hex) `04`. The serialization concatenates the x and y coordinates of the public key:
+　イーサリアムは非圧縮の公開鍵のみを使用するため、関連するプレフィックスは（16進数の）`04`のみです。シリアライゼーションは公開鍵のx座標とy座標を連結します。
 
 ```
-04 + x-coordinate (32 bytes / 64 hex) + y-coordinate (32 bytes / 64 hex)
+04 + x座標（32バイト / 64桁の16進数） + y座標（32バイト / 64桁の16進数）
 ```
 
-Therefore, the public key we calculated earlier is serialized as:
+　したがって、先ほど計算した公開鍵は次のようにシリアライズされます。
 
 ```
 046e145ccef1033dea239875dd00dfb4fee6e3348b84985c92f103444683bae07b83b5c38e5e2b0c8529d7fa3f64d46daa1ece2d9ac14cab9477d042c84c32ccd0
 ```
 
-### Elliptic Curve Libraries
+### 楕円曲線ライブラリ
 
-There are a couple of implementations of the `secp256k1` elliptic curve that are used in cryptocurrency-related projects:
+　暗号通貨関連のプロジェクトで使われている`secp256k1`楕円曲線の実装がいくつかあります。
 
 [**OpenSSL**](https://www.openssl.org)
 
-The OpenSSL library offers a comprehensive set of cryptographic primitives, including a full implementation of `secp256k1`. For example, to derive the public key, the function `EC_POINT_mul` can be used.
+　OpenSSLライブラリは、`secp256k1`の完全な実装を含む包括的な暗号プリミティブのセットを提供します。たとえば、公開鍵の導出には`EC_POINT_mul`関数を使用できます。
 
 [**libsecp256k1**](https://oreil.ly/lv84W)
 
-Bitcoin Core's `libsecp256k1` is a C-language implementation of the `secp256k1` elliptic curve and other cryptographic primitives. It was written from scratch to replace OpenSSL in Bitcoin Core software and is considered superior in both performance and security.
+　Bitcoin Coreの`libsecp256k1`は、`secp256k1`楕円曲線およびその他の暗号プリミティブのC言語実装です。Bitcoin CoreソフトウェアのOpenSSLを置き換えるためにゼロから書かれたもので、パフォーマンスとセキュリティの両面で優れていると見なされています。
+## 暗号学的ハッシュ関数
 
-## Cryptographic Hash Functions
+　暗号学的ハッシュ関数はイーサリアム全体で使用されています。実際、ハッシュ関数はほぼすべての暗号システムで広く使われています。暗号技術者のブルース・シュナイアーは「暗号化アルゴリズムよりもはるかに、一方向ハッシュ関数が現代の暗号技術の主力である」と述べています。
 
-Cryptographic hash functions are used throughout Ethereum. In fact, hash functions are used extensively in almost all cryptographic systems—a fact captured by cryptographer Bruce Schneier, who said, "Much more than encryption algorithms, one-way hash functions are the workhorses of modern cryptography."
+　このセクションでは、ハッシュ関数について説明し、その基本的な性質を探り、それらの性質がいかにして現代の暗号技術の多くの分野で有用であるかを見ていきます。ハッシュ関数はイーサリアムの公開鍵からアドレスへの変換の一部であるため、ここで取り上げます。ハッシュ関数はデータの検証を助けるデジタル フィンガープリントの作成にも使用できます。
 
-In this section, we will discuss hash functions, explore their basic properties, and see how those properties make them so useful in so many areas of modern cryptography. We address hash functions here because they are part of the transformation of Ethereum public keys into addresses. They can also be used to create digital fingerprints, which aid in the verification of data.
+　簡単に言えば、*ハッシュ関数*は、任意のサイズのデータを固定サイズのデータにマッピングするために使用できる関数です。ハッシュ関数への入力は*プリイメージ*、*メッセージ*、または単に入力データと呼ばれます。出力は*ハッシュ*と呼ばれます。暗号学的ハッシュ関数は、イーサリアムのような安全なプラットフォームに有用な特定の性質を持つ特別なサブカテゴリーです。
 
-In simple terms, a *hash function* is any function that can be used to map data of arbitrary size to data of fixed size. The input to a hash function is called a *preimage*, the *message*, or simply the input data. The output is called the *hash*. Cryptographic hash functions are a special subcategory that have specific properties that are useful to secure platforms, such as Ethereum.
+　暗号学的ハッシュ関数は、任意のサイズのデータを固定サイズのビット列にマッピングする*一方向ハッシュ関数*です。「一方向」とは、出力ハッシュだけを知っていても入力データを再現することが計算上不可能であることを意味します。可能な入力を決定する唯一の方法は総当たり探索であり、出力が一致する各候補を確認していくことになります。探索空間が事実上無限であることを考えると、このタスクの実質的な不可能性は容易に理解できます。ハッシュが一致する入力データを見つけたとしても、元の入力データとは異なる可能性があります。ハッシュ関数は「多対一」関数だからです。同じ出力にハッシュされる2つの入力データセットを見つけることは、*ハッシュ衝突*の発見と呼ばれます。大まかに言えば、ハッシュ関数が優れているほど、ハッシュ衝突は稀になります。イーサリアムにおいて、ハッシュ衝突は事実上不可能です。
 
-A cryptographic hash function is a *one-way hash function* that maps data of arbitrary size to a fixed-size string of bits. The "one-way" nature means that it is computationally infeasible to re-create the input data if one only knows the output hash. The only way to determine a possible input is to conduct a brute-force search, checking each candidate for a matching output; given that the search space is virtually infinite, it is easy to understand the practical impossibility of the task. Even if you find some input data that creates a matching hash, it may not be the original input data: hash functions are "many-to-one" functions. Finding two sets of input data that hash to the same output is called finding a *hash collision*. Roughly speaking, the better the hash function, the rarer hash collisions are. For Ethereum, they are effectively impossible.
+　暗号学的ハッシュ関数の主な性質を詳しく見てみましょう。
 
-Let's take a closer look at the main properties of cryptographic hash functions:
+**決定性**
 
-**Determinism**
+　与えられた入力メッセージは常に同じハッシュ出力を生成する。
 
-A given input message always produces the same hash output.
+**検証可能性**
 
-**Verifiability**
+　メッセージのハッシュ計算は効率的である（線形の計算量）。
 
-Computing the hash of a message is efficient (linear complexity).
+**無相関性**
 
-**Noncorrelation**
+　メッセージへの小さな変更（たとえば1ビットの変更）は、元のメッセージのハッシュとは相関できないほどハッシュ出力を大幅に変えるべきである。
 
-A small change to the message (e.g., a 1-bit change) should change the hash output so extensively that it cannot be correlated to the hash of the original message.
+**不可逆性**
 
-**Irreversibility**
+　ハッシュからメッセージを計算することは不可能であり、すべての可能なメッセージの総当たり探索に相当する。
 
-Computing the message from its hash is infeasible, equivalent to a brute-force search through all possible messages.
+**衝突耐性**
 
-**Collision protection**
+　同じハッシュ出力を生成する2つの異なるメッセージを計算することは不可能であるべきである。
 
-It should be infeasible to calculate two different messages that produce the same hash output.
+　ハッシュ衝突への耐性は、イーサリアムにおけるデジタル署名の偽造を避けるために特に重要です。
 
-Resistance to hash collisions is particularly important for avoiding digital signature forgery in Ethereum.
+　これらの性質の組み合わせにより、暗号学的ハッシュ関数は幅広いセキュリティ アプリケーションに有用なものとなっています。
 
-The combination of these properties makes cryptographic hash functions useful for a broad range of security applications, including:
+- データのフィンガープリンティング
+- メッセージの完全性（エラー検出）
+- プルーフ・オブ・ワーク
+- 認証（パスワードのハッシュ化と鍵ストレッチング）
+- 疑似乱数生成器
+- メッセージ コミットメント（コミット・リビール メカニズム）
+- 一意の識別子
 
-- Data fingerprinting
-- Message integrity (error detection)
-- Proof of work
-- Authentication (password hashing and key stretching)
-- Pseudorandom number generators
-- Message commitment (commit-reveal mechanisms)
-- Unique identifiers
+　システムのさまざまなレイヤーを進むにつれて、イーサリアムでこれらの多くを見ることになります。
 
-We will find many of these in Ethereum as we progress through the various layers of the system.
+### イーサリアムの暗号学的ハッシュ関数：Keccak-256
 
-### Ethereum's Cryptographic Hash Function: Keccak-256
+　イーサリアムは多くの場所でKeccak-256暗号学的ハッシュ関数を使用しています。Keccak-256は、2007年にNISTが開催したSHA-3暗号学的ハッシュ関数コンペティションの候補として設計されました。Keccakが優勝アルゴリズムとなり、2015年に連邦情報処理標準（FIPS）202として標準化されました。
 
-Ethereum uses the Keccak-256 cryptographic hash function in many places. Keccak-256 was designed as a candidate for the SHA-3 Cryptographic Hash Function Competition held in 2007 by NIST. Keccak was the winning algorithm, which became standardized as Federal Information Processing Standard (FIPS) 202 in 2015.
+　しかし、イーサリアムが開発されている時期には、NISTの標準化はまだ最終決定されていませんでした。NISTは標準化プロセスの完了後、効率を向上させるためとしてKeccakのパラメーターを調整しました。同時期に、勇敢な内部告発者エドワード・スノーデンが、NISTが国家安全保障局（NSA）から不正に影響を受けてDual_EC_DRBG RNG標準を意図的に弱体化させ、標準RNGにバックドアを仕込んだ可能性を示唆する文書を公開しました。この論争の結果、提案された変更に対する反発とSHA-3の標準化の大幅な遅延が生じました。当時、イーサリアム財団は、NISTが修正したSHA-3標準ではなく、発明者が提案したオリジナルのKeccakアルゴリズムを実装することを決定しました。
 
-However, during the period when Ethereum was developed, the NIST standardization was not yet finalized. NIST adjusted some of the parameters of Keccak after completion of the standards process, allegedly to improve its efficiency. At the same time, heroic whistleblower Edward Snowden revealed documents implying that NIST may have been improperly influenced by the National Security Agency to intentionally weaken the Dual_EC_DRBG RNG standard, effectively placing a backdoor in the standard RNG. The result of this controversy was a backlash against the proposed changes and a significant delay in the standardization of SHA-3. At the time, the Ethereum Foundation decided to implement the original Keccak algorithm as proposed by its inventors, rather than the SHA-3 standard as modified by NIST.
-
-> **Warning**
+> **警告**
 >
-> While you may see "SHA-3" mentioned throughout Ethereum documents and code, many—if not all—of those instances actually refer to Keccak-256, not the finalized FIPS-202 SHA-3 standard. The implementation differences are slight, having to do with padding parameters, but they are significant in that Keccak-256 produces different hash outputs than FIPS-202 SHA-3 for the same input.
+> イーサリアムのドキュメントやコードで「SHA-3」という表記を見かけるかもしれないが、それらの多く——すべてではないにしても——は実際にはKeccak-256を指しており、最終版のFIPS-202 SHA-3標準ではない。実装の違いはパディング パラメーターに関する軽微なものだが、Keccak-256は同じ入力に対してFIPS-202 SHA-3とは異なるハッシュ出力を生成するため、その違いは重要である。
 
-### Which Hash Function Am I Using?
+### どのハッシュ関数を使っているのか
 
-How can you tell if the software library you are using implements FIPS-202 SHA-3 or Keccak-256, if both might be called "SHA-3"?
+　使用しているソフトウェア ライブラリがFIPS-202 SHA-3を実装しているのか、Keccak-256を実装しているのか、両方が「SHA-3」と呼ばれている可能性がある場合、どのように判別できるでしょうか。
 
-An easy way to tell is to use a *test vector*, an expected output for a given input. The test most used for a hash function is the empty input. If you run the hash function with an empty string as input, you should see the following results:
+　簡単な方法は*テスト ベクトル*を使うことです。テスト ベクトルとは、与えられた入力に対する期待される出力のことです。ハッシュ関数で最もよく使われるテストは空の入力です。空の文字列を入力としてハッシュ関数を実行すると、以下の結果が得られるはずです。
 
 ```
 Keccak256("") = c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470
 SHA3("") = a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a
 ```
 
-Regardless of what the function is called, you can test it to see whether it is the original Keccak-256 or the final NIST standard FIPS-202 SHA-3 by running this simple test. Remember, Ethereum uses Keccak-256, even though it is often called SHA-3 in the code.
+　関数の名称に関係なく、このシンプルなテストを実行することで、オリジナルのKeccak-256なのか最終的なNIST標準FIPS-202 SHA-3なのかを確認できます。イーサリアムはKeccak-256を使用していることを忘れないでください。コードでSHA-3と呼ばれていても同様です。
 
-> **Note**
+> **注**
 >
-> Due to the confusion created by the difference between the hash function used in Ethereum (Keccak-256) and the finalized standard (FIP-202 SHA-3), all instances of `sha3` in all code, opcodes, and libraries have been renamed to `keccak256`. See [ERC-59](https://oreil.ly/rTHDv) for details.
+> イーサリアムで使用されるハッシュ関数（Keccak-256）と最終標準（FIP-202 SHA-3）の違いによる混乱のため、すべてのコード、オペコード、ライブラリにおける`sha3`のすべてのインスタンスは`keccak256`に改名された。詳細は[ERC-59](https://oreil.ly/rTHDv)を参照。
 
-Next, let's examine the first application of Keccak-256 in Ethereum, which is to produce Ethereum addresses from public keys.
+　次に、イーサリアムにおけるKeccak-256の最初の応用として、公開鍵からイーサリアム アドレスを生成する方法を見てみましょう。
 
-## Ethereum Addresses
+## イーサリアム アドレス
 
-Ethereum addresses are unique identifiers that are derived from public keys or contracts using the Keccak-256 one-way hash function.
+　イーサリアム アドレスは、Keccak-256一方向ハッシュ関数を使用して、公開鍵またはコントラクトから導出される一意の識別子です。
 
-In our previous examples, we started with a private key and used elliptic curve multiplication to derive a public key.
+　前の例では、秘密鍵から始めて楕円曲線乗算を使って公開鍵を導出しました。
 
-**Private key k:**
+**秘密鍵 k：**
 
 ```
 k = f8f8a2f43c8376ccb0871305060d7b27b0554d2cc72bccf41b2705608452f315
 ```
 
-**Public key K (x and y coordinates concatenated and shown as hex):**
+**公開鍵 K（x座標とy座標を連結し、16進数で表示）：**
 
 ```
 K = 6e145ccef1033dea239875dd00dfb4fee6e3348b84985c92f103444683bae07b83b5c38e5e...
 ```
 
-> **Note**
+> **注**
 >
-> It is worth noting that the public key is not formatted with the prefix (hex) `04` when the address is calculated.
+> アドレスの計算時には、公開鍵にプレフィックス（16進数の）`04`が付与されないことに注意する価値がある。
 
-We use Keccak-256 to calculate the hash of this public key:
+　Keccak-256を使ってこの公開鍵のハッシュを計算します。
 
 ```
 Keccak256(K) = 2a5bc342ed616b5ba5732269001d3f1ef827552ae1114027bd3ecf1f086ba0f9
 ```
 
-Then, we keep only the last 20 bytes (least significant bytes), which is our Ethereum address:
+　次に、最後の20バイト（最下位バイト）のみを保持します。これがイーサリアム アドレスです。
 
 ```
 001d3f1ef827552ae1114027bd3ecf1f086ba0f9
 ```
 
-You will most often see Ethereum addresses with the prefix `0x`, which indicates they are hexadecimal encoded, like this:
+　イーサリアム アドレスは通常、16進数エンコードであることを示す`0x`プレフィックス付きで表示されます。
 
 ```
 0x001d3f1ef827552ae1114027bd3ecf1f086ba0f9
 ```
 
-### Ethereum Address Formats
+### イーサリアム アドレスの形式
 
-Ethereum addresses are hexadecimal numbers, identifiers derived from the last 20 bytes of the Keccak-256 hash of the public key.
+　イーサリアム アドレスは16進数であり、公開鍵のKeccak-256ハッシュの最後の20バイトから導出される識別子です。
 
-Unlike Bitcoin addresses, which are encoded in the user interface of all clients to include a built-in checksum to protect against mistyped addresses, Ethereum addresses are presented as raw hexadecimal without any checksum. The rationale behind that decision was that Ethereum addresses would eventually be hidden behind abstractions (such as name services) at higher layers of the system and that checksums should be added at higher layers if necessary.
+　ビットコインのアドレスは、誤入力からの保護のためにすべてのクライアントのユーザー インターフェースに組み込みチェックサムを含むようにエンコードされていますが、イーサリアム アドレスはチェックサムなしの生の16進数として表示されます。この設計判断の根拠は、イーサリアム アドレスは最終的にシステムの上位レイヤーの抽象化（ネーム サービスなど）の背後に隠され、必要であればチェックサムは上位レイヤーで追加されるべきだということでした。
 
-In reality, these higher layers were developed too slowly, and this design choice led to a number of problems in the early days of the ecosystem, including the loss of funds due to mistyped addresses and input validation errors. Furthermore, because Ethereum name services were developed more slowly than initially expected, alternative encodings were adopted very slowly by wallet developers. We'll look at a few of the encoding options next.
+　実際には、これらの上位レイヤーの開発は非常にゆっくりと進み、この設計上の選択はエコシステムの初期の時代にいくつかの問題を引き起こしました。誤入力されたアドレスや入力検証エラーによる資金の損失などです。さらに、イーサリアム ネーム サービスの開発が当初の予想よりも遅かったため、代替エンコーディングのウォレット開発者による採用も非常にゆっくりでした。次にいくつかのエンコーディング オプションを見てみましょう。
 
-> **Note**
+> **注**
 >
-> It's worth mentioning the Ethereum Name Service (ENS), introduced in 2017 by Alex Van de Sande and Nick Johnson. ENS provides an on-chain solution for converting human-readable names, such as `masteringethereum.eth`, into Ethereum addresses.
+> 2017年にアレックス・ヴァン・デ・サンデとニック・ジョンソンによって導入されたイーサリアム ネーム サービス（ENS）について触れておく価値がある。ENSは、`masteringethereum.eth`のような人間が読める名前をイーサリアム アドレスに変換するオンチェーン ソリューションを提供する。
 
-### Hex Encoding with Checksum in Capitalization (ERC-55)
+### 大文字小文字によるチェックサムを持つ16進数エンコーディング（ERC-55）
 
-Due to the slow deployment of name services, a standard was proposed by [ERC-55](https://oreil.ly/JfgWs). ERC-55 offers a backward-compatible checksum for Ethereum addresses by modifying the capitalization of the hexadecimal address. The idea is that Ethereum addresses are case insensitive and all wallets are supposed to accept Ethereum addresses expressed in capital or lowercase characters, without any difference in interpretation. By modifying the capitalization of the alphabetic characters in the address, we can convey a checksum that can be used to protect the integrity of the address against typing or reading mistakes. Wallets that do not support ERC-55 checksums simply ignore the fact that the address contains mixed capitalization, but those that do support it can validate it and detect errors with a 99.986% accuracy.
+　ネーム サービスの展開が遅かったため、[ERC-55](https://oreil.ly/JfgWs)によって標準が提案されました。ERC-55は、16進数アドレスの大文字小文字を変更することで、イーサリアム アドレスに後方互換性のあるチェックサムを提供します。イーサリアム アドレスは大文字小文字を区別せず、すべてのウォレットは大文字または小文字で表されたイーサリアム アドレスを解釈の違いなく受け入れるべきです。アドレス中のアルファベット文字の大文字小文字を変更することで、アドレスの完全性をタイプミスや読み間違いから保護するために使用できるチェックサムを伝達できます。ERC-55チェックサムをサポートしないウォレットは、アドレスに大文字小文字が混在している事実を単に無視しますが、サポートしているウォレットはアドレスを検証し、99.986%の精度でエラーを検出できます。
 
-The mixed-capitals encoding is subtle, and you may not notice it at first. Our example address is:
+　大文字小文字混在のエンコーディングは微妙であり、最初は気づかないかもしれません。この例のアドレスは：
 
 ```
 0x001d3f1ef827552ae1114027bd3ecf1f086ba0f9
 ```
 
-With an ERC-55 mixed-capitalization checksum it becomes:
+　ERC-55の大文字小文字混在チェックサムを適用すると：
 
 ```
 0x001d3F1ef827552Ae1114027BD3ECF1f086bA0F9
 ```
 
-Can you tell the difference? Some of the alphabetic (A–F) characters from the hexadecimal encoding alphabet are now capitals, while others are lowercase.
+　違いがわかりますか。16進数エンコーディングのアルファベット（A～F）の一部が大文字になり、残りは小文字のままです。
 
-ERC-55 is quite simple to implement. We take the Keccak-256 hash of the lowercase hexadecimal address. This hash acts as a digital fingerprint of the address, giving us a convenient checksum. Any small change in the input (the address) should cause a big change in the resulting hash (the checksum), allowing us to detect errors effectively. The hash of our address is then encoded in the capitalization of the address itself. Let's break it down, step-by-step:
+　ERC-55の実装は非常にシンプルです。小文字の16進数アドレスのKeccak-256ハッシュを取得します。このハッシュはアドレスのデジタル フィンガープリントとして機能し、便利なチェックサムを提供します。入力（アドレス）への小さな変更が結果のハッシュ（チェックサム）に大きな変化をもたらすため、効果的にエラーを検出できます。アドレスのハッシュは、アドレス自体の大文字小文字にエンコードされます。ステップごとに分解してみましょう。
 
-1. Hash the lowercase address, without the `0x` prefix:
+1. `0x`プレフィックスなしの小文字アドレスをハッシュ化する：
 
     ```
     Keccak256("001d3f1ef827552ae1114027bd3ecf1f086ba0f9") = 23a69c1653e4ebbb619b0b2cb8a9bad49892a8b9695d9a19d8f673ca991deae1
     ```
 
-2. Capitalize each alphabetic address character if the corresponding hex digit of the hash is greater than or equal to `0x8`. This is easier to show if we line up the address and the hash:
+2. ハッシュの対応する16進数の桁が`0x8`以上の場合、アドレスの各アルファベット文字を大文字にする。アドレスとハッシュを並べると分かりやすくなる：
 
     ```
     Address: 001d3f1ef827552ae1114027bd3ecf1f086ba0f9
     Hash   : 23a69c1653e4ebbb619b0b2cb8a9bad49892a8b9...
     ```
 
-Our address contains an alphabetic character `d` in the fourth position. The fourth character of the hash is `6`, which is less than 8. So, we leave the `d` lowercase. The next alphabetic character in our address is `f`, in the sixth position. The sixth character of the hexadecimal hash is `c`, which is greater than 8. Therefore, we capitalize the `F` in the address, and so on. As you can see, we only use the first 20 bytes (40 hex characters) of the hash as a checksum, since we only have 20 bytes (40 hex characters) in the address to capitalize appropriately.
+　アドレスの4番目の位置にアルファベット文字`d`があります。ハッシュの4番目の文字は`6`で、8より小さいです。したがって、`d`は小文字のままにします。アドレスの次のアルファベット文字は6番目の位置の`f`です。16進数ハッシュの6番目の文字は`c`で、8より大きいです。したがって、アドレスの`F`を大文字にします。同様に続けます。ご覧の通り、チェックサムとしてハッシュの最初の20バイト（40桁の16進数文字）のみを使用します。アドレスの20バイト（40桁の16進数文字）を適切に大文字化するために使います。
 
-Check the resulting mixed-capitals address yourself and see if you can tell which characters were capitalized and which characters they correspond to in the address hash:
+　結果の大文字小文字混在アドレスを自分で確認し、どの文字が大文字化され、アドレス ハッシュのどの文字に対応しているか見てみてください。
 
 ```
 Address: 001d3F1ef827552Ae1114027BD3ECF1f086bA0F9
 Hash   : 23a69c1653e4ebbb619b0b2cb8a9bad49892a8b9...
 ```
 
-### Detecting an Error in an ERC-55 Encoded Address
+### ERC-55エンコード アドレスのエラー検出
 
-Now, let's look at how ERC-55 addresses will help us find an error. Let's assume we have printed out an Ethereum address, which is ERC-55 encoded:
+　ここで、ERC-55アドレスがエラーの発見にどう役立つかを見てみましょう。ERC-55でエンコードされたイーサリアム アドレスを印刷したとします。
 
 ```
 0x001d3F1ef827552Ae1114027BD3ECF1f086bA0F9
 ```
 
-Now let's make a basic mistake in reading that address. The character before the last one is a capital F. For this example, let's assume we misread that as a capital E, and we type the following (incorrect) address into our wallet:
+　このアドレスを読み取る際に基本的なミスを犯したとしましょう。最後から2番目の文字は大文字のFです。この例では、大文字のEと読み間違えて、以下の（間違った）アドレスをウォレットに入力したとします。
 
 ```
 0x001d3F1ef827552Ae1114027BD3ECF1f086bA0E9
 ```
 
-Fortunately, our wallet is EIP-55 compliant! It notices the mixed capitalization and attempts to validate the address. It converts it to lowercase and calculates the checksum hash:
+　幸いなことに、ウォレットはEIP-55に準拠しています。大文字小文字の混在に気づき、アドレスの検証を試みます。小文字に変換してチェックサム ハッシュを計算します。
 
 ```
 Keccak256("001d3f1ef827552ae1114027bd3ecf1f086ba0e9") = 5429b5d9460122fb4b11af9cb88b7bb76d8928862e0a57d46dd18dd8e08a6927
 ```
 
-As you can see, even though the address has only changed by one character (in fact, only one bit, as `e` and `f` are one bit apart), the hash of the address has changed radically. That's the property of hash functions that makes them so useful for checksums!
+　ご覧の通り、アドレスが1文字しか変わっていなくても（実際には1ビットだけ、`e`と`f`は1ビット違い）、アドレスのハッシュは劇的に変化しています。これがハッシュ関数をチェックサムに非常に有用にする性質です。
 
-Now, let's line up the two and check the capitalization:
+　2つを並べて大文字小文字を確認してみましょう。
 
 ```
 001d3F1ef827552Ae1114027BD3ECF1f086bA0E9
 5429b5d9460122fb4b11af9cb88b7bb76d892886...
 ```
 
-It's all wrong! Several of the alphabetic characters are incorrectly capitalized. Remember that the capitalization is the encoding of the correct checksum.
+　すべてが間違っています。いくつかのアルファベット文字の大文字小文字が正しくありません。大文字小文字は正しいチェックサムのエンコーディングであることを思い出してください。
 
-The capitalization of the address we input doesn't match the checksum just calculated, meaning something has changed in the address, and an error has been introduced.
+　入力したアドレスの大文字小文字は計算されたばかりのチェックサムと一致しないため、アドレスに何かが変更され、エラーが導入されたことがわかります。
+## バリデーターの暗号技術
 
-## Validators' Cryptography
+　このセクションでは、新しいPoSベースのコンセンサス プロトコルでバリデーターが使用する暗号技術を探ります。デジタル署名を作成しメッセージを検証するという核心的なアイデアは常に同じですが、トランザクションやアドレスに使用される暗号技術とは異なる設計上の選択と最終的な実装につながる興味深い要件があります。
 
-In this section, we're going to explore the cryptography used by validators in the new PoS-based consensus protocol. While the core idea is always to be able to digitally sign messages and verify them, there are interesting requirements that lead to design choices and final implementations that differ from the cryptography used in Ethereum for transactions or addresses.
+### はじめに
 
-### Introduction
+　イーサリアムが*Ethash*——PoWコンセンサス アルゴリズム——を使用していた時代には、ブロック提案者——当時はマイナー——が生成するブロックに署名すべき理由はありませんでした。実際、PoWベースのコンセンサス アルゴリズムは、正しく機能するために誰がブロックを作成しているかを知る必要がありません。ブロック提案者が不正を行った場合、プロトコルは電気エネルギーと時間、つまりお金を無駄にさせることで暗黙的に罰します。
 
-When Ethereum was using *Ethash*—the PoW consensus algorithm—there was no reason why block proposers—miners at that time—should have signed the blocks they were producing. In fact, PoW-based consensus algorithms don't need to know who's creating the blocks in order to correctly work. If a block proposer misbehaves, the protocol implicitly punishes them by making them waste electric energy and time, thus money.
-Let's take the example of a miner who tries to do a double spend by creating two blocks at the same time. To better understand the core idea behind this "exploit," imagine a miner wants to buy a car and agrees with the dealer to pay in ETH—let's say 10 ETH. The miner then creates two blocks at the same time. Let's suppose they're both valid: in the first one, the miner adds the payment transaction in which they send 10 ETH to the car dealer while in the other block, they don't. The miner is trying to split the chain in two parts.
+　二重支払いを試みるためにマイナーが同時に2つのブロックを作成する例を考えてみましょう。この「悪用」の核心的なアイデアをよりよく理解するために、マイナーが車を買い、ディーラーとETHで支払うことに合意したとします——10 ETHとしましょう。マイナーは同時に2つのブロックを作成します。両方が有効だとしましょう。最初のブロックにはマイナーがカー ディーラーに10 ETHを送る支払いトランザクションを追加し、もう一方のブロックには追加しません。マイナーはチェーンを2つに分割しようとしています。
 
-Depending on (almost) random factors, the car dealer could receive first the block in which the miner paid them 10 ETH. So the car dealer can suppose that the payment went fine. But they don't give the car to the miner yet. In fact, the car dealer knows that in PoW systems, you usually want to wait a bunch of blocks before considering a transaction definitely settled.
+　（ほぼ）ランダムな要因に依存して、カー ディーラーはマイナーが10 ETHを支払ったブロックを先に受信する可能性があります。そのためカー ディーラーは支払いが完了したと想定できます。しかし、まだ車をマイナーに渡しません。実際、PoWシステムではトランザクションが確実に決済されたと見なす前に、通常いくつかのブロックを待つ必要があることをカー ディーラーは知っているからです。
 
-After more or less 12 seconds, a different miner produces a new block on top of the block that doesn't contain the 10 ETH payment. This is completely possible as it usually depends on which block this next miner has received first. Now there is one longer blockchain and, thanks to the *heaviest chain rule*—also known (a bit wrongly) as the *longest chain rule*—that chain is considered the only one that is valid by all the nodes.
+　約12秒後、別のマイナーが10 ETHの支払いを含まないブロックの上に新しいブロックを生成します。次のマイナーがどのブロックを先に受信したかに通常依存するため、これはまったく可能です。今や、より長いブロックチェーンが存在し、*最重チェーン ルール*——（少し不正確ですが）*最長チェーン ルール*とも呼ばれる——のおかげで、そのチェーンがすべてのノードによって唯一の有効なものと見なされます。
 
-The car dealer sees that the valid blockchain doesn't contain the block they previously received in which there is the 10 ETH payment, so they consider the payment not done, and they don't give the car to the miner.
+　カー ディーラーは、有効なブロックチェーンに以前受信した10 ETHの支払いを含むブロックが含まれていないことを確認し、支払いが完了していないと見なして、マイナーに車を渡しません。
 
-Remember that, in PoW systems, miners have to spend real energy and time to produce a valid block that passes the PoW check—that is, the block hash is lower than a dynamic threshold—so the fact that they spend energy and time to create a block and then they see one of their blocks rejected by the entire network is already an implicit punishment. They lost precious energy and time they could have better spent by creating only valid blocks, respecting all the rules and not trying to cheat.
+　PoWシステムでは、マイナーはPoWチェックをパスする有効なブロック——つまりブロック ハッシュが動的な閾値より低いブロック——を生成するために実際のエネルギーと時間を費やさなければなりません。エネルギーと時間を費やしてブロックを作成した後にネットワーク全体からそのブロックが拒否されるという事実自体が暗黙的な罰です。有効なブロックのみを作成し、すべてのルールを遵守し、不正を試みないことに使えたはずの貴重なエネルギーと時間を失ったのです。
 
-PoS systems don't have this same implicit punishment for block producers (i.e., validators) that misbehave. Instead, they use an explicit method: *slashing*.
+　PoSシステムには、不正を行うブロック生成者（つまりバリデーター）に対する同じ暗黙的な罰がありません。代わりに、明示的な方法である*スラッシング*を使用します。
 
-*Slashing* is the action of punishing a validator who didn't follow the rules by subtracting some (or all) of their staked ETH. This explains why validators have to put a minimum amount of ETH at stake to become active validators. If they don't have anything at stake, the protocol won't be able to punish them if they start to act maliciously.
+　*スラッシング*とは、ルールに従わなかったバリデーターをステークしたETHの一部（またはすべて）を差し引くことで罰する行為です。これが、バリデーターがアクティブなバリデーターになるために最低限のETHをステークしなければならない理由です。ステークに何もなければ、悪意を持って行動し始めた場合にプロトコルはバリデーターを罰することができません。
 
-Explicitly punishing validators for not following the rules requires knowing exactly what every validator is doing. To do that, every message (including blocks) that validators send must be authenticated with their digital signatures.
+　ルールに従わないバリデーターを明示的に罰するには、すべてのバリデーターが何をしているかを正確に知る必要があります。そのためには、バリデーターが送信するすべてのメッセージ（ブロックを含む）がデジタル署名で認証されなければなりません。
 
-Let's re-create the analogous example we used previously with the miner. Now we have a validator who is proposing two blocks at the same time. While with PoW, the miner should have spent double the energy and time to produce two valid blocks at the same time, with PoS this is (almost) entirely free.
+　先ほどマイナーで使った例を同様に再現してみましょう。今度は、同時に2つのブロックを提案するバリデーターがいます。PoWでは、マイナーは同時に2つの有効なブロックを生成するために2倍のエネルギーと時間を費やす必要がありましたが、PoSではこれが（ほぼ）完全に無料です。
 
-But here is where slashing enters into the scene. *Double-signing* — proposing two blocks at the same time — is a slashable event, so the validator is immediately punished by (in this specific example) destroying all their ETH at stake.
+　しかし、ここでスラッシングが登場します。*二重署名*——同時に2つのブロックを提案すること——はスラッシング対象のイベントであり、バリデーターは（この具体例では）ステークしたETHのすべてを破壊されることで即座に罰せられます。
 
-Now that we know why validators must authenticate all of their messages, we can deep-dive into the cryptography used for that: BLS signatures. In the next section, we'll see the requirements that led to the final decision to use BLS cryptography.
+　バリデーターがすべてのメッセージを認証しなければならない理由がわかったので、そのために使われる暗号技術——BLS署名——について深く掘り下げることができます。次のセクションでは、BLS暗号技術を使用する最終的な決定につながった要件を見ていきます。
 
-### Requirements
+### 要件
 
-The first solution you could think of for this problem—that is, the need to authenticate every message that validators send to one another—is to apply the same digital signature algorithm Ethereum already uses to digitally sign every transaction: the *Elliptic Curve Digital Signature Algorithm* (ECDSA).
+　この問題——つまり、バリデーターが互いに送信するすべてのメッセージを認証する必要性——に対する最初のソリューションとして考えられるのは、イーサリアムがすべてのトランザクションにデジタル署名するために既に使用している同じデジタル署名アルゴリズム、*楕円曲線デジタル署名アルゴリズム*（ECDSA）を適用することです。
 
-But it wouldn't work with the high number of validators Ethereum has—more than one million. In fact, there is a fundamental requirement that this digital signature algorithm should adhere to: it must be possible to condense signatures in order to reduce the space needed for them in the block and lower the time nodes need to spend on validating all validators' signatures.
+　しかし、イーサリアムが持つ100万以上のバリデーターの多さでは機能しません。実際、このデジタル署名アルゴリズムが守るべき基本的な要件があります。それは、ブロック内での署名に必要なスペースを削減し、ノードがすべてのバリデーターの署名を検証するのに費やす時間を短縮するために、署名を集約できなければならないということです。
 
-Right now, every validator can cast a vote—a message that needs to be authenticated—once every *epoch*, or 32 *slots* (we'll expand more on this in Chapter 15). These messages need to travel the P2P gossip layer to reach other validators and nodes, be validated by every other node to check that the signature is valid, and be inserted into a block.
+　現在、すべてのバリデーターは*エポック*ごと、つまり32*スロット*ごとに投票——認証が必要なメッセージ——を1回行うことができます（これについては第15章で詳しく説明します）。これらのメッセージはP2Pゴシップ レイヤーを通じて他のバリデーターやノードに到達し、すべてのノードによって署名が有効かどうか検証され、ブロックに挿入される必要があります。
 
-It's very easy to spot a bottleneck here: the more validators that join the network, the more messages that nodes need to handle. Even blocks become bigger because they need to reserve more and more space for those validators' signatures.
+　ここでボトルネックを見つけるのは非常に簡単です。ネットワークに参加するバリデーターが増えるほど、ノードが処理しなければならないメッセージが増えます。バリデーターの署名のためにより多くのスペースを確保する必要があるため、ブロックも大きくなります。
 
-> **Note**
+> **注**
 >
-> You can easily calculate the number of messages that nodes need to handle based on the number of active validators:
+> アクティブなバリデーターの数に基づいて、ノードが処理する必要があるメッセージ数を簡単に計算できる：
 > ```
-> N = number of active validators
+> N = アクティブなバリデーターの数
 > 1 msg / 1 epoch × N =
-> = 1 msg / 32 slots × N = ← one epoch is made of 32 slots
-> = 1 msg / 32 × 12 seconds × N = ← every slot takes 12 seconds
+> = 1 msg / 32 slots × N = ← 1エポックは32スロットで構成される
+> = 1 msg / 32 × 12 seconds × N = ← 各スロットは12秒かかる
 > = 1 msg / 384 seconds × N =
 > = 0.0026041667 msg / second × N
 > ```
 >
-> So we have about 0.0026 messages every second that we need to multiply with N, the number of active validators in the network:
+> したがって、毎秒約0.0026メッセージにN（ネットワーク内のアクティブなバリデーター数）を乗じることになる：
 >
 > ```
-> N = 1,000 → ~2.6 messages per second
-> N = 10,000 → ~26 messages per second
-> N = 100,000 → 260 messages per second
-> N = 1,000,000 → 2,600 messages per second
+> N = 1,000 → 毎秒約2.6メッセージ
+> N = 10,000 → 毎秒約26メッセージ
+> N = 100,000 → 毎秒260メッセージ
+> N = 1,000,000 → 毎秒2,600メッセージ
 > ```
 
-Right now, the Ethereum PoS protocol is handling about 2,600 messages every second.
+　現在、イーサリアムのPoSプロトコルは毎秒約2,600メッセージを処理しています。
 
-For these reasons, most PoS blockchains have a very small validator set, in the tens or hundreds at maximum. Even the Ethereum initial proposal (see [EIP-1011](https://oreil.ly/pQSCp)) was targeting a maximum of nine hundred validators, with 1,500 ETH as the minimum deposit for being elected in the active validator set.
+　これらの理由から、ほとんどのPoSブロックチェーンのバリデーター セットは非常に小さく、最大でも数十から数百です。イーサリアムの当初の提案（[EIP-1011](https://oreil.ly/pQSCp)参照）でさえ、最大900のバリデーターをターゲットとし、アクティブなバリデーター セットに選出されるための最低預入額は1,500 ETHでした。
 
-This would have been the final specification for the Ethereum PoS protocol if Justin Drake, an Ethereum Foundation researcher, didn't come up with the idea of BLS signature aggregation in May 2018 in a [long article published on the ethresearch website](https://oreil.ly/EbBib).
+　イーサリアム財団の研究者であるジャスティン・ドレイクが2018年5月に[ethresearchウェブサイトに公開した長い記事](https://oreil.ly/EbBib)でBLS署名の集約のアイデアを提案しなければ、これがイーサリアムのPoSプロトコルの最終仕様になっていたでしょう。
 
-### BLS Digital Signatures
+### BLSデジタル署名
 
-BLS signatures are named after their authors. BLS stands for Boneh–Lynn–Shacham, referring to the three cryptographers Dan Boneh, Ben Lynn, and Hovav Shacham who introduced the signature scheme in their paper titled ["Short Signatures from the Weil Pairing"](https://oreil.ly/cJn6v) in 2001.
+　BLS署名はその考案者の名前にちなんで名付けられています。BLSはボネ・リン・シャチャム（Boneh–Lynn–Shacham）の略で、2001年に論文["Short Signatures from the Weil Pairing"](https://oreil.ly/cJn6v)でこの署名方式を発表した3人の暗号技術者、ダン・ボネ、ベン・リン、ホヴァヴ・シャチャムを指します。
 
-As ECDSA (which will be further explained in Chapter 6), BLS signatures are still based on elliptic curve cryptography. In particular, Ethereum uses the curve *BLS12-381*, designed by Sean Bowe in 2017 while he was working for the Zcash protocol. It's defined by the following function:
+　ECDSA（第6章でさらに詳しく説明します）と同様に、BLS署名も楕円曲線暗号に基づいています。特に、イーサリアムはショーン・ボウが2017年にZcashプロトコルのために設計した曲線*BLS12-381*を使用しています。BLS12-381は以下の関数で定義されます。
 
 ```
 y^2 = x^3 + 4
 ```
 
-over the integers modulo q, where q is a 115-decimal-digits number: `0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab`.
+　整数をqで法とする演算上で定義されます。ここでqは115桁の10進数です：`0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab`。
 
-#### How Does It Work?
+#### 仕組み
 
-The core idea is very similar to how ECDSA works: there is a secret key from which a public key is derived. Then, every message is signed using the secret key, and everyone else can verify its integrity by using the corresponding public key.
+　核心的なアイデアはECDSAの仕組みと非常に似ています。秘密鍵があり、そこから公開鍵が導出されます。すべてのメッセージは秘密鍵で署名され、他の人は対応する公開鍵を使って完全性を検証できます。
 
-The secret key (`sk`) is an integer between 1 and r – 1, where r is this huge number: `0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001`. It has 77 decimal digits!
+　秘密鍵（`sk`）は1からr – 1の間の整数です。ここでrはこの巨大な数：`0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001`です。77桁の10進数です。
 
-The public key (`pk`) is obtained by doing `sk * g1`, a scalar multiplication of the elliptic curve point, where `g1` is the generator of a group called G1. The `pk` is represented in a compressed and serialized format, resulting in a 48-byte string.
+　公開鍵（`pk`）は`sk * g1`（楕円曲線点のスカラー乗算）によって得られます。ここで`g1`はG1と呼ばれる群の生成元です。`pk`は圧縮・シリアライズされた形式で表現され、48バイトの文字列となります。
 
-The message (`m`) that is signed is always mapped to an elliptic curve point, which is a member of a different group called G2. You can think of this mapping as a sort of hash function that takes a message `m`—that is, the actual validator's attestation—and outputs a point `H(m)` in G2, represented in its compressed serialized form as a 96-byte string.
+　署名されるメッセージ（`m`）は常に楕円曲線の点にマッピングされます。この点はG2と呼ばれる別の群のメンバーです。このマッピングは、メッセージ`m`——つまり実際のバリデーターのアテステーション——を受け取り、G2の点`H(m)`を出力する一種のハッシュ関数と考えることができます。圧縮・シリアライズされた形式では96バイトの文字列として表現されます。
 
-Finally, we obtain the signature (σ) of the message `m` by doing `sk * H(m)`, a new elliptic point in G2.
+　最後に、メッセージ`m`の署名（σ）は`sk * H(m)`（G2における新しい楕円曲線の点）によって得られます。
 
-The key differences between ECDSA and BLS lie in the low-level details of the two protocols—that is, in the mathematical techniques they use for verifying the correctness of signatures. In fact, while ECDSA involves mathematical linear calculations, such as scalar multiplication and addition on the elliptic curve, BLS signatures rely on the more complex arithmetic of *elliptic curve bilinear pairings*.
+　ECDSAとBLSの主な違いは、2つのプロトコルの低レベルの詳細——つまり署名の正しさを検証するために使用する数学的テクニック——にあります。実際、ECDSAは楕円曲線上のスカラー乗算や加算などの数学的な線形計算を伴いますが、BLS署名はより複雑な*楕円曲線の双線形ペアリング*の算術に依存しています。
 
-In fact, a signature σ is valid if and only if the following equation holds true:
+　実際、署名σが有効であるのは、以下の等式が成り立つ場合に限ります。
 
 ```
 e(g1,σ) = e(pk, H(m))
 ```
 
-where `e` is an elliptic curve bilinear pairing.
+　ここで`e`は楕円曲線の双線形ペアリングです。
 
-#### Inside Elliptic Curve Properties
+#### 楕円曲線の性質の内部
 
-Completely understanding the previous equation requires a deep knowledge of elliptic curves, pairings, and all that huge rabbit hole. But an easy way to understand it is to simply follow the steps here. You won't grasp all the details of why and how the pairing has that property, but it can still help you familiarize yourself with it:
+　前の等式を完全に理解するには、楕円曲線、ペアリング、およびその巨大なうさぎの穴に関する深い知識が必要です。しかし、ここでの手順を追うだけでも理解の助けになります。ペアリングがその性質を持つ理由と仕組みのすべての詳細は把握できませんが、親しみを持つ助けにはなるでしょう。
 
 ```
 e(pk, H(m)) = e(sk * g1,H(m)) = ← pk = sk * g1
-= e(g1, H(m))^sk = ← thanks to a pairing property
-= e(g1, sk * H(m)) = ← thanks to the same property
+= e(g1, H(m))^sk = ← ペアリングの性質による
+= e(g1, sk * H(m)) = ← 同じ性質による
 = e(g1,σ) ← σ = sk * H(m)
 ```
 
-As Vitalik Buterin pointed out in a [Medium article](https://oreil.ly/v578s):
+　ヴィタリック・ブテリンが[Mediumの記事](https://oreil.ly/v578s)で指摘したように：
 
-> If you view elliptic curve points as one-way encrypted numbers—`encrypt(p) = p * G = P`, where G is the generator point—then whereas traditional elliptic curve math lets you check linear constraints on the numbers (e.g., if `P = G * p`, `Q = G * q` and `R = G * r`, checking `5 * P + 7 * Q = 11 * R` is really checking that `5 * p + 7 * q = 11 * r`), pairings let you check quadratic constraints (e.g., checking `e(P, Q) * e(G, G * 5) = 1` is really checking that `p * q + 1 * 5 = 0`).
+> 楕円曲線の点を一方向に暗号化された数値と見なすと——`encrypt(p) = p * G = P`（ここでGは生成点）——従来の楕円曲線の数学では数値の線形制約を検証できる（例：`P = G * p`、`Q = G * q`、`R = G * r`の場合、`5 * P + 7 * Q = 11 * R`の検証は実際には`5 * p + 7 * q = 11 * r`の検証である）。一方、ペアリングでは二次制約を検証できる（例：`e(P, Q) * e(G, G * 5) = 1`の検証は実際には`p * q + 1 * 5 = 0`の検証である）。
 
-As you can imagine, more complex arithmetic also means more time to produce and to verify a signature. The only reason Ethereum is using BLS signatures for validators is their extremely important property of *signature aggregation*.
+　想像できるように、より複雑な算術はより多くの署名の生成と検証の時間を意味します。イーサリアムがバリデーターにBLS署名を使用している唯一の理由は、*署名の集約*という極めて重要な性質です。
 
-In fact, if you take two ECDSA signatures and sum them together, you don't obtain a meaningful result. If you try to use that result to prove the integrity of the initially signed message, you won't pass any test.
+　実際、2つのECDSA署名を足し合わせても、意味のある結果は得られません。その結果を使って最初に署名されたメッセージの完全性を証明しようとしても、テストにはパスしません。
 
-Instead, if you take two BLS signatures and sum them together, you are simply doing an elliptic curve addition. The result is a new elliptic curve point—in G2—that you can use against the sum of the two correspondent public keys—which is still an elliptic curve point in G1—to correctly verify the integrity of the initially signed message.
+　一方、2つのBLS署名を足し合わせると、単純に楕円曲線の加算を行っていることになります。結果はG2の新しい楕円曲線の点であり、2つの対応する公開鍵の和——G1の楕円曲線の点のまま——に対して使用することで、最初に署名されたメッセージの完全性を正しく検証できます。
 
-> **Note**
+> **注**
 >
-> Aggregate signatures and aggregate public keys are indistinguishable from a single signature and a single public key, so you can use the exact same algorithm to verify the correctness of an aggregated signature.
+> 集約された署名と集約された公開鍵は、単一の署名と単一の公開鍵と区別がつかないため、集約された署名の正しさを検証するためにまったく同じアルゴリズムを使用できる。
 >
-> **Aggregated signature and public key:**
+> **集約された署名と公開鍵：**
 > ```
 > σagg = σ1 + σ2 + σ3 + … + σn
 > pkagg = pk1 + pk2 + pk3 + … + pkn
 > ```
 >
-> **Aggregated signature verification:**
+> **集約された署名の検証：**
 >
 > ```
 > e(pkagg,H(m)) =
@@ -606,466 +604,466 @@ Instead, if you take two BLS signatures and sum them together, you are simply do
 > = e(g1,σagg)
 >```
 
-#### In Summary
+#### まとめ
 
-Cryptography is really hard; it requires a deep mathematical background. And this book isn't really for cryptographers, so it's fundamental to summarize what we've briefly touched on in the previous sections. We explained how BLS signatures work and why they were chosen as the digital signature algorithm that validators use in the new PoS-based consensus protocol: their aggregation property lets you condense more digital signatures into one, reducing the amount of space needed to store them and the time to validate them without losing any security.
+　暗号技術は本当に難しく、深い数学的背景が必要です。この本は暗号技術者向けではないので、前のセクションで簡単に触れた内容を要約することが重要です。BLS署名の仕組みと、バリデーターが新しいPoSベースのコンセンサス プロトコルで使用するデジタル署名アルゴリズムとして選ばれた理由を説明しました。集約の性質により、複数のデジタル署名をひとつに集約でき、保存に必要なスペースと検証にかかる時間を削減しつつ、セキュリティを犠牲にしません。
 
-We can now do a quick example to demonstrate how validators use BLS algorithms in "real life" and how signature aggregation comes into play. Figure 4-6 illustrates a scenario where we have three validators who want to express their votes for a block, block A. So they cast their votes, sign them, and share them with one another.
+　バリデーターが「実際の運用」でBLSアルゴリズムをどのように使用し、署名の集約がどのように機能するかを示す簡単な例を見てみましょう。図4-6は、3人のバリデーターがブロックA に対して投票を表明したいシナリオを示しています。投票を行い、署名し、互いに共有します。
 
-![BLS signature aggregation example](images/ch4/maet_0406.png)
+![BLS署名の集約の例](images/ch4/maet_0406.png)
 
-Figure 4-6. BLS signature aggregation: three validators vote and sign
+図4-6 BLS署名の集約：3人のバリデーターが投票し署名する
 
-Without BLS, you would need to save all three signed votes into the block to store them permanently. With BLS, you can aggregate all three signed votes into a new aggregated vote and store only that into the block.
+　BLSがなければ、3つの署名付き投票すべてをブロックに保存して永続化する必要があります。BLSを使えば、3つの署名付き投票すべてをひとつの新しい集約投票に集約し、それだけをブロックに保存できます。
 
-This not only saves space but also dramatically reduces the amount of time and computation all Ethereum nodes have to do when validating all signed votes because they can directly validate aggregated ones instead of performing the validation for each single signed vote. And the magic of BLS cryptography is that the aggregated result is no different than a normal signature: that means that verifying the validity of an aggregated signature is no harder than verifying the validity of a single signature. Thus, by significantly reducing the number of signed votes to validate but requiring the same amount of computation to verify each of them, the total amount of computation—and therefore, time—that full nodes must perform is much lower than without using BLS-aggregated signatures, as shown in Figure 4-7.
+　これはスペースを節約するだけでなく、すべてのイーサリアム ノードが署名付き投票を検証する際に必要な時間と計算量を劇的に削減します。個々の署名付き投票ごとに検証を行う代わりに、集約された投票を直接検証できるからです。BLS暗号技術のマジックは、集約された結果が通常の署名と変わらないことです。つまり、集約された署名の有効性を検証することは、単一の署名の有効性を検証することと同じ難しさです。したがって、検証すべき署名付き投票の数を大幅に削減しつつ、各検証に同じ計算量を必要とすることで、フル ノードが実行しなければならない計算の総量——そして時間——は、BLS集約署名を使用しない場合よりもはるかに少なくなります（図4-7参照）。
 
-![BLS aggregation efficiency](images/ch4/maet_0407.png)
+![BLS集約の効率性](images/ch4/maet_0407.png)
 
-Figure 4-7. BLS signature aggregation reduces validation time
+図4-7 BLS署名の集約による検証時間の削減
 
-What if a validator doesn't follow the rules? If a validator behaves maliciously—for example, by double-signing, or voting for two different blocks at the same time—the protocol can detect this behavior and punish the validator accordingly, as shown in Figure 4-8.
+　バリデーターがルールに従わなかったらどうなるでしょうか。バリデーターが悪意を持って行動した場合——たとえば二重署名、つまり同時に2つの異なるブロックに投票した場合——プロトコルはこの行動を検出し、図4-8に示すようにバリデーターを適切に罰することができます。
 
-![BLS slashing detection](images/ch4/maet_0408.png)
+![BLSスラッシング検出](images/ch4/maet_0408.png)
 
-Figure 4-8. BLS signatures enable detection of malicious validators
+図4-8 BLS署名により悪意あるバリデーターの検出が可能になる
 
-In fact, because all votes are digitally signed using the BLS signature scheme, it's trivial to identify validators who are responsible for misbehaviors and slash them accordingly.
+　実際、すべての投票がBLS署名方式を使ってデジタル署名されているため、不正行為の原因となったバリデーターを特定し、適切にスラッシングすることは容易です。
+## KZG暗号技術
 
-## KZG Cryptography
+　2024年3月13日、イーサリアムはCancun-Deneb（Dencun）ハードフォークにアップグレードしました。このアップグレードには多くの変更が含まれていましたが、最も重要なものは間違いなく新しいタイプのトランザクション、EIP-4844 blobトランザクションの導入でした。
 
-On March 13, 2024, Ethereum upgraded to the Cancun-Deneb (Dencun) hard fork. This upgrade contained a lot of changes, but the most important one was definitely the introduction of a new type of transaction: EIP-4844 blob transaction.
+　blobトランザクションがイーサリアムのロードマップにとってなぜ重要なのかについては、第16章ではるかに詳しく説明するため、ここでは深入りしません。代わりに、次のセクションでは、この新しいタイプのトランザクションの基盤となる暗号技術——*多項式コミットメント スキーム*、より具体的には*KZGコミットメント スキーム*——を探ります。
 
-We're not going to deep-dive here into why blob transactions are important to Ethereum's roadmap, as we will do that in much more detail in Chapter 16. Instead, in the next sections we'll explore the cryptography underneath this new type of transaction: *polynomial commitment schemes* and, more specifically, the *KZG commitment scheme*.
+### はじめに
 
-### Introduction
+　多項式コミットメント スキームを見る前に、直面している問題と達成したい最終目標を理解することが重要です。
 
-Before looking at polynomial commitment schemes, it's important to understand the problem we're facing and the final goal we want to reach.
-
-> **Note**
+> **注**
 >
-> In this section, we'll briefly mention the term Layer 2s (L2s). While L2s will be properly explained and expanded on in Chapter 16, it can be useful to at least have a quick introduction to them. L2s are a new scaling solution for Ethereum: they are real blockchains, with a unique history and state, that periodically post all their updates and data to the Ethereum mainnet. The rationale is that it must be possible to derive the entire L2 blockchain by looking only at the Ethereum mainnet.
+> このセクションでは、レイヤー2（L2）という用語に簡単に触れる。L2については第16章で適切に説明・展開するが、ここでは簡単な紹介をしておくと役立つだろう。L2はイーサリアムの新しいスケーリング ソリューションである。独自の履歴と状態を持つ実際のブロックチェーンであり、定期的にすべての更新とデータをイーサリアムのメインネットに投稿する。根拠としては、イーサリアムのメインネットのみを見ることで、L2ブロックチェーン全体を導出できなければならないということである。
 
-Without going into too much detail, L2s post a lot of data into the Ethereum main chain every day. All this data has to be downloaded and verified by all the nodes in the network. This situation usually leads to a spike in gas fees that, in critical scenarios, can reach $10–$20 just for a single ETH transfer.
+　詳細に立ち入りすぎないように説明すると、L2は毎日大量のデータをイーサリアムのメイン チェーンに投稿します。このデータはネットワーク内のすべてのノードによってダウンロードされ検証されなければなりません。この状況は通常、ガス代の急上昇につながり、深刻なシナリオでは単一のETH送金だけで10～20ドルに達することがあります。
 
-Eventually, instead of posting all this data directly on chain, we only want to store a commitment to it—that is, a cryptographic hash—leaving the full data outside the Ethereum chain. But posting only a hash creates a new problem: all the nodes in the network must ensure that the data that the commitment points to exists somewhere; otherwise, we may have lost critical data.
+　最終的には、すべてのデータを直接オンチェーンに投稿する代わりに、データへのコミットメント——つまり暗号学的ハッシュ——のみを保存し、完全なデータはイーサリアム チェーンの外に残したいと考えています。しかし、ハッシュのみを投稿すると新たな問題が生じます。ネットワーク内のすべてのノードが、コミットメントが指し示すデータがどこかに存在することを確認しなければなりません。そうでなければ、重要なデータが失われている可能性があります。
 
-The first (obvious) solution would be to obligate all the nodes to temporarily download the full data so that they can easily verify the commitment is valid—that is, it points to the full data they have. This is where we are at the time of writing this chapter (June 2025).
+　最初の（明白な）ソリューションは、すべてのノードに完全なデータを一時的にダウンロードすることを義務付けることです。これにより、コミットメントが有効であること——つまり、自分が持っている完全なデータを指し示していること——を容易に検証できます。本章の執筆時点（2025年6月）では、これが現在の状況です。
 
-The long-term solution is to not require all the nodes to download the full data but just a very small part of it. Nodes can then use cryptographic proofs that ensure the data is fully available. These proofs have to be small and need to be verified quickly. The idea is that it's much faster and more lightweight to prove—and verify—that the data is available than it is to download it and directly verify it. This strategy is called *data availability sampling* (DAS), one of the most important areas of research in the Ethereum community.
+　長期的なソリューションは、すべてのノードに完全なデータのダウンロードを要求せず、そのごく一部のみをダウンロードさせることです。ノードはデータが完全に利用可能であることを保証する暗号学的証明を使用できます。これらの証明は小さく、迅速に検証できる必要があります。データが利用可能であることを証明し検証するほうが、データをダウンロードして直接検証するよりもはるかに高速で軽量であるというアイデアです。この戦略は*データ可用性サンプリング*（DAS）と呼ばれ、イーサリアム コミュニティにおける最も重要な研究分野のひとつです。
 
-To achieve the final goal of DAS, we want a cryptographic system that enables us—all the nodes—to:
+　DASの最終目標を達成するために、すべてのノードが以下のことを可能にする暗号システムが必要です。
 
-- Create a commitment to some data (data you want to prove that exists and is available in its entirety)
-- Generate small proofs for the data related to the previously created commitment
-- Easily verify these proofs
+- あるデータ（存在し、完全に利用可能であることを証明したいデータ）へのコミットメントを作成する
+- 以前作成したコミットメントに関連するデータの小さな証明を生成する
+- これらの証明を容易に検証する
 
-This cryptographic system optionally (but ideally) shouldn't reveal much information about the data it refers to.
+　この暗号システムは、参照するデータに関する情報をあまり明かさないことが（任意ですが）理想的です。
 
-In the next section, we'll explore such a cryptographic system: polynomial commitment schemes and, more specifically, the KZG commitment scheme.
+　次のセクションでは、そのような暗号システム——多項式コミットメント スキーム、より具体的にはKZGコミットメント スキーム——を探ります。
 
-> **Note**
+> **注**
 >
-> You may wonder why we're talking about polynomial commitment schemes instead of data commitment schemes. And that's a very good question: our goal is to be able to commit to some data, not to a polynomial. But here is the trick: data can be represented as a polynomial. So if we are able to produce a polynomial commitment scheme, then we're good.
+> データ コミットメント スキームではなく多項式コミットメント スキームについて話している理由は何かと疑問に思うかもしれない。それはとても良い質問である。目標はデータにコミットすることであり、多項式にコミットすることではない。しかし、ここにトリックがある。データは多項式として表現できる。したがって、多項式コミットメント スキームを作成できれば、それで十分である。
 
-### Polynomial Commitment Schemes
+### 多項式コミットメント スキーム
 
-A *polynomial commitment scheme* allows a prover to compute a commitment to a polynomial, with the property that this commitment can later be "opened"—evaluated—at any position. The prover can show that the value of the polynomial at a certain position is equal to a claimed value and can generate a proof for that claim. The verifier, having both the commitment and the proof, can verify that the proof is valid if and only if the prover didn't cheat—that is, the committed polynomial actually evaluates to the claimed value at the selected position.
+　*多項式コミットメント スキーム*は、証明者が多項式へのコミットメントを計算することを可能にします。このコミットメントは後で任意の位置で「開く」（評価する）ことができるという性質を持ちます。証明者は、ある位置における多項式の値が主張された値と等しいことを示し、その主張に対する証明を生成できます。検証者は、コミットメントと証明の両方を持ち、証明者が不正をしていない場合にのみ——つまり、コミットされた多項式が選択された位置で実際に主張された値に評価される場合にのみ——証明が有効であることを検証できます。
 
-#### Introduction to Polynomials
+#### 多項式入門
 
-We'll talk about polynomials a lot in this section, so it's important to make sure everyone knows what a polynomial is, since it may have been a long time since you studied them in school.
+　このセクションでは多項式について多く語ることになるため、多項式が何であるかを全員が理解していることが重要です。学校で学んでから時間が経っているかもしれません。
 
-A polynomial is a mathematical expression like this:
+　多項式は次のような数学的な式です。
 
 ```
 x^3 + 3x^2 – 9
 ```
 
-where `x` is the variable and all the numbers (1, 3, 0, –9) are the coefficients. Note that we put a 0 as the third coefficient because that polynomial is actually the following one:
+　ここで`x`は変数であり、すべての数値（1, 3, 0, –9）は係数です。3番目の係数を0としたのは、この多項式が実際には以下のものだからです。
 
 ```
 x^3 + 3x^2 + 0x – 9
 ```
 
-We'll refer to a polynomial as `p(x)` throughout this section:
+　このセクションを通じて、多項式を`p(x)`と表記します。
 
 ```
 p(x) = x^3 + 3x^2 + 0x – 9
 ```
 
-We'll also need the *degree* `n` of a polynomial. It's the number of the highest power in the polynomial. The degree of our example polynomial is 3. So `n = 3`.
+　多項式の*次数*`n`も必要です。次数は多項式における最高次の冪の数です。この例の多項式の次数は3です。したがって`n = 3`です。
 
-The general formula to describe a polynomial is the following:
+　多項式を記述する一般的な公式は以下の通りです。
 
 ```
 p(x) = p₀ + p₁x + p₂x² + ... + pₙxⁿ
 ```
 
-Or more formally:
+　またはより形式的に：
 
 ```
 p(x) = Σ pᵢxⁱ  (for i = 0 to n)
 ```
 
-where `n` is the degree of the polynomial and `pi` are all its coefficients.
+　ここで`n`は多項式の次数、`pi`はすべての係数です。
 
-### Using Merkle Trees
+### マークル木の使用
 
-Let's start looking at a polynomial commitment scheme using the classical Merkle tree data structure. If you're interested in deep-diving into Merkle trees, we'll expand on them in Chapter 14.
+　古典的なマークル木データ構造を使った多項式コミットメント スキームを見てみましょう。マークル木の詳細については、第14章で展開します。
 
-We can commit to a polynomial of degree `n = 2^d – 1`, where `d` is the depth of the Merkle tree, by setting all the leaf elements of the tree equal to all the coefficients `pi` of the polynomial we want to commit to.
+　マークル木の深さ`d`に対して次数`n = 2^d – 1`の多項式にコミットできます。ツリーのすべてのリーフ要素を、コミットしたい多項式のすべての係数`pi`に等しく設定します。
 
-Have a look at the following example:
+　以下の例を見てみましょう。
 
 ```
 p(x) = x^7 + 5x^5 – 2x^4 + 3
-n = 7 ← degree of p(x)
-d = 3 ← depth of the required Merkle tree
+n = 7 ← p(x)の次数
+d = 3 ← 必要なマークル木の深さ
 ```
 
-Figure 4-9 shows the polynomial commitment scheme applied to this example, using Merkle roots as the core cryptographic primitive.
+　図4-9は、マークル ルートを核となる暗号プリミティブとして使用した、この例に適用された多項式コミットメント スキームを示しています。
 
-![Merkle tree polynomial commitment](images/ch4/maet_0409.png)
+![マークル木による多項式コミットメント](images/ch4/maet_0409.png)
 
-Figure 4-9. Polynomial commitment using Merkle trees
+図4-9 マークル木を使った多項式コミットメント
 
-The final commitment is the Merkle root we obtain by constructing the full Merkle tree.
-Now let's say we want to prove (to a verifier) that `p(1) = 7`. This statement is true because if you take `p(x)` and set `x = 1`, you can easily calculate that the polynomial at that position evaluates to 7.
+　最終的なコミットメントは、完全なマークル木を構築して得られるマークル ルートです。
+ここで、`p(1) = 7`であることを（検証者に）証明したいとしましょう。この主張は正しいです。なぜなら、`p(x)`に`x = 1`を代入すると、多項式がその位置で7に評価されることを容易に計算できるからです。
 
-To prove our assertion that `p(1) = 7`, we need to send to the verifier:
+　`p(1) = 7`という主張を証明するには、検証者に以下を送信する必要があります。
 
-- The statement we want to prove: `p(1) = 7`
-- The Merkle root—that is, the commitment to the polynomial `p(x)`
-- All the coefficients `pi` of the polynomial
+- 証明したい主張：`p(1) = 7`
+- マークル ルート——つまり多項式`p(x)`へのコミットメント
+- 多項式のすべての係数`pi`
 
-This way, the verifier can take all the coefficients `pi` and calculate the value of the polynomial when `x = 1`. Here, the verifier verifies that our assertion is actually true. Then, the verifier takes all the coefficients `pi` and computes the Merkle tree, comparing their Merkle root with the one we provided to them. Here, they verify that the polynomial we committed to initially is actually the same one we sent to them.
+　こうすることで、検証者はすべての係数`pi`を取得し、`x = 1`のときの多項式の値を計算できます。ここで、検証者は主張が実際に正しいことを検証します。次に、検証者はすべての係数`pi`を取得してマークル木を計算し、自分のマークル ルートと提供されたものを比較します。ここで、検証者は最初にコミットした多項式が実際に送信されたものと同じであることを検証します。
 
-To recap the properties of polynomial commitment using Merkle trees, we have the following:
+　マークル木を使った多項式コミットメントの性質をまとめると、以下の通りです。
 
-**Commitment size**
+**コミットメントのサイズ**
 
-The commitment is the Merkle root, which is a single hash, usually 32 bytes long.
+　コミットメントはマークル ルートであり、単一のハッシュで通常32バイトの長さである。
 
-**Proof size**
+**証明のサイズ**
 
-To prove an evaluation, we need to send all the coefficients `pi` of the polynomial. That means the proof size is linear in the degree `n` of the polynomial.
+　評価を証明するには、多項式のすべての係数`pi`を送信する必要がある。つまり、証明のサイズは多項式の次数`n`に対して線形である。
 
-**Verifier complexity**
+**検証者の計算量**
 
-The verifier has to do linear work (in the degree of the polynomial) to completely verify our assertion. In fact, the verifier has all the coefficients `pi` and has to compute both the Merkle tree and the evaluation of the polynomial at the claimed point.
+　検証者は（多項式の次数に対して）線形の作業を行う必要がある。実際、検証者はすべての係数`pi`を持ち、マークル木の計算と主張された点での多項式の評価の両方を計算しなければならない。
 
-**Scheme privacy**
+**スキームのプライバシー**
 
-The scheme doesn't hide anything about the polynomial as the prover sends all its coefficients `pi`.
+　証明者がすべての係数`pi`を送信するため、スキームは多項式に関する情報を何も隠さない。
 
-These properties are not ideal because the degree `n` of the polynomial could be very big in the real Ethereum protocol, and the bandwidth required to send all its coefficients on the network is too high. Also, we would like a protocol that lets the prover reveal as little information as possible regarding the committed polynomial.
+　これらの性質は理想的ではありません。実際のイーサリアム プロトコルでは多項式の次数`n`が非常に大きくなる可能性があり、すべての係数をネットワーク上で送信するために必要な帯域幅が大きすぎます。また、証明者がコミットした多項式に関する情報をできるだけ少なく明かすプロトコルが望ましいです。
 
-Luckily, there is a scheme that satisfies all our requirements, and this is where KZG enters the scene.
+　幸いなことに、すべての要件を満たすスキームが存在します。ここでKZGが登場します。
 
-### KZG Commitment
+### KZGコミットメント
 
-KZG is an acronym that stands for Kate, Zaverucha, and Goldberg, the names of its three authors. These cryptographers introduced this commitment scheme in their 2010 paper ["Constant-Size Commitments to Polynomials and Their Applications"](https://oreil.ly/JnEc0).
+　KZGはケイト、ザヴェルチャ、ゴールドバーグの頭文字で、3人の著者の名前です。この3人の暗号技術者は、2010年の論文["Constant-Size Commitments to Polynomials and Their Applications"](https://oreil.ly/JnEc0)でこのコミットメント スキームを発表しました。
 
-#### The trusted setup
+#### トラステッド セットアップ
 
-The KZG commitment scheme requires the presence of a *trusted setup*. You can view it as a common knowledge base shared with all the participants of a cryptographic protocol—that is, both prover and verifier. It's called a trusted setup because, in order to produce that common knowledge base, some participants need to generate random numbers (secrets), encrypt them, and create the final data. Then, they must delete the secrets to ensure the protocol remains safe. Since these participants need to be trusted to delete their secrets, this whole ceremony is called a trusted setup.
+　KZGコミットメント スキームには*トラステッド セットアップ*が必要です。トラステッド セットアップは、暗号プロトコルのすべての参加者——つまり証明者と検証者の両方——が共有する共通の知識ベースと見なすことができます。トラステッド セットアップと呼ばれる理由は、その共通の知識ベースを生成するために、一部の参加者がランダムな数値（秘密）を生成し、暗号化し、最終的なデータを作成する必要があるからです。その後、プロトコルの安全性を確保するために秘密を削除しなければなりません。参加者が秘密を削除したことを信頼する必要があるため、このセレモニー全体がトラステッド セットアップと呼ばれます。
 
-Modern setups usually use the [*Powers-of-Tau*](https://oreil.ly/uaS5x) setup, which has a 1-of-N trust model. That means we need only one honest actor for the entire trusted setup to be considered safe.
+　現代のセットアップは通常、1-of-Nの信頼モデルを持つ[*Powers-of-Tau*](https://oreil.ly/uaS5x)セットアップを使用します。つまり、トラステッド セットアップ全体が安全と見なされるために必要な正直な参加者は1人だけです。
 
-The Ethereum KZG trusted setup ceremony involved more than 140,000 different participants, as you can see in Figure 4-10.
+　イーサリアムのKZGトラステッド セットアップ セレモニーには、図4-10に示すように、14万人以上の参加者が関与しました。
 
-![KZG trusted setup ceremony](images/ch4/maet_0410.png)
+![KZGトラステッド セットアップ セレモニー](images/ch4/maet_0410.png)
 
-Figure 4-10. Ethereum KZG trusted setup ceremony participants
+図4-10 イーサリアムのKZGトラステッド セットアップ セレモニーの参加者
 
-More specifically the trusted setup generates the elements `[s^i]₁` and `[s^i]₂` for `i = 0, 1, … , n – 1`, where:
+　より具体的には、トラステッド セットアップは`i = 0, 1, … , n – 1`に対して要素`[s^i]₁`と`[s^i]₂`を生成します。ここで：
 
-- `s` is the trusted setup secret that no one knows (made by the sum of secrets that each participant has generated)
-- `[s^i]₁` and `[s^i]₂` are actually elliptic curve points (respectively in curves G1 and G2)
-- `n` is the order of the polynomial
+- `s`は誰も知らないトラステッド セットアップの秘密（各参加者が生成した秘密の合計で構成される）
+- `[s^i]₁`と`[s^i]₂`は実際には楕円曲線の点（それぞれ曲線G1とG2上）
+- `n`は多項式の次数
 
-> **Tip**
+> **ヒント**
 >
-> When you see something inside square braces, that represents an elliptic curve point.
+> 角括弧の中にあるものは楕円曲線の点を表す。
 
-#### The commitment
+#### コミットメント
 
-As you can see, the KZG commitment scheme involves (again) elliptic curves and pairings, something we have already seen for BLS digital signatures.
+　ご覧の通り、KZGコミットメント スキームは（再び）楕円曲線とペアリングを伴います。BLSデジタル署名で既に見たものです。
 
-Remember that on elliptic curves, if you have a secret number `a`, you can obtain an elliptic curve point `[a]` with an elliptic curve multiplication:
+　楕円曲線では、秘密の数値`a`がある場合、楕円曲線乗算によって楕円曲線の点`[a]`を得ることができることを思い出してください。
 
 ```
 [a]₁ = aG₁
 ```
 
-And it's computationally impossible to go back. Thus, if you have only `[a]`, you cannot obtain the secret `a`.
+　逆方向の計算は計算上不可能です。したがって、`[a]`のみを持っている場合、秘密`a`を得ることはできません。
 
-Even though neither the prover nor the verifier knows `s`, the trusted-setup secret, they can still do certain operations on it:
+　証明者も検証者もトラステッド セットアップの秘密`s`を知りませんが、それに対して特定の演算を行うことはできます。
 
 ```
-c[s^i]₁ = cs^iG₁ = [cs^i]₁  ← elliptic curve multiplication; c is an integer number
-c[s^i]₁ + d[s^i]₁ = (cs^i + ds^i)G₁ = [cs^i + ds^i]₁  ← elliptic curve points addition
+c[s^i]₁ = cs^iG₁ = [cs^i]₁  ← 楕円曲線乗算；cは整数
+c[s^i]₁ + d[s^i]₁ = (cs^i + ds^i)G₁ = [cs^i + ds^i]₁  ← 楕円曲線の点の加算
 ```
 
-So, if `p(x) = p₀ + p₁x + p₂x² + ... + pₙxⁿ` is a polynomial, the prover can compute:
+　したがって、`p(x) = p₀ + p₁x + p₂x² + ... + pₙxⁿ`が多項式である場合、証明者は以下を計算できます。
 
 ```
 [p(s)]₁ = [p₀ + p₁s₁ + p₂s²₁ + ... + pₙsⁿ₁] = p₀ + p₁[s]₁ + p₂[s²]₁ + ... + pₙ[sⁿ]₁
 ```
 
-Since `[s^i]₁` is part of the trusted setup, and therefore it's common knowledge, the prover is able to evaluate the polynomial at a secret point `s` that no one knows. Sounds magic, right? Be careful of one important thing, though: the output of the previous operation is not an integer number; instead, it's an elliptic curve point. That `[p(s)]₁` elliptic curve point is our KZG commitment to the polynomial `p(x)`.
+　`[s^i]₁`はトラステッド セットアップの一部であり共通の知識であるため、証明者は誰も知らない秘密の点`s`で多項式を評価できます。魔法のように聞こえるでしょう。ただし、重要なことに注意してください。前の演算の出力は整数ではなく、楕円曲線の点です。楕円曲線の点`[p(s)]₁`が、多項式`p(x)`に対するKZGコミットメントです。
 
-#### Soundness of KZG: Why the Prover Can't Fake the Commitment
+#### KZGの健全性：証明者がコミットメントを偽造できない理由
 
-Can the prover, without knowing the secret `s`, find a different polynomial `q(x) != p(x)` so that they have the same KZG commitment: `[q(s)]₁ = [p(s)]₁`? If so, the prover would be able to make the verifier think that they know a polynomial `p` even if that's not true.
+　証明者は秘密`s`を知らずに、同じKZGコミットメントを持つ異なる多項式`q(x) != p(x)`を見つけることができるでしょうか。`[q(s)]₁ = [p(s)]₁`のように。もしそうなら、証明者は多項式`p`を知っていると検証者に信じさせることができます。
 
-Assume they can, so there is a polynomial `r(x) = p(x) – q(x)` not constant of degree `n`. Since `q(x) != p(x)`, that means that `r(x)` has at most `n` zeros—that is, `r(x) = 0` in at most `n` positions. This is a fundamental property of algebra. You can easily verify that it holds true for all the basic geometric shapes you studied in school: lines (polynomials of degree 1) have one zero, parabolas (polynomials of degree 2) have at most two, and so on.
+　できると仮定しましょう。すると、次数`n`の定数でない多項式`r(x) = p(x) – q(x)`が存在します。`q(x) != p(x)`であるため、`r(x)`は最大`n`個のゼロ——つまり`r(x) = 0`となる位置——を持ちます。これは代数の基本的な性質です。学校で学んだすべての基本的な幾何学的形状について正しいことを容易に確認できます。直線（1次の多項式）はひとつのゼロを持ち、放物線（2次の多項式）は最大2つ持つ、といった具合です。
 
-The only way the prover can achieve `q(s) = p(s)` is by making `r(x) = p(x) + q(x) = 0` in as many places as possible. But they can choose up to `n` zeros, as we said previously.
+　証明者が`q(s) = p(s)`を達成する唯一の方法は、`r(x) = p(x) + q(x) = 0`をできるだけ多くの場所で成り立たせることです。しかし、前述のように最大`n`個のゼロしか選べません。
 
-Since the prover doesn't know `s`, it's extremely unlikely that they will be able to guess it. In fact, `n` (order of the polynomial) << `p` (order of elliptic curves).
+　証明者は`s`を知らないため、推測できる可能性は極めて低いです。実際、`n`（多項式の次数）<< `p`（楕円曲線の位数）です。
 
-If `n = 228` and `p = 2^256`, the probability that `s` is one of the selected zeros is `2 × 10^-69`.
+　`n = 228`で`p = 2^256`の場合、`s`が選択されたゼロのひとつである確率は`2 × 10^-69`です。
 
-So we can say that, while there exist many polynomials with the same commitment `C = [p(s)]₁`, they are impossible to compute. This is a *computational binding*.
+　したがって、同じコミットメント`C = [p(s)]₁`を持つ多項式は多数存在するものの、計算することは不可能であると言えます。これは*計算的束縛*です。
 
-So far, we are able to commit to a polynomial `p(x)` by evaluating it at a secret point `s`, but we're still missing a way to prove that the initial prover's assertion `p(z) = y` is true without sending all the coefficients `pi` to the verifier. Here again is where elliptic curve pairings come in handy.
+　ここまでで、秘密の点`s`で多項式`p(x)`を評価することでコミットできるようになりましたが、検証者にすべての係数`pi`を送信せずに、最初の証明者の主張`p(z) = y`が正しいことを証明する方法がまだ欠けています。ここでも楕円曲線のペアリングが役立ちます。
 
-### KZG Proof
+### KZG証明
 
-To understand the final KZG proof, we need to recall some important properties of polynomials.
+　最終的なKZG証明を理解するには、多項式のいくつかの重要な性質を思い出す必要があります。
 
-A polynomial `p(x)` is divisible by `(x – z)` if it has a zero in `z`. This is very easy to understand. Take the polynomial `p(x) = x² – 4` that can also be represented as `p(x) = (x + 2)(x – 2)`. Since `p(2) = 4 – 4 = 0`, `p(x)` is divisible by `(x – 2)`.
+　多項式`p(x)`が`z`でゼロを持つ場合、`(x – z)`で割り切れます。これは非常に理解しやすいです。多項式`p(x) = x² – 4`を取り上げましょう。`p(x) = (x + 2)(x – 2)`とも表現できます。`p(2) = 4 – 4 = 0`であるため、`p(x)`は`(x – 2)`で割り切れます。
 
-The opposite is also true. A polynomial `p(x)` has a zero in `z` if `p(x)` is divisible by `(x – z)`. Take the same example we used before and you can easily demonstrate that.
+　逆も成り立ちます。多項式`p(x)`が`(x – z)`で割り切れる場合、`p(x)`は`z`でゼロを持ちます。先ほどと同じ例を使えば容易に示せます。
 
-Remember that we (as the prover) want to prove that `p(z) = y`. At this point, we take the polynomial `p(x) – y`. This polynomial evaluates to zero at `x = z`, so we can use the properties described previously—in particular, the fact that since `p(x) – y` has a zero in `z`, then it is divisible by `(x – z)`.
+　（証明者として）`p(z) = y`を証明したいことを思い出してください。ここで多項式`p(x) – y`を取り上げます。この多項式は`x = z`でゼロに評価されるため、先ほど説明した性質——特に、`p(x) – y`が`z`でゼロを持つので`(x – z)`で割り切れるという事実——を使用できます。
 
-So we can compute the quotient polynomial `q(x)`:
+　したがって、商多項式`q(x)`を計算できます。
 
 ```
 q(x) = [p(x) – y] / (x – z)
 ```
 
-which we can write in the equivalent form:
+　これは以下の等価な形式で書くこともできます。
 
 ```
 q(x)(x – z) = p(x) – y
 ```
 
-> **Note**
+> **注**
 >
-> It's very important to note here that the quotient polynomial `q(x)` is only possible to compute because `p(x) – y` is divisible by `x – z`. Otherwise, it would be impossible as we would always have a remainder.
+> ここで非常に重要な点は、商多項式`q(x)`は`p(x) – y`が`x – z`で割り切れるからこそ計算可能であるということである。そうでなければ、常に余りが生じるため不可能である。
 >
-> To understand this better, let's look at an example. Take again the polynomial `p(x) = (x + 2)(x – 2)`. Since this polynomial is divisible by `(x + 2)`, we can compute the quotient polynomial:
+> これをよりよく理解するために、例を見てみよう。再び多項式`p(x) = (x + 2)(x – 2)`を取り上げる。この多項式は`(x + 2)`で割り切れるため、商多項式を計算できる：
 >
 > ```
 > q(x) = p(x) / (x + 2) = [(x + 2)(x – 2)] / (x + 2) = x – 2
 > ```
-> If we tried to divide by `(x – 3)`, we wouldn't be able to obtain the quotient polynomial. You can try using the previous example if you want…
+> `(x – 3)`で割ろうとすると、商多項式を得ることはできない。前の例を使って試してみてほしい…
 
-Now we're fully ready to generate our proof. In fact, a KZG proof for the assertion `p(z) = y` is `π = [q(s)]₁`. Basically, it's the (elliptic curve point) quotient polynomial evaluated at the secret point `s`.
+　これで証明を生成する準備が完全に整いました。KZG証明は主張`p(z) = y`に対して`π = [q(s)]₁`です。基本的に、秘密の点`s`で評価された（楕円曲線の点の）商多項式です。
 
-The verifier checks the validity of this proof by computing the following equation:
+　検証者は以下の等式を計算してこの証明の有効性を確認します。
 
 ```
 e(π, [s – z]₂) = e(C – [y]₁, H)
 ```
 
-where:
+ここで：
 
-- `π = [q(s)]₁` is the KZG proof
-- `C = [p(s)]₁` is the commitment to the polynomial `p(x)`
-- `H` is the generator of the group G2, known to both prover and verifier
+- `π = [q(s)]₁`はKZG証明
+- `C = [p(s)]₁`は多項式`p(x)`へのコミットメント
+- `H`はG2群の生成元であり、証明者と検証者の両方に既知
 
-Let's prove that this cryptographic scheme is both:
+　この暗号スキームが以下の両方であることを証明しましょう。
 
-**Correct**
+**正当性**
 
-If the prover follows all the rules, then they must be able to produce a valid proof that the verifier should be able to correctly verify.
+　証明者がすべてのルールに従えば、検証者が正しく検証できる有効な証明を生成できなければならない。
 
-**Sound**
+**健全性**
 
-The prover cannot trick the verifier by computing a fake proof—that is, the prover cannot make the verifier believe that `p(z) = y′` for some `y′ != y`.
+　証明者は偽の証明を計算することで検証者を騙すことができない——つまり、証明者は`y′ != y`となる`p(z) = y′`であると検証者に信じさせることができない。
 
-#### Correctness
+#### 正当性
 
-If we take the verifier equation and write it to the pairing group, basically computing the pairing operation, we get:
+　検証者の等式をペアリング群に書き下す——基本的にペアリング演算を計算する——と、以下が得られます。
 
 ```
 [q(s)(s – z)]ₜ = [p(s) – y]ₜ
 ```
 
-where `T` is a a multiplicative subgroup of a finite field extension.
+　ここで`T`は有限体拡大の乗法部分群です。
 
-You can just see that this equation is the exact same equation we calculated before:
+　この等式は、先ほど計算した等式とまったく同じであることがわかります。
 
 ```
 q(x)(x – z) = p(x) – y
 ```
 
-evaluated at the secret point `s`. The only difference is that we have elliptic curve points instead of numbers.
+　秘密の点`s`で評価されたものです。唯一の違いは、数値の代わりに楕円曲線の点があることです。
 
-That equation always holds true by construction. And that's it for the correctness part.
+　この等式は構成上常に成り立ちます。正当性の部分はこれで完了です。
 
-#### Soundness
+#### 健全性
 
-Can the prover fake it? That means: can the prover claim that `p(z) = y′` even though that's not true and still pass the verifier check?
+　証明者は偽造できるでしょうか。つまり、証明者は`p(z) = y′`が真でないにもかかわらずそう主張し、検証者のチェックをパスできるでしょうか。
 
-To try to do that, the verifier has two options:
+　それを試みるために、検証者には2つの選択肢があります。
 
-1. The verifier can try to follow the normal procedure, just changing the claimed value `y′`. So, they have to compute the quotient polynomial by dividing `p(x) – y′` by `(x – z)`. But that's impossible because `p(z) – y′ != 0`—polynomial division is not doable here. You may wonder: what if the prover is able to choose a `y′ != y` so that `p(x) – y′ = 0`? Actually, we have already given an answer in a previous note, which is that the probability is near zero. The prover is not able to compute such a `y′`. This first solution is not a concrete option.
+1. 検証者は通常の手順に従い、主張する値`y′`を変更するだけでよい。そのため、`p(x) – y′`を`(x – z)`で割って商多項式を計算する必要がある。しかし、`p(z) – y′ != 0`であるため不可能である——多項式の除算はここでは実行できない。証明者が`p(x) – y′ = 0`となるような`y′ != y`を選べるのではないかと思うかもしれない。実際、前の注で既に回答を示しており、確率はほぼゼロである。証明者はそのような`y′`を計算することができない。この最初のソリューションは具体的な選択肢にならない。
 
-2. The verifier can directly work on the elliptic curve when constructing the proof. In fact, if they are able to generate the proof:
+2. 検証者は証明を構築する際に楕円曲線上で直接作業できる。実際、以下の証明を生成できれば：
 
    ```
    π′ = [C – y′] / [s – z]₂
    ```
 
-   then they can prove whatever they want:
+   何でも証明できる：
 
    ```
    e(π′, [s – z]₂) = e(C – [y′]₁, H) →
    → e(π′, [s – z]₂) = e(C – [y′]₁, H) →
    → (C - y`)/(s - z)*(s - z) = C - y` →
-   → C - y` = C - y`  ← This is always true.
+   → C - y` = C - y`  ← これは常に真。
    ```
 
-   But again, computing that proof is computationally impossible for the prover as that requires knowledge of `s`, which is the secret of the trusted setup and no one knows its value.
+   しかし、この証明の計算は証明者にとって計算上不可能である。なぜなら`s`の知識が必要であり、`s`はトラステッド セットアップの秘密で誰もその値を知らないからである。
 
-### KZG Properties
+### KZGの性質
 
-To recap the properties of polynomial commitment using the KZG proof system, we have:
+　KZG証明システムを使った多項式コミットメントの性質をまとめると、以下の通りです。
 
-**Commitment size**
+**コミットメントのサイズ**
 
-The commitment is a single group element of an elliptic curve that admits pairing—for example, with curve BLS12_381, this is 48 bytes long in its compressed form.
+　コミットメントはペアリングを許容する楕円曲線の単一の群要素である。たとえば、曲線BLS12_381では、圧縮形式で48バイトの長さである。
 
-**Proof size**
+**証明のサイズ**
 
-The proof size is independent of the size of the polynomial `p(x)` we commit to. It's always one single group element of an elliptic curve.
+　証明のサイズはコミットする多項式`p(x)`のサイズに依存しない。常に楕円曲線のひとつの群要素である。
 
-**Verifier complexity**
+**検証者の計算量**
 
-Verification is also independent of the size of the polynomial and only requires two (elliptic curve) group multiplications and two pairings.
+　検証も多項式のサイズに依存せず、2つの（楕円曲線の）群乗算と2つのペアリングのみが必要である。
 
-**Scheme privacy**
+**スキームのプライバシー**
 
-The scheme is able to mostly hide the polynomial `p(x)` that the prover commits to. In fact, while with Merkle trees the prover has to send all the coefficients, with KZG they need to only send the quotient polynomial evaluated at the secret point `s`, even though it's an elliptic curve point and not an integer number.
+　スキームは、証明者がコミットする多項式`p(x)`をほぼ隠すことができる。実際、マークル木では証明者がすべての係数を送信する必要があったが、KZGでは秘密の点`s`で評価された商多項式のみを送信すればよい。ただし、それは整数ではなく楕円曲線の点である。
 
-### Multiproofs
+### マルチプルーフ
 
-We were able to prove a single evaluation of a polynomial `p(x)`, but we can do more. We can prove the evaluation of a polynomial at any number of points and prove while still using the same proof size.
+　多項式`p(x)`の単一の評価を証明できましたが、さらに多くのことが可能です。多項式を任意の数の点で評価し、同じ証明サイズで証明できます。
 
-Let's see how this works. We want to prove that for every `zᵢ`, `p(x)` evaluates to `yᵢ`:
+　その仕組みを見てみましょう。すべての`zᵢ`に対して`p(x)`が`yᵢ`に評価されることを証明したいとします。
 
 ```
 (z₀, y₀), (z₁, y₁), …, (zₖ₋₁, yₖ₋₁)
 ```
 
-We can always find a polynomial of degree lower than `k` that passes through all these points. This is an algebraic property, and there also is a mathematical formula that generates that polynomial, which is called the *interpolation polynomial* `I(x)`:
+　これらのすべての点を通る`k`未満の次数の多項式を常に見つけることができます。これは代数的性質であり、その多項式を生成する数学的公式も存在します。*補間多項式*`I(x)`と呼ばれます。
 
 ```
 I(x) = Σ yᵢ · ∏ (x – zⱼ)/(zᵢ – zⱼ)  (for i,j = 0 to k-1, j ≠ i)
 ```
 
-Although this sounds hard, it's actually pretty easy to grasp. Let's say we have two distinct points, as shown in Figure 4-11:
+　難しく聞こえるかもしれませんが、実際にはかなり理解しやすいです。2つの異なる点があるとします（図4-11参照）。
 
 ```
 A = (1, 0)
 B = (2, 1)
 ```
 
-![Two points on a coordinate plane](images/ch4/maet_0411.png)
+![座標平面上の2点](images/ch4/maet_0411.png)
 
-Figure 4-11. Two distinct points A and B
+図4-11 2つの異なる点AとB
 
-It's easy to understand that there is a line—a polynomial of degree 1 (which is less than two, the number of points)—that goes through both A and B.
+　AとBの両方を通る直線——1次の多項式（2つの点の数未満）——が存在することは容易に理解できます。
 
-That line is:
+　その直線は：
 
 ```
 I(x) = x – 1
 ```
 
-Figure 4-12 better illustrates this.
+　図4-12はこれをよりよく示しています。
 
-![Line through two points](images/ch4/maet_0412.png)
+![2点を通る直線](images/ch4/maet_0412.png)
 
-Figure 4-12. The interpolation polynomial (line) passing through points A and B
+図4-12 点AとBを通る補間多項式（直線）
 
-Here, we used our intuition, but we can use the formula to prove that the result is the same. Remember that we have `k = 2`:
+　ここでは直感を使いましたが、公式を使って同じ結果を証明できます。`k = 2`であることを思い出してください。
 
 ```
 I(x) = y₀ · (x – z₁)/(z₀ – z₁) + y₁ · (x – z₀)/(z₁ – z₀)
      = 0 · (x – 2)/(1 – 2) + 1 · (x – 1)/(2 – 1)
      = 0 + (x – 1) = x – 1
 ```
-Since the prover wants to prove that `p(x)` goes through all those points mentioned at the start of this section, and we assume that's true—that is, the prover is trustworthy—`p(x) – I(x)` is zero at each `z₀, z₁, …, zₖ₋₁` point.
 
-That means it's divisible by `(x – z₀)(x – z₁)...(x – zₖ₋₁)`. We call this polynomial `Z(x)` the *zerofier*.
+　証明者は`p(x)`がこのセクションの冒頭で述べたすべての点を通ることを証明したいとしており、それが正しい——つまり証明者は信頼できる——と仮定すると、`p(x) – I(x)`は各`z₀, z₁, …, zₖ₋₁`の点でゼロです。
 
-Now, we proceed with the usual method. The prover computes the quotient polynomial `q(x)`:
+　つまり、`(x – z₀)(x – z₁)...(x – zₖ₋₁)`で割り切れます。この多項式を*ゼロファイア*`Z(x)`と呼びます。
+
+　通常の方法で進めます。証明者は商多項式`q(x)`を計算します。
 
 ```
 q(x) = [p(x) – I(x)] / Z(x)
 ```
 
-and generates the proof `π = [q(s)]₁`. Note that this proof is the usual (single elliptic curve point) KZG proof.
+　そして証明`π = [q(s)]₁`を生成します。この証明は通常の（単一の楕円曲線の点の）KZG証明であることに注意してください。
 
-To check the validity of this proof, the verifier needs to:
+　この証明の有効性を確認するために、検証者は以下を行う必要があります。
 
-1. Compute `I(x)` by applying the formula previously described and then calculating `[I(s)]₁`.
-2. Compute `Z(x)` and then calculate `[Z(s)]₂`. Note that the verifier can compute `Z(x)` because they know all the claimed points (and values) that the prover wants to prove.
-3. And then apply the usual equivalence check:
+1. 先ほど説明した公式を適用して`I(x)`を計算し、次に`[I(s)]₁`を計算する。
+2. `Z(x)`を計算し、次に`[Z(s)]₂`を計算する。証明者が証明したいすべての主張された点（と値）を知っているため、検証者は`Z(x)`を計算できることに注意。
+3. そして通常の等価性チェックを適用する：
 
 ```
 e(π, [Z(s)]₂) = e(C – [I(s)]₁, H)
 ```
 
-by writing the equation in the pairing group:
+　この等式をペアリング群に書き下すと：
 
 ```
 q(s)Z(s) = p(s) – I(s)
 ```
 
-That's the same equation we had when the prover computed the quotient polynomial before, with the only difference that here it's evaluated at the secret point `s`.
+　これは、証明者が以前に商多項式を計算したときと同じ等式であり、唯一の違いは秘密の点`s`で評価されていることです。
 
-### In Summary
+### まとめ
 
-Let's summarize the entire prover↔verifier flow in the KZG commitment scheme.
+　KZGコミットメント スキームにおける証明者↔検証者のフロー全体をまとめましょう。
 
-We start with the prover, who has knowledge of some data. They immediately encode this data into a polynomial, as shown in Figure 4-13.
+　まず証明者から始めます。証明者はあるデータの知識を持っています。すぐにこのデータを多項式にエンコードします（図4-13参照）。
 
-![Prover encodes data as polynomial](images/ch4/maet_0413.png)
+![証明者がデータを多項式にエンコード](images/ch4/maet_0413.png)
 
-Figure 4-13. The prover encodes the data into a polynomial p
+図4-13 証明者がデータを多項式pにエンコードする
 
-The goal of the prover is to convince the verifier that they know a certain piece of data, now encoded as a polynomial. However, the prover does not want to reveal the entire dataset. Instead, they want the verifier to be able to verify specific claims about the data. In particular, the prover wants the verifier to confirm that the polynomial evaluates to the expected values at specific points, as shown in Figure 4-14.
+　証明者の目標は、ある特定のデータ（現在は多項式としてエンコードされている）を知っていることを検証者に納得させることです。しかし、証明者はデータセット全体を明かしたくありません。代わりに、検証者がデータに関する特定の主張を検証できるようにしたいと考えています。特に、証明者は多項式が特定の点で期待される値に評価されることを検証者に確認してもらいたいのです（図4-14参照）。
 
-![Prover wants to prove specific evaluations](images/ch4/maet_0414.png)
+![証明者が特定の評価を証明したい](images/ch4/maet_0414.png)
 
-Figure 4-14. The prover wants to prove the evaluation of the polynomial at specific points
+図4-14 証明者が特定の点での多項式の評価を証明したい
 
-To achieve this goal, the prover computes the KZG commitment of the polynomial and sends it to the verifier, as shown in Figure 4-15.
+　この目標を達成するために、証明者は多項式のKZGコミットメントを計算し、検証者に送信します（図4-15参照）。
 
-![Prover computes and sends commitment](images/ch4/maet_0415.png)
+![証明者がコミットメントを計算して送信](images/ch4/maet_0415.png)
 
-Figure 4-15. The prover computes KZG commitment C and sends it to the verifier
+図4-15 証明者がKZGコミットメントCを計算し、検証者に送信する
 
-Then, the prover needs to compute the KZG proof for all evaluations that they want to prove to the verifier, as shown in Figure 4-16.
+　次に、証明者は検証者に証明したいすべての評価に対するKZG証明を計算する必要があります（図4-16参照）。
 
-![Prover computes KZG proofs](images/ch4/maet_0416.png)
+![証明者がKZG証明を計算](images/ch4/maet_0416.png)
 
-Figure 4-16. The prover computes the KZG proof of different evaluations of the polynomials and sends it to the verifier
+図4-16 証明者が多項式のさまざまな評価のKZG証明を計算し、検証者に送信する
 
-Now, it's the verifier's turn. To make sure that the prover is honest, the verifier needs to compute the elliptic curve pairing check using the information that the prover has previously sent, along with the trusted setup, as you can see in Figure 4-17.
+　ここで検証者の番です。証明者が正直であることを確認するために、検証者は証明者が以前に送信した情報とトラステッド セットアップを使って、楕円曲線のペアリング チェックを計算する必要があります（図4-17参照）。
 
-![Verifier checks the proofs](images/ch4/maet_0417.png)
+![検証者が証明を確認](images/ch4/maet_0417.png)
 
-Figure 4-17. The verifier checks the validity of the evaluations through an elliptic curve pairing operation
+図4-17 検証者が楕円曲線のペアリング演算を通じて評価の有効性を確認する
 
-## Conclusion
+## 結論
 
-We provided a survey of PKC and focused on the use of public and private keys in Ethereum and of cryptographic tools, such as hash functions, in the creation and verification of Ethereum addresses. We also looked at digital signatures and how they can show ownership of a private key without revealing that key. In Chapter 5, we’ll put these ideas together and look at how wallets can be used to manage collections of keys.
+　PKCの概要を提供し、イーサリアムにおける公開鍵と秘密鍵の使用、およびイーサリアム アドレスの作成と検証におけるハッシュ関数などの暗号ツールの使用に焦点を当てました。また、デジタル署名が秘密鍵を明かすことなくその所有を示す方法についても見ました。第5章では、これらのアイデアを統合し、ウォレットを使って鍵のコレクションを管理する方法を見ていきます。

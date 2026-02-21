@@ -1,1 +1,6 @@
 book
+.venv/
+
+# Service account keys (reverse sync)
+service-account-*.json
+ethereum-book-*.json

@@ -1,247 +1,247 @@
-# Chapter 10. Tokens
+# 第10章 トークン
 
-The word *token* derives from the Old English *tācen*, meaning a sign or symbol. It is commonly used to refer to privately issued, special-purpose, coin-like items of insignificant intrinsic value, such as transportation tokens, laundry tokens, and arcade-game tokens. Nowadays, tokens administered on blockchains are redefining the word to mean blockchain-based abstractions that can be owned and that represent assets, currency, or access rights.
+　*token*（トークン）という言葉は、古英語の*tācen*に由来し、記号やシンボルを意味します。一般的には、交通トークン、コインランドリーのトークン、アーケードゲームのトークンなど、本質的な価値がほとんどない、私的に発行された特殊用途のコイン状のものを指す言葉として使われてきました。今日では、ブロックチェーン上で管理されるトークンがこの言葉の意味を再定義しつつあり、所有可能で資産、通貨、またはアクセス権を表現するブロックチェーンベースの抽象概念を意味するようになっています。
 
-The association between the word *token* and insignificant value has a lot to do with the limited use of the physical versions of tokens. Often restricted to specific businesses, organizations, or locations, physical tokens are not easily exchangeable and typically have only one function. With blockchain tokens, these restrictions are lifted or, to be more accurate, are completely redefinable. Many blockchain tokens serve multiple purposes globally and can be traded for one another or for other currencies on global liquid markets. With the restrictions on use and ownership gone, the “insignificant value” expectation is also a thing of the past.
+　*token*という言葉と取るに足らない価値との結びつきは、物理的なトークンの用途が限定的であったことに大きく関係しています。物理的なトークンは、特定の事業者、組織、場所に限定されることが多く、容易に交換できず、通常は単一の機能しか持ちません。ブロックチェーン トークンでは、こうした制約が取り除かれるか、より正確に言えば、完全に再定義可能になります。多くのブロックチェーン トークンはグローバルに複数の目的を果たし、グローバルな流動性のある市場で互いに、または他の通貨と交換できます。使用や所有に関する制約がなくなることで、「取るに足らない価値」という期待も過去のものとなっています。
 
-In this chapter, we look at various uses for tokens and how they are created. We also discuss attributes of tokens, such as fungibility and intrinsicality. Finally, we examine the standards and technologies that they are based on and experiment by building our own tokens.
+　本章では、トークンのさまざまな用途と、トークンの作成方法について説明します。また、代替可能性や内在性といったトークンの属性についても議論します。最後に、トークンの基盤となる標準規格や技術を検証し、独自のトークンを構築する実験を行います。
 
-## How Tokens Are Used
+## トークンの使われ方
 
-The most obvious use of tokens is as digital private currencies. However, this is only one possible use. Tokens can be programmed to serve many different functions, which often overlap. For example, a token can simultaneously convey a voting right, an access right, and ownership of a resource. As the following list shows, currency is just the first “app”:
+　トークンの最も明白な用途は、デジタルの私的通貨です。しかし、これは可能な用途のひとつに過ぎません。トークンはさまざまな機能を果たすようにプログラムでき、それらはしばしば重複します。たとえば、あるトークンが投票権、アクセス権、リソースの所有権を同時に持つことがあります。以下のリストが示すように、通貨は最初の「アプリ」に過ぎません。
 
-**Currency**
+**通貨**
 
-A token can serve as a form of currency, with a value determined through private trade.
+トークンは通貨の一形態として機能し、その価値は私的な取引を通じて決定される。
 
-**Resource**
+**リソース**
 
-A token can represent a resource earned or produced in a sharing economy or resource-sharing environment—for example, a storage or CPU token representing resources that can be shared over a network.
+トークンは、シェアリング エコノミーやリソース共有環境で獲得または生成されたリソースを表現できる。たとえば、ネットワーク上で共有可能なリソースを表すストレージ トークンやCPUトークンなどである。
 
-**Asset**
+**資産**
 
-A token can represent ownership of an intrinsic or extrinsic, tangible or intangible asset—for example, gold, real estate, a car, oil, energy, MMOG items, and so on.
+トークンは、内在的または外在的、有形または無形の資産の所有権を表現できる。たとえば、金、不動産、自動車、石油、エネルギー、MMOGのアイテムなどである。
 
-**Access**
+**アクセス**
 
-A token can represent access rights and can grant access to a digital or physical property, such as a discussion forum, an exclusive website, a hotel room, or a rental car.
+トークンはアクセス権を表現し、ディスカッション フォーラム、限定的なウェブサイト、ホテルの部屋、レンタカーなど、デジタルまたは物理的な資産へのアクセスを付与できる。
 
-**Equity**
+**エクイティ**
 
-A token can represent shareholder equity in a digital organization (e.g., a DAO) or legal entity (e.g., a corporation).
+トークンは、デジタル組織（例: DAO）または法人（例: 株式会社）における株主資本を表現できる。
 
-**Voting**
+**投票**
 
-A token can represent voting rights in a digital or legal system.
+トークンはデジタルまたは法的システムにおける投票権を表現できる。
 
-**Collectible**
+**コレクティブル**
 
-A token can represent a digital collectible (e.g., CryptoPunks) or physical collectible (e.g., a painting).
+トークンはデジタル コレクティブル（例: CryptoPunks）または物理的なコレクティブル（例: 絵画）を表現できる。
 
-**Identity**
+**アイデンティティ**
 
-A token can represent a digital identity (e.g., an avatar) or a legal identity (e.g., a national ID).
+トークンはデジタル アイデンティティ（例: アバター）または法的なアイデンティティ（例: 国民ID）を表現できる。
 
-**Attestation**
+**アテステーション**
 
-A token can represent a certification or attestation of fact by some authority or by a decentralized reputation system (e.g., a marriage record, birth certificate, or college degree).
+トークンは、何らかの権威者または分散型評判システムによる事実の証明やアテステーションを表現できる（例: 婚姻届、出生証明書、大学の学位）。
 
-**Utility**
+**ユーティリティ**
 
-A token can be used to access or pay for a service.
+トークンはサービスへのアクセスや支払いに利用できる。
 
-Often, a single token encompasses several of these functions. Sometimes it is hard to discern between them because the physical equivalents have always been inextricably linked. For example, in the physical world, a driver’s license (attestation) is also an identity document (identity), and the two cannot be separated. In the digital realm, previously commingled functions can be separated and developed independently (e.g., an anonymous attestation).
+　多くの場合、ひとつのトークンがこれらの機能を複数兼ね備えています。物理的な同等物が常に不可分に結びついてきたため、これらを区別するのが難しいこともあります。たとえば、物理的な世界では、運転免許証（アテステーション）はアイデンティティ文書（アイデンティティ）でもあり、この2つを分離することはできません。デジタルの領域では、以前は混在していた機能を分離し、独立して発展させることが可能です（例: 匿名のアテステーション）。
 
-## Tokens and Fungibility
+## トークンと代替可能性
 
-[Wikipedia](https://oreil.ly/ge7zP) says, “In economics, fungibility is the property of a good or a commodity whose individual units are essentially interchangeable.” Tokens are *fungible* when we can substitute any single unit of the token for another without any difference in its value or function.
+　[Wikipedia](https://oreil.ly/ge7zP)によると、「経済学において、代替可能性とは、財や商品の個々の単位が本質的に交換可能である性質のこと」です。トークンが*代替可能*であるとは、トークンのいかなる単一の単位を別の単位に置き換えても、その価値や機能に違いが生じないことを意味します。
 
-*Nonfungible* *tokens* (NFTs) are tokens that each represent a unique tangible or intangible item and therefore are not interchangeable. For example, a token that represents ownership of a *specific* Van Gogh painting is not equivalent to another token that represents a Picasso, even though they may be part of the same “art ownership token” system. Similarly, a token representing a *specific* digital collectible, such as a specific CryptoKitty, is not interchangeable with any other CryptoKitty. Each NFT is associated with a unique identifier, such as a serial number.
+　*非代替性トークン*（NFT）は、各トークンが固有の有形または無形のアイテムを表現するため、相互に交換できないトークンです。たとえば、*特定の*ファン・ゴッホの絵画の所有権を表すトークンは、ピカソの絵画を表す別のトークンと同等ではありません。たとえ同じ「アート所有権トークン」システムの一部であっても同様です。同様に、*特定の*デジタル コレクティブル（特定のCryptoKittyなど）を表すトークンは、他のいかなるCryptoKittyとも交換できません。各NFTには、シリアルナンバーなどの固有の識別子が関連付けられています。
 
-We will see examples of both fungible and nonfungible tokens later in this chapter.
+　本章の後半で、代替可能トークンと非代替性トークンの両方の例を見ていきます。
 
-> **Note**
+> **注**
 >
-> Note that *fungible* is often used to mean “directly exchangeable for money” (for example, a casino token can be “cashed in,” while laundry tokens typically cannot). This is *not* the sense in which we use the word here.
+> *代替可能*（fungible）は「お金と直接交換可能」という意味で使われることがよくある（たとえば、カジノのトークンは「換金」できるが、コインランドリーのトークンは通常できない）。本書ではこの意味では使用していない。
 
-## Counterparty Risk
+## カウンターパーティ リスク
 
-*Counterparty risk* is the risk that the *other* party in a transaction will fail to meet their obligations. Some types of transactions suffer additional counterparty risk because there are more than two parties involved. For example, if you hold a certificate of deposit for a precious metal and you sell that to someone, there are at least three parties in that transaction: the seller, the buyer, and the custodian of the precious metal. Someone holds the physical asset; by necessity, they become party to the fulfillment of the transaction and add counterparty risk to any transaction involving that asset. In general, when an asset is traded indirectly through the exchange of a token of ownership, there is additional counterparty risk from the custodian of the asset. Do they have the asset? Will they recognize (or allow) the transfer of ownership based on the transfer of a token (such as a certificate, deed, title, or digital token)? In the world of digital tokens representing assets, as in the nondigital world, it is important to understand who holds the asset that is represented by the token and what rules apply to that underlying asset.
+　*カウンターパーティ リスク*とは、取引の*相手方*が義務を果たさないリスクのことです。取引に2つ以上の当事者が関与すると、カウンターパーティ リスクはさらに増大します。たとえば、貴金属の預かり証を持っていて、それを誰かに売る場合、そのトランザクションには少なくとも3つの当事者が存在します。売り手、買い手、そして貴金属の保管者です。誰かが物理的な資産を保有しており、その人は必然的にトランザクションの履行に関わる当事者となり、その資産に関連するあらゆるトランザクションにカウンターパーティ リスクを追加します。一般的に、所有権トークンの交換を通じて資産が間接的に取引される場合、資産の保管者からの追加的なカウンターパーティ リスクが発生します。保管者は資産を保有しているのでしょうか。トークン（証書、権利書、権原、デジタル トークンなど）の移転に基づく所有権の移転を認識（または許可）するのでしょうか。資産を表すデジタル トークンの世界でも、非デジタルの世界と同様に、トークンが表す資産を誰が保有し、その原資産にどのようなルールが適用されるかを理解することが重要です。
 
-## Tokens and Intrinsicality
+## トークンと内在性
 
-The word *intrinsic* derives from the Latin *intra*, meaning “from within.” Some tokens represent digital items that are intrinsic to the blockchain. Those digital assets are governed by consensus rules, just like the tokens themselves. This has an important implication: tokens that represent intrinsic assets do not carry additional counterparty risk. If you hold the keys for a CryptoKitty, there is no other party holding that CryptoKitty for you—you own it directly. The blockchain consensus rules apply, and your ownership (i.e., control) of the private keys is equivalent to ownership of the asset, without any intermediary.
+　*intrinsic*（内在的）という言葉は、ラテン語の*intra*（内側から）に由来します。一部のトークンは、ブロックチェーンに内在するデジタル アイテムを表現します。こうしたデジタル資産は、トークン自体と同様にコンセンサス ルールによって管理されます。ここに重要な意味があります。内在的な資産を表すトークンには、追加のカウンターパーティ リスクが伴いません。CryptoKittyの鍵を保有していれば、他の誰かがそのCryptoKittyをあなたのために保管しているわけではありません。あなたが直接所有しています。ブロックチェーンのコンセンサス ルールが適用され、秘密鍵の所有（すなわち管理）が、仲介者なしに資産の所有と同等になります。
 
-Conversely, many tokens are used to represent *extrinsic* things, such as real estate, corporate voting shares, trademarks, gold bars, and bonds. The ownership of these items, which are not “within” the blockchain, is governed by law, custom, and policy, separate from the consensus rules that govern the token. In other words, token issuers and owners may still depend on real-world nonsmart contracts. As a result, these extrinsic assets carry additional counterparty risk because they are held by custodians, recorded in external registries, or controlled by laws and policies outside the blockchain environment.
+　逆に、多くのトークンは、不動産、企業の議決権株式、商標、金塊、債券など、*外在的*なものを表現するために使用されます。ブロックチェーンの「内側」にないこれらのアイテムの所有権は、トークンを管理するコンセンサス ルールとは別に、法律、慣習、方針によって管理されます。言い換えれば、トークンの発行者と所有者は、現実世界の非スマートコントラクトに依然として依存する可能性があります。その結果、こうした外在的資産は、保管者によって保有され、外部の登記簿に記録され、またはブロックチェーン環境外の法律や方針によって管理されるため、追加のカウンターパーティ リスクを伴います。
 
-One of the most important ramifications of blockchain-based tokens is the ability to convert extrinsic assets into intrinsic assets and thereby remove counterparty risk. A good example is moving from equity in a corporation (extrinsic) to an equity or voting token in a DAO or similar (intrinsic) organization. Stablecoins serve as another example, acting as blockchain-based tokens pegged to fiat currencies and backed by extrinsic assets like treasury bills and cash reserves.
+　ブロックチェーン ベースのトークンの最も重要な意義のひとつは、外在的資産を内在的資産に変換し、カウンターパーティ リスクを除去できることです。良い例として、企業のエクイティ（外在的）からDAOまたは類似の（内在的）組織におけるエクイティ トークンや投票トークンへの移行が挙げられます。ステーブルコインもまた、法定通貨にペッグされ、国債や現金準備などの外在的資産によって裏付けられたブロックチェーン ベースのトークンとして、もうひとつの例を提供しています。
 
-## Utility, Equity, or Cash Grab?
+## ユーティリティか、エクイティか、それとも金集めか
 
-Almost every Ethereum project seems to launch with some sort of token. But do all these projects really need tokens? The slogan “Tokenize all the things” sounds catchy, but the reality is far more complex. Tokens can be powerful tools for organizing and incentivizing communities, but they’ve also become synonymous with speculation and hype.
+　ほぼすべてのイーサリアム プロジェクトが何らかのトークンを伴ってローンチされているようです。しかし、これらすべてのプロジェクトに本当にトークンが必要なのでしょうか。「すべてをトークン化しよう」というスローガンはキャッチーに聞こえますが、現実ははるかに複雑です。トークンはコミュニティを組織し、インセンティブを与えるための強力なツールになり得ますが、投機やハイプの代名詞にもなっています。
 
-In theory, tokens serve two primary purposes. First, there are *utility tokens.* These are designed to provide access to a service or resource within a specific ecosystem. For example, a token might represent storage space on a decentralized network or access to premium features in a DApp. The token’s value, in this case, is tied to its function within the platform. Second, we have *equity tokens*, which are supposed to function like shares in a company. These tokens can represent ownership or control in a project, such as voting rights in a DAO or a share of profits.
+　理論上、トークンには2つの主要な目的があります。まず、*ユーティリティ トークン*があります。ユーティリティ トークンは、特定のエコシステム内でサービスやリソースへのアクセスを提供するために設計されています。たとえば、分散型ネットワーク上のストレージ容量やDAppのプレミアム機能へのアクセスを表すトークンがあります。この場合、トークンの価値はプラットフォーム内での機能に紐づきます。次に、*エクイティ トークン*があります。エクイティ トークンは企業の株式のように機能することを意図しています。DAOにおける議決権やプロジェクトの利益配分など、所有権や支配権を表現できます。
 
-In practice, the distinction between these categories is often blurred. Many utility tokens remain largely speculative, with users holding them more as assets than as access credentials. Equity-like tokens may grant governance rights but often lack mechanisms to ensure meaningful participation. Some projects integrate their tokens deeply into their economic models, but these cases remain the exception rather than the rule.
+　しかし実際には、これらのカテゴリの区別はしばしば曖昧です。多くのユーティリティ トークンは依然として大部分が投機的であり、ユーザーはアクセス資格としてよりも資産として保有しています。エクイティ的なトークンはガバナンス権を付与することがありますが、意味のある参加を保証するメカニズムを欠いていることが多いです。トークンを経済モデルに深く統合しているプロジェクトもありますが、そうしたケースはルールというより例外のままです。
 
-This brings us to the question: are tokens inherently bad? Not at all. Tokens can be incredibly effective for creating and incentivizing communities or powering decentralized governance in a DAO. But the reality is that most tokens are launched with profit, not utility, as the primary motivator. If you’re thinking of launching a token or investing in one, it’s worth asking some tough questions. Does the token truly serve a necessary purpose in the protocol, or is it just a fundraising tool? Would the project work just as well without it? Answering these questions honestly can help you distinguish between genuine innovation and marketing-driven hype.
+　ここで疑問が生じます。トークンは本質的に悪いものなのでしょうか。まったくそうではありません。トークンは、コミュニティの創造とインセンティブ付与や、DAOにおける分散型ガバナンスの推進に非常に効果的です。しかし現実には、ほとんどのトークンは、ユーティリティではなく利益を主な動機としてローンチされています。トークンのローンチや投資を考えているなら、厳しい問いを投げかける価値があります。そのトークンはプロトコルに本当に必要な目的を果たしているのか、それとも単なる資金調達ツールなのか。トークンなしでもプロジェクトは同じようにうまくいくのではないか。これらの問いに正直に答えることで、本物のイノベーションとマーケティング主導のハイプを区別できるようになります。
 
-It’s clear that the token landscape is still evolving, and tokens are not inherently good or bad; their value depends on how they’re designed and implemented. The challenge lies in separating the meaningful from the meaningless and resisting the lure of the next meme coin.
+　トークンの状況は未だ発展途上であり、トークンは本質的に善でも悪でもありません。その価値は、どのように設計され実装されるかに依存します。課題は、意味のあるものと無意味なものを分別し、次のミームコインの誘惑に抗うことにあります。
 
-> **Note**
+> **注**
 >
-> During the writing of this chapter (January 2025), the newly elected president Donald Trump launched his own meme coin, which reached a market cap of $15 billion within a single day. Many had anticipated favorable crypto policies from his presidency, but instead, we got a meme coin. This event highlights the speculative frenzy dominating crypto, where hype often triumphs over substance.
+> 本章の執筆時点（2025年1月）、新しく選出された大統領ドナルド・トランプが独自のミームコインをローンチし、わずか1日で時価総額150億ドルに達した。多くの人が暗号資産に好意的な政策を期待していたが、代わりに得られたのはミームコインであった。この出来事は、ハイプが実質に勝ることが多い、暗号資産を支配する投機的な熱狂を浮き彫りにしている。
 
-## It’s a Duck!
+## あひるだ
 
-Tokens have long been a favorite fundraising tool for startups. They promise innovation, decentralization, and sometimes outright financial freedom. But here’s the catch: offering securities to the public is a regulated activity in most jurisdictions, and tokens can easily cross the line into securities territory. For years, projects have tried to sidestep regulations by branding their tokens as “utility tokens,” claiming they’re just a presale of access to future services. The logic goes: if the token isn’t an equity share, it’s not a security. But as the old saying goes, “If it walks like a duck and quacks like a duck, it’s a duck.” And regulators, especially the US Securities and Exchange Commission (SEC), are paying attention to these ducks.
+　トークンは長い間、スタートアップのお気に入りの資金調達ツールでした。イノベーション、分散化、そして時には完全な経済的自由を約束します。しかし問題があります。一般への証券の提供はほとんどの法域で規制された活動であり、トークンは容易に証券の領域に踏み込み得るのです。何年もの間、プロジェクトはトークンを「ユーティリティ トークン」と称し、将来のサービスへのアクセスの先行販売に過ぎないと主張することで、規制を回避しようとしてきました。そのロジックは、トークンがエクイティの持分でなければ証券ではないというものです。しかし、古い格言にあるように、「あひるのように歩き、あひるのように鳴くなら、それはあひるだ」ということです。そして規制当局、特に米国証券取引委員会（SEC）は、このあひるたちに注目しています。
 
-Over the last few years, the SEC has taken an increasingly aggressive stance against token offerings, striking down projects that try to straddle the line between utility and equity. For example, in 2020, the SEC sued Ripple Labs over their XRP token, arguing it was an unregistered security. Ripple claimed XRP was a currency, not a security, but the court’s partial rulings showed how nuanced these cases can be.
+　過去数年間、SECはトークン オファリングに対してますます積極的な姿勢をとり、ユーティリティとエクイティの境界線をまたごうとするプロジェクトを摘発してきました。たとえば2020年、SECはXRPトークンをめぐってRipple Labsを提訴し、未登録証券であると主張しました。Ripple側はXRPは通貨であり証券ではないと主張しましたが、裁判所の部分的な判決は、これらのケースがいかに微妙であるかを示しました。
 
-Even Ethereum itself wasn’t exempt from scrutiny. Back in 2018, former SEC officials declared that ether was “sufficiently decentralized” and thus not a security. But as recently as 2024, the SEC suggested that Ethereum’s transition to PoS could bring it back under the microscope. Why? Because staking rewards resemble dividends, and dividends are a hallmark of securities. These developments show just how fluid and unpredictable the regulatory landscape has become.
+　イーサリアム自体も監視を免れていませんでした。2018年、元SEC当局者はイーサが「十分に分散化されている」ため証券ではないと宣言しました。しかし2024年になっても、SECはイーサリアムのPoSへの移行により再び精査の対象になる可能性があると示唆しています。なぜでしょうか。ステーキング報酬が配当に類似しており、配当は証券の特徴だからです。こうした展開は、規制の状況がいかに流動的で予測不可能になっているかを示しています。
 
-What’s fascinating—and frustrating—is how often these cases boil down to semantics. Projects claim their tokens are utility tools, like tickets to a service. But if the primary motivation for buyers is speculation, the SEC sees a security, plain and simple. The challenge is that the legal framework used to make these determinations was created long before blockchain technology existed. The Howey Test, developed in the 1940s to define investment contracts, wasn’t designed for decentralized networks or programmable assets. As a result, applying it to crypto projects isn’t always straightforward. Innovators want to raise money and build communities, but regulators want to protect investors from being misled. The result? A courtroom drama that plays out over and over, with billions of dollars and entire ecosystems hanging in the balance.
+　興味深くもあり、苛立たしくもあるのは、これらのケースがいかに頻繁に意味論の問題に帰着するかということです。プロジェクトはトークンをサービスへのチケットのようなユーティリティ ツールだと主張します。しかし、購入者の主な動機が投機であれば、SECは端的に証券と見なします。問題は、こうした判断に使用される法的枠組みが、ブロックチェーン技術が存在するはるか以前に作られたものであることです。1940年代に投資契約を定義するために開発されたハウィー テストは、分散型ネットワークやプログラマブルな資産のために設計されたものではありません。そのため、暗号資産プロジェクトへの適用は必ずしも簡単ではありません。イノベーターは資金を調達してコミュニティを構築したいと考え、規制当局は投資家が誤解させられることから保護したいと考えています。その結果、何十億ドルもの資金とエコシステム全体の命運をかけた法廷劇が繰り返し展開されることになります。
 
-## Tokens on Ethereum
+## イーサリアム上のトークン
 
-Blockchain tokens existed before Ethereum. In some ways, the first blockchain currency, Bitcoin, is a token itself. Many token platforms were also developed on Bitcoin and other cryptocurrencies before Ethereum. However, the introduction of the first token standard on Ethereum led to an explosion of tokens.
+　ブロックチェーン トークンはイーサリアム以前にも存在していました。ある意味では、最初のブロックチェーン通貨であるBitcoinもトークンの一種です。イーサリアム以前にも、Bitcoinや他の暗号通貨上で多くのトークン プラットフォームが開発されました。しかし、イーサリアム上で最初のトークン標準が導入されたことが、トークンの爆発的な増加につながりました。
 
-Vitalik Buterin suggested tokens as one of the most obvious and useful applications of a generalized programmable blockchain such as Ethereum. In fact, during Ethereum’s first year, it was common to see Buterin and others wearing T-shirts emblazoned with the Ethereum logo and a smart contract sample on the back. There were several variations of this T-shirt, but the most common showed an implementation of a token.
+　ヴィタリック・ブテリンは、イーサリアムのような汎用プログラマブル ブロックチェーンの最も明白で有用なアプリケーションのひとつとしてトークンを提案しました。実際、イーサリアムの最初の1年間は、ブテリンや他の人々がイーサリアムのロゴとスマートコントラクトのサンプルが背面にプリントされたTシャツを着ているのをよく見かけました。このTシャツにはいくつかのバリエーションがありましたが、最も一般的なものはトークンの実装を示していました。
 
-Before we delve into the details of creating tokens on Ethereum, it is important to have an overview of how tokens work on Ethereum. Tokens are different from ether because the Ethereum protocol does not know anything about them. Sending ether is an intrinsic action of the Ethereum platform, but sending or even owning tokens is not. The ether balance of Ethereum accounts is handled at the protocol level, whereas the token balance of Ethereum accounts is handled at the smart contract level. To create a new token on Ethereum, you must create a new smart contract. Once the smart contract is deployed, it handles everything, including ownership, transfers, and access rights. You can write your smart contract to perform all the necessary actions any way you want, but it is probably wisest to follow an existing standard. We will look at such standards next.
+　イーサリアム上でのトークン作成の詳細に入る前に、イーサリアム上でトークンがどのように機能するかの概要を把握しておくことが重要です。トークンはイーサとは異なります。なぜなら、イーサリアム プロトコルはトークンについて何も知らないからです。イーサの送信はイーサリアム プラットフォームの固有のアクションですが、トークンの送信や所有はそうではありません。イーサリアム アカウントのイーサ残高はプロトコル レベルで処理されますが、イーサリアム アカウントのトークン残高はスマートコントラクト レベルで処理されます。イーサリアム上で新しいトークンを作成するには、新しいスマートコントラクトを作成する必要があります。スマートコントラクトがデプロイされると、所有権、送金、アクセス権など、すべてを処理します。スマートコントラクトは必要なアクションを自由に実装できますが、既存の標準に従うのがおそらく最も賢明です。次にそうした標準について見ていきます。
 
-## The ERC-20 Token Standard
+## ERC-20トークン標準
 
-The first standard was introduced in November 2015 by Fabian Vogelsteller as an ERC. It was automatically assigned GitHub issue number 20, giving rise to the name “ERC-20 token.” The vast majority of tokens are currently based on the ERC-20 standard. The ERC-20 request for comments eventually became EIP-20, but it is still mostly referred to by the original name, ERC-20.
+　最初の標準は2015年11月にファビアン・フォーゲルシュテラーによってERCとして提案されました。GitHubのイシュー番号20が自動的に割り当てられ、「ERC-20トークン」という名前が生まれました。現在、トークンの大多数がERC-20標準に基づいています。ERC-20のリクエスト フォー コメントは最終的にEIP-20となりましたが、今でもほとんどの場合、元の名前であるERC-20で参照されています。
 
-ERC-20 is a standard for fungible tokens, meaning that different units of an ERC-20 token are interchangeable and have no unique properties. The [ERC-20 standard](https://oreil.ly/Psw-O) defines a common interface for contracts implementing a token such that any compatible token can be accessed and used in the same way. The interface consists of a number of functions that must be present in every implementation of the standard as well as some optional functions and attributes that may be added by developers.
+　ERC-20は代替可能トークンの標準であり、ERC-20トークンの異なる単位は交換可能で固有の性質を持ちません。[ERC-20標準](https://oreil.ly/Psw-O)は、トークンを実装するコントラクトの共通インターフェースを定義しており、互換性のあるトークンは同じ方法でアクセスおよび使用できます。このインターフェースは、標準のすべての実装に存在しなければならないいくつかの関数と、開発者が追加できるオプションの関数および属性で構成されています。
 
-### ERC-20 required functions and events
+### ERC-20の必須関数とイベント
 
-A token contract that is compliant with ERC-20 must provide at least the following functions and events:
+　ERC-20に準拠するトークン コントラクトは、少なくとも以下の関数とイベントを提供する必要があります。
 
 `totalSupply`
 
-Returns the total units of this token that currently exist. ERC-20 tokens can have a fixed or a variable supply.
+現在存在するトークンの総単位数を返す。ERC-20トークンは固定または可変の供給量を持つことができる。
 
 `balanceOf`
 
-Given an address, returns the token balance of that address.
+アドレスが与えられると、そのアドレスのトークン残高を返す。
 
 `transfer`
 
-Given an address and amount, transfers that number of tokens to that address from the balance of the address that executed the transfer.
+アドレスと数量が与えられると、transferを実行したアドレスの残高からそのアドレスへ、指定された数のトークンを送金する。
 
 `transferFrom`
 
-Given a sender, recipient, and amount, transfers tokens from one account to another. Used in combination with `approve`.
+送信者、受信者、数量が与えられると、あるアカウントから別のアカウントへトークンを送金する。`approve`と組み合わせて使用する。
 
 `approve`
 
-Given a recipient address and amount, authorizes that address to execute several transfers up to that amount from the account that issued the approval.
+受信者アドレスと数量が与えられると、承認を発行したアカウントから指定された数量まで複数回の送金を実行する権限を、そのアドレスに付与する。
 
 `allowance`
 
-Given an owner address and a spender address, returns the remaining amount that the spender is approved to withdraw from the owner.
+所有者アドレスと支出者アドレスが与えられると、支出者が所有者から引き出すことを承認されている残りの数量を返す。
 
 `transfer`
 
-Event triggered upon a successful transfer (call to `transfer` or `transferFrom`), even for zero-value transfers.
+成功した送金（`transfer`または`transferFrom`の呼び出し）時に発行されるイベント。ゼロ値の送金でも発行される。
 
 `approval`
 
-Event logged upon a successful call to `approve`.
+`approve`の呼び出しが成功した時に記録されるイベント。
 
-#### ERC-20 optional functions
+#### ERC-20のオプション関数
 
-In addition to the required functions listed in the previous section, the following optional functions are also defined by the standard:
+　前のセクションで列挙した必須関数に加えて、以下のオプション関数も標準で定義されています。
 
 **Name**
 
-Returns the human-readable name (e.g., “US dollars”) of the token.
+トークンの人間が読める名前（例: 「US dollars」）を返す。
 
 **Symbol**
 
-Returns a human-readable symbol (e.g., “USD”) for the token.
+トークンの人間が読めるシンボル（例: 「USD」）を返す。
 
 **decimals**
 
-Returns the number of decimals used to divide token amounts. For example, if the number of decimals is 2, then a token amount of 1,000 actually means a balance of 10.
+トークンの数量を分割するために使用される小数点以下の桁数を返す。たとえば、小数点以下の桁数が2の場合、トークン数量1,000は実際には残高10を意味する。
 
-#### The ERC-20 interface defined in Solidity
+#### Solidityで定義されたERC-20インターフェース
 
-Here’s what an ERC-20 interface specification looks like in Solidity:
+　ERC-20のインターフェース仕様をSolidityで表すと、以下のようになります。
 
 ```solidity
 contract ERC20 {
-   function totalSupply() public view returns (uint256 theTotalSupply);
-   function balanceOf(address _owner) public view returns (uint256 balance);
-   function transfer(address _to, uint256 _value) public returns (bool success);
-   function transferFrom(address _from, address _to, uint256 _value) public returns
-      (bool success);
-   function approve(address _spender, uint256 _value) public returns (bool success);
-   function allowance(address _owner, address _spender) public view returns
-      (uint256 remaining);
-   event Transfer(address indexed _from, address indexed _to, uint256 _value);
-   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+   function totalSupply() public view returns (uint256 theTotalSupply);
+   function balanceOf(address _owner) public view returns (uint256 balance);
+   function transfer(address _to, uint256 _value) public returns (bool success);
+   function transferFrom(address _from, address _to, uint256 _value) public returns
+      (bool success);
+   function approve(address _spender, uint256 _value) public returns (bool success);
+   function allowance(address _owner, address _spender) public view returns
+      (uint256 remaining);
+   event Transfer(address indexed _from, address indexed _to, uint256 _value);
+   event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 }
 ```
 
-#### ERC-20 data structures
+#### ERC-20のデータ構造
 
-If you examine any ERC-20 implementation, you will see that it contains two data structures: one to track balances and one to track allowances. In Solidity, they are implemented with a *data mapping*.
+　ERC-20の実装を調べると、2つのデータ構造が含まれていることがわかります。ひとつは残高を追跡するもの、もうひとつはアロワンスを追跡するものです。Solidityでは、*データ マッピング*を使用して実装されています。
 
-The first data mapping implements an internal table of token balances, by owner. This allows the token contract to keep track of who owns the tokens. Each transfer is a deduction from one balance and an addition to another balance:
+　最初のデータ マッピングは、所有者ごとのトークン残高の内部テーブルを実装します。トークン コントラクトはこれにより、誰がトークンを所有しているかを追跡できます。各送金は、ある残高からの差し引きと別の残高への加算です。
 
 ```solidity
 mapping(address account => uint256) _balances;
 ```
 
-The second data structure is a data mapping of allowances. As we will see in the next section, with ERC-20 tokens, an owner of a token can delegate authority to a spender, allowing them to spend a specific amount (allowance) from the owner’s balance. The ERC-20 contract keeps track of the allowances with a two-dimensional mapping, with the primary key being the address of the token owner, mapping to a spender address and an allowance amount:
+　2番目のデータ構造は、アロワンスのデータ マッピングです。次のセクションで説明するように、ERC-20トークンでは、トークンの所有者が支出者に権限を委任し、所有者の残高から特定の金額（アロワンス）を使用することを許可できます。ERC-20コントラクトは、2次元のマッピングでアロワンスを追跡します。主キーはトークン所有者のアドレスで、支出者アドレスとアロワンスの金額にマッピングされます。
 
 ```solidity
 mapping(address account => mapping(address spender => uint256)) public _allowances;
 ```
 
-#### ERC-20 workflows: “Transfer” and “approve and transferFrom”
+#### ERC-20のワークフロー: 「transfer」と「approveとtransferFrom」
 
-The ERC-20 token standard has two transfer functions. You might be wondering why.
+　ERC-20トークン標準には2つの送金関数があります。なぜ2つあるのか疑問に思うかもしれません。
 
-ERC-20 allows for two different workflows. The first is a straightforward single-transaction workflow using the `transfer` function. This workflow is the one used by wallets to send tokens to other wallets. The vast majority of token transactions happen with the `transfer` workflow.
+　ERC-20では2つの異なるワークフローが可能です。最初のワークフローは、`transfer`関数を使用する単純な単一トランザクションのワークフローです。このワークフローは、ウォレットが他のウォレットにトークンを送信する際に使用されます。トークン トランザクションの大多数は`transfer`ワークフローで行われます。
 
-Executing the transfer contract is very simple. If Alice wants to send 10 tokens to Bob, her wallet sends a transaction to the token contract’s address, calling the `transfer` function with Bob’s address and `10` as the arguments. The token contract adjusts Alice’s balance (–10) and Bob’s balance (+10) and issues a `Transfer` event.
+　transferコントラクトの実行は非常に単純です。アリスがボブに10トークンを送りたい場合、アリスのウォレットはトークン コントラクトのアドレスにトランザクションを送信し、ボブのアドレスと`10`を引数として`transfer`関数を呼び出します。トークン コントラクトはアリスの残高（−10）とボブの残高（+10）を調整し、`Transfer`イベントを発行します。
 
-The second workflow is a two-transaction workflow that uses `approve` followed by `transferFrom`. This workflow allows a token owner to delegate their control to another address. It is most often used to delegate control to a contract for distribution of tokens, but it can also be used by exchanges. For example, if a company is selling tokens for an ICO, they can `approve` a crowdsale contract address to distribute a certain number of tokens. The crowdsale contract can then `transferFrom` the token contract owner’s balance to each buyer of the token, as illustrated in Figure 10-1.
+　2番目のワークフローは、`approve`に続いて`transferFrom`を使用する2トランザクションのワークフローです。このワークフローにより、トークンの所有者は自身の管理権を別のアドレスに委任できます。最もよく使われるのは、トークンの配布のためにコントラクトに管理権を委任するケースですが、取引所でも使用できます。たとえば、企業がICOのためにトークンを販売する場合、クラウドセール コントラクトのアドレスに対して一定数のトークンの`approve`を行えます。クラウドセール コントラクトは、トークン コントラクトの所有者の残高から各購入者へ`transferFrom`で送金できます（図10-1参照）。
 
-![The two-step approve and transferFrom workflow of ERC-20 tokens](images/ch10/maet_1001.png)
+![ERC-20トークンの2段階のapproveとtransferFromワークフロー](images/ch10/maet_1001.png)
 
-**Figure 10-1.** The two-step `approve` and `transferFrom` workflow of ERC-20 tokens
+**図10-1** ERC-20トークンの2段階の`approve`と`transferFrom`ワークフロー
 
-> **Note**
+> **注**
 >
-> An *initial coin offering* (ICO) is a crowdfunding mechanism used by companies and organizations to raise money by selling tokens. The term is derived from *initial public offering* (IPO), which is the process by which a public company offers shares for sale to investors on a stock exchange. Unlike the highly regulated IPO markets, ICOs are open, global, and messy.
+> *イニシャル コイン オファリング*（ICO）は、企業や組織がトークンを販売して資金を調達するクラウドファンディングの仕組みである。この用語は、公開企業が証券取引所で投資家に株式を売り出すプロセスである*新規株式公開*（IPO）に由来する。高度に規制されたIPO市場とは異なり、ICOはオープンでグローバルであり、混沌としている。
 
-For the `approve` and `transferFrom` workflow, two transactions are needed. Let’s say that Alice wants to allow the `AliceICO` contract to sell 50% of all the AliceCoin tokens to buyers like Bob and Charlie. First, Alice launches the `AliceCoin` ERC-20 contract, issuing all the AliceCoin to her own address. Then, Alice launches the `AliceICO` contract that can sell tokens for ether. Next, Alice initiates the `approve` and `transferFrom` workflow. She sends a transaction to the `AliceCoin` contract, calling `approve` with the address of the `AliceICO` contract and 50% of the `totalSupply` as arguments. This will trigger the `Approval` event. Now, the `AliceICO` contract can sell AliceCoin.
+　`approve`と`transferFrom`のワークフローでは、2つのトランザクションが必要です。アリスが`AliceICO`コントラクトにAliceCoinトークンの全体の50%を購入者（ボブやチャーリーなど）に販売することを許可したいとしましょう。まず、アリスは`AliceCoin` ERC-20コントラクトをローンチし、すべてのAliceCoinを自分のアドレスに発行します。次に、アリスはトークンをイーサと交換して販売できる`AliceICO`コントラクトをローンチします。その後、アリスは`approve`と`transferFrom`のワークフローを開始します。アリスは`AliceCoin`コントラクトにトランザクションを送信し、`AliceICO`コントラクトのアドレスと`totalSupply`の50%を引数として`approve`を呼び出します。これにより`Approval`イベントがトリガーされます。これで`AliceICO`コントラクトはAliceCoinを販売できるようになります。
 
-When the `AliceICO` contract receives ether from Bob, it needs to send some AliceCoin to Bob in return. Within the `AliceICO` contract is an exchange rate between AliceCoin and ether. The exchange rate that Alice set when she created the `AliceICO` contract determines how many tokens Bob will receive for the amount of ether sent to the `AliceICO` contract. When the `AliceICO` contract calls the AliceCoin `transferFrom` function, it sets Alice’s address as the sender and Bob’s address as the recipient and uses the exchange rate to determine how many AliceCoin tokens will be transferred to Bob in the `value` field. The `AliceCoin` contract transfers the balance from Alice’s address to Bob’s address and triggers a `Transfer` event. The `AliceICO` contract can call `transferFrom` an unlimited number of times, as long as it doesn’t exceed the approval limit Alice set. The `AliceICO` contract can keep track of how many AliceCoin tokens it can sell by calling the `allowance` function.
+　`AliceICO`コントラクトがボブからイーサを受け取ると、見返りにAliceCoinをボブに送る必要があります。`AliceICO`コントラクト内にはAliceCoinとイーサの交換レートがあります。アリスが`AliceICO`コントラクト作成時に設定した交換レートにより、`AliceICO`コントラクトに送信されたイーサの量に対してボブが受け取るトークン数が決まります。`AliceICO`コントラクトがAliceCoinの`transferFrom`関数を呼び出す際、アリスのアドレスを送信者、ボブのアドレスを受信者として設定し、交換レートを使用して`value`フィールドでボブに送金されるAliceCoinトークンの数を決定します。`AliceCoin`コントラクトはアリスのアドレスからボブのアドレスへ残高を送金し、`Transfer`イベントをトリガーします。`AliceICO`コントラクトは、アリスが設定した承認上限を超えない限り、`transferFrom`を無制限に呼び出すことができます。`AliceICO`コントラクトは`allowance`関数を呼び出すことで、販売可能なAliceCoinトークンの数を追跡できます。
 
-#### ERC-2612: Gasless transfers with “permit”
+#### ERC-2612: 「permit」によるガスレス送金
 
-In Chapter 9, we fully explored the ins and outs of the traditional `transfer` and `transferFrom` flows with ERC-20 tokens. While these methods have been the backbone of token transfers, they’re not without their limitations. Both require the sender to interact directly with the blockchain, which means they must have some native cryptocurrency on hand to cover gas fees. This creates a significant hurdle, especially when tokens are sent to a brand-new address without any native funds. It’s a frustrating experience and far from ideal.
+　第9章では、ERC-20トークンの従来の`transfer`と`transferFrom`フローの詳細を完全に検証しました。これらの方式はトークン送金の基盤として機能してきましたが、限界がないわけではありません。両方とも送信者がブロックチェーンと直接やり取りする必要があり、ガス代を賄うためにネイティブの暗号通貨を手元に持っていなければなりません。トークンがネイティブ資金を持たないまったく新しいアドレスに送信される場合、これは大きな障壁となります。フラストレーションが溜まる体験であり、理想的とは程遠いものです。
 
-This is where ERC-2612 steps in. It’s a clever addition to the ERC-20 token standard that lets users approve token transfers without having to touch the blockchain themselves. Here’s how it works: instead of sending an on-chain transaction to approve a transfer, you just sign the necessary data—things like the recipient’s address, the number of tokens, the expiration time, and a nonce—using your wallet. This creates a signature, and whoever needs to execute the transfer (whether it’s the recipient or another party) can submit that signature to the `permit` method of the token contract. The contract reads the signature, verifies it, and processes the approval, all without you needing to pay gas for the initial step. It’s efficient and secure, and it takes a lot of the hassle out of the process.
+　ここでERC-2612が登場します。ERC-2612は、ERC-20トークン標準への巧みな追加機能であり、ユーザーがブロックチェーンに直接触れることなくトークンの送金を承認できるようにします。仕組みはこうです。送金を承認するためにオンチェーン トランザクションを送信する代わりに、受信者のアドレス、トークン数、有効期限、nonceなどの必要なデータにウォレットで署名するだけです。これにより署名が作成され、送金を実行する必要がある人（受信者であれ他の当事者であれ）は、その署名をトークン コントラクトの`permit`メソッドに提出できます。コントラクトは署名を読み取り、検証し、承認を処理します。最初のステップでガスを支払う必要はありません。効率的で安全であり、プロセスから多くの手間を取り除きます。
 
-For ERC-2612 to work, token developers need to extend their ERC-20 contracts to include this functionality. Once it’s in place, it offers two key benefits for users. First, it simplifies the whole process. Instead of having to approve every single transfer, users can grant permission with one signature. Second, it saves on gas costs since you’re cutting down the number of transactions needed.
+　ERC-2612が機能するためには、トークン開発者がERC-20コントラクトを拡張してこの機能を含める必要があります。導入されれば、ユーザーに2つの主要なメリットを提供します。第一に、プロセス全体が簡素化されます。すべての送金を個別に承認する代わりに、ひとつの署名で許可を与えることができます。第二に、必要なトランザクション数が削減されるため、ガスコストが節約されます。
 
-#### ERC-20 implementations
+#### ERC-20の実装
 
-While it is possible to implement a token that is compatible with ERC-20 in about 30 lines of Solidity code, most implementations are more complex. This is to account for potential security vulnerabilities. The EIP-20 standard mentions two implementations, developed by Consensys and OpenZeppelin. The Consensys EIP-20 token has not been maintained since 2018, while [OpenZeppelin’s ERC-20 token](https://oreil.ly/7d7RD) became the de facto standard for developers and is actively maintained. This implementation forms the basis of OpenZeppelin libraries implementing more complex ERC-20-compatible tokens with fundraising caps, tokenized vaults, vesting schedules, and other features.
+　ERC-20と互換性のあるトークンは約30行のSolidityコードで実装可能ですが、ほとんどの実装はより複雑です。これは潜在的なセキュリティ脆弱性に対処するためです。EIP-20標準は、ConsensysとOpenZeppelinによって開発された2つの実装に言及しています。ConsensysのEIP-20トークンは2018年以降メンテナンスされていませんが、[OpenZeppelinのERC-20トークン](https://oreil.ly/7d7RD)が開発者にとってのデファクト スタンダードとなり、積極的にメンテナンスされています。この実装は、資金調達上限、トークン化されたボールト、ベスティング スケジュールなど、より複雑なERC-20互換トークンを実装するOpenZeppelinライブラリの基盤となっています。
 
-### Launching Our Own ERC-20 Token
+### 独自のERC-20トークンのローンチ
 
-Let’s create and launch our own token. For this example, we will use the Foundry framework. The example assumes that you have already [installed Foundry](https://oreil.ly/dfDGh) and configured it and that you are familiar with its basic operation.
+　独自のトークンを作成してローンチしましょう。この例ではFoundryフレームワークを使用します。この例は、[Foundryをすでにインストール](https://oreil.ly/dfDGh)して設定済みであり、基本的な操作に精通していることを前提としています。
 
-We will call our token the “Mastering Ethereum Token,” with the symbol MET. First, let’s create and initialize a Foundry project directory with the following commands:
+　トークンの名前は「Mastering Ethereum Token」、シンボルはMETとします。まず、以下のコマンドでFoundryプロジェクト ディレクトリを作成して初期化しましょう。
 
 ```bash
 $ mkdir METoken
@@ -249,26 +249,26 @@ $ cd METoken
 $ forge init
 ```
 
-You should now have the following directory structure:
+　以下のディレクトリ構造が作成されるはずです。
 
 ```
 METoken/
 ├── foundry.toml
 ├── lib
-│   └── forge-std
-│       └── ...
+│   └── forge-std
+│       └── ...
 ├── README.md
 ├── script
-│   └── Counter.s.sol
+│   └── Counter.s.sol
 ├── src
-│   └── Counter.sol
+│   └── Counter.sol
 └── test
-    └── Counter.t.sol
+    └── Counter.t.sol
 ```
 
-`Counter` is Foundry’s default example contract, which comes with its own test and deploy scripts. We will remove all its related files to make room for our token contract.
+　`Counter`はFoundryのデフォルトのサンプル コントラクトで、独自のテストとデプロイ スクリプトが付属しています。トークン コントラクトのスペースを確保するため、関連ファイルをすべて削除します。
 
-For our example, we will import the OpenZeppelin library, the industry standard for Solidity-based tokens:
+　この例では、Solidityベースのトークンの業界標準であるOpenZeppelinライブラリをインポートします。
 
 ```bash
 $ forge install OpenZeppelin/openzeppelin-contracts
@@ -276,25 +276,25 @@ $ forge install OpenZeppelin/openzeppelin-contracts
 Installed openzeppelin-contracts v5.2.0
 ```
 
-Inside *METoken/lib/openzeppelin-contracts/contracts*, we can now see all the OpenZeppelin contracts. The OpenZeppelin library includes a lot more than the ERC-20 token, but we will use only a small part of it.
+　*METoken/lib/openzeppelin-contracts/contracts*内に、すべてのOpenZeppelinコントラクトが表示されます。OpenZeppelinライブラリにはERC-20トークンよりもはるかに多くのものが含まれていますが、ここではそのごく一部のみを使用します。
 
-Next, let’s write our token contract. Create a new file, *METoken.sol*, and copy the code in Example 10-1. Our contract is very simple since it inherits all its functionality from the OpenZeppelin library.
+　次に、トークン コントラクトを書きましょう。新しいファイル*METoken.sol*を作成し、例10-1のコードをコピーします。OpenZeppelinライブラリからすべての機能を継承するため、コントラクトは非常にシンプルです。
 
-**Example 10-1. METoken.sol: a Solidity contract implementing an ERC-20 token**
+**例10-1 METoken.sol: ERC-20トークンを実装するSolidityコントラクト**
 
 ```solidity
 pragma solidity 0.8.28;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 contract METoken is ERC20 {
-    constructor(uint256 initialSupply) ERC20("METoken", "MET") {
-        _mint(msg.sender, initialSupply);
-    }
+    constructor(uint256 initialSupply) ERC20("METoken", "MET") {
+        _mint(msg.sender, initialSupply);
+    }
 }
 ```
 
-Here we are passing `"METoken"` and `"MET"` as name and symbol to the constructor of the ERC-20 contract. The token initial supply is provided during the deployment as a constructor parameter and will be sent to the deployer of this token contract (`msg.sender`). We are using the default value for decimals, 18, which is the widely adopted standard for ERC-20 tokens.
+　ここでは、ERC-20コントラクトのコンストラクタに名前として`"METoken"`、シンボルとして`"MET"`を渡しています。トークンの初期供給量はデプロイ時にコンストラクタのパラメータとして提供され、このトークン コントラクトのデプロイヤー（`msg.sender`）に送られます。decimalsにはデフォルト値の18を使用しています。これはERC-20トークンで広く採用されている標準です。
 
-We can now use Foundry to compile the `METoken` contract:
+　Foundryを使用して`METoken`コントラクトをコンパイルできます。
 
 ```bash
 $ forge build
@@ -304,33 +304,33 @@ $ forge build
 Compiler run successful!
 ```
 
-Let’s set up a deploy script to bring the `METoken` contract to the blockchain. Create a new file *METokenDeploy.s.sol*, in the *METoken/script* folder and copy the following code:
+　`METoken`コントラクトをブロックチェーンにデプロイするためのデプロイ スクリプトを設定しましょう。*METoken/script*フォルダに新しいファイル*METokenDeploy.s.sol*を作成し、以下のコードをコピーします。
 
 ```solidity
 pragma solidity 0.8.28;
 import {Script, console} from "forge-std/Script.sol";
 import {METoken} from "../src/METoken.sol";
 contract METokenDeployer is Script {
-    METoken public _METoken;
-    function run() public {
-        vm.startBroadcast();
-        _METoken = new METoken(50_000_000e18);
-        vm.stopBroadcast();
-    }
+    METoken public _METoken;
+    function run() public {
+        vm.startBroadcast();
+        _METoken = new METoken(50_000_000e18);
+        vm.stopBroadcast();
+    }
 }
 ```
 
-In this example, we are passing 50 million as the initial supply. Did you notice that we are multiplying by 1e18? Those are the token decimals. Remember that in order to have a balance of *X* tokens, we need a token amount of *X* × 10 ^ decimals.
+　この例では、初期供給量として5000万を渡しています。1e18を掛けていることに気づきましたか。それがトークンのdecimalsです。*X*トークンの残高を持つためには、*X* × 10 ^ decimals のトークン数量が必要であることを思い出してください。
 
-> **Note**
+> **注**
 >
-> The suffix *.s.sol* for scripts is a Foundry naming convention to quickly identify the purpose of a file. It is not a requirement—it’s enough to place the script files inside the script folder—but it’s a very good practice that will come in handy during development. The same applies to tests with the *.t.sol* suffix.
+> スクリプトの接尾辞*.s.sol*は、ファイルの目的を素早く識別するためのFoundryの命名規則である。要件ではなく、scriptフォルダ内にスクリプト ファイルを配置するだけで十分であるが、開発中に役立つ非常に良い慣行である。テストの*.t.sol*接尾辞にも同様のことが当てはまる。
 
-Before we deploy on one of the Ethereum test networks, let’s start a local blockchain to test everything. We will use another tool in the Foundry toolbox: Anvil, a local Ethereum development node. To use it, just open a new terminal and type `anvil`. The console will show a list of available accounts, their private keys, the chain ID, the RPC URL, and other information. The RPC URL is the endpoint that allows Foundry (or any Ethereum client) to communicate with our local blockchain node, enabling transactions, contract deployment, and data retrieval. Anvil’s default RPC is *http://127.0.0.1:8545*. To tell our deploy script to deploy on our local blockchain, we need to provide Anvil’s RPC URL as a console parameter with the flag `--rpc-url "http://127.0.0.1:8545"`.
+　イーサリアムのテスト ネットワークにデプロイする前に、ローカル ブロックチェーンを起動してすべてをテストしましょう。Foundryツールボックスのもうひとつのツールである、ローカルのイーサリアム開発ノードAnvilを使用します。使用するには、新しいターミナルを開いて`anvil`と入力するだけです。コンソールに利用可能なアカウント、秘密鍵、チェーンID、RPC URL、その他の情報のリストが表示されます。RPC URLは、Foundry（または任意のイーサリアム クライアント）がローカル ブロックチェーン ノードと通信し、トランザクション、コントラクトのデプロイ、データの取得を可能にするエンドポイントです。AnvilのデフォルトRPCは*http://127.0.0.1:8545*です。デプロイ スクリプトにローカル ブロックチェーンへのデプロイを指示するには、AnvilのRPC URLをコンソール パラメータとしてフラグ`--rpc-url "http://127.0.0.1:8545"`で提供する必要があります。
 
-The final piece we need is the private key of the deployer account. Since this is a local blockchain, the addresses we use on Ethereum mainnet or testnets won’t have any funds here, and we don’t want to expose real private keys unnecessarily. Instead, we’ll use the test accounts generated by Anvil when it starts up. These accounts come preloaded with 10,000 ETH on our local chain, making them perfect for development and testing.
+　最後に必要なのは、デプロイヤー アカウントの秘密鍵です。ローカル ブロックチェーンなので、イーサリアムのメインネットやテストネットで使用するアドレスにはここでは資金がなく、実際の秘密鍵を不必要にさらしたくありません。代わりに、Anvil起動時に生成されるテスト アカウントを使用します。これらのアカウントにはローカル チェーン上に10,000 ETHがプリロードされており、開発とテストに最適です。
 
-We are ready to deploy our token by running:
+　以下を実行してトークンをデプロイする準備が整いました。
 
 ```bash
 $ forge script script/METokenDeploy.s.sol --broadcast --rpc-url "http://127.0.0.1:8545"
@@ -340,88 +340,88 @@ No files changed, compilation skipped
 Script ran successfully.
 ```
 
-> **Note**
+> **注**
 >
-> You might be wondering what the `--broadcast` flag is for. That is to tell Foundry to actually broadcast the transaction to the blockchain. Without that, Foundry would just simulate the transaction.
+> `--broadcast`フラグが何のためにあるのか疑問に思うかもしれない。Foundryに実際にブロックチェーンにトランザクションをブロードキャストするよう指示するためである。このフラグがなければ、Foundryはトランザクションをシミュレートするだけである。
 
-The console output informed us that the deploy script ran successfully. If we take a look at the terminal where we are running Anvil, we will notice a lot of activity, among which is our contract creation:
+　コンソール出力は、デプロイ スクリプトが正常に実行されたことを通知しています。Anvilを実行しているターミナルを見ると、コントラクト作成を含む多くのアクティビティが確認できます。
 
 ```
-   Transaction: 0xd01e3a90e1f2ee60112658e92f4ebf04c24df67d2ec1315cfb79d145729d15ec
-    Contract created: 0x5FbDB2315678afecb367f032d93F642f64180aa3
-    Gas used: 941861
-    Block Number: 1
-    Block Hash: 0x748b6058dea932317cacf45bb63be82f253554f359b97ace224e35979a92b00a
-    Block Time: "Fri, 31 Jan 2025 19:10:42 +0000"
+   Transaction: 0xd01e3a90e1f2ee60112658e92f4ebf04c24df67d2ec1315cfb79d145729d15ec
+    Contract created: 0x5FbDB2315678afecb367f032d93F642f64180aa3
+    Gas used: 941861
+    Block Number: 1
+    Block Hash: 0x748b6058dea932317cacf45bb63be82f253554f359b97ace224e35979a92b00a
+    Block Time: "Fri, 31 Jan 2025 19:10:42 +0000"
 ```
 
-Our METoken was successfully deployed at the following address:
+　METokenは以下のアドレスに正常にデプロイされました。
 
 ```
 0x5FbDB2315678afecb367f032d93F642f64180aa3
 ```
 
-Alternatively, we can deploy our token using forge’s `create` console command:
+　また、forgeの`create`コンソール コマンドを使用してトークンをデプロイすることもできます。
 
 ```bash
 $ forge create METoken --broadcast --rpc-url http://127.0.0.1:8545 --private-key
 <DEPLOYER_PRIVATE_KEY> --constructor-args 50000000000000000000000000
 ```
 
-Here, the total supply is passed as a constructor argument, taking decimals into account.
+　ここでは、decimalsを考慮して総供給量がコンストラクタ引数として渡されています。
 
-#### Interacting with METoken
+#### METokenとのやり取り
 
-We can interact with our contract in several ways. We could use Remix (as we did in Chapter 2), a Solidity REPL like Foundry’s Chisel, or a JavaScript library like ethers.js. We could also execute transactions using Foundry scripts, which are what we are going to use for our examples.
+　コントラクトとのやり取りにはいくつかの方法があります。Remix（第2章で使用したもの）、FoundryのChiselのようなSolidity REPL、またはethers.jsのようなJavaScriptライブラリを使用できます。Foundryスクリプトを使用してトランザクションを実行することもでき、この例ではそれを使用します。
 
-Ethereum addresses are 40-character hexadecimal strings, which aren’t exactly easy to read. To make our examples clearer, we’ll assign nicknames to the two addresses we’re using: Deployer for the address that deployed the MET contract and Alice for a secondary address. We will also use one of Anvil’s prefunded addresses for Alice.
+　イーサリアム アドレスは40文字の16進数文字列であり、読みやすいとは言えません。例をわかりやすくするため、使用する2つのアドレスにニックネームを割り当てます。METコントラクトをデプロイしたアドレスをDeployer、2番目のアドレスをアリスとします。アリスにもAnvilのプリファンド アドレスのひとつを使用します。
 
-Let’s create a Foundry script to check the Deployer’s METoken balance and send some METoken to Alice. Copy the contents from the following code snippet and paste them in a new file *METoken/script/METokenInteraction.s.sol*:
+　Foundryスクリプトを作成して、DeployerのMEToken残高を確認し、アリスにMETokenを送信しましょう。以下のコード スニペットの内容をコピーして、新しいファイル*METoken/script/METokenInteraction.s.sol*に貼り付けます。
 
 ```solidity
 pragma solidity 0.8.28;
 import {Script, console} from "forge-std/Script.sol";
 import {METoken} from "../src/METoken.sol";
 contract METokenInteraction is Script {
-    METoken public _METoken = METoken(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
-    address alice = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8;
-    function run() public {
-        vm.startBroadcast();
-        uint256 ourBalance = _METoken.balanceOf(msg.sender);
-        console.log("Deployer initial balance:", ourBalance);
-        uint256 aliceBalance = _METoken.balanceOf(alice);
-        console.log("Alice initial balance:", aliceBalance);
-        uint256 amountToTransfer = 50e18;
-        bool success = _METoken.transfer(alice, amountToTransfer);
-        if (success) {
-            console.log("Transfer successful");
-        } else {
-            console.log("Transfer failed");
-            revert();
-        }
-        ourBalance = _METoken.balanceOf(msg.sender);
-        console.log("Deployer final balance:", ourBalance);
-        aliceBalance = _METoken.balanceOf(alice);
-        console.log("Alice final balance:", aliceBalance);
-        vm.stopBroadcast();
-    }
+    METoken public _METoken = METoken(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
+    address alice = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8;
+    function run() public {
+        vm.startBroadcast();
+        uint256 ourBalance = _METoken.balanceOf(msg.sender);
+        console.log("Deployer initial balance:", ourBalance);
+        uint256 aliceBalance = _METoken.balanceOf(alice);
+        console.log("Alice initial balance:", aliceBalance);
+        uint256 amountToTransfer = 50e18;
+        bool success = _METoken.transfer(alice, amountToTransfer);
+        if (success) {
+            console.log("Transfer successful");
+        } else {
+            console.log("Transfer failed");
+            revert();
+        }
+        ourBalance = _METoken.balanceOf(msg.sender);
+        console.log("Deployer final balance:", ourBalance);
+        aliceBalance = _METoken.balanceOf(alice);
+        console.log("Alice final balance:", aliceBalance);
+        vm.stopBroadcast();
+    }
 }
 ```
 
-We can run the script with the following console command:
+　以下のコンソール コマンドでスクリプトを実行できます。
 
 ```bash
 $ forge script script/METokenInteraction.s.sol --private-key <DEPLOYER_PRIVATE_KEY>
 --rpc-url "http://127.0.0.1:8545" -vv
 ```
 
-It’s important to use the same private key that was used for deployment. This ensures that `msg.sender` corresponds to the deployer address, which holds the initial token supply.
+　デプロイ時に使用したものと同じ秘密鍵を使用することが重要です。これにより、`msg.sender`が初期トークン供給量を保有するデプロイヤー アドレスに対応することが保証されます。
 
-> **Note**
+> **注**
 >
-> Foundry’s `-v` flags control the verbosity level of output when running commands like `forge script` or `forge build`. Increasing the number of `v`s increases the output verbosity to include more information. To show the console logs, we need at least `-vv` while the maximum verbosity is provided by `-vvvv`.
+> Foundryの`-v`フラグは、`forge script`や`forge build`などのコマンド実行時の出力の詳細度を制御する。`v`の数を増やすと、より多くの情報を含むように出力の詳細度が上がる。コンソール ログを表示するには少なくとも`-vv`が必要であり、最大の詳細度は`-vvvv`で提供される。
 
-Once we run the script, the following will be printed in the console:
+　スクリプトを実行すると、コンソールに以下が出力されます。
 
 ```bash
 [⁘] Compiling...
@@ -430,43 +430,43 @@ Once we run the script, the following will be printed in the console:
 Compiler run successful!
 Script ran successfully.
 == Logs ==
-  Deployer initial balance: 50000000000000000000000000
-  Alice initial balance: 0
-  Transfer successful
-  Deployer final balance: 49999950000000000000000000
-  Alice final balance: 50000000000000000000
+  Deployer initial balance: 50000000000000000000000000
+  Alice initial balance: 0
+  Transfer successful
+  Deployer final balance: 49999950000000000000000000
+  Alice final balance: 50000000000000000000
 ```
 
-In this script, we first log the current token balances of the deployer and Alice. Next, we transfer 50 tokens from the deployer to Alice and log the balances again. Keep in mind that 50 tokens are represented as 50e18 because our token has 18 decimals, hence the large number of zeros.
+　このスクリプトでは、まずデプロイヤーとアリスの現在のトークン残高をログに記録します。次に、デプロイヤーからアリスに50トークンを送金し、再度残高をログに記録します。トークンのdecimalsが18であるため、50トークンは50e18として表現されることに注意してください。そのためゼロが大量に並びます。
 
-#### Sending ERC-20 tokens to contract addresses
+#### ERC-20トークンのコントラクト アドレスへの送信
 
-So far, we’ve set up an ERC-20 token and transferred some tokens from one account to another. All the accounts we used for these demonstrations are EOAs, meaning they are controlled by a private key, not a contract. What happens if we send MET tokens to a contract address? Let’s find out!
+　ここまで、ERC-20トークンのセットアップと、あるアカウントから別のアカウントへのトークン送金を行いました。これらのデモンストレーションで使用したアカウントはすべてEOA、つまり秘密鍵によって制御されるアカウントであり、コントラクトではありません。METトークンをコントラクト アドレスに送信するとどうなるでしょうか。確認してみましょう。
 
-First, let’s deploy another contract into our test environment. For this example, we will use the *NaiveFaucet.sol* contract that follows:
+　まず、テスト環境に別のコントラクトをデプロイしましょう。この例では、以下の*NaiveFaucet.sol*コントラクトを使用します。
 
 ```solidity
 pragma solidity 0.8.28;
 contract NaiveFaucet {
-    receive() external payable {}
-    // Function to withdraw Ether from the contract
-    function withdraw(uint256 amount) public {
-        require(amount <= address(this).balance, "Insufficient balance in faucet");
-        payable(msg.sender).transfer(amount);
-    }
+    receive() external payable {}
+    // コントラクトからイーサを引き出す関数
+    function withdraw(uint256 amount) public {
+        require(amount <= address(this).balance, "Insufficient balance in faucet");
+        payable(msg.sender).transfer(amount);
+    }
 }
 ```
 
-Our directory should look like this:
+　ディレクトリは以下のようになります。
 
 ```
 METoken/
 +---- src
-|   +---- NaiveFaucet.sol
-|   +---- METoken.sol
+|   +---- NaiveFaucet.sol
+|   +---- METoken.sol
 ```
 
-Let’s compile and deploy the `NaiveFaucet` contract:
+　`NaiveFaucet`コントラクトをコンパイルしてデプロイしましょう。
 
 ```bash
 $ forge create NaiveFaucet --broadcast --rpc-url http://localhost:8545
@@ -480,33 +480,33 @@ Deployed to: 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0
 Transaction hash: 0x4d1947547e3cfec8db670f3c1b7ff309b41de8aacee42165578a3ddf8619f63f
 ```
 
-Great, our `NaiveFaucet` contract has been deployed to the address `0x9fE46736679​d2D9a65F0992F2272dE9f3c7fa6e0`. Now, let’s send some MET to the `NaiveFaucet` contract by copying the following script to *METoken/script/METokenSend.s.sol*:
+　`NaiveFaucet`コントラクトがアドレス`0x9fE46736679​d2D9a65F0992F2272dE9f3c7fa6e0`にデプロイされました。では、以下のスクリプトを*METoken/script/METokenSend.s.sol*にコピーして、`NaiveFaucet`コントラクトにMETを送信しましょう。
 
 ```solidity
 pragma solidity 0.8.28;
 import {Script, console} from "forge-std/Script.sol";
 import {METoken} from "../src/METoken.sol";
 contract METokenSend is Script {
-    METoken public _METoken = METoken(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
-    address naiveFaucet = 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0;
-    function run() public {
-        vm.startBroadcast();
-        uint256 amountToSend = 100e18;
-        bool success = _METoken.transfer(naiveFaucet, amountToSend);
-        if (success) {
-            console.log("Transfer successful");
-        } else {
-            console.log("Transfer failed");
-            revert();
-        }
-        uint256 faucetBalance = _METoken.balanceOf(naiveFaucet);
-        console.log("Faucet balance:", faucetBalance);
-        vm.stopBroadcast();
-    }
+    METoken public _METoken = METoken(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
+    address naiveFaucet = 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0;
+    function run() public {
+        vm.startBroadcast();
+        uint256 amountToSend = 100e18;
+        bool success = _METoken.transfer(naiveFaucet, amountToSend);
+        if (success) {
+            console.log("Transfer successful");
+        } else {
+            console.log("Transfer failed");
+            revert();
+        }
+        uint256 faucetBalance = _METoken.balanceOf(naiveFaucet);
+        console.log("Faucet balance:", faucetBalance);
+        vm.stopBroadcast();
+    }
 }
 ```
 
-We can run it with:
+　以下で実行できます。
 
 ```bash
 $ forge script script/METokenSend.s.sol --private-key <DEPLOYER_PRIVATE_KEY>
@@ -517,78 +517,78 @@ $ forge script script/METokenSend.s.sol --private-key <DEPLOYER_PRIVATE_KEY>
 Compiler run successful!
 Script ran successfully.
 == Logs ==
-  Transfer successful
-  Faucet balance: 100000000000000000000
+  Transfer successful
+  Faucet balance: 100000000000000000000
 ```
 
-Again, we need to use the deployer private key to make it work as that is the address that initiates the transfer.
+　ここでも、送金を開始するアドレスであるため、デプロイヤーの秘密鍵を使用する必要があります。
 
-We have transferred 100 MET to the `NaiveFaucet` contract. Now, how do we withdraw those tokens?
+　`NaiveFaucet`コントラクトに100 METを送金しました。では、これらのトークンをどのように引き出すのでしょうか。
 
-Remember, *NaiveFaucet.sol* is a pretty simple contract. It only has one function, `withdraw`, which is for withdrawing *ether*. It doesn’t have a function for withdrawing MET or any other ERC-20 token. If we use `withdraw`, it will try to send ether, but since `NaiveFaucet` doesn’t have a balance of ether yet, it will fail.
+　*NaiveFaucet.sol*は非常にシンプルなコントラクトであることを思い出してください。`withdraw`というひとつの関数しかなく、*イーサ*を引き出すためのものです。METやその他のERC-20トークンを引き出す関数はありません。`withdraw`を使用すると、イーサの送信を試みますが、`NaiveFaucet`にはまだイーサの残高がないため、失敗します。
 
-The `METoken` contract knows that `NaiveFaucet` has a balance, but the only way it can transfer that balance is if it receives a `transfer` call from the address of the contract. Somehow, we need to make the `NaiveFaucet` contract call the `transfer` function in `METoken`.
+　`METoken`コントラクトは`NaiveFaucet`が残高を持っていることを知っていますが、その残高を送金できるのは、コントラクトのアドレスから`transfer`呼び出しを受け取った場合のみです。何らかの方法で`NaiveFaucet`コントラクトに`METoken`の`transfer`関数を呼び出させる必要があります。
 
-If you’re wondering what to do next, don’t. There is no solution to this problem. The MET sent to `NaiveFaucet` is stuck, forever. Only the `NaiveFaucet` contract can transfer it, and the `NaiveFaucet` contract doesn’t have code to call the `transfer` function of an ERC-20 token contract.
+　次に何をすべきか考えているなら、やめてください。この問題に解決策はありません。`NaiveFaucet`に送信されたMETは永久にスタックしたままです。`NaiveFaucet`コントラクトだけがMETを送金できますが、`NaiveFaucet`コントラクトにはERC-20トークン コントラクトの`transfer`関数を呼び出すコードがありません。
 
-Perhaps you anticipated this problem. Most likely, you didn’t. In fact, neither did hundreds of Ethereum users who accidentally transferred various tokens to contracts that didn’t have any ERC-20 capability. Over the years, a staggering amount of millions of dollars has gotten “stuck” like this and is lost forever.
+　おそらくこの問題を予見していたかもしれません。しかし、予見していなかった可能性の方が高いでしょう。実際、何百人ものイーサリアム ユーザーが、ERC-20機能を持たないコントラクトに誤ってさまざまなトークンを送金してきました。長年にわたり、驚くべき数百万ドル相当の資金がこのようにして「スタック」し、永久に失われてきました。
 
-#### Demonstrating the “approve and transferFrom” workflow
+#### 「approveとtransferFrom」ワークフローのデモンストレーション
 
-Our `NaiveFaucet` contract couldn’t handle ERC-20 tokens. Sending tokens to it using the `transfer` function resulted in the loss of those tokens. Let’s rewrite the contract now and make it handle ERC-20 tokens. Specifically, we will turn it into a faucet that gives out MET to anyone who asks.
+　`NaiveFaucet`コントラクトはERC-20トークンを処理できませんでした。`transfer`関数を使用してトークンを送信したことで、トークンが失われる結果となりました。ここでコントラクトを書き直して、ERC-20トークンを処理できるようにしましょう。具体的には、リクエストした誰にでもMETを配布するフォーセットに改造します。
 
-Our new faucet contract, *METFaucet.sol*, will look like Example 10-2.
+　新しいフォーセット コントラクト*METFaucet.sol*は、例10-2のようになります。
 
-**Example 10-2. METFaucet.sol: A faucet for METoken**
+**例10-2 METFaucet.sol: METoken用のフォーセット**
 
 ```solidity
 pragma solidity 0.8.28;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract METFaucet {
-    IERC20 public _METoken;
-    address public _METOwner;
-    constructor(address _metokenAddress, address metOwner) {
-        _METoken = IERC20(_metokenAddress);
-        _METOwner = metOwner;
-    }
-    // Function to withdraw METoken from the contract
-    function withdraw(uint256 amount) public {
-        require(amount <= 10e18, "At most 10 MET");
-        require(_METoken.transferFrom(_METOwner, msg.sender, amount), "Transfer failed");
-    }
+    IERC20 public _METoken;
+    address public _METOwner;
+    constructor(address _metokenAddress, address metOwner) {
+        _METoken = IERC20(_metokenAddress);
+        _METOwner = metOwner;
+    }
+    // コントラクトからMETokenを引き出す関数
+    function withdraw(uint256 amount) public {
+        require(amount <= 10e18, "At most 10 MET");
+        require(_METoken.transferFrom(_METOwner, msg.sender, amount), "Transfer failed");
+    }
 }
 ```
 
-We’ve made quite a few changes to the basic `Faucet` example. Since `METFaucet` will use the `transferFrom` function in `METoken`, it will need two additional variables. One will hold the address of the `METoken` contract. The other will hold the address of the owner of the MET, who will approve the faucet withdrawals. In our case, the owner is the deployer since they received the initial supply. The `METFaucet` contract will call `METoken.transferFrom` and instruct it to move MET from the owner to the address where the faucet withdrawal request came from.
+　基本的な`Faucet`の例からかなり多くの変更を加えました。`METFaucet`は`METoken`の`transferFrom`関数を使用するため、2つの追加変数が必要です。ひとつは`METoken`コントラクトのアドレスを保持し、もうひとつはフォーセットからの引き出しを承認するMETの所有者のアドレスを保持します。この場合、所有者は初期供給量を受け取ったデプロイヤーです。`METFaucet`コントラクトは`METoken.transferFrom`を呼び出し、所有者からフォーセットの引き出しリクエスト元のアドレスへMETを移動するよう指示します。
 
-We declare these two variables here:
+　これら2つの変数を以下のように宣言します。
 
 ```solidity
 IERC20 public _METoken;
 address public _METOwner;
 ```
 
-Since our faucet needs to be initialized with the correct addresses for `METoken` and `METOwner`, we need to declare a custom constructor:
+　フォーセットは`METoken`と`METOwner`の正しいアドレスで初期化する必要があるため、カスタム コンストラクタを宣言する必要があります。
 
 ```solidity
-// METFaucet constructor - provide the address of the METoken contract and
-// the owner address we will be approved to transferFrom
+// METFaucetコンストラクタ - METokenコントラクトのアドレスと
+// transferFromの承認を受ける所有者アドレスを提供する
 constructor(address _metokenAddress, address metOwner) {
-    _METoken = IERC20(_metokenAddress);
-    _METOwner = metOwner;
+    _METoken = IERC20(_metokenAddress);
+    _METOwner = metOwner;
 }
 ```
 
-The next change is to the `withdraw` function. Instead of calling `transfer`, `METFaucet` uses the `transferFrom` function in `METoken` and asks `METoken` to transfer MET to the faucet recipient:
+　次の変更は`withdraw`関数です。`transfer`を呼び出す代わりに、`METFaucet`は`METoken`の`transferFrom`関数を使用し、`METoken`にフォーセットの受信者へMETを送金するよう依頼します。
 
 ```solidity
-// Use the transferFrom function of METoken
+// METokenのtransferFrom関数を使用する
 _METoken.transferFrom(metOwner, msg.sender, withdraw_amount);
 ```
 
-Finally, since our faucet no longer sends ether, we should probably prevent anyone from sending ether to `METFaucet` since we wouldn’t want it to get stuck. To reject incoming ether, it suffices to remove the `receive` function from our contract.
+　最後に、フォーセットはもうイーサを送信しないので、誰かが`METFaucet`にイーサを送信してスタックすることを防ぐべきでしょう。着信するイーサを拒否するには、コントラクトから`receive`関数を削除するだけで十分です。
 
-Now that our *METFaucet.sol* code is ready, we can deploy it by providing the MET token address and its deployer as address parameters:
+　*METFaucet.sol*のコードの準備ができたので、METトークンのアドレスとそのデプロイヤーをアドレス パラメータとして提供してデプロイできます。
 
 ```bash
 $ forge create METFaucet --broadcast --rpc-url http://localhost:8545 --private-key
@@ -601,30 +601,30 @@ Deployed to: 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9
 Transaction hash: 0xa8bfbde9489ee40d41328a80538d0d3e7778b7f3b896c1d51897bf85bb25cec2
 ```
 
-The `METFaucet` contract has been deployed to `0xCf7Ed3AccA5a467e9e704C703E​8D87F634fB0Fc9`, and we are almost ready to test it. First let’s write a *METApprove.s.sol* script to allow the `METFaucet` contract to spend the owner’s MET tokens:
+　`METFaucet`コントラクトが`0xCf7Ed3AccA5a467e9e704C703E​8D87F634fB0Fc9`にデプロイされ、テストの準備がほぼ整いました。まず、`METFaucet`コントラクトが所有者のMETトークンを使用できるようにする*METApprove.s.sol*スクリプトを作成しましょう。
 
 ```solidity
 pragma solidity 0.8.28;
 import {Script, console} from "forge-std/Script.sol";
 import {METoken} from "../src/METoken.sol";
 contract METApprove is Script {
-    METoken public _METoken = METoken(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
-    address _METFaucet = 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9;
-    function run() public {
-        vm.startBroadcast();
-        bool success = _METoken.approve(_METFaucet, type(uint256).max);
-        if (success) {
-            console.log("Approve successful");
-        } else {
-            console.log("Approve failed");
-            revert();
-        }
-        vm.stopBroadcast();
-    }
+    METoken public _METoken = METoken(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
+    address _METFaucet = 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9;
+    function run() public {
+        vm.startBroadcast();
+        bool success = _METoken.approve(_METFaucet, type(uint256).max);
+        if (success) {
+            console.log("Approve successful");
+        } else {
+            console.log("Approve failed");
+            revert();
+        }
+        vm.stopBroadcast();
+    }
 }
 ```
 
-We can run it with:
+　以下で実行できます。
 
 ```bash
 $ forge script script/METApprove.s.sol --broadcast --private-key <DEPLOYER_PRIVATE_KEY>
@@ -635,12 +635,12 @@ $ forge script script/METApprove.s.sol --broadcast --private-key <DEPLOYER_PRIVA
 Compiler run successful!
 Script ran successfully.
 == Logs ==
-  Approve successful
+  Approve successful
 ```
 
-Now, we can write a script to let a secondary address interact with the `METFaucet` contract to withdraw 10 MET tokens and log its balance before and after the operation. Let’s create a *METFaucetWithdraw.s.sol* script as in Example 10-3.
+　次に、セカンダリ アドレスが`METFaucet`コントラクトとやり取りして10 METトークンを引き出し、操作の前後の残高をログに記録するスクリプトを作成しましょう。例10-3のように*METFaucetWithdraw.s.sol*スクリプトを作成します。
 
-**Example 10-3. METFaucetWithdraw: a faucet withdrawal script**
+**例10-3 METFaucetWithdraw: フォーセット引き出しスクリプト**
 
 ```solidity
 pragma solidity 0.8.28;
@@ -648,21 +648,21 @@ import {Script, console} from "forge-std/Script.sol";
 import {METoken} from "../src/METoken.sol";
 import {METFaucet} from "../src/METFaucet.sol";
 contract METFaucetWithdraw is Script {
-    METoken public _METoken = METoken(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
-    METFaucet public _METFaucet = METFaucet(0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9);
-    function run() public {
-        vm.startBroadcast();
-       uint256 balanceBefore = _METoken.balanceOf(msg.sender);
-       console.log("Alice balance before:", balanceBefore);
-       _METFaucet.withdraw(10e18);
-       uint256 balanceAfter = _METoken.balanceOf(msg.sender);
-       console.log("Alice balance after:", balanceAfter);
-        vm.stopBroadcast();
-    }
+    METoken public _METoken = METoken(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
+    METFaucet public _METFaucet = METFaucet(0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9);
+    function run() public {
+        vm.startBroadcast();
+       uint256 balanceBefore = _METoken.balanceOf(msg.sender);
+       console.log("Alice balance before:", balanceBefore);
+       _METFaucet.withdraw(10e18);
+       uint256 balanceAfter = _METoken.balanceOf(msg.sender);
+       console.log("Alice balance after:", balanceAfter);
+        vm.stopBroadcast();
+    }
 }
 ```
 
-We can now run this script from Alice’s address by providing her private key while running the script:
+　アリスのアドレスからこのスクリプトを実行するには、スクリプト実行時にアリスの秘密鍵を提供します。
 
 ```bash
 $ forge script script/METFaucetWithdraw.s.sol --broadcast --private-key <ALICE_PRIVATE_KEY>
@@ -673,321 +673,321 @@ $ forge script script/METFaucetWithdraw.s.sol --broadcast --private-key <ALICE_P
 Compiler run successful!
 Script ran successfully.
 == Logs ==
-  Alice balance before: 0
-  Alice balance after: 10000000000000000000
+  Alice balance before: 0
+  Alice balance after: 10000000000000000000
 ```
 
-As you can see from the results, we can use the `approve` and `transferFrom` workflow to authorize one contract to transfer tokens defined in another token. If properly used, ERC-20 tokens can be used by EOAs and other contracts. However, the burden of managing ERC-20 tokens correctly is pushed to the user interface. If a user incorrectly attempts to transfer ERC-20 tokens to a contract address and that contract is not equipped to receive ERC-20 tokens, the tokens will be lost.
+　結果からわかるように、`approve`と`transferFrom`のワークフローを使用して、あるコントラクトに別のトークン コントラクトで定義されたトークンの送金を承認できます。適切に使用すれば、ERC-20トークンはEOAと他のコントラクトの両方で使用できます。ただし、ERC-20トークンを正しく管理する責任はユーザー インターフェースに押し付けられています。ユーザーがERC-20トークンをコントラクト アドレスに誤って送金しようとし、そのコントラクトがERC-20トークンを受け取る機能を備えていない場合、トークンは失われます。
 
-### Issues with ERC-20 Tokens
+### ERC-20トークンの問題点
 
-The adoption of the ERC-20 token standard has been truly explosive. Thousands of tokens have been launched, both to experiment with the new capabilities and to raise funds in various “crowdfunding” auctions and ICOs. However, there are some potential pitfalls, as we saw with the issue of transferring tokens to contract addresses.
+　ERC-20トークン標準の採用は、まさに爆発的でした。何千ものトークンがローンチされ、新しい機能の実験や、さまざまな「クラウドファンディング」オークションおよびICOでの資金調達に使用されました。しかし、コントラクト アドレスへのトークン送金の問題で見たように、いくつかの潜在的な落とし穴があります。
 
-One of the less obvious issues with ERC-20 tokens is that they expose subtle differences between tokens and ether itself. Whereas ether is transferred by a transaction that has a recipient address as its destination, token transfers occur within the *specific token contract state* and have the token contract as their destination, not the recipient’s address. The token contract tracks balances and issues events. In a token transfer, no transaction is actually sent to the recipient of the token. Instead, the recipient’s address is added to a mapping within the token contract itself. A transaction sending ether to an address changes the state of an address. A transaction transferring a token to an address only changes the state of the token contract, not the state of the recipient address. Even a wallet that has support for ERC-20 tokens does not become aware of a token balance unless the user explicitly adds a specific token contract to “watch.” Some wallets watch the most popular token contracts to detect balances held by addresses they control, but that’s limited to a small fraction of existing ERC-20 contracts.
+　ERC-20トークンの目立ちにくい問題のひとつは、トークンとイーサ自体の間の微妙な違いが露呈することです。イーサは受信者アドレスを宛先とするトランザクションによって送金されますが、トークンの送金は*特定のトークン コントラクトの状態*内で行われ、受信者のアドレスではなくトークン コントラクトが宛先となります。トークン コントラクトは残高を追跡し、イベントを発行します。トークンの送金では、トークンの受信者に実際にトランザクションが送られるわけではありません。代わりに、受信者のアドレスがトークン コントラクト自体の中のマッピングに追加されます。イーサをアドレスに送信するトランザクションはアドレスの状態を変更しますが、トークンをアドレスに送金するトランザクションはトークン コントラクトの状態のみを変更し、受信者アドレスの状態は変更しません。ERC-20トークンをサポートするウォレットであっても、ユーザーが特定のトークン コントラクトを明示的に「ウォッチ」対象に追加しない限り、トークン残高を認識しません。一部のウォレットは、管理するアドレスが保有する残高を検出するために最も人気のあるトークン コントラクトをウォッチしますが、既存のERC-20コントラクトのごく一部に限られます。
 
-In fact, it’s unlikely that a user would *want* to track all balances in all possible ERC-20 token contracts. Many ERC-20 tokens are more like email spam than usable tokens. They automatically create balances for accounts that have ether activity in order to attract users. If you have an Ethereum address with a long history of activity, especially if it was created in the presale, you will find it full of “junk” tokens that appeared out of nowhere. Of course, the address isn’t really full of tokens; it’s the token contracts that have your address in them. You only see these balances if these token contracts are being watched by the block explorer or wallet you use to view your address.
+　実際、ユーザーがすべてのERC-20トークン コントラクトのすべての残高を追跡*したい*とは考えにくいでしょう。多くのERC-20トークンは、使用可能なトークンというよりもメール スパムに近いものです。ユーザーを引き付けるために、イーサのアクティビティがあるアカウントの残高を自動的に作成します。特にプレセール時に作成された、長いアクティビティ履歴を持つイーサリアム アドレスがあれば、どこからともなく現れた「ジャンク」トークンでいっぱいになっているでしょう。もちろん、アドレスは実際にはトークンでいっぱいではなく、あなたのアドレスを含んでいるのはトークン コントラクトの方です。これらの残高が見えるのは、アドレスの閲覧に使用するブロック エクスプローラーやウォレットがこれらのトークン コントラクトをウォッチしている場合のみです。
 
-Tokens don’t behave the same way as ether. Ether is sent with the `send` function and accepted by any payable function in a contract or any externally owned address. Tokens are sent using the `transfer` or `approve` and `transferFrom` functions that exist only in the ERC-20 contract and do not (at least in ERC-20) trigger any payable functions in a recipient contract. Tokens are meant to function just like a cryptocurrency such as ether, but they come with certain differences that break that illusion.
+　トークンはイーサと同じようには振る舞いません。イーサは`send`関数で送信され、コントラクト内の任意のpayable関数または任意の外部所有アカウントに受け入れられます。トークンはERC-20コントラクトにのみ存在する`transfer`、または`approve`と`transferFrom`の関数を使用して送信され、（少なくともERC-20では）受信コントラクト内のpayable関数をトリガーしません。トークンはイーサのような暗号通貨と同じように機能することを意図していますが、その幻想を壊すいくつかの違いがあります。
 
-Let’s focus on the `approve` and `transferFrom` pattern. For newer users, the `approve`-`transferFrom` system can be especially misleading. Many assume that transferring tokens is a single operation, so encountering a two-step process feels confusing and counterintuitive. Worse, the `approve` action seems harmless but can be a trap. When users approve a contract, they might unknowingly grant unlimited permissions, allowing malicious actors to drain their tokens later. This gap in understanding makes phishing attacks easier and highlights how the system’s design doesn’t align with how newcomers expect to interact with the blockchain.
+　`approve`と`transferFrom`のパターンに注目しましょう。新しいユーザーにとって、`approve`-`transferFrom`システムは特に誤解を招きやすいものです。多くのユーザーはトークンの送金が単一の操作であると想定しているため、2段階のプロセスに遭遇すると混乱し直感に反すると感じます。さらに悪いことに、`approve`アクションは無害に見えますがトラップになり得ます。ユーザーがコントラクトを承認する際、知らないうちに無制限の権限を付与し、悪意のあるアクターが後でトークンを流出させることを可能にしてしまうかもしれません。この理解のギャップがフィッシング攻撃を容易にし、システムの設計が新規参入者のブロックチェーンとのやり取りの期待と一致していないことを浮き彫りにしています。
 
-Consider another issue. To send ether or use any Ethereum contract, you need ether to pay for gas. To send tokens, you *also need ether*. You cannot pay for a transaction’s gas with a token, and the token contract can’t pay for the gas for you. For example, let’s say you use an exchange to convert some Bitcoin to a token. You “receive” the token in a wallet that tracks that token’s contract and shows your balance. It looks the same as any of the other cryptocurrencies you have in your wallet. Try sending the token, though, and your wallet will inform you that you need ether to do that. You might be confused—after all, you didn’t need ether to receive the token. Perhaps you have no ether. Perhaps you didn’t even know the token was an ERC-20 token on Ethereum; maybe you thought it was a cryptocurrency with its own blockchain. The illusion just broke.
+　別の問題も考えてみましょう。イーサを送信したりイーサリアムのコントラクトを使用したりするには、ガス代を支払うためにイーサが必要です。トークンを送信するにも、*イーサが必要です*。トークンでトランザクションのガス代を支払うことはできず、トークン コントラクトがガス代を代わりに支払うこともできません。たとえば、取引所を使用してBitcoinをあるトークンに交換するとしましょう。そのトークン コントラクトを追跡し、残高を表示するウォレットでトークンを「受け取り」ます。ウォレット内の他の暗号通貨と同じように見えます。しかし、そのトークンを送信しようとすると、ウォレットはイーサが必要であることを通知します。混乱するかもしれません。トークンを受け取るのにイーサは必要なかったのに。イーサを持っていないかもしれません。そのトークンがイーサリアム上のERC-20トークンであることすら知らなかったかもしれません。独自のブロックチェーンを持つ暗号通貨だと思っていたかもしれません。幻想が崩れた瞬間です。
 
-We can partially address this issue with ERC-2612’s `permit` function and the gas fee sponsorship functionality offered by smart wallets like EIP-4337 and EIP-7702. ERC-2612 lets you approve token allowances by signing off-chain messages, skipping the need for the on-chain approval transaction. EIP-4337 and other smart wallet architectures let third parties pay your gas fees in exchange for reimbursement in ERC-20 tokens. The challenge lies in the limited adoption of ERC-2612 among tokens and the lack of widespread use of smart wallets.
+　ERC-2612の`permit`関数と、EIP-4337やEIP-7702のようなスマート ウォレットが提供するガス代スポンサーシップ機能により、この問題を部分的に解決できます。ERC-2612では、オフチェーン メッセージに署名することでトークンのアロワンスを承認でき、オンチェーンの承認トランザクションを省略できます。EIP-4337やその他のスマート ウォレット アーキテクチャでは、第三者がERC-20トークンでの払い戻しと引き換えにガス代を肩代わりできます。課題は、トークン間でのERC-2612の採用が限定的であることと、スマート ウォレットが広く普及していないことにあります。
 
-Some of these issues are specific to ERC-20 tokens. Others are more general issues that relate to abstraction and interface boundaries within Ethereum. Some can be solved by changing the token interface, while others may need changes to fundamental structures within Ethereum (such as the distinctions between EOAs and contracts and between transactions and messages). Some may not be “solvable” exactly and may require user interface design to hide the nuances and make the user experience consistent regardless of the underlying distinctions.
+　これらの問題のいくつかはERC-20トークンに固有のものです。その他は、イーサリアム内の抽象化やインターフェースの境界に関連するより一般的な問題です。トークン インターフェースの変更で解決できるものもあれば、イーサリアムの基本構造（EOAとコントラクトの区別、トランザクションとメッセージの区別など）の変更が必要なものもあります。正確には「解決」できないものもあり、基礎的な違いに関わらずユーザー エクスペリエンスを一貫させるためのユーザー インターフェース設計が必要になるかもしれません。
 
-In the following sections, we will look at various proposals that attempt to address some of these issues.
+　以下のセクションでは、これらの問題のいくつかに対処しようとするさまざまな提案を見ていきます。
 
-### ERC-223: A proposed token contract interface standard
+### ERC-223: 提案されたトークン コントラクト インターフェース標準
 
-The ERC-223 proposal attempts to solve the problem of inadvertent transfer of tokens to a contract (that may or may not support tokens) by detecting whether the destination address is a contract or not. ERC-223 requires that contracts designed to accept tokens implement a function named `tokenFallback`. If the destination of a transfer is a contract and the contract does not have support for tokens (i.e., does not implement `tokenFallback`), the transfer fails.
+　ERC-223の提案は、送信先アドレスがコントラクトかどうかを検出することで、（トークンをサポートしている場合もしていない場合もある）コントラクトへのトークンの不注意な送金の問題を解決しようとするものです。ERC-223では、トークンを受け取るように設計されたコントラクトが`tokenFallback`という名前の関数を実装することを要求します。送金先がコントラクトで、そのコントラクトがトークンをサポートしていない場合（つまり`tokenFallback`を実装していない場合）、送金は失敗します。
 
-To detect whether the destination address is a contract, the ERC-223 reference implementation uses a small segment of inline bytecode in a rather creative way:
+　送信先アドレスがコントラクトかどうかを検出するために、ERC-223のリファレンス実装は、非常に創造的な方法でインライン バイトコードの小さなセグメントを使用します。
 
 ```solidity
 function isContract(address _addr) private view returns (bool is_contract) {
-  uint256 length;
-    assembly {
-       // retrieve the size of the code on target address; this needs assembly
-       length := extcodesize(_addr)
-    }
-    return (length>0);
+  uint256 length;
+    assembly {
+       // ターゲット アドレスに格納されたコードのサイズを取得する。アセンブリが必要
+       length := extcodesize(_addr)
+    }
+    return (length>0);
 }
 ```
 
-> **Note**
+> **注**
 >
-> `extcodesize` returns the size of the bytecode stored at a given address. Historically, this was the main difference between EOAs and smart contracts: EOAs had no code, and contracts did. But that assumption no longer holds. With EIP-7702, EOAs can now have code attached, blurring the line entirely.
-> There’s also an important edge case: during the constructor phase of a contract, its code has not yet been stored on chain. The EVM only writes the contract’s bytecode to the address after the constructor finishes executing. So if you call `extcodesize` on a contract’s own address from within its constructor (or on another contract that hasn’t finished deploying), it will return `0`, even though that address will eventually contain code. As a result, if an address has no code, it could be an EOA or a contract still under construction. And if it does have code, it could be either a deployed contract or an EOA using a custom code payload. In short, this check no longer reliably tells us whether an address is a contract.
+> `extcodesize`は、指定されたアドレスに格納されているバイトコードのサイズを返す。歴史的に、EOAとスマートコントラクトの主な違いはこの点にあった。EOAにはコードがなく、コントラクトにはあった。しかし、その前提はもはや成立しない。EIP-7702により、EOAにもコードをアタッチできるようになり、境界は完全に曖昧になった。
+> 重要なエッジ ケースもある。コントラクトのコンストラクタ フェーズでは、コードはまだオンチェーンに格納されていない。EVMはコンストラクタの実行完了後にのみコントラクトのバイトコードをアドレスに書き込む。そのため、コンストラクタ内からコントラクト自身のアドレス（またはデプロイがまだ完了していない別のコントラクト）に対して`extcodesize`を呼び出すと、そのアドレスに最終的にコードが含まれるにもかかわらず`0`が返される。結果として、アドレスにコードがない場合、EOAかまだ構築中のコントラクトの可能性がある。コードがある場合は、デプロイ済みのコントラクトかカスタム コード ペイロードを使用するEOAのいずれかの可能性がある。要するに、このチェックではアドレスがコントラクトかどうかを信頼性をもって判定することはもはやできない。
 
-The ERC-223 contract-interface specification is:
+　ERC-223のコントラクト インターフェース仕様は以下のとおりです。
 
 ```solidity
 interface ERC223Token {
-  uint256 public totalSupply;
-  function balanceOf(address who) public view returns (uint256);
-  function name() public view returns (string _name);
-  function symbol() public view returns (string _symbol);
-  function decimals() public view returns (uint8 _decimals);
-  function totalSupply() public view returns (uint256 _supply);
-  function transfer(address to, uint256 value) public returns (bool success);
-  function transfer(address to, uint256 value, bytes data) public returns (bool success);
-  function transfer(address to, uint256 value, bytes data, string custom_fallback)
-      public returns (bool success);
-  event Transfer(address indexed from, address indexed to, uint256 value,
-                 bytes indexed data);
+  uint256 public totalSupply;
+  function balanceOf(address who) public view returns (uint256);
+  function name() public view returns (string _name);
+  function symbol() public view returns (string _symbol);
+  function decimals() public view returns (uint8 _decimals);
+  function totalSupply() public view returns (uint256 _supply);
+  function transfer(address to, uint256 value) public returns (bool success);
+  function transfer(address to, uint256 value, bytes data) public returns (bool success);
+  function transfer(address to, uint256 value, bytes data, string custom_fallback)
+      public returns (bool success);
+  event Transfer(address indexed from, address indexed to, uint256 value,
+                 bytes indexed data);
 }
 ```
 
-ERC-223 is not widely implemented, and there is some debate in the [ERC discussion thread](https://oreil.ly/iguyT) about backward compatibility and trade-offs between implementing changes at the contract interface level versus the user interface. The debate continues.
+　ERC-223は広く実装されておらず、[ERCのディスカッション スレッド](https://oreil.ly/iguyT)では、後方互換性やコントラクト インターフェース レベルでの変更の実装とユーザー インターフェースでの変更の実装のトレードオフについて議論が行われています。議論は続いています。
 
-### ERC-777: The future that could have been
+### ERC-777: 実現し得た未来
 
-ERC-777 brings a fresh approach to token interactions by introducing *hooks*: functions triggered during token transfers. These hooks are fully compatible with ERC-20, ensuring that existing systems can interact with ERC-777 tokens seamlessly.
+　ERC-777は、トークンのやり取りに*フック*という新しいアプローチをもたらします。フックはトークンの送金中にトリガーされる関数です。これらのフックはERC-20と完全に互換性があり、既存のシステムがERC-777トークンとシームレスにやり取りできることを保証します。
 
-The sender’s hook, `tokensToSend`, is executed before tokens leave the account, allowing senders to add logic like logging or conditional checks. On the other hand, the receiver’s hook, `tokensReceived`, springs into action when tokens land in an account. At the core of ERC-777’s hook architecture is the ERC-1820 registry, which keeps track of which addresses have implemented the required hooks: `tokensToSend` for senders and `tokensReceived` for recipients. This ensures that transfers are successful only when both parties are prepared to handle them, preventing common issues like lost tokens.
+　送信者のフック`tokensToSend`は、トークンがアカウントから送出される前に実行され、ロギングや条件チェックなどのロジックを送信者が追加できるようにします。一方、受信者のフック`tokensReceived`は、トークンがアカウントに着金した時に動作します。ERC-777のフック アーキテクチャの中核にあるのがERC-1820レジストリで、送信者の`tokensToSend`と受信者の`tokensReceived`という必要なフックをどのアドレスが実装しているかを追跡します。これにより、両当事者が送金を処理する準備ができている場合にのみ送金が成功し、トークンの喪失などの一般的な問題を防止します。
 
-Hooks also simplify transactions. With ERC-20, transferring tokens to a contract often requires a cumbersome two-step process: `approve` and then `transferFrom`. ERC-777 does away with that, allowing atomic transactions through its hooks. It’s efficient, intuitive, and, frankly, overdue.
+　フックはトランザクションも簡素化します。ERC-20では、コントラクトへのトークン送金にはしばしば面倒な2段階プロセス（`approve`してから`transferFrom`）が必要です。ERC-777はフックを通じてアトミックなトランザクションを可能にし、この手順を不要にします。効率的で直感的であり、率直に言って待ち望まれていた改善です。
 
-Another interesting feature of ERC-777 is its operator mechanism, which allows authorized addresses—often smart contracts, such as exchanges or payment processors—to send and burn tokens on behalf of a holder. Holders have the ability to grant or withdraw authorization for operators whenever they choose, giving them full control over which third parties can manage their tokens on their behalf at any given moment. Every authorization or revocation emits an event, providing visibility into authorization changes.
+　ERC-777のもうひとつの興味深い機能は、オペレーター メカニズムです。承認されたアドレス（多くの場合、取引所や決済処理業者などのスマートコントラクト）が、保有者に代わってトークンを送信およびバーンできるようにします。保有者はいつでもオペレーターへの承認を付与または取り消すことができ、どの第三者が自分のトークンを管理できるかを完全にコントロールできます。すべての承認または取り消しはイベントを発行し、承認変更の可視性を提供します。
 
-The ERC-777 contract interface specification is:
+　ERC-777のコントラクト インターフェース仕様は以下のとおりです。
 
 ```solidity
 interface ERC777Token {
-    function name() public view returns (string);
-    function symbol() public view returns (string);
-    function totalSupply() public view returns (uint256);
-    function granularity() public view returns (uint256);
-    function balanceOf(address owner) public view returns (uint256);
-    function send(address to, uint256 amount, bytes userData) public;
-    function authorizeOperator(address operator) public;
-    function revokeOperator(address operator) public;
-    function isOperatorFor(address operator, address tokenHolder)
-        public constant returns (bool);
-    function operatorSend(address from, address to, uint256 amount,
-                          bytes userData,bytes operatorData) public;
-    event Sent(address indexed operator, address indexed from,
-               address indexed to, uint256 amount, bytes userData,
-               bytes operatorData);
-    event Minted(address indexed operator, address indexed to,
-                 uint256 amount, bytes operatorData);
-    event Burned(address indexed operator, address indexed from,
-                 uint256 amount, bytes userData, bytes operatorData);
-    event AuthorizedOperator(address indexed operator,
-                             address indexed tokenHolder);
-    event RevokedOperator(address indexed operator, address indexed tokenHolder);
+    function name() public view returns (string);
+    function symbol() public view returns (string);
+    function totalSupply() public view returns (uint256);
+    function granularity() public view returns (uint256);
+    function balanceOf(address owner) public view returns (uint256);
+    function send(address to, uint256 amount, bytes userData) public;
+    function authorizeOperator(address operator) public;
+    function revokeOperator(address operator) public;
+    function isOperatorFor(address operator, address tokenHolder)
+        public constant returns (bool);
+    function operatorSend(address from, address to, uint256 amount,
+                          bytes userData,bytes operatorData) public;
+    event Sent(address indexed operator, address indexed from,
+               address indexed to, uint256 amount, bytes userData,
+               bytes operatorData);
+    event Minted(address indexed operator, address indexed to,
+                 uint256 amount, bytes operatorData);
+    event Burned(address indexed operator, address indexed from,
+                 uint256 amount, bytes userData, bytes operatorData);
+    event AuthorizedOperator(address indexed operator,
+                             address indexed tokenHolder);
+    event RevokedOperator(address indexed operator, address indexed tokenHolder);
 }
 ```
 
-#### Issues with ERC-777 tokens
+#### ERC-777トークンの問題点
 
-While ERC-777 makes token interactions more intuitive, its hooks introduce some significant challenges—most notably, the risk of reentrancy attacks. These attacks take advantage of a contract’s ability to reenter its own logic before fully updating its state, often resulting in severe consequences. The very nature of ERC-777 hooks, which pass execution control to both the sender and receiver during a token transfer, creates an ideal scenario for such exploits. This design means developers must handle these hooks carefully to avoid vulnerabilities.
+　ERC-777はトークンのやり取りをより直感的にする一方で、フックにはいくつかの重大な課題があります。中でも顕著なのは、リエントランシー攻撃のリスクです。リエントランシー攻撃は、コントラクトが状態を完全に更新する前に自身のロジックに再入する能力を悪用し、深刻な結果をもたらすことがあります。ERC-777のフックは、トークン送金中に送信者と受信者の両方に実行制御を渡すという性質上、こうした攻撃にとって理想的なシナリオを生み出します。そのため、開発者は脆弱性を回避するためにこれらのフックを慎重に扱う必要があります。
 
-The most infamous case of reentrancy caused by ERC-777 tokens integration was the Uniswap v1 incident in April 2020. Uniswap, a decentralized exchange protocol, inadvertently exposed its reserves to exploitation due to ERC-777’s hooks. Attackers could call back into the Uniswap contract mid-operation, exploiting the discrepancy between token and ether reserves to siphon out funds. While this vulnerability was specific to how Uniswap interacted with ERC-777, it’s a stark reminder of the risks these hooks introduce.
+　ERC-777トークンの統合によるリエントランシーの最も悪名高い事例は、2020年4月のUniswap v1のインシデントです。分散型取引所プロトコルであるUniswapが、ERC-777のフックにより意図せず準備金を攻撃にさらしてしまいました。攻撃者は操作の途中でUniswapコントラクトにコールバックし、トークンとイーサの準備金の不一致を悪用して資金を流出させることができました。この脆弱性はUniswapがERC-777とやり取りする方法に固有のものでしたが、フックがもたらすリスクを如実に示す出来事でした。
 
-Another issue worth noting is the potential for DoS attacks. Let’s say a contract distributes ERC-777 tokens to multiple accounts. If one of the recipients is a malicious contract programmed to revert the transaction during the `tokensReceived` hook, the entire distribution process would be prevented.
+　もうひとつ注目すべき問題は、DoS攻撃の可能性です。あるコントラクトが複数のアカウントにERC-777トークンを配布するとしましょう。受信者のひとつが`tokensReceived`フック中にトランザクションをリバートするようプログラムされた悪意のあるコントラクトであれば、配布プロセス全体が阻止されてしまいます。
 
-These risks highlight why integrating ERC-777 isn’t as simple as swapping out ERC-20. Developers need to adopt best practices like relying on reentrancy locks to mitigate vulnerabilities.
+　これらのリスクは、ERC-777の統合がERC-20の単純な置き換えではないことを浮き彫りにしています。開発者は、脆弱性を軽減するためにリエントランシー ロックなどのベスト プラクティスを採用する必要があります。
 
-#### The future that could have been
+#### 実現し得た未来
 
-ERC-777 could have been the next evolution of Ethereum’s token standard. It addresses many pain points of ERC-20, particularly around the user experience and token handling. The ability to prevent lost tokens, enable atomic transactions, and build richer contract interactions are all compelling advancements.
+　ERC-777は、イーサリアムのトークン標準の次なる進化となり得たものでした。ユーザー エクスペリエンスとトークンの取り扱いに関するERC-20の多くの課題に対処しています。トークンの喪失を防止し、アトミックなトランザクションを可能にし、より豊かなコントラクト インタラクションを構築できることは、すべて説得力のある進歩です。
 
-The Ethereum community, however, became hesitant. The potential DoS and reentrancy scenarios cast a long shadow. Developers feared the complexities and risks of integrating ERC-777, even though those risks are manageable with the right precautions. Instead of rising to the challenge, we stuck with the familiar but limited ERC-20. It’s a missed opportunity to embrace a standard that aligns tokens more closely with Ethereum’s philosophy while offering superior functionality.
+　しかし、イーサリアム コミュニティは躊躇しました。DoSやリエントランシーのシナリオの可能性が暗い影を落としたのです。開発者は、リスクが適切な予防措置で管理可能であるにもかかわらず、ERC-777の統合の複雑さとリスクを恐れました。課題に立ち向かう代わりに、馴染み深いが限定的なERC-20にとどまったのです。トークンをイーサリアムの哲学により近づけながら、優れた機能を提供する標準を受け入れる機会を逃したと言えます。
 
-In the end, ERC-777’s hooks aren’t the villain; improper implementation is. With a bit of effort and adherence to secure coding practices, ERC-777 could pave the way for a more seamless Ethereum ecosystem. To further research the matter, a suggested read is the [discussion on the deprecation of ERC-777](https://oreil.ly/J4p9B) by the OpenZeppelin library.
+　結局のところ、ERC-777のフックが悪者なのではなく、不適切な実装が問題です。少しの努力と安全なコーディング慣行の遵守があれば、ERC-777はよりシームレスなイーサリアム エコシステムへの道を切り拓くことができるでしょう。この問題をさらに研究するために、OpenZeppelinライブラリによる[ERC-777の非推奨化に関する議論](https://oreil.ly/J4p9B)が参考になります。
 
-## ERC-721: NFT Standard
+## ERC-721: NFT標準
 
-So far, we’ve explored token standards for fungible tokens, like ERC-20, where each unit is interchangeable and the system cares only about account balances. Now, let’s dive into something different and far more unique: ERC-721, the standard for nonfungible tokens, or as everyone knows them now, NFTs. You may have heard of NFTs during the mania of 2021 when digital collectibles like CryptoPunks, Bored Ape Yacht Club, and NBA Top Shot captured headlines and sold for jaw-dropping sums. Trading platforms like OpenSea and Rarible became household names in the crypto world.
+　ここまで、ERC-20のような代替可能トークンの標準を探求してきました。ERC-20では各単位が交換可能であり、システムが気にするのはアカウント残高のみです。ここからは、まったく異なるものに踏み込みましょう。ERC-721、非代替性トークン（NFT）の標準です。2021年の熱狂の中でNFTのことを耳にしたことがあるかもしれません。CryptoPunks、Bored Ape Yacht Club、NBA Top Shotなどのデジタル コレクティブルが見出しを飾り、驚くべき金額で取引されました。OpenSeaやRaribleなどの取引プラットフォームは、暗号資産の世界で誰もが知る名前になりました。
 
-But what exactly makes NFTs special? Unlike ERC-20 tokens, NFTs are all about uniqueness. Each token represents ownership of a distinct item, and that item can be anything: a digital collectible, an in-game asset, a piece of art, or even a real-world asset like property or a car. The beauty of ERC-721 lies in its flexibility. It doesn’t care what the token represents as long as it’s unique and can be identified by a number. Under the hood, this is accomplished with a `uint256` identifier for each NFT. Think of it as a serial number that distinguishes one token from another. In ERC-20, we track balances by mapping an account to the amount it holds, but in ERC-721, on top of balances we’re also mapping each unique token ID to its owner:
+　しかし、NFTの何が特別なのでしょうか。ERC-20トークンとは異なり、NFTはユニークさがすべてです。各トークンは固有のアイテムの所有権を表し、そのアイテムはデジタル コレクティブル、ゲーム内アセット、アート作品、さらには不動産や自動車のような現実世界の資産など、何でもあり得ます。ERC-721の美しさはその柔軟性にあります。トークンが表すものがユニークであり、番号で識別できる限り、何を表現しても構いません。内部的には、各NFTの`uint256`識別子によって実現されています。あるトークンを別のトークンと区別するシリアルナンバーのようなものと考えてください。ERC-20ではアカウントと保有量のマッピングで残高を追跡しますが、ERC-721では残高に加えて、各固有のトークンIDとその所有者のマッピングも行います。
 
 ```solidity
 mapping (uint256 => address) private _owners;
 ```
 
-This subtle shift in structure changes everything. Each NFT is tied to a specific owner, and its history, provenance, and unique attributes can be tracked directly. This is what makes ERC-721 perfect for applications where individuality matters, such as proving ownership of a one-of-a-kind artwork, a rare in-game sword, or even a plot of land in the metaverse.
+　構造のこの微妙な変化がすべてを変えます。各NFTは特定の所有者に紐づけられ、その履歴、来歴、固有の属性を直接追跡できます。だからこそ、ERC-721は個別性が重要なアプリケーションに最適なのです。唯一無二のアート作品の所有権証明、ゲーム内のレアな剣、メタバースの土地区画などがその例です。
 
-What makes ERC-721 truly powerful and versatile is the optional ERC-721 metadata extension, which allows each token ID to be tied to a uniform resource identifier (URI). This URI can point to metadata describing the NFT, such as its name, description, and image. The URI might be a standard HTTP link pointing to a centralized server or an Inter-Planetary File System (IPFS) link for decentralized storage. Centralized servers can go offline or disappear entirely, making NFTs dependent on third-party infrastructure. By contrast, IPFS helps ensure that metadata remains accessible and tamper resistant, and it is thus the preferred choice for storing NFT metadata. The ability to associate each token with a metadata URI is what enables NFTs to carry rich, descriptive data and multimedia content, further enhancing their uniqueness and usability.
+　ERC-721を真に強力で多用途にしているのは、オプションのERC-721メタデータ拡張です。各トークンIDをURI（Uniform Resource Identifier）に紐づけることができます。このURIはNFTの名前、説明、画像などを記述するメタデータを指すことができます。URIは中央集権型サーバーを指す標準的なHTTPリンクの場合もあれば、分散型ストレージのためのIPFS（Inter-Planetary File System）リンクの場合もあります。中央集権型サーバーはオフラインになったり完全に消滅したりする可能性があり、NFTをサードパーティのインフラに依存させます。対照的に、IPFSはメタデータがアクセス可能かつ改ざん耐性を維持することを保証するため、NFTメタデータの保存に推奨される選択肢です。各トークンをメタデータURIに関連付ける機能により、NFTは豊かな説明データやマルチメディア コンテンツを持つことができ、そのユニークさと有用性がさらに高まります。
 
-The speculative use of NFTs, particularly as digital collectibles, has undeniably dominated the public narrative. These tokens became a symbol of hype, with values driven by scarcity, celebrity endorsements, and community sentiment. Yet, beyond the flashy headlines is a world of practical applications that have the potential to redefine industries. For instance, NFTs can be used in supply chain management to track the provenance of goods, ensuring authenticity and transparency for consumers. They can represent property deeds, streamlining real estate transactions by automating ownership transfers and reducing fraud. NFTs can also be leveraged in education to issue verifiable credentials, like degrees and certificates, that are tamper proof and universally accessible.
+　NFTの投機的な使用、特にデジタル コレクティブルとしての使用は、紛れもなく世間の注目を集めてきました。これらのトークンはハイプの象徴となり、希少性、セレブリティの推薦、コミュニティの感情によって価値が牽引されました。しかし、派手な見出しの向こう側には、産業を再定義する可能性を持つ実用的なアプリケーションの世界があります。たとえば、NFTはサプライチェーン管理において商品の来歴を追跡し、消費者に真正性と透明性を保証するために使用できます。不動産の権利書を表現し、所有権の移転を自動化して不正を減少させることで、不動産取引を効率化できます。教育分野では、改ざん不可能で世界中からアクセスできる検証可能な資格情報（学位や証明書など）の発行に活用できます。
 
-While collectibles brought NFTs into the spotlight, their real promise lies in these practical, transformative uses. By combining uniqueness, traceability, and programmability, ERC-721 tokens are poised to become a foundational building block for the digital economy. Whether you’re minting a quirky piece of art or tokenizing a life-saving medical record, ERC-721 empowers developers to create solutions that go far beyond speculation.
+　コレクティブルがNFTに注目を集めましたが、NFTの真の可能性はこうした実用的で変革的な用途にあります。ユニークさ、追跡可能性、プログラマビリティを組み合わせることで、ERC-721トークンはデジタル経済の基盤的な構成要素となる態勢にあります。風変わりなアート作品をミントする場合でも、生命を救う医療記録をトークン化する場合でも、ERC-721は投機を超えたソリューションの構築を開発者に可能にします。
 
-The ERC-721 contract interface specification is as follows:
+　ERC-721のコントラクト インターフェース仕様は以下のとおりです。
 
 ```solidity
 interface ERC721 /* is ERC165 */ {
-    event Transfer(address indexed _from, address indexed _to, uint256 _deedId);
-    event Approval(address indexed _owner, address indexed _approved,
-                   uint256 _deedId);
-    event ApprovalForAll(address indexed _owner, address indexed _operator,
-                         bool _approved);
-    function balanceOf(address _owner) external view returns (uint256 _balance);
-    function ownerOf(uint256 _deedId) external view returns (address _owner);
-    function transfer(address _to, uint256 _deedId) external payable;
-    function transferFrom(address _from, address _to, uint256 _deedId)
-        external payable;
-    function approve(address _approved, uint256 _deedId) external payable;
-    function setApprovalForAll(address _operator, boolean _approved) payable;
-    function supportsInterface(bytes4 interfaceID) external view returns (bool);
+    event Transfer(address indexed _from, address indexed _to, uint256 _deedId);
+    event Approval(address indexed _owner, address indexed _approved,
+                   uint256 _deedId);
+    event ApprovalForAll(address indexed _owner, address indexed _operator,
+                         bool _approved);
+    function balanceOf(address _owner) external view returns (uint256 _balance);
+    function ownerOf(uint256 _deedId) external view returns (address _owner);
+    function transfer(address _to, uint256 _deedId) external payable;
+    function transferFrom(address _from, address _to, uint256 _deedId)
+        external payable;
+    function approve(address _approved, uint256 _deedId) external payable;
+    function setApprovalForAll(address _operator, boolean _approved) payable;
+    function supportsInterface(bytes4 interfaceID) external view returns (bool);
 }
 ```
 
-## ERC-1155: Multitoken Standard
+## ERC-1155: マルチトークン標準
 
-Ethereum has come a long way since ERC-20 and ERC-721, which set the foundations for fungible and nonfungible tokens. ERC-1155, the multitoken standard, combines the strengths of both to enable efficient and versatile token management.
+　イーサリアムは、代替可能トークンと非代替性トークンの基盤を築いたERC-20とERC-721から大きく進歩しました。ERC-1155（マルチトークン標準）は、両方の強みを組み合わせて、効率的で多用途なトークン管理を可能にします。
 
-Imagine you’re a game developer. You want to create a system where players can collect gold coins (fungible), unique swords (nonfungible), and potions that are consumable in stacks (semifungible). With ERC-20 or ERC-721, you’d need a separate smart contract for each type of token. Each new contract would increase gas costs and add complexity because you’d also need to manage permissions and interactions between these contracts. ERC-1155 solves this problem. It lets us deploy a single contract to manage multiple token types. Each token type is identified by a unique ID, and the contract can handle all operations, including transfers, balances, and metadata retrieval, for any combination of token types. This streamlined approach reduces redundancy and transaction costs, making ERC-1155 a widely adopted standard.
+　あなたがゲーム開発者だと想像してください。プレイヤーがゴールド コイン（代替可能）、ユニークな剣（非代替性）、スタックで消費できるポーション（半代替性）を収集できるシステムを作りたいとします。ERC-20やERC-721では、トークンの種類ごとに別々のスマートコントラクトが必要です。新しいコントラクトごとにガス コストが増加し、これらのコントラクト間のパーミッションやインタラクションも管理する必要があるため、複雑さが増します。ERC-1155はこの問題を解決します。単一のコントラクトをデプロイするだけで、複数のトークン タイプを管理できます。各トークン タイプは固有のIDで識別され、コントラクトはあらゆるトークン タイプの組み合わせに対して、送金、残高、メタデータの取得を含むすべての操作を処理できます。この効率的なアプローチにより、冗長性とトランザクション コストが削減され、ERC-1155は広く採用された標準となっています。
 
-ERC-1155’s batch operations are a standout feature. They let us transfer or query multiple tokens in a single transaction, saving gas and making the standard more scalable. Additionally, ERC-1155 includes safety mechanisms to prevent issues like locked tokens. When transferring tokens to a smart contract, the receiving contract must implement the `IERC1155Receiver` interface; otherwise, the transaction will revert. These hooks enable advanced interactions during token transfers. For example, a contract could implement custom logic to execute when it receives tokens, such as updating an in-game leaderboard or triggering an event. However, as seen in ERC-777, if these hooks are not handled carefully, they can introduce vulnerabilities, such as reentrancy attacks. Developers must ensure proper safeguards, such as using checks-effects-interactions patterns and reentrancy locks, to secure their contracts when implementing ERC-1155 tokens.
+　ERC-1155のバッチ操作は際立った機能です。単一のトランザクションで複数のトークンを送金またはクエリでき、ガスを節約しスケーラビリティを向上させます。さらに、ERC-1155にはトークンのロックなどの問題を防ぐ安全メカニズムが含まれています。スマートコントラクトにトークンを送金する際、受信コントラクトは`IERC1155Receiver`インターフェースを実装している必要があり、そうでなければトランザクションはリバートされます。これらのフックにより、トークン送金中の高度なインタラクションが可能になります。たとえば、コントラクトはトークンを受信した際にゲーム内リーダーボードの更新やイベントのトリガーなど、カスタム ロジックを実行できます。しかし、ERC-777で見たように、これらのフックが慎重に扱われないと、リエントランシー攻撃などの脆弱性を招く可能性があります。開発者はERC-1155トークンを実装する際、checks-effects-interactionsパターンやリエントランシー ロックなどの適切な保護措置を講じてコントラクトを安全に保つ必要があります。
 
-The ERC-1155 contract interface specification is as follows:
+　ERC-1155のコントラクト インターフェース仕様は以下のとおりです。
 
 ```solidity
 interface IERC1155 /* is IERC165 */ {
-    event TransferSingle(address indexed operator, address indexed from, address indexed to,
+    event TransferSingle(address indexed operator, address indexed from, address indexed to,
 uint256 id, uint256 value);
-    event TransferBatch(
-        address indexed operator,
-        address indexed from,
-        address indexed to,
-        uint256[] ids,
-        uint256[] values
-    );
-    event ApprovalForAll(address indexed account, address indexed operator, bool approved);
-    event URI(string value, uint256 indexed id);
-    function balanceOf(address account, uint256 id) external view returns (uint256);
-    function balanceOfBatch(
-        address[] calldata accounts,
-        uint256[] calldata ids
-    ) external view returns (uint256[] memory);
-    function setApprovalForAll(address operator, bool approved) external;
-    function isApprovedForAll(
-        address account,
-        address operator
-    ) external view returns (bool);
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 value,
-        bytes calldata data
-    ) external;
-    function safeBatchTransferFrom(
-        address from,
-        address to,
-        uint256[] calldata ids,
-        uint256[] calldata values,
-        bytes calldata data
-    ) external;
+    event TransferBatch(
+        address indexed operator,
+        address indexed from,
+        address indexed to,
+        uint256[] ids,
+        uint256[] values
+    );
+    event ApprovalForAll(address indexed account, address indexed operator, bool approved);
+    event URI(string value, uint256 indexed id);
+    function balanceOf(address account, uint256 id) external view returns (uint256);
+    function balanceOfBatch(
+        address[] calldata accounts,
+        uint256[] calldata ids
+    ) external view returns (uint256[] memory);
+    function setApprovalForAll(address operator, bool approved) external;
+    function isApprovedForAll(
+        address account,
+        address operator
+    ) external view returns (bool);
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 value,
+        bytes calldata data
+    ) external;
+    function safeBatchTransferFrom(
+        address from,
+        address to,
+        uint256[] calldata ids,
+        uint256[] calldata values,
+        bytes calldata data
+    ) external;
 }
 ```
 
-## Using Token Standards
+## トークン標準の使い方
 
-In the previous section, we reviewed several proposed standards and a couple of widely deployed standards for token contracts. What exactly do these standards do? Should you use these standards? How should you use them? Should you add functionality beyond these standards? Which standards should you use? We will examine some of those questions next.
+　前のセクションでは、トークン コントラクトのいくつかの提案された標準と、広く普及している2つの標準を確認しました。これらの標準は具体的に何をするのでしょうか。これらの標準を使うべきでしょうか。どのように使うべきでしょうか。これらの標準を超える機能を追加すべきでしょうか。どの標準を使うべきでしょうか。次にこれらの疑問のいくつかを検討します。
 
-### What Are Token Standards and What Is Their Purpose?
+### トークン標準とは何か、その目的は何か
 
-Token standards are the *minimum* specifications for an implementation. What that means is that in order to be compliant with, say, ERC-20, you need to at minimum implement the functions and behavior specified by the ERC-20 standard. You are also free to *add* to the functionality by implementing functions that are not part of the standard.
+　トークン標準とは、実装のための*最低限の*仕様です。つまり、たとえばERC-20に準拠するためには、ERC-20標準で規定された関数と振る舞いを最低限実装する必要があります。標準に含まれない機能を追加で実装することも自由です。
 
-The primary purpose of these standards is to encourage *interoperability* between contracts. Thus, all wallets, exchanges, user interfaces, and other infrastructure components can *interface* in a predictable manner with any contract that follows the specification. In other words, if you deploy a contract that follows the ERC-20 standard, all existing wallet users can seamlessly start trading your token without any wallet upgrade or effort on your part.
+　これらの標準の主な目的は、コントラクト間の*相互運用性*を促進することです。これにより、すべてのウォレット、取引所、ユーザー インターフェース、その他のインフラ コンポーネントが、仕様に従ったあらゆるコントラクトと予測可能な方法で*インターフェース*できます。言い換えれば、ERC-20標準に従ったコントラクトをデプロイすれば、ウォレットのアップグレードやあなた側の労力なしに、すべての既存のウォレット ユーザーがシームレスにトークンの取引を開始できます。
 
-The standards are meant to be *descriptive* rather than *prescriptive*. How you choose to implement those functions is up to you; the internal functioning of the contract is not relevant to the standard. They have some functional requirements, which govern the behavior under specific circumstances, but they do not prescribe an implementation. An example of this is how a transfer function behaves when the value is set to zero. The ERC-20 standard does not specify whether the transaction should revert or not in this case.
+　標準は*記述的*であることを意図しており、*規範的*ではありません。関数をどのように実装するかはあなた次第であり、コントラクトの内部動作は標準に関係ありません。標準には特定の状況下での振る舞いを規定する機能的な要件がありますが、実装を規定するものではありません。その一例として、値がゼロに設定された場合のtransfer関数の振る舞いがあります。ERC-20標準は、この場合にトランザクションをリバートすべきかどうかを規定していません。
 
-### Should You Use These Standards?
+### これらの標準を使うべきか
 
-Given all these standards, each developer faces a dilemma: use the existing standards or innovate beyond the restrictions they impose?
+　これらのすべての標準を前にして、各開発者はジレンマに直面します。既存の標準を使うか、それともその制約を超えて革新するかという問題です。
 
-This dilemma is not easy to resolve. Standards necessarily restrict your ability to innovate by creating a narrow “rut” that you have to follow. On the other hand, the basic standards have emerged from experience with hundreds of applications and often fit well with the vast majority of use cases.
+　このジレンマは簡単には解決できません。標準は、従わなければならない狭い「轍」を作ることで、必然的にイノベーションの能力を制限します。一方で、基本的な標準は何百ものアプリケーションの経験から生まれたものであり、大多数のユースケースに適合することが多いです。
 
-As part of this consideration is an even bigger issue: the value of interoperability and broad adoption. If you choose to use an existing standard, you gain the value of all the systems designed to work with that standard. If you choose to depart from the standard, you have to consider the cost of building all the support infrastructure on your own or persuading others to support your implementation as a new standard. The tendency to forge your own path and ignore existing standards is known as “not invented here” syndrome and is antithetical to open source culture. On the other hand, progress and innovation depend on departing from tradition sometimes. It’s a tricky choice, so consider it carefully!
+　この考慮事項の一部として、さらに大きな問題があります。相互運用性と広範な採用の価値です。既存の標準を使用すれば、その標準に対応して設計されたすべてのシステムの価値を得ることができます。標準から逸脱する場合は、すべてのサポート インフラを自分で構築するか、他者にあなたの実装を新しい標準として支持してもらうコストを考慮する必要があります。独自の道を切り開き、既存の標準を無視する傾向は「Not Invented Here（NIH）症候群」と呼ばれ、オープンソース文化とは対極にあるものです。一方で、進歩とイノベーションは時に伝統からの逸脱に依存します。難しい選択ですので、慎重に検討してください。
 
-> **Note**
+> **注**
 >
-> Per [Wikipedia](https://oreil.ly/TTA96), “not invented here” is a stance adopted by social, corporate, or institutional cultures that avoid using or buying already existing products, research, standards, or knowledge because of their external origins and costs, such as royalties.
+> [Wikipedia](https://oreil.ly/TTA96)によると、「Not Invented Here」とは、社会的、企業的、または制度的文化が採用する姿勢であり、外部起源であることやロイヤルティなどのコストを理由に、既存の製品、研究、標準、または知識の使用や購入を避けることである。
 
-### Detecting Standards: EIP-165
+### 標準の検出: EIP-165
 
-As we’ve seen, standards like ERC-20 simplify interactions between tokens and wallets. But how do we identify which interfaces a smart contract supports? This is where EIP-165 comes in, providing a standardized way for contracts to declare and detect interfaces.
+　これまで見てきたように、ERC-20のような標準はトークンとウォレット間のやり取りを簡素化します。しかし、スマートコントラクトがどのインターフェースをサポートしているかをどのように識別するのでしょうか。ここでEIP-165が登場します。コントラクトがインターフェースを宣言し検出するための標準化された方法を提供します。
 
-EIP-165 defines a method for contracts to announce the interfaces they implement. Contracts use the `supportsInterface` function to return a `true` or `false` value for a given interface ID (a unique identifier calculated as the XOR of all the function selectors in an interface). For instance, if an interface includes `foo()` and `bar(int256)`, its ID is derived as:
+　EIP-165は、コントラクトが実装しているインターフェースを宣言するための方法を定義します。コントラクトは`supportsInterface`関数を使用して、指定されたインターフェースID（インターフェース内のすべての関数セレクタのXORとして計算される一意の識別子）に対して`true`または`false`の値を返します。たとえば、インターフェースに`foo()`と`bar(int256)`が含まれる場合、そのIDは以下のように導出されます。
 
 ```
 foo.selector ^ bar.selector
 ```
 
-This approach enables other contracts and tools to verify compatibility before interacting. For example, a marketplace can confirm that an NFT contract supports the ERC-721 interface before listing its tokens.
+　このアプローチにより、他のコントラクトやツールがやり取りの前に互換性を検証できます。たとえば、マーケットプレイスはNFTコントラクトがERC-721インターフェースをサポートしていることを確認してからトークンをリストできます。
 
-To implement EIP-165, a contract inherits from a base class, such as OpenZeppelin’s ERC-165, and overrides the `supportsInterface` method to include the contract’s supported interfaces:
+　EIP-165を実装するには、コントラクトはOpenZeppelinのERC-165のような基底クラスを継承し、`supportsInterface`メソッドをオーバーライドしてコントラクトがサポートするインターフェースを含めます。
 
 ```solidity
 contract MyContract is IMyContract, ERC165 {
-    function supportsInterface(bytes4 interfaceId) public view override returns (bool) {
-        return interfaceId == type(IMyContract).interfaceId ||
+    function supportsInterface(bytes4 interfaceId) public view override returns (bool) {
+        return interfaceId == type(IMyContract).interfaceId ||
 super.supportsInterface(interfaceId);
-    }
+    }
 }
 ```
 
-To better grasp how EIP-165 works in practice, let’s look at ERC-1155, a versatile and widely used standard for multitoken contracts:
+　EIP-165が実際にどのように機能するかをより深く理解するために、多用途で広く使用されているマルチトークン コントラクトの標準であるERC-1155を見てみましょう。
 
 ```solidity
 abstract contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI,
-    IERC1155Errors {
+    IERC1155Errors {
 [...]
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165,
+    /**
+     * @dev {IERC165-supportsInterface}を参照。
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165,
 IERC165) returns (bool) {
-        return
-            interfaceId == type(IERC1155).interfaceId ||
-            interfaceId == type(IERC1155MetadataURI).interfaceId ||
-            super.supportsInterface(interfaceId);
-    }
+        return
+            interfaceId == type(IERC1155).interfaceId ||
+            interfaceId == type(IERC1155MetadataURI).interfaceId ||
+            super.supportsInterface(interfaceId);
+    }
 [...]
 }
 ```
 
-> **Warning**
+> **警告**
 >
-> EIP-165 relies on contracts honestly reporting their capabilities. A malicious or poorly implemented contract could falsely claim to support an interface, leading to potential issues. While EIP-165 improves developer experience and reduces friction, it should not be treated as a security guarantee.
+> EIP-165は、コントラクトが自身の機能を正直に報告することに依存している。悪意のある、または不適切に実装されたコントラクトは、インターフェースをサポートしていると偽って主張する可能性があり、潜在的な問題を引き起こし得る。EIP-165は開発者エクスペリエンスを向上させ摩擦を減少させるが、セキュリティの保証として扱うべきではない。
 
-For more advanced scenarios, such as when contracts implement interfaces on behalf of others, developers could explore ERC-1820, which uses a global registry to track interface support. While ERC-1820 is more complex than EIP-165, it offers greater flexibility for decentralized systems.
+　コントラクトが他者に代わってインターフェースを実装するようなより高度なシナリオでは、開発者はERC-1820を検討できます。ERC-1820はインターフェースのサポートを追跡するためにグローバル レジストリを使用します。ERC-1820はEIP-165よりも複雑ですが、分散型システムにとってより大きな柔軟性を提供します。
 
-### Security by Maturity
+### 成熟によるセキュリティ
 
-Beyond the choice of standard, there is the parallel choice of *implementation*. When you decide to use a standard such as ERC-20, you have to then decide how to implement a compatible design. There are a number of existing “reference” implementations that are widely used in the Ethereum ecosystem, or you could write your own from scratch. Again, this choice represents a dilemma that can have serious security implications.
+　標準の選択に加えて、*実装*の選択という並行する課題があります。ERC-20のような標準を使用することを決めたら、互換性のある設計をどのように実装するかを決定する必要があります。イーサリアム エコシステムで広く使用されている既存の「リファレンス」実装がいくつかありますし、ゼロから独自に書くこともできます。この選択もまた、セキュリティに重大な影響を及ぼし得るジレンマを表しています。
 
-Existing implementations are “battle-tested.” While it is impossible to prove that they are secure, many of them underpin millions of dollars’ worth of tokens—billions, in some cases. They have been attacked, repeatedly and vigorously. So far, no significant vulnerabilities have been discovered. Writing your own is not easy; there are many subtle ways a contract can be compromised. It is much safer to use a well-tested, widely used implementation. In our examples, we used the OpenZeppelin implementation of the ERC-20 standard because this implementation is security focused from the ground up.
+　既存の実装は「実戦テスト済み」です。それらが安全であることを証明することは不可能ですが、その多くが数百万ドル、場合によっては数十億ドル相当のトークンを支えています。繰り返し、精力的に攻撃されてきました。これまでのところ、重大な脆弱性は発見されていません。独自に書くのは容易ではありません。コントラクトが侵害される微妙な方法は数多くあります。十分にテストされ、広く使用されている実装を使用する方がはるかに安全です。この例では、OpenZeppelinのERC-20標準の実装を使用しました。なぜなら、この実装は最初からセキュリティに重点を置いているからです。
 
-If you use an existing implementation, you can also extend it. Again, be careful with this impulse. Complexity is the enemy of security. Every single line of code you add expands the attack surface of your contract and could represent a vulnerability lying in wait. You might not notice a problem until you put a lot of value on top of the contract and someone breaks it.
+　既存の実装を使用する場合、それを拡張することもできます。ただし、この衝動には注意が必要です。複雑さはセキュリティの敵です。追加するコードの一行一行がコントラクトの攻撃対象面を拡大し、潜在的な脆弱性を含んでいる可能性があります。コントラクトの上に多くの価値を載せ、誰かがそれを破るまで問題に気づかないかもしれません。
 
-> **Tip**
+> **ヒント**
 >
-> Standards and implementation choices are important parts of overall secure smart contract design, but they’re not the only considerations (see Chapter 9).
+> 標準と実装の選択は、安全なスマートコントラクト設計全体の重要な部分であるが、唯一の考慮事項ではない（第9章を参照）。
 
-## Extensions to Token Interface Standards
+## トークン インターフェース標準の拡張
 
-The token standards we’ve discussed so far provide essential functionality for creating and managing tokens. However, they’re intentionally minimal, leaving room for projects to extend and adapt them to fit specific needs. Over time, many projects have built on these standards, introducing features that enhance usability, security, and flexibility. OpenZeppelin, a leading library for Ethereum smart contracts, has become the go-to source for such extensions. Let’s explore some of the most notable extensions for ERC-20, ERC-721, and ERC-1155 tokens.
+　これまで議論してきたトークン標準は、トークンの作成と管理のための基本的な機能を提供します。しかし、これらは意図的に最小限に設計されており、プロジェクトが特定のニーズに合わせて拡張・適応する余地を残しています。時間の経過とともに、多くのプロジェクトがこれらの標準を基にして構築し、ユーザビリティ、セキュリティ、柔軟性を向上させる機能を導入してきました。イーサリアム スマートコントラクトの主要なライブラリであるOpenZeppelinが、こうした拡張のための定番のソースとなっています。ERC-20、ERC-721、ERC-1155トークンの最も注目すべき拡張のいくつかを見てみましょう。
 
-With ERC-20, for example, we see the addition of burning mechanisms. Burning allows tokens to be permanently removed from circulation, reducing supply, which is useful for deflationary models or token economics that require deliberate supply control. On the flip side, some projects incorporate caps to set hard limits on the total supply, ensuring that no more tokens can ever be minted beyond a predefined threshold.
+　たとえばERC-20では、バーン メカニズムの追加があります。バーンによりトークンを流通から永久に除去でき、供給量を削減できます。これはデフレ モデルや、意図的な供給量制御を必要とするトークン エコノミクスに有用です。一方で、一部のプロジェクトはキャップを組み込み、総供給量にハードリミットを設定して、事前に定義された閾値を超えるトークンがミントされないようにしています。
 
-Another interesting addition to ERC-20 is voting functionality. This allows token holders to participate in governance decisions directly through their tokens. Projects that implement this create decentralized decision-making processes, enabling stakeholders to have a say in how a protocol evolves.
+　ERC-20のもうひとつの興味深い追加機能は、投票機能です。トークン保有者がトークンを通じて直接ガバナンスの意思決定に参加できるようにします。この機能を実装するプロジェクトは、分散型の意思決定プロセスを構築し、ステークホルダーがプロトコルの進化に発言権を持てるようにします。
 
-ERC-721 has seen similar creativity in its extensions. Features like royalty payments let creators earn a percentage of sales whenever their NFTs are traded. URI storage is another common addition that enables metadata to be stored and retrieved dynamically, which is particularly useful for NFTs with evolving properties. Enumerable extensions allow developers to efficiently list all tokens held by an address, making it easier to build marketplaces or wallets.
+　ERC-721にも同様に創造的な拡張が見られます。ロイヤルティ支払い機能により、クリエイターはNFTが取引されるたびに販売額の一定割合を受け取ることができます。URIストレージも一般的な追加機能で、メタデータを動的に保存・取得でき、進化する属性を持つNFTに特に有用です。列挙可能な拡張により、開発者はアドレスが保有するすべてのトークンを効率的にリストでき、マーケットプレイスやウォレットの構築が容易になります。
 
-ERC-1155, the multitoken standard, hasn’t been left behind. Extensions for ERC-1155 include burnable tokens and pausable contracts, allowing for added flexibility in use cases like gaming or tokenized supply chains. Some implementations also enhance metadata handling, ensuring that token details remain accessible and easy to update.
+　ERC-1155（マルチトークン標準）も取り残されていません。ERC-1155の拡張には、バーン可能なトークンやポーザブルなコントラクトがあり、ゲームやトークン化されたサプライ チェーンなどのユースケースに柔軟性を追加します。一部の実装ではメタデータの処理も強化し、トークンの詳細がアクセスしやすく更新しやすい状態を維持します。
 
-Beyond these, countless other extensions exist, addressing needs like crowdfunding, blocklisting, allowlisting, and implementing fees on transfers. Developers often combine these features with other standard libraries like OpenZeppelin’s Ownable or Access Control, tapping into even more battle-tested resources.
+　これら以外にも、クラウドファンディング、ブロックリスト、アローリスト、送金手数料の実装など、さまざまなニーズに対応する無数の拡張が存在します。開発者はしばしばこれらの機能をOpenZeppelinのOwnableやAccess Controlなどの他の標準ライブラリと組み合わせ、さらに多くの実戦テスト済みのリソースを活用します。
 
-With flexibility comes responsibility. Extending token standards involves balancing innovation with interoperability. Writing custom features may seem appealing, but it often introduces unnecessary complexity and risks. Instead, leveraging well-established libraries and extensions, like those from OpenZeppelin, ensures security and code quality and significantly reduces development costs. There’s no need to reinvent the wheel when robust, tested solutions already exist.
+　柔軟性には責任が伴います。トークン標準の拡張には、イノベーションと相互運用性のバランスが必要です。カスタム機能の作成は魅力的に見えるかもしれませんが、しばしば不必要な複雑さとリスクを招きます。代わりに、OpenZeppelinのような確立されたライブラリと拡張を活用することで、セキュリティとコード品質を確保し、開発コストを大幅に削減できます。堅牢でテスト済みのソリューションがすでに存在するのに、車輪を再発明する必要はありません。
 
-## Conclusion
+## まとめ
 
-Tokens are more than just digital currency; they can represent governance rights, access credentials, identities, and real-world assets. Their versatility is only possible thanks to standards like ERC-20, ERC-721, and ERC-1155, which ensure seamless interoperability across wallets, exchanges, and DApps, creating a more efficient and interconnected blockchain ecosystem. In this chapter, we looked at the different types of tokens and token standards, and you built your first token and related application.
+　トークンは単なるデジタル通貨ではありません。ガバナンス権、アクセス資格、アイデンティティ、現実世界の資産を表現できます。その多用途性は、ERC-20、ERC-721、ERC-1155のような標準のおかげで初めて可能になるものであり、これらの標準がウォレット、取引所、DApp間のシームレスな相互運用性を保証し、より効率的で相互に接続されたブロックチェーン エコシステムを構築しています。本章では、さまざまな種類のトークンとトークン標準を見てきました。そして、最初のトークンとそれに関連するアプリケーションを構築しました。
