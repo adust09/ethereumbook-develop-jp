@@ -486,3 +486,38 @@
 | Gasper | Gasper |
 | validator | バリデーター |
 | finality | ファイナリティ |
+| oracle | オラクル |
+| authenticity proof | 真正性証明 |
+| trusted execution environment (TEE) | 信頼できる実行環境（TEE） |
+| computation oracle | 計算オラクル |
+| decentralized oracle | 分散型オラクル |
+| cross-chain | クロスチェーン |
+| ZK coprocessor | ZKコプロセッサ |
+| Schelling point | シェリング ポイント |
+| publish-subscribe | パブリッシュ-サブスクライブ |
+| request-response | リクエスト-レスポンス |
+| immediate-read | 即時読み取り |
+| guardian | ガーディアン |
+| enclave | エンクレーブ |
+| decentralized exchange (DEX) | 分散型取引所（DEX） |
+| automated market maker (AMM) | 自動マーケット メーカー（AMM） |
+| liquidity pool | 流動性プール |
+| impermanent loss | インパーマネント ロス |
+| slippage | スリッページ |
+| lending market | レンディング マーケット |
+| collateral | 担保 |
+| overcollateralization | 過剰担保 |
+| liquidation | 清算 |
+| flash loan | フラッシュ ローン |
+| composability | コンポーザビリティ |
+| TradFi | TradFi |
+| algorithmic stablecoin | アルゴリズム型ステーブルコイン |
+| market cap / market capitalization | 時価総額 |
+| liquid restaking | リキッド リステーキング |
+| real-world assets (RWA) | 現実世界の資産（RWA） |
+| omnichain | オムニチェーン |
+| wrapped token | ラップド トークン |
+| order book | オーダー ブック |
+| shorting | ショート |
+| bad debt | 不良債権 |
+| slashing | スラッシング |

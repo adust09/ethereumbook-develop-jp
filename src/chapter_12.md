@@ -1,88 +1,88 @@
-# Chapter 12. Decentralized Applications
+# 第12章 分散型アプリケーション（DApp）
 
-In this chapter, we'll demystify DApps, explaining what they are, how they work, and how their core architecture is structured. After covering the fundamentals, we'll walk through a practical, hands-on example where you'll build your first DApp from the ground up. This includes deploying the necessary smart contracts, integrating a frontend, and preparing the entire stack for a near-production environment. By the end, you'll have both a working DApp and a solid understanding of the core concepts that underpin these innovative applications.
+　この章では、DAppの謎を解き明かし、DAppとは何か、どのように機能するか、そしてコア アーキテクチャがどのように構成されているかを説明します。基本を説明した後、実践的なハンズオン形式の例を通じて、最初のDAppをゼロから構築します。必要なスマート コントラクトのデプロイ、フロントエンドの統合、そしてスタック全体をほぼ本番環境に準備することが含まれます。最後には、動作するDAppと、これらの革新的なアプリケーションを支える中核的な概念の確かな理解の両方を手に入れることができます。
 
-## What Is a DApp?
+## DAppとは
 
-*DApp* stands for *decentralized application*; it's a completely new paradigm shift compared to legacy applications, where you usually have the following architecture, as shown in Figure 12-1:
+　*DApp*は*分散型アプリケーション*（decentralized application）の略です。従来のアプリケーションとは完全に新しいパラダイム シフトであり、従来のアプリケーションでは通常、図12-1に示すような以下のアーキテクチャを持っています:
 
-- A closed source code for the logic part of the app
-- A centralized database to store application data into
-- A unique frontend to let users access the app
+- アプリのロジック部分のクローズド ソース コード
+- アプリケーション データを保存するための中央集権型データベース
+- ユーザーがアプリにアクセスするための単一のフロントエンド
 
-![General architecture of a legacy application](images/ch12/maet_1201.png)
+![従来のアプリケーションの一般的なアーキテクチャ](images/ch12/maet_1201.png)
 
-Figure 12-1. General architecture of a legacy application
+図12-1. 従来のアプリケーションの一般的なアーキテクチャ
 
-Think about Instagram, TikTok, your bank, or whatever applications you have on your phone right now. They probably rely on a very similar architecture. You have access to the application only if the team behind it wants you to access it; there are no alternative websites you can visit to log into your Instagram account if the official one is out of service.
+　Instagram、TikTok、銀行、あるいは今スマートフォンに入っているどんなアプリケーションでも考えてみてください。おそらく非常に類似したアーキテクチャに依存しています。アプリケーションの背後にいるチームがアクセスを許可した場合にのみアクセスできます。公式サイトがサービス停止中の場合に、Instagramアカウントにログインするための代替ウェブサイトは存在しません。
 
-DApps have two clear goals: don't have a single point of failure and be a product that people can still use even if the whole team disappears. Their architecture can be simplified in the following way, as shown in Figure 12-2:
+　DAppには2つの明確な目標があります。単一障害点を持たないことと、チーム全体が消えても人々が引き続き使用できるプロダクトであることです。DAppのアーキテクチャは、図12-2に示すように以下のように簡略化できます:
 
-- Several Ethereum smart contracts form the basis of the logic part of the DApp. Most of the time, the Solidity (or Vyper) code is open source, too.
-- Smart contracts can also contain data, working as a proper database and collecting all necessary user information.
-- People can access the app via an official frontend, which is easily replaceable with an alternative one (even one that is made by the community) if the main one doesn't work for whatever reason.
+- 複数のイーサリアム スマート コントラクトがDAppのロジック部分の基盤を形成する。ほとんどの場合、Solidity（またはVyper）のコードもオープン ソースである
+- スマート コントラクトはデータも保持でき、適切なデータベースとして機能し、必要なユーザー情報をすべて収集する
+- 公式フロントエンドを通じてアプリにアクセスできる。メインのフロントエンドが何らかの理由で動作しない場合、代替フロントエンド（コミュニティが作成したものを含む）で簡単に置き換えることができる
 
-![General architecture of a DApp](images/ch12/maet_1202.png)
+![DAppの一般的なアーキテクチャ](images/ch12/maet_1202.png)
 
-Figure 12-2. General architecture of a DApp
+図12-2. DAppの一般的なアーキテクチャ
 
-> **Note**  
+> **注記**
 >
-> DApps can have some off-chain components with some degree of centralization, too, but usually these components are not fundamental for the core logic of the application. They may be helpful to speed up the application in the average case, but it should always be possible to fully rely on on-chain data in the worst case. This is not always true, and there are definitely some DApps that have core logic parts dependent on centralized components. They are not truly decentralized apps but are more like a hybrid form between legacy and fully decentralized applications.
+> DAppには、ある程度の中央集権化を伴うオフチェーン コンポーネントを持つこともできるが、通常これらのコンポーネントはアプリケーションのコア ロジックにとって基本的なものではない。平均的なケースでアプリケーションの高速化に役立つかもしれないが、最悪のケースではオンチェーン データに完全に依存できるべきである。これは常に当てはまるわけではなく、中央集権的なコンポーネントに依存するコア ロジック部分を持つDAppも確かに存在する。それらは真の分散型アプリではなく、レガシーと完全な分散型アプリケーションの間のハイブリッド形態に近い。
 
-In the next sections, we'll further explore each component of the DApp stack to better understand how they work and how they relate to one another and the Ethereum protocol.
+　次のセクションでは、DAppスタックの各コンポーネントをさらに探求し、それぞれがどのように機能し、互いにおよびイーサリアム プロトコルとどのように関係しているかをより深く理解します。
 
-## Backend (Smart Contract)
+## バックエンド（スマート コントラクト）
 
-In a DApp, core business logic and data storage are encoded into smart contracts and run on the Ethereum blockchain instead of residing on a centralized server. The blockchain acts as a decentralized backend where transaction execution, state changes, and record keeping are trustlessly enforced by the network rather than a single entity.
+　DAppでは、コア ビジネス ロジックとデータ ストレージはスマート コントラクトにエンコードされ、中央集権的なサーバではなくイーサリアム ブロックチェーン上で実行されます。ブロックチェーンは分散型バックエンドとして機能し、トランザクションの実行、状態の変更、記録の保持は単一のエンティティではなくネットワークによってトラストレスに強制されます。
 
-Users don't need to trust any centralized team to access a DApp because they can expect the Ethereum network to always be working properly, handling all their transactions and correctly updating smart contracts' state, no matter the day or the hour.
+　ユーザーはDAppにアクセスするために中央集権的なチームを信頼する必要がありません。イーサリアム ネットワークが常に適切に動作し、曜日や時間に関係なくすべてのトランザクションを処理し、スマート コントラクトの状態を正しく更新することを期待できるからです。
 
-Furthermore, this architecture introduces a very powerful property: *censorship resistance*. With traditional applications, you very often have a list of countries that are forbidden to access the app because of government laws or whatever reason. For example, as of 2025, Facebook is banned in Brazil, China, Iran, North Korea, Myanmar, Russia, Turkmenistan, and Uganda. People in those countries cannot create a profile or log into the platform.
+　さらに、このアーキテクチャは非常に強力な特性を導入します。それが*検閲耐性*です。従来のアプリケーションでは、政府の法律やその他の理由により、アプリへのアクセスが禁止されている国のリストがあることが非常に多いです。例えば、2025年時点でFacebookはブラジル、中国、イラン、北朝鮮、ミャンマー、ロシア、トルクメニスタン、ウガンダで禁止されています。これらの国の人々はプロフィールを作成したり、プラットフォームにログインしたりすることはできません。
 
-With DApps built on Ethereum, this type of censorship is not achievable anymore. Even though it's still possible to ban an official website for a particular DApp, no one can prevent an address from interacting with some random smart contracts on chain. Anyone could jump in and create an alternative frontend for the DApp, and everybody could use it to interact with the DApp again.
+　イーサリアム上に構築されたDAppでは、この種の検閲はもはや実現できません。特定のDAppの公式ウェブサイトを禁止することは可能ですが、アドレスがチェーン上のスマート コントラクトとインタラクションすることを誰も防ぐことはできません。誰でもDAppの代替フロントエンドを作成でき、すべての人がDAppと再びインタラクションするために使用できます。
 
-### The Tornado Cash Saga
+### Tornado Cashの物語
 
-It's worth mentioning the story of Tornado Cash here. Tornado Cash is a decentralized mixing service that enables anyone, anywhere, to mix traceable or "tainted" cryptocurrencies with others, obscuring the trail back to their original source by breaking all links between the real sender and receiver of the funds.
+　ここでTornado Cashの話に触れる価値があります。Tornado Cashは、世界中の誰もが追跡可能な、または「汚染された」暗号通貨を他の暗号通貨と混合し、資金の実際の送信者と受信者の間のすべてのリンクを断ち切ることで、元のソースへの追跡を困難にする分散型ミキシング サービスです。
 
-On August 8, 2022, the US Treasury Department's Office of Foreign Assets Control blocklisted Tornado Cash, effectively prohibiting US citizens and companies from using it. The platform was accused of laundering more than $7 billion in cryptocurrencies. Two days later, on August 10, one of Tornado Cash's developers, Alexey Pertsev, was arrested in Amsterdam for only the crime of creating the platform itself. The official GitHub repository was removed, and developer accounts were suspended. As of December 2024, the official website remains inaccessible.
+　2022年8月8日、米国財務省の外国資産管理局（OFAC）はTornado Cashをブロックリストに登録し、米国市民と企業による使用を事実上禁止しました。このプラットフォームは70億ドル以上の暗号通貨のマネーロンダリングで告発されました。2日後の8月10日、Tornado Cashの開発者の1人であるAlexey Pertsevが、プラットフォーム自体を作成したという罪のみでアムステルダムで逮捕されました。公式GitHubリポジトリは削除され、開発者アカウントは停止されました。2024年12月時点で、公式ウェブサイトはアクセス不能のままです。
 
-Given all of this, you might assume that the Tornado Cash DApp has ceased operations, but this couldn't be further from the truth. While the service has received less attention (and liquidity) since these events, the protocol remains fully functional and accessible through various IPFS-hosted gateways. In other words, anyone in the world can still use Tornado Cash as much as they could before, even without the original official website.
+　これらすべてを考えると、Tornado CashのDAppは運用を停止したと思うかもしれませんが、現実はまったく異なります。これらのイベント以降、サービスの注目度（と流動性）は低下しましたが、プロトコルは完全に機能しており、さまざまなIPFSホスト型ゲートウェイを通じてアクセス可能です。言い換えれば、世界中の誰もが元の公式ウェブサイトがなくても、以前と同様にTornado Cashを使用できます。
 
-## Data Storage
+## データ ストレージ
 
-Data storage refers to the solution used to save users' data. Storing and reading data into and out of smart contracts is possible, but it's an expensive operation, and it doesn't scale well; further, not everything needs to be saved on chain.
+　データ ストレージとは、ユーザーのデータを保存するために使用されるソリューションを指します。スマート コントラクトへのデータの保存と読み取りは可能ですが、コストの高い操作であり、スケーラビリティも良くありません。さらに、すべてをオンチェーンに保存する必要もありません。
 
-Usually, smart contracts store critical state information and enforce the DApp logic. Key pieces of information, such as account balances, ownership records, or results of computations, are stored directly in the smart contract. This ensures that sensitive and value-bearing data remains fully transparent, tamper resistant, and accessible to anyone with an Ethereum node.
+　通常、スマート コントラクトは重要な状態情報を保存し、DAppのロジックを強制します。アカウント残高、所有権記録、計算結果などの重要な情報はスマート コントラクトに直接保存されます。これにより、機密性が高く価値のあるデータが完全に透明で、改ざん耐性があり、イーサリアム ノードを持つ誰もがアクセスできる状態を維持します。
 
-All other information can be saved in a less decentralized data storage solution, such as a classical database. For example, DApp developers often use indexers for fast data query or centralized databases to store user data, so the frontend doesn't need to interact with the Ethereum chain at all.
+　その他のすべての情報は、従来のデータベースのような、分散化の程度が低いデータ ストレージ ソリューションに保存できます。例えば、DApp開発者は高速なデータ クエリのためにインデクサを使用したり、ユーザー データを保存するために中央集権型データベースを使用したりすることが多く、フロントエンドがイーサリアム チェーンとまったくインタラクションする必要がなくなります。
 
-> **Note**  
+> **注記**
 >
-> A *blockchain indexer* is a tool that lets developers query and analyze data stored on the blockchain in a fast and efficient way. It takes transaction data, transforms it into machine- and human-readable data, and loads it into a database for easy querying.
+> *ブロックチェーン インデクサ*は、ブロックチェーンに保存されたデータを高速かつ効率的にクエリ・分析できるツールである。トランザクション データを取得し、機械および人間が読みやすいデータに変換し、簡単にクエリできるようにデータベースにロードする。
 >
-> In fact, you cannot directly "search" data in the blockchain. For example, let's say you'd like to know how many USDC tokens a certain account held on block 15364050. You cannot just go to the USDC smart contract and look for it because it doesn't store historical data. You could take all the transactions that happened from that block up to now, filter them, and extract all the USDC transfer information that is related to that account, and then you could finally get your answer back. As you can imagine, this is not a desirable approach to follow. This is where indexers come into play. They maintain a database-like structure that lets you immediately run a query for whatever information you need, including historical information, and get an answer back quickly.
+> 実際には、ブロックチェーン内のデータを直接「検索」することはできない。例えば、特定のアカウントがブロック15364050でどれだけのUSDCトークンを保有していたかを知りたいとする。USDCスマート コントラクトにアクセスして調べることはできない。履歴データを保存していないからである。そのブロックから現在までに発生したすべてのトランザクションを取得し、フィルタリングし、そのアカウントに関連するすべてのUSDC転送情報を抽出して、ようやく答えを得ることができる。想像できるように、これは望ましいアプローチではない。ここでインデクサが活躍する。インデクサはデータベースのような構造を維持し、履歴情報を含む必要な情報に対するクエリを即座に実行し、素早く回答を得ることができる。
 
-The idea is that you only need to store essential data and application logic on chain so that anyone can verify the DApp is working correctly; anything else can and should be left off chain.
+　重要なのは、誰もがDAppが正しく動作していることを検証できるように、本質的なデータとアプリケーション ロジックのみをオンチェーンに保存する必要があるということです。それ以外のものはオフチェーンに置くことができ、そうすべきです。
 
 ### IPFS
 
-*IPFS* is a decentralized, content-addressable storage system that distributes stored objects among peers in a P2P network. *Content addressable* means that each piece of content (file) is hashed and the hash is used to identify that file. You can then retrieve any file from any IPFS node by requesting it by its hash.
+　*IPFS*は、P2Pネットワーク内のピア間で保存されたオブジェクトを分散する、分散型のコンテンツ アドレッサブル ストレージ システムです。*コンテンツ アドレッサブル*とは、各コンテンツ（ファイル）がハッシュ化され、そのハッシュがファイルを識別するために使用されることを意味します。そのハッシュでリクエストすることにより、任意のIPFSノードから任意のファイルを取得できます。
 
-IPFS aims to replace HTTP as the protocol of choice for delivery of web applications. Instead of storing a web application on a single server, the files are stored on IPFS and can be retrieved from any IPFS node. Read the IPFS docs to learn more.
+　IPFSは、Webアプリケーションの配信プロトコルとしてHTTPに置き換わることを目指しています。単一のサーバにWebアプリケーションを保存する代わりに、ファイルはIPFS上に保存され、任意のIPFSノードから取得できます。詳細についてはIPFSのドキュメントをお読みください。
 
-### Merkle trees
+### マークル木
 
-An interesting and frequently used solution is to save data off chain with a Merkle tree structure and store only the Merkle root on chain. This way, you don't have to store all the data in smart contracts, which would cost you a lot of money in gas fees, but you're still able to perform some sort of validation on chain.
+　興味深くかつ頻繁に使用されるソリューションは、マークル木構造でデータをオフチェーンに保存し、マークル ルートのみをオンチェーンに保存することです。この方法では、すべてのデータをスマート コントラクトに保存する必要がなく（ガス代に多額のコストがかかる）、それでもオンチェーンである種の検証を実行できます。
 
-> **Note**  
+> **注記**
 >
-> Editor's note: the following code examples refer to "whitelist" in a very specific technical context. Though this term has problematic connotations, it is also widely used throughout the industry and its documentation. While we greatly value inclusivity, the authors have opted to keep the term as-is here for the sake of clarity in this presentation of technical concepts.
+> 編集者注: 以下のコード例は非常に特定の技術的コンテクストで「whitelist」に言及している。この用語には問題のある含意があるが、業界とそのドキュメント全体で広く使用されている。包括性を大いに尊重しつつも、著者はここでは技術的概念の提示における明確さのために、用語をそのまま維持することを選択した。
 
-The most common use case is when you create an NFT collection and you want to whitelist different addresses so that they can mint those NFTs at a lower price before the public sale is open to everyone. You have two options.
+　最も一般的なユースケースは、NFTコレクションを作成し、異なるアドレスをホワイトリストに登録して、パブリック セール開始前に低い価格でNFTをミントできるようにする場合です。2つのオプションがあります。
 
-The first is to create a storage variable inside the smart contract that maps each address to a Boolean value, which is true for all whitelisted addresses. Then, you can use this map to verify if a certain address is indeed whitelisted. The user doesn't have to provide anything when submitting the mint transaction; the contract simply checks that `msg.sender` is included in the whitelisted map, as follows:
+　1つ目は、スマート コントラクト内にストレージ変数を作成し、各アドレスをブーリアン値にマッピングする方法です。ホワイトリストに登録されたすべてのアドレスに対してtrueとなります。このマップを使用して、特定のアドレスが実際にホワイトリストに登録されているかどうかを確認できます。ユーザーはミント トランザクションを送信する際に何も提供する必要がありません。コントラクトは`msg.sender`がホワイトリスト マップに含まれているかを確認するだけです:
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -92,23 +92,23 @@ pragma solidity 0.8.28;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-// A simplified NFT contract with a whitelist mint function that uses a mapping to 
+// A simplified NFT contract with a whitelist mint function that uses a mapping to
 // store whitelisted addresses.
 contract MyWhitelistNFT is ERC721, Ownable {
     // ... rest of the contract
-    
+
     // mapping for whitelisted addresses
     mapping(address => bool) public isWhitelisted;
-    
+
     /**
      * @notice Whitelist mint function.
      */
     function whitelistMint() payable {
         // ... rest of the function
-        
+
         // check if the user is whitelisted.
         require(isWhitelisted[msg.sender], "You are not whitelisted");
-        
+
         // mint the NFT.
         _safeMint(msg.sender, nextTokenId);
         nextTokenId++;
@@ -116,7 +116,7 @@ contract MyWhitelistNFT is ERC721, Ownable {
 }
 ```
 
-The second is to create a Merkle tree off chain and store the Merkle root on chain in the contract. Then, you give each whitelisted user its Merkle proof. The user submits the Merkle proof to the contract, which verifies on chain the validity of that proof (usually through some libraries), as follows:
+　2つ目は、マークル木をオフチェーンで作成し、マークル ルートをコントラクト内にオンチェーンで保存する方法です。ホワイトリストに登録された各ユーザーにマークル証明を渡します。ユーザーはマークル証明をコントラクトに送信し、コントラクトはその証明の有効性をオンチェーンで検証します（通常はライブラリを通じて）:
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -127,14 +127,14 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
-// A simplified NFT contract with a whitelist mint function that uses a merkle tree to 
+// A simplified NFT contract with a whitelist mint function that uses a merkle tree to
 // store whitelisted addresses.
 contract MyWhitelistNFT is ERC721, Ownable {
     // ... rest of the contract
-    
+
     // the merkle root of the off-chain generated Merkle Tree.
     bytes32 public merkleRoot;
-    
+
     /**
      * @notice Whitelist mint function.
      * @dev User must provide a merkle proof to prove they are whitelisted.
@@ -142,69 +142,69 @@ contract MyWhitelistNFT is ERC721, Ownable {
      */
     function whitelistMint(bytes32[] calldata _merkleProof) external payable {
         // ... rest of the function
-        
+
         // verify that (msg.sender) is in the merkle tree using the provided proof.
         bytes32 leaf = keccak256(abi.encodePacked(msg.sender));
         bool isValidLeaf = MerkleProof.verify(_merkleProof, merkleRoot, leaf);
         require(isValidLeaf, "Invalid Merkle Proof: Not whitelisted");
-               
+
         // mint the NFT.
         _safeMint(msg.sender, nextTokenId);
-    }  
+    }
 }
 ```
 
-The second option is a lot cheaper and more efficient than the first, especially for large whitelists.
+　2つ目のオプションは、特に大規模なホワイトリストの場合、1つ目よりもはるかに安価で効率的です。
 
-> **Note**  
+> **注記**
 >
-> This method greatly reduces gas costs but introduces the potential risk of a dishonest whitelist creator unless the tree and proofs are auditable. Ideally, the original list used to generate the tree should be open source and accessible so that anyone can verify the validity of the resulting Merkle root.
+> この方法はガス コストを大幅に削減するが、ツリーと証明が監査可能でない限り、不正なホワイトリスト作成者の潜在的リスクを導入する。理想的には、ツリーの生成に使用された元のリストはオープン ソースでアクセス可能であるべきであり、結果のマークル ルートの有効性を誰もが検証できるようにすべきである。
 
-## Frontend (Web User Interface)
+## フロントエンド（WebユーザーインターフェースI）
 
-The frontend of a DApp is created by using any of the most well-known Web2 frameworks, such as React, Angular, or Vue. The interaction with the Ethereum chain, if needed, is abstracted through libraries like `viem` or `ethers.js`.
+　DAppのフロントエンドは、React、Angular、Vueなどの最もよく知られたWeb2フレームワークを使用して作成されます。必要に応じて、イーサリアム チェーンとのインタラクションは`viem`や`ethers.js`のようなライブラリを通じて抽象化されます。
 
-A naive approach to building a DApp frontend is to read data only directly from the chain to update all the components. For example, if you need to display the balances of some tokens that an account holds, you could query the blockchain and get the answer back, repeating this step for every new block.
+　DAppフロントエンドを構築する素朴なアプローチは、すべてのコンポーネントを更新するためにチェーンからのみ直接データを読み取ることです。例えば、あるアカウントが保有するトークンの残高を表示する必要がある場合、ブロックチェーンにクエリして回答を取得し、新しいブロックごとにこのステップを繰り返すことができます。
 
-The main problem with this naive approach is that your website becomes really slow, and it could be very frustrating for users to interact with such a frontend. This is why, as we've mentioned previously, developers often use centralized data storage components in their DApp architecture, minimizing the interaction with the chain: it makes the whole user experience better. So you usually end up with a frontend that relies on some centralized components, but you can always verify all the information by double-checking on the blockchain. Eventually, you could create your own alternative frontend for a particular DApp if you don't trust the official one or simply don't like it at all.
+　この素朴なアプローチの主な問題は、ウェブサイトが非常に遅くなり、ユーザーがそのようなフロントエンドとインタラクションするのが非常にストレスになる可能性があることです。これが、前述したように、開発者がDAppアーキテクチャに中央集権的なデータ ストレージ コンポーネントを使用し、チェーンとのインタラクションを最小限にする理由です。ユーザー エクスペリエンス全体が向上するからです。したがって、通常は一部の中央集権的なコンポーネントに依存するフロントエンドになりますが、ブロックチェーン上でダブル チェックすることで、すべての情報をいつでも検証できます。最終的には、公式フロントエンドを信頼しない場合や単に気に入らない場合に、特定のDApp用に独自の代替フロントエンドを作成できます。
 
-Figure 12-3 shows a complete (simplified) DApp architecture.
+　図12-3は完全な（簡略化された）DAppアーキテクチャを示しています。
 
-![Complete DApp architecture](images/ch12/maet_1203.png)
+![完全なDAppアーキテクチャ](images/ch12/maet_1203.png)
 
-Figure 12-3. Complete DApp architecture
+図12-3. 完全なDAppアーキテクチャ
 
-## A Basic DApp Example
+## 基本的なDAppの例
 
-So far, we've explored the basic concepts behind a DApp. Now, it's time to roll up our sleeves and build a DApp ourselves.
+　ここまで、DAppの基本的な概念を探ってきました。次は袖をまくってDAppを自分で構築する時間です。
 
-You can find lots of tutorials online to help you build your first DApp on Ethereum from scratch, but we really recommend [Speedrun Ethereum](https://oreil.ly/Onygc). It's the most effective way to learn quickly and immediately start building cool stuff. To increase your knowledge of building DApps on Ethereum, we suggest that you complete all the challenges you can find on Speedrun Ethereum and join the [BuidlGuidl community](https://buidlguidl.com).
+　イーサリアム上で最初のDAppをゼロから構築するためのチュートリアルはオンラインで数多く見つかりますが、[Speedrun Ethereum](https://oreil.ly/Onygc)を強くお勧めします。素早く学び、すぐにクールなものを構築し始めるための最も効果的な方法です。イーサリアム上でDAppを構築する知識を深めるために、Speedrun Ethereumで見つけられるすべてのチャレンジを完了し、[BuidlGuidlコミュニティ](https://buidlguidl.com)に参加することをお勧めします。
 
-In this section, we're going to build a very basic decentralized application, a sort of "Hello World" DApp. You don't need any previous experience; all you need is a computer and an internet connection.
+　このセクションでは、非常に基本的な分散型アプリケーション、いわば「Hello World」DAppを構築します。事前の経験は必要ありません。必要なのはコンピュータとインターネット接続だけです。
 
-### Installation Requirements
+### インストール要件
 
-To follow this tutorial, you need to install [node.js](http://node.js) and [yarn](https://oreil.ly/dq_hw) on your computer. Refer to the official websites to download and install them. We'll use [Scaffold-ETH 2](https://scaffoldeth.io), a very cool tool that lets you create your development environment very quickly.
+　このチュートリアルに従うには、コンピュータに[node.js](http://node.js)と[yarn](https://oreil.ly/dq_hw)をインストールする必要があります。公式ウェブサイトを参照してダウンロードとインストールを行ってください。開発環境を非常に素早く作成できる便利なツール、[Scaffold-ETH 2](https://scaffoldeth.io)を使用します。
 
-### Creating the DApp
+### DAppの作成
 
-Let's open a terminal and run the following command:
+　ターミナルを開いて以下のコマンドを実行しましょう:
 
 ```bash
 $ npx create-eth@latest
 ```
 
-It will ask for a project name. We chose "mastering-ethereum" for this demonstration:
+　プロジェクト名を尋ねられます。このデモでは「mastering-ethereum」を選びました:
 
 ```
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
- | Create Scaffold-ETH 2 app | 
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ | Create Scaffold-ETH 2 app |
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 ? Your project name: mastering-ethereum
 ```
 
-Then, it will ask for the Solidity framework we want to use. We'll use Hardhat here, but feel free to choose the one you are more familiar with:
+　次に、使用したいSolidityフレームワークを尋ねられます。ここではHardhatを使用しますが、より慣れているものを自由に選んでください:
 
 ```
 ? What solidity framework do you want to use?
@@ -213,7 +213,7 @@ Then, it will ask for the Solidity framework we want to use. We'll use Hardhat h
   none
 ```
 
-After a couple of seconds, you should see a "Congratulations" and some "Next steps" similar to these:
+　数秒後に、「Congratulations」と以下のような「Next steps」が表示されるはずです:
 
 ```
   Congratulations! Your project has been scaffolded! 🎉
@@ -221,51 +221,51 @@ After a couple of seconds, you should see a "Congratulations" and some "Next ste
   Next steps:
 
   cd mastering-ethereum
-  
+
         Start the local development node
-  
+
         yarn chain
-  
+
         In a new terminal window, deploy your contracts
-  
+
         yarn deploy
-  
+
     In a new terminal window, start the frontend
-  
+
     yarn start
-  
+
  Thanks for using Scaffold-ETH 2 🙏 , Happy Building!
 ```
 
-### Starting the Chain
+### チェーンの起動
 
-We now have everything in place to start building our DApp. Enter the project folder:
+　DAppの構築を開始する準備が整いました。プロジェクト フォルダに入ります:
 
 ```bash
 $ cd mastering-ethereum
 ```
 
-Here, you can find an example smart contract called `YourContract.sol` if you go into `packages/hardhat/contracts`. The `contracts` folder is where you should put every smart contract you will need for your DApp project.
+　`packages/hardhat/contracts`に移動すると、`YourContract.sol`というサンプル スマート コントラクトを見つけることができます。`contracts`フォルダは、DAppプロジェクトに必要なすべてのスマート コントラクトを配置する場所です。
 
-Inside `packages/nextjs`, you will find the nextjs framework structure already in place for your DApp frontend.
+　`packages/nextjs`内には、DAppフロントエンドのためのNext.jsフレームワーク構造が既に配置されています。
 
-Since this is a very basic tutorial, we won't write any contracts from scratch or modify the frontend. We'll stick with defaults to quickly show the usual workflow.
+　これは非常に基本的なチュートリアルなので、スマート コントラクトをゼロから書いたり、フロントエンドを変更したりすることはしません。通常のワークフローを素早く示すために、デフォルトのままにしておきます。
 
-First, you need to start a chain for local development. In fact, even though the final product will use smart contracts that are deployed on the Ethereum mainnet, you shouldn't use a real chain to build and test your DApp. It would be really slow and a waste of a lot of money, too. Scaffold-ETH comes with a very useful and easy command to immediately start a new chain for local development. You just need to run:
+　まず、ローカル開発用のチェーンを起動する必要があります。最終的なプロダクトはイーサリアム メインネットにデプロイされたスマート コントラクトを使用しますが、DAppの構築とテストに実際のチェーンを使用すべきではありません。非常に遅く、多額のお金の無駄にもなるからです。Scaffold-ETHには、ローカル開発用の新しいチェーンを即座に起動するための非常に便利で簡単なコマンドが付属しています。実行するだけです:
 
 ```bash
 $ yarn chain
 ```
 
-### Deploying Your Contract
+### コントラクトのデプロイ
 
-Now, you need to deploy your contract to the local chain that you set up in the previous step. Again, Scaffold-ETH has an easy command for that. Open a new terminal and type:
+　次に、前のステップで設定したローカル チェーンにコントラクトをデプロイする必要があります。ここでもScaffold-ETHにはそのための簡単なコマンドがあります。新しいターミナルを開いて以下を入力してください:
 
 ```bash
 $ yarn deploy
 ```
 
-You should see something like this:
+　以下のような出力が表示されるはずです:
 
 ```
 Generating typings for: 2 artifacts in dir: typechain-types for target: ethers-v6
@@ -276,9 +276,9 @@ deploying "YourContract" (tx: 0x8ec9ba16869588c2826118a0043f63bc679a4e947f739e80
 📝  Updated TypeScript contract definition file on ../nextjs/contracts/deployedContracts.ts
 ```
 
-As you can see, this command deploys the contract called `YourContract`—the example smart contract—on the local chain. In the future, when you build a new DApp, you'll need to go to `packages/hardhat/deploy` and change the `00_deploy_your_contract.ts` file so that you can deploy all the contracts you actually need.
+　ご覧の通り、このコマンドは`YourContract`というサンプル スマート コントラクトをローカル チェーンにデプロイします。将来、新しいDAppを構築する際には、`packages/hardhat/deploy`に移動して`00_deploy_your_contract.ts`ファイルを変更し、実際に必要なすべてのコントラクトをデプロイできるようにする必要があります。
 
-If you go back to the terminal where you previously ran the command `yarn chain`, you should have some new logs, specifically one similar to this:
+　先ほど`yarn chain`コマンドを実行したターミナルに戻ると、新しいログが表示されているはずです。特に以下のようなログです:
 
 ```
 eth_sendTransaction
@@ -291,155 +291,155 @@ eth_sendTransaction
   Block #1:            0xa7b8e3b6f82eccb3542279573dbf8efa2b876ff00807a8619feef191007e06d9
 ```
 
-Note the `Contract deployment` and the `Contract address` lines. That proves that you have successfully deployed your contract on the local chain at that particular contract address.
+　`Contract deployment`と`Contract address`の行に注目してください。これは、特定のコントラクト アドレスにローカル チェーン上にコントラクトが正常にデプロイされたことを証明しています。
 
-### Starting the Frontend
+### フロントエンドの起動
 
-The Scaffold-ETH example comes with a basic built-in frontend so that you can immediately start interacting with your contracts with a graphical interface. Open a new terminal window and type:
+　Scaffold-ETHのサンプルには基本的な組み込みフロントエンドが付属しており、グラフィカル インターフェースを使用してコントラクトとすぐにインタラクションを開始できます。新しいターミナル ウィンドウを開いて以下を入力してください:
 
 ```bash
 $ yarn start
 ```
 
-It should return something like:
+　以下のような出力が返されるはずです:
 
 ```
 yarn start
   ▲ Next.js 14.2.21
   - Local:        http://localhost:3000
- 
+
  ✓ Starting...
  ✓ Ready in 1767ms
 ```
 
-Now copy the localhost URL, open your browser, and paste the link. You should see the frontend, as shown in Figure 12-4.
+　localhostのURLをコピーし、ブラウザを開いてリンクを貼り付けてください。図12-4に示すようなフロントエンドが表示されるはずです。
 
-![Scaffold-ETH frontend](images/ch12/maet_1204.png)
+![Scaffold-ETHフロントエンド](images/ch12/maet_1204.png)
 
-Figure 12-4. Scaffold-ETH frontend
+図12-4. Scaffold-ETHフロントエンド
 
-### Interacting with Your Contract
+### コントラクトとのインタラクション
 
-Congratulations, you're all set up. You can now experiment and interact with your DApp. There are a couple of really useful features that you'll find fundamental for your development workflow:
+　おめでとうございます。すべてのセットアップが完了しました。DAppの実験とインタラクションを始めることができます。開発ワークフローに不可欠な本当に便利な機能がいくつかあります:
 
-- Burner wallets
-- Debug Contracts section
+- バーナー ウォレット
+- Debug Contractsセクション
 
-As you can see in Figure 12-4, in the upper-right corner, we are already connected to the website with a wallet that may look random and unfamiliar to us. That's because it's a *burner wallet*: an auto-generated address whose private key is temporarily saved in your web browser. In fact, if you try to update the page, you'll notice that your burner address doesn't change.
+　図12-4で見られるように、右上隅には、ランダムで見慣れないウォレットでウェブサイトに既に接続されています。これは*バーナー ウォレット*です。秘密鍵がWebブラウザに一時的に保存された自動生成されたアドレスです。実際にページを更新しても、バーナー アドレスは変わりません。
 
-Burner wallets are a killer feature for your development workflow since you don't have to open your Web3 wallet and connect it to the website every time. You can still do that once you're ready; you just need to click on the drop-down menu and select Disconnect; then, you can click Connect Wallet and choose your preferred wallet from the list, as shown in Figures 12-5, 12-6, and 12-7.
+　バーナー ウォレットは開発ワークフローのキラー機能です。毎回Web3ウォレットを開いてウェブサイトに接続する必要がないからです。準備ができたらそうすることもできます。ドロップダウン メニューをクリックしてDisconnectを選択するだけです。その後、Connect Walletをクリックして、リストから好みのウォレットを選択できます。図12-5、12-6、12-7に示します。
 
-![Disconnect burner wallet](images/ch12/maet_1205.png)
+![バーナー ウォレットの切断](images/ch12/maet_1205.png)
 
-Figure 12-5. Disconnect burner wallet
+図12-5. バーナー ウォレットの切断
 
-![Connect Wallet button](images/ch12/maet_1206.png)
+![Connect Walletボタン](images/ch12/maet_1206.png)
 
-Figure 12-6. Connect Wallet button
+図12-6. Connect Walletボタン
 
-![Choose wallet](images/ch12/maet_1207.png)
+![ウォレットの選択](images/ch12/maet_1207.png)
 
-Figure 12-7. Choose wallet
+図12-7. ウォレットの選択
 
-The second killer feature is the Debug Contracts section. To open it, just click the Debug Contracts link at the center of the page. With the default example, you should now see something like Figure 12-8.
+　2つ目のキラー機能はDebug Contractsセクションです。開くには、ページ中央のDebug Contractsリンクをクリックするだけです。デフォルトのサンプルでは、図12-8のような表示になるはずです。
 
-![Debug Contracts section](images/ch12/maet_1208.png)
+![Debug Contractsセクション](images/ch12/maet_1208.png)
 
-Figure 12-8. Debug Contracts section
+図12-8. Debug Contractsセクション
 
-Here, you can easily interact with all your contracts without having to build any kind of frontend on top of them. This is really useful during development to constantly check that your contracts work as you expect them to.
+　ここでは、フロントエンドを構築することなく、すべてのコントラクトと簡単にインタラクションできます。開発中にコントラクトが期待通りに動作しているかを常に確認するのに非常に便利です。
 
-Let's do a small demonstration. First, we need to fund our burner wallet so that we can later send some transactions to interact with the deployed contract. To do that, you just need to click on the right-most button, as shown in Figure 12-9. You'll almost immediately receive some ETH, and you'll see your ETH balance increase.
+　小さなデモンストレーションをしましょう。まず、デプロイされたコントラクトとインタラクションするためのトランザクションを後で送信できるように、バーナー ウォレットに資金を供給する必要があります。そのためには、図12-9に示す右端のボタンをクリックするだけです。ほぼ即座にETHを受け取り、ETH残高が増加するのが見えます。
 
-![Grab funds button](images/ch12/maet_1209.png)
+![Grab fundsボタン](images/ch12/maet_1209.png)
 
-Figure 12-9. Grab funds button
+図12-9. Grab fundsボタン
 
-Now go to the `setGreeting` section and type `hello world` in the "_newGreeting" field and `0.1` in the "payable value" field. Then, click the asterisk you can find on the right of the "payable value" field: it will transform the ETH value into the same amount represented in wei (1 ETH = 10<sup>18</sup> wei). Finally, you can click Send to send your transaction and see how it changes the state of your contract.
+　次に`setGreeting`セクションに移動し、「_newGreeting」フィールドに`hello world`、「payable value」フィールドに`0.1`と入力します。「payable value」フィールドの右にあるアスタリスクをクリックすると、ETHの値がwei（1 ETH = 10<sup>18</sup> wei）で表された同じ量に変換されます。最後に、Sendをクリックしてトランザクションを送信し、コントラクトの状態がどのように変化するかを確認できます。
 
-Figure 12-10 shows the state of the contract before hitting the Send button. You can see that your contract holds 0 ETH, the greeting is "Building Unstoppable Apps!!!," premium is false, and totalCounter is equal to 0.
+　図12-10はSendボタンを押す前のコントラクトの状態を示しています。コントラクトが0 ETHを保持し、greetingが「Building Unstoppable Apps!!!」、premiumがfalse、totalCounterが0であることがわかります。
 
-![Contract state before transaction](images/ch12/maet_1210.png)
+![トランザクション前のコントラクト状態](images/ch12/maet_1210.png)
 
-Figure 12-10. Contract state before transaction
+図12-10. トランザクション前のコントラクト状態
 
-Figure 12-11 captures the state of the contract after sending the transaction. You can immediately see that your contract now holds 0.1 ETH, the greeting is "hello world," premium is true, and totalCounter is equal to 1.
+　図12-11はトランザクション送信後のコントラクトの状態をキャプチャしています。コントラクトが0.1 ETHを保持し、greetingが「hello world」、premiumがtrue、totalCounterが1になったことがすぐにわかります。
 
-![Contract state after transaction](images/ch12/maet_1211.png)
+![トランザクション後のコントラクト状態](images/ch12/maet_1211.png)
 
-Figure 12-11. Contract state after transaction
+図12-11. トランザクション後のコントラクト状態
 
-You can play around with this and see how your contract behaves based on your inputs and actions.
+　これを試して、入力やアクションに基づいてコントラクトがどのように動作するかを確認できます。
 
-### Deploying to Vercel
+### Vercelへのデプロイ
 
-When you're satisfied with your decentralized application, you can publish it to a production environment such as Vercel. Vercel is a really useful frontend-as-a-service tool that lets you easily deploy your application to the internet. You can also attach a custom domain that you have bought so that people can reach your DApp just by typing the domain name.
+　分散型アプリケーションに満足したら、Vercelのような本番環境に公開できます。Vercelは、アプリケーションをインターネットに簡単にデプロイできる非常に便利なフロントエンド アズ ア サービス ツールです。購入したカスタム ドメインを添付することもでき、ドメイン名を入力するだけでDAppにアクセスできるようになります。
 
-Scaffold-ETH again comes to your aid by providing a single command to immediately deploy your DApp to Vercel. Open a terminal and type:
+　Scaffold-ETHはここでも、DAppをVercelに即座にデプロイするための単一のコマンドを提供してくれます。ターミナルを開いて以下を入力します:
 
 ```bash
 $ yarn vercel:yolo
 ```
 
-You'll need to link your Vercel account (or create a new one if you don't have it) and choose a name for your project—that's it. After a few minutes, you'll have your entire DApp deployed to Vercel, and anyone in the world can go try it out.
+　Vercelアカウントをリンクし（持っていない場合は新しいアカウントを作成し）、プロジェクトの名前を選択するだけです。数分後には、DApp全体がVercelにデプロイされ、世界中の誰もが試すことができます。
 
-If you go to your Vercel profile, you can now see your newly created project. As shown in Figure 12-12, there is a Domains field where you can find the website domain that Vercel auto-generated for you.
+　Vercelプロファイルに移動すると、新しく作成されたプロジェクトが表示されます。図12-12に示すように、Vercelが自動生成したウェブサイト ドメインを見つけることができるDomainsフィールドがあります。
 
-![Vercel project page](images/ch12/maet_1212.png)
+![Vercelプロジェクト ページ](images/ch12/maet_1212.png)
 
-Figure 12-12. Vercel project page
+図12-12. Vercelプロジェクト ページ
 
-## Further Decentralizing the DApp
+## DAppのさらなる分散化
 
-In the previous section, we deployed our DApp to Vercel. While Vercel is one of the most popular solutions for hosting DApps, it is not a decentralized service. Everything resides on its proprietary servers, which means Vercel could potentially censor any user based on its policies and track the IP addresses of everyone interacting with your DApp.
+　前のセクションでは、DAppをVercelにデプロイしました。Vercelは DAppのホスティングで最も人気のあるソリューションの1つですが、分散型サービスではありません。すべてがVercel独自のサーバ上にあり、Vercelのポリシーに基づいてユーザーを検閲したり、DAppとインタラクションするすべての人のIPアドレスを追跡したりする可能性があります。
 
-To further decentralize our DApp, we can host the frontend on solutions like IPFS, a global P2P network of nodes. An emerging service worth mentioning is `eth.limo`, which aims to match the user experience of mainstream websites—typically served via centralized platforms—with the robustness and decentralization provided by IPFS and similar technologies.
+　DAppをさらに分散化するために、IPFSのようなグローバルP2Pノード ネットワーク上のソリューションにフロントエンドをホストできます。言及すべき新興サービスとして`eth.limo`があり、通常は中央集権的なプラットフォームを通じて提供される主流のウェブサイトのユーザー エクスペリエンスと、IPFSや類似技術が提供する堅牢性と分散化を両立させることを目指しています。
 
-### Decentralized Websites
+### 分散型ウェブサイト
 
-[Eth.limo](https://eth.limo/) is the missing piece of the puzzle to create better decentralized websites—also called *DWebsites*—that can be accessed in the same way you usually would with a classic app. It's based on the ENS technology, which makes Ethereum addresses user-friendly with `.eth` domain names. Vitalik Buterin, one of the cofounders of Ethereum, uses ENS to link his wallet address—`0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045`—with the easy-to-remember name `vitalik.eth`.
+　[Eth.limo](https://eth.limo/)は、より優れた分散型ウェブサイト（*DWebサイト*とも呼ばれる）を作成するためのパズルの欠けたピースであり、通常のアプリと同じ方法でアクセスできます。ENS技術に基づいており、`.eth`ドメイン名でイーサリアム アドレスをユーザー フレンドリーにします。イーサリアムの共同創設者の1人であるヴィタリック・ブテリンは、ENSを使用して自身のウォレット アドレス`0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045`を覚えやすい名前`vitalik.eth`とリンクしています。
 
-ENS goes beyond just linking a domain with an Ethereum address: it can also resolve to an IPFS website (actually the content hash), something like `bafybeif3dy…ga4zu`. The main problem related to IPFS websites is that most popular web browsers are not able to properly resolve them and show their contents to the user. This is where `eth.limo` comes into play: it operates a reverse proxy for ENS names and IPFS contents. It captures all requests to `*.eth.limo` (basically all websites ending with `.eth.limo`) and automatically resolves the IPFS contenthash of the requested ENS record, returning the corresponding static content over HTTPS. For example, when you go to [Vitalik Buterin's official blog](https://vitalik.eth.limo), this is what's happening under the hood:
+　ENSは単にドメインとイーサリアム アドレスをリンクするだけでなく、IPFSウェブサイト（実際にはコンテンツ ハッシュ）にも解決できます。`bafybeif3dy…ga4zu`のようなものです。IPFSウェブサイトに関連する主な問題は、ほとんどの人気Webブラウザがそれらを適切に解決してユーザーにコンテンツを表示できないことです。ここで`eth.limo`が登場します。ENS名とIPFSコンテンツのリバース プロキシとして動作します。`*.eth.limo`（基本的に`.eth.limo`で終わるすべてのウェブサイト）へのすべてのリクエストをキャプチャし、リクエストされたENSレコードのIPFSコンテンツ ハッシュを自動的に解決し、HTTPS経由で対応する静的コンテンツを返します。例えば、[ヴィタリック・ブテリンの公式ブログ](https://vitalik.eth.limo)にアクセスすると、裏側では以下のことが起きています:
 
-1. Eth.limo sees the incoming requests to the `vitalik.eth` ENS domain.
-2. It resolves it to the IPFS contenthash (that Buterin previously set) containing the home page of his website.
-3. It returns the corresponding static content over HTTPS.
+1. Eth.limoが`vitalik.eth` ENSドメインへの受信リクエストを確認する。
+2. ウェブサイトのホーム ページを含むIPFSコンテンツ ハッシュ（ブテリンが以前に設定したもの）に解決する。
+3. HTTPS経由で対応する静的コンテンツを返す。
 
-This way, anyone in the world with a web browser can easily access content that is stored on IPFS with zero configuration or setup needed.
+　この方法で、Webブラウザを持つ世界中の誰もが、設定やセットアップなしでIPFS上に保存されたコンテンツに簡単にアクセスできます。
 
-### Limitations
+### 制限事項
 
-Even though DWebsites in general—and `eth.limo` in particular—are an evolving technology and are improving pretty fast, there are still some limitations at the time of writing this chapter (June 2025). First, IPFS can only handle static files, so it cannot perform any kind of server-side computation. Furthermore, to use `eth.limo`, you need to buy an ENS and link it to the IPFS contenthash of your frontend. And you must always use the `*.eth.limo` custom domain; you cannot cut the `.limo` final part of it, or your web browser will not be able to resolve your ENS name to the IPFS frontend for your DApp. This is probably why most DApps do not use `eth.limo`.
+　DWebサイト全般、特に`eth.limo`は進化中の技術であり、かなりの速さで改善されていますが、この章の執筆時点（2025年6月）ではまだいくつかの制限があります。まず、IPFSは静的ファイルのみを処理できるため、サーバサイドの計算を実行することはできません。さらに、`eth.limo`を使用するには、ENSを購入してフロントエンドのIPFSコンテンツ ハッシュにリンクする必要があります。また、常に`*.eth.limo`カスタム ドメインを使用する必要があります。最後の`.limo`部分を削除するとWebブラウザはENS名をDApp用のIPFSフロントエンドに解決できません。これがおそらく、ほとんどのDAppが`eth.limo`を使用しない理由です。
 
-> **Tip**  
+> **ヒント**
 >
-> Although it's true that most web browsers are not compatible with ENS and IPFS yet, certain browsers are starting to add support for them. One example is [Brave](https://oreil.ly/LlJT7).
+> ほとんどのWebブラウザがまだENSとIPFSに対応していないのは事実であるが、特定のブラウザはサポートを追加し始めている。一例として[Brave](https://oreil.ly/LlJT7)がある。
 
-It must be said that `eth.limo` is another potentially centralized third party that could stop working without any notice. In case that happens, your DApps would still be reachable through IPFS, but the `.eth.limo` URL would not redirect users to them anymore.
+　`eth.limo`は、予告なく動作を停止する可能性のある別の潜在的に中央集権的なサードパーティであることも述べておく必要があります。それが起こった場合、DAppはIPFSを通じて引き続きアクセス可能ですが、`.eth.limo`のURLはユーザーをDAppにリダイレクトしなくなります。
 
-If you're interested and want to deep-dive into this solution for building fully decentralized websites, you can find a lot more details on the [official website](https://eth.limo).
+　完全に分散型のウェブサイトを構築するこのソリューションに興味があり、深く掘り下げたい場合は、[公式ウェブサイト](https://eth.limo)で多くの詳細を見つけることができます。
 
-### Deploying to IPFS
+### IPFSへのデプロイ
 
-Scaffold-ETH 2 has another easy command that lets you quickly push your DApp to IPFS. You just need to open a new terminal and type:
+　Scaffold-ETH 2には、DAppをIPFSに素早くプッシュできる別の簡単なコマンドがあります。新しいターミナルを開いて以下を入力するだけです:
 
 ```bash
 $ yarn ipfs
 ```
 
-And it's done! You should see something like this:
+　これで完了です。以下のような出力が表示されるはずです:
 
 ```
    Creating an optimized production build ...
- 
+
  ✓ Compiled successfully
  ✓ Linting and checking validity of types
-    
+
  ✓ Collecting page data
-    
+
  ✓ Generating static pages (8/8)
  ✓ Collecting build traces
-    
+
  ✓ Finalizing page optimization
 
 …
@@ -447,26 +447,26 @@ And it's done! You should see something like this:
 🚀  Upload complete! Your site is now available at: https://community.bgipfs.com/ipfs/bafybei…
 ```
 
-If you go to the displayed website, you should see your DApp working fine with the frontend hosted on IPFS. The string "bafy…" is the IPFS contenthash. You still need to configure `eth.limo` if you have a personal ENS and want to redirect it to this IPFS-hosted site.
+　表示されたウェブサイトにアクセスすると、IPFSでホストされたフロントエンドでDAppが正常に動作しているはずです。「bafy…」という文字列がIPFSコンテンツ ハッシュです。個人のENSを持っていてこのIPFSホスト型サイトにリダイレクトしたい場合は、`eth.limo`の設定が引き続き必要です。
 
-This is what actually happens under the hood of this `yarn ipfs` command:
+　`yarn ipfs`コマンドの裏側で実際に起きていることは以下の通りです:
 
-1. The frontend is built in order to have the static files ready to be uploaded to IPFS.
-2. The static files are uploaded to IPFS through the BuidlGuidl (the maintainers of Scaffold-ETH 2) IPFS community node.
-3. A URL is returned that redirects to the static files, working as a reverse proxy for the IPFS content (`community.bgipfs.com/<ipfs-content-hash>`).
+1. フロントエンドがビルドされ、IPFSにアップロードする準備が整った静的ファイルが作成される。
+2. 静的ファイルはBuidlGuidl（Scaffold-ETH 2のメンテナー）のIPFSコミュニティ ノードを通じてIPFSにアップロードされる。
+3. IPFSコンテンツのリバース プロキシとして機能する静的ファイルへリダイレクトするURLが返される（`community.bgipfs.com/<ipfs-content-hash>`）。
 
-See [BuidlGuidl IPFS](https://www.bgipfs.com) if you want to learn how to run your own IPFS node and pin a cluster.
+　独自のIPFSノードを実行してピン クラスタを運用する方法について学びたい場合は、[BuidlGuidl IPFS](https://www.bgipfs.com)を参照してください。
 
-## From App to DApp
+## アプリからDAppへ
 
-Over the past several sections, we have gradually built a decentralized application. We used a tool called Scaffold-ETH to facilitate our development workflow: we started a local chain, deployed our contract, and launched a local frontend to immediately begin interacting with and testing our DApp. Next, we published our DApp's frontend to Vercel to show how simple it is to deploy a DApp in a production-ready environment. Finally, we explored how to further decentralize our DApp by posting the frontend to IPFS and using solutions such as ENS and `eth.limo`, allowing anyone to access it without installing a special app.
+　これまでのいくつかのセクションで、分散型アプリケーションを段階的に構築してきました。開発ワークフローを促進するためにScaffold-ETHというツールを使用しました。ローカル チェーンを起動し、コントラクトをデプロイし、DAppとのインタラクションとテストをすぐに開始するためのローカル フロントエンドを立ち上げました。次に、DAppのフロントエンドをVercelに公開し、本番環境にDAppをデプロイすることがいかに簡単かを示しました。最後に、フロントエンドをIPFSに投稿し、ENSや`eth.limo`のようなソリューションを使用してDAppをさらに分散化する方法を探りました。これにより、特別なアプリをインストールすることなく誰でもアクセスできるようになります。
 
-Figure 12-13 provides a concise overview of the engineering stack required to create a fully decentralized application.
+　図12-13は、完全に分散化されたアプリケーションを作成するために必要なエンジニアリング スタックの簡潔な概要を提供しています。
 
-![DApp engineering stack](images/ch12/maet_1213.png)
+![DAppエンジニアリング スタック](images/ch12/maet_1213.png)
 
-Figure 12-13. Concise overview of the full engineering stack of a DApp
+図12-13. DAppのフル エンジニアリング スタックの簡潔な概要
 
-## Conclusion
+## まとめ
 
-In this chapter, we've explored how to build a basic DApp from scratch using modern tools to streamline the development workflow. In the next chapter, we'll take a closer look at some of the most important DApps—and categories of DApps—on Ethereum that collectively create what is known as DeFi.
+　この章では、最新のツールを使用して開発ワークフローを効率化しながら、基本的なDAppをゼロから構築する方法を探りました。次の章では、イーサリアム上で最も重要なDApp、およびDAppのカテゴリをより詳しく見ていきます。これらが集合的にDeFiとして知られるものを形成しています。
