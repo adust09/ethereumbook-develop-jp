@@ -1,431 +1,431 @@
-# Chapter 16. Scaling Ethereum
+# 第16章 イーサリアムのスケーリング
 
-Ethereum is one of the most powerful and widely used blockchain platforms, but as we've seen time and again, success comes with growing pains. Ethereum has become so popular that its base layer is having trouble keeping up, gas fees often get so high that transactions become too expensive, and the system is becoming weighed down by all the data it has to handle. While Ethereum developers have been rolling out upgrades like EIP-1559 (described in Chapter 6), The Merge (the 2022 hard fork that changed the consensus protocol from PoW to PoS), and EIP-4844 (proto-danksharding, described later in this chapter), the fundamental constraints of L1 remain a bottleneck for mass adoption. These improvements help, but they don't eliminate the need for additional scaling solutions like L2 rollups.
+　イーサリアムは最も強力かつ広く利用されているブロックチェーン プラットフォームの1つですが、これまで何度も見てきたように、成功には成長痛が伴います。イーサリアムは非常に人気が高まったため、ベースレイヤーが需要に追いつけなくなっています。ガス代はしばしば高騰してトランザクションが高額になりすぎ、処理すべきデータの増大によりシステムの負担が増しています。イーサリアムの開発者たちはEIP-1559（第6章で説明）、The Merge（コンセンサス プロトコルをPoWからPoSに変更した2022年のハードフォーク）、EIP-4844（プロトダンクシャーディング、本章で後述）などのアップグレードを展開してきましたが、L1の根本的な制約は大規模な普及を阻むボトルネックであり続けています。これらの改善は役立ちますが、L2ロールアップのような追加のスケーリング ソリューションの必要性を排除するものではありません。
 
-> **Note**  
+> **注記**
 >
-> L2 rollups are scaling solutions that process transactions off chain and then post a summary (such as a proof or data batch) to Ethereum's Layer 1. This reduces congestion and fees while still relying on Ethereum for security. There are two main types: optimistic rollups (assume valid, challenge if wrong) and zero-knowledge rollups (prove correctness with cryptography). Ethereum essentially becomes a settlement layer, meaning its main role shifts toward verifying proofs, ensuring data availability, and providing ultimate security guarantees for L2 transactions. We will explore rollups in detail in the second part of this chapter.
+> L2ロールアップは、トランザクションをオフチェーンで処理し、その要約（証明やデータ バッチなど）をイーサリアムのLayer 1に投稿するスケーリング ソリューションです。イーサリアムのセキュリティに依存しながら、混雑と手数料を削減します。主に2つのタイプがあります。オプティミスティック ロールアップ（有効と仮定し、問題があれば異議を申し立てる）とゼロ知識ロールアップ（暗号技術で正当性を証明する）です。イーサリアムは本質的に決済レイヤーとなり、証明の検証、データ可用性の確保、L2トランザクションに対する最終的なセキュリティ保証の提供に主な役割がシフトしています。ロールアップについては、本章の後半で詳しく解説します。
 
-## The Problems of Ethereum's Layer 1
+## イーサリアムLayer 1の問題
 
-To fully understand Ethereum's scaling challenges, we need to break things down into four major issues: the scalability trilemma, gas costs and network congestion, state growth and storage, and block propagation and MEV. These issues aren't unique to Ethereum—other chains run into the same problems in different forms—but Ethereum's popularity amplifies them. Let's dig into each.
+　イーサリアムのスケーリング課題を十分に理解するためには、4つの主要な問題に分解する必要があります。スケーラビリティ トリレンマ、ガスコストとネットワーク混雑、ステートの増大とストレージ、ブロック伝播とMEVです。これらの問題はイーサリアムに固有のものではなく、他のチェーンも形を変えて同じ問題に直面していますが、イーサリアムの人気がこれらを増幅させています。それぞれ詳しく見ていきましょう。
 
-### The Scalability Trilemma
+### スケーラビリティ トリレンマ
 
-Ethereum, like any permissionless blockchain, has three fundamental goals: *decentralization*, *security*, and *scalability*. But here's the problem: improving one of these often means compromising another. This is what Vitalik Buterin calls the *scalability trilemma*.
+　イーサリアムは、あらゆるパーミッションレス ブロックチェーンと同様に、3つの基本的な目標を持っています。*分散化*、*セキュリティ*、*スケーラビリティ*です。しかし問題は、1つを改善すると他の1つが犠牲になることが多いということです。ヴィタリック・ブテリンはこれを*スケーラビリティ トリレンマ*と呼んでいます。
 
-Let's break it down:
+　それぞれを分解して説明します。
 
-**Decentralization**
+**分散化**
 
-Decentralization is what makes Ethereum censorship resistant and trustless. Anyone can run a node, validate transactions, and participate in the network without needing permission from a central authority.
+　分散化は、イーサリアムを検閲耐性があり、トラストレスなものにしている要素です。誰でもノードを運用し、トランザクションを検証し、中央機関の許可なくネットワークに参加できます。
 
-**Security**
+**セキュリティ**
 
-Security ensures that Ethereum remains resilient against attacks. Transactions must be irreversible, smart contracts must be immutable, and bad actors should have no easy way to manipulate the system.
+　セキュリティは、イーサリアムが攻撃に対して回復力を保つことを保証します。トランザクションは不可逆でなければならず、スマートコントラクトは不変でなければならず、悪意ある行為者がシステムを容易に操作できてはなりません。
 
-**Scalability**
+**スケーラビリティ**
 
-Scalability is what allows the network to handle thousands or even millions of transactions per second (TPS), making it practical for global adoption.
+　スケーラビリティは、ネットワークが1秒あたり数千、さらには数百万のトランザクション（TPS）を処理できるようにし、グローバルな普及を実現するものです。
 
-The challenge is that traditional blockchains like Ethereum are designed to be fully decentralized and secure at the cost of scalability. Every transaction is processed by all nodes, ensuring correctness but also creating a bottleneck.
+　課題は、イーサリアムのような従来のブロックチェーンが、スケーラビリティを犠牲にして完全な分散化とセキュリティを実現するよう設計されていることです。すべてのトランザクションがすべてのノードによって処理されるため、正確性は保証されますが、ボトルネックも生じます。
 
-Why can't we just increase throughput? If we try to speed things up by making blocks larger (so they can hold more transactions), fewer people will be able to run full nodes because the hardware requirements will become too demanding. This could push Ethereum toward centralization, where only a handful of powerful entities control the network—exactly what we're trying to avoid.
+　なぜスループットを上げるだけではだめなのでしょうか。ブロックを大きくして（より多くのトランザクションを格納できるように）処理速度を上げようとすると、ハードウェア要件が厳しくなりすぎて、フルノードを運用できる人が少なくなります。これにより、少数の強力なエンティティだけがネットワークを制御する中央集権化が進む可能性があります。これはまさに私たちが避けようとしていることです。
 
-Other blockchains, like Solana, have taken a different approach. They've optimized for speed and scalability but at the cost of decentralization, requiring more powerful hardware to run a node. Ethereum has refused to compromise on decentralization, making the challenge of scaling all the more difficult.
+　Solanaのような他のブロックチェーンは、異なるアプローチを取っています。速度とスケーラビリティに最適化しましたが、分散化を犠牲にしており、ノードの運用にはより高性能なハードウェアが必要です。イーサリアムは分散化を妥協しないことを選択しており、スケーリングの課題はさらに困難になっています。
 
-PoS, introduced with The Merge, replaced the energy-intensive PoW system. This not only cut Ethereum's energy use dramatically but also reduced the dominance of big players who could afford massive mining setups. While staking introduces new centralization risks, it's still a step toward a more accessible and efficient network. However, PoS brings new challenges, such as the centralization risk posed by large staking pools. Liquid staking solutions help keep staked ETH accessible, but they also concentrate control in the hands of a few platforms. Finding the right balance remains a work in progress.
+　The Mergeで導入されたPoSは、エネルギー集約型のPoWシステムに取って代わりました。イーサリアムのエネルギー消費を劇的に削減しただけでなく、大規模なマイニング設備を持つ余裕のある大手プレイヤーの優位性も縮小しました。ステーキングには新たな中央集権化リスクが伴いますが、よりアクセスしやすく効率的なネットワークへの一歩です。ただし、PoSは大規模なステーキング プールによる中央集権化リスクなどの新たな課題ももたらしています。リキッド ステーキング ソリューションは、ステーキングされたETHのアクセシビリティを維持するのに役立ちますが、少数のプラットフォームに制御が集中するという側面もあります。適切なバランスを見つけることは現在も進行中の課題です。
 
-### Gas Costs and Network Congestion
+### ガスコストとネットワーク混雑
 
-One of the most frustrating experiences for Ethereum users is high gas fees, with transaction costs that fluctuate wildly depending on network demand. How does this happen, and why do fees get so expensive during peak times?
+　イーサリアム ユーザーにとって最もフラストレーションの溜まる体験の1つは、ネットワーク需要に応じて大きく変動するトランザクションコストに伴う高いガス代です。なぜこのようなことが起こり、ピーク時に手数料がなぜこれほど高くなるのでしょうか。
 
-Ethereum transactions require *gas*, a unit that measures the computational effort needed to execute operations like transfers or smart contract interactions. The more complex the operation, the more gas it requires. Every block has a limited amount of gas it can include, meaning there's competition for block space. When demand is high, users bid against one another, driving fees up.
+　イーサリアムのトランザクションには*ガス*が必要です。ガスは、送金やスマートコントラクトとのやり取りなどの操作を実行するために必要な計算量を測定する単位です。操作が複雑になるほど、より多くのガスが必要になります。各ブロックには含められるガスの量に制限があるため、ブロック スペースの競争が生じます。需要が高いとき、ユーザーは互いに入札し合い、手数料が上昇します。
 
-We've seen this play out in dramatic ways:
+　これが劇的な形で表れた事例があります。
 
-**CryptoKitties craze (2017)**
+**CryptoKittiesブーム（2017年）**
 
-This was the first real test of Ethereum's limits. A simple game where users could breed and trade digital cats clogged the network so badly that transaction times slowed to a crawl and gas fees soared.
+　イーサリアムの限界が初めて本格的に試されたケースです。ユーザーがデジタル猫を繁殖させたり取引したりするシンプルなゲームが、ネットワークを著しく詰まらせ、トランザクション時間は大幅に遅延し、ガス代は急騰しました。
 
-**DeFi Summer (2020)**
+**DeFiサマー（2020年）**
 
-The explosion of DeFi apps like Uniswap and Compound brought massive activity to Ethereum. Traders rushed to make transactions, sometimes paying hundreds of dollars in gas fees to get priority in the mempool.
+　UniswapやCompoundのようなDeFiアプリの爆発的な普及が、イーサリアムに大量のアクティビティをもたらしました。トレーダーたちはメンプールで優先的に処理してもらうため、時には数百ドルのガス代を支払ってトランザクションを急ぎました。
 
-**NFT boom (2021)**
+**NFTブーム（2021年）**
 
-NFT drops became gas wars, with people paying thousands just to mint a new digital collectible before someone else did. Some transactions failed despite users spending exorbitant amounts on gas.
+　NFTのドロップはガス ウォーズとなり、人々は新しいデジタル コレクティブルを他の誰よりも先にミントするためだけに数千ドルを支払いました。法外なガス代を費やしたにもかかわらず、失敗するトランザクションもありました。
 
-Ethereum's Layer 1 wasn't designed to handle this level of demand efficiently. However, the introduction of EIP-1559 in 2021 changed how fees work by introducing variable block sizes and a new gas-pricing mechanism, which reduced spikes in gas fees during periods of high network activity. The rising popularity of L2 solutions has allowed Ethereum to offload a significant portion of its computational burden, further reducing gas fees. More recently, EIP-4844 (proto-danksharding) was rolled out, significantly lowering fees, especially for L2 rollups, and making Ethereum transactions more affordable for users. Despite these improvements, Ethereum's transaction costs remain higher than those of most other blockchains (see Figure 16-1).
+　イーサリアムのLayer 1は、このレベルの需要を効率的に処理するようには設計されていませんでした。しかし、2021年に導入されたEIP-1559は、可変ブロック サイズと新しいガス価格メカニズムを導入し、ネットワーク活動が活発な時期のガス代の急騰を緩和しました。L2ソリューションの人気上昇により、イーサリアムは計算負担のかなりの部分をオフロードでき、ガス代がさらに削減されています。さらに最近では、EIP-4844（プロトダンクシャーディング）が展開され、特にL2ロールアップの手数料が大幅に低下し、ユーザーにとってイーサリアムのトランザクションがより手頃になりました。これらの改善にもかかわらず、イーサリアムのトランザクション コストは他のほとんどのブロックチェーンよりも依然として高い状態です（図16-1参照）。
 
-![Gas cost comparison across blockchains](images/ch16/maet_1601.png)
+![ブロックチェーン間のガスコスト比較](images/ch16/maet_1601.png)
 
-Figure 16-1. Gas cost comparison across blockchains
+図16-1 ブロックチェーン間のガスコスト比較
 
-### State Growth and Storage Issues
+### ステートの増大とストレージの問題
 
-Ethereum isn't just used for transactions; it's a *global state machine* that continuously tracks account balances, smart contract data, DeFi positions, NFTs, and other on-chain activity. Unlike traditional databases, which can archive or delete old records, Ethereum is designed to retain its full history, ensuring transparency and verifiability. The problem? As Ethereum grows, it needs to store more data, and that storage burden keeps getting heavier.
+　イーサリアムはトランザクションだけに使われているわけではありません。イーサリアムは*グローバル ステート マシン*であり、アカウント残高、スマートコントラクト データ、DeFiポジション、NFT、その他のオンチェーン アクティビティを継続的に追跡しています。従来のデータベースは古い記録をアーカイブまたは削除できますが、イーサリアムは透明性と検証可能性を確保するために完全な履歴を保持するよう設計されています。問題は、イーサリアムが成長するにつれてより多くのデータを保存する必要があり、そのストレージ負担が増し続けていることです。
 
-Right now, the size of Ethereum's state—essentially, the set of all active accounts, contract balances, and storage slots—is growing at an alarming rate. Every new smart contract adds to this state, and every transaction modifies it. Full nodes, which play a crucial role in verifying the network's integrity, must store and constantly update this data. As the state grows, it becomes increasingly difficult for individuals to run full nodes without expensive hardware, leading to concerns about decentralization.
+　現在、イーサリアムのステート、つまりすべてのアクティブなアカウント、コントラクト残高、ストレージ スロットの集合のサイズは、驚くべき速度で増大しています。新しいスマートコントラクトが追加されるたびにステートが増え、すべてのトランザクションがステートを変更します。ネットワークの整合性を検証するうえで重要な役割を果たすフルノードは、このデータを保存し、常に更新し続けなければなりません。ステートが増大するにつれ、高価なハードウェアなしにフルノードを運用することがますます困難になり、分散化に関する懸念が生じています。
 
-Archival nodes face an even bigger challenge. These nodes store not only the current state but also the entire historical record of Ethereum, including every past transaction and contract execution. The sheer volume of this data reaches into the terabytes, requiring significant storage capacity and bandwidth. The number of people capable of running these nodes is shrinking, raising questions about who will preserve Ethereum's long-term history.
+　アーカイバル ノードはさらに大きな課題に直面しています。アーカイバル ノードは現在のステートだけでなく、過去のすべてのトランザクションやコントラクト実行を含むイーサリアムの完全な履歴記録も保存します。このデータの量はテラバイト規模に達し、大容量のストレージと帯域幅が必要です。アーカイバル ノードを運用できる人の数は減少しており、誰がイーサリアムの長期的な履歴を保存するのかという疑問が生じています。
 
-Validators, who are responsible for proposing and attesting to blocks in Ethereum's PoS system, also feel the weight of state growth. To verify transactions efficiently, they need quick access to the latest blockchain state. But as the state expands, accessing and processing this information becomes slower and more expensive. If this trend continues unchecked, we risk creating an environment where only those with high-end hardware can participate in validation, pushing Ethereum toward centralization.
+　イーサリアムのPoSシステムにおいてブロックの提案と証明を担当するバリデーターも、ステート増大の影響を受けています。トランザクションを効率的に検証するには、最新のブロックチェーン ステートへの迅速なアクセスが必要です。しかし、ステートが拡大するにつれ、情報へのアクセスと処理は遅くなり、コストも増大します。この傾向が抑制されないまま続けば、ハイエンドなハードウェアを持つ人だけがバリデーションに参加できる環境が生まれ、イーサリアムは中央集権化に向かうリスクがあります。
 
-Ethereum developers have explored solutions to curb state bloat, including history expiry and state rent, which we will discuss in detail later in this chapter in "Scaling the L1".
+　イーサリアムの開発者たちは、ステートの肥大化を抑制するために履歴有効期限やステート レントなどのソリューションを検討してきました。これらについては本章の後半「L1のスケーリング」で詳しく説明します。
 
-Client diversity also helps. While Geth has historically been the dominant Ethereum client (see Figure 16-2), alternatives like Nethermind, Erigon, and Besu introduce optimizations that improve storage efficiency. Erigon, for example, specializes in handling historical data more efficiently, reducing the burden on full nodes.
+　クライアント多様性も役立ちます。Gethは歴史的にイーサリアムの主要クライアントでしたが（図16-2参照）、Nethermind、Erigon、Besuなどの代替クライアントがストレージ効率を改善する最適化を導入しています。たとえばErigonは、履歴データの効率的な処理に特化しており、フルノードの負担を軽減しています。
 
-![Ethereum client distribution](images/ch16/maet_1602.png)
+![イーサリアム クライアントの分布](images/ch16/maet_1602.png)
 
-Figure 16-2. Ethereum client distribution
+図16-2 イーサリアム クライアントの分布
 
-### Block Propagation and MEV
+### ブロック伝播とMEV
 
-Even if Ethereum could handle a higher transaction throughput, there's another fundamental bottleneck: the time it takes for new blocks to propagate across the network. The moment a validator produces a new block, that block must be broadcast to thousands of other nodes worldwide. The larger the block, the longer it takes to propagate. And the longer it takes, the higher the chance of network disagreements, or even temporary forks, where different parts of the network momentarily diverge.
+　イーサリアムがより高いトランザクション スループットを処理できたとしても、もう1つの根本的なボトルネックがあります。それは、新しいブロックがネットワーク全体に伝播するのにかかる時間です。バリデーターが新しいブロックを生成すると、そのブロックは世界中の数千のノードにブロードキャストされなければなりません。ブロックが大きいほど伝播に時間がかかります。そして伝播に時間がかかるほど、ネットワークの不一致、つまり一時的なフォーク（ネットワークの異なる部分が一時的に分岐する現象）が発生する可能性が高まります。
 
-PoS has helped reduce these risks, but block-propagation delays still affect performance. Client teams have been working on network optimizations to speed things up, but it's a challenge we'll continue to refine as we scale Ethereum.
+　PoSはこれらのリスクを軽減するのに役立っていますが、ブロック伝播の遅延は依然としてパフォーマンスに影響を与えています。クライアント チームは処理を高速化するためのネットワーク最適化に取り組んでいますが、イーサリアムのスケーリングを進めるにあたり引き続き改善が必要な課題です。
 
-There's another issue that lurks beneath the surface: MEV. Even though Ethereum has transitioned to PoS, the name "miner extractable value" has stuck. Today, it's more accurate to call it *maximal extractable value*, meaning the profit that validators and searchers can make by strategically reordering, including, or excluding transactions in a block.
+　水面下に潜むもう1つの問題があります。MEVです。イーサリアムはPoSに移行しましたが、「miner extractable value」という名称が定着しています。今日ではより正確に*最大抽出可能価値（maximal extractable value）*と呼ばれ、バリデーターやサーチャーがブロック内のトランザクションを戦略的に並べ替えたり、含めたり、除外したりすることで得られる利益を意味します。
 
-MEV arises because transactions don't always get processed in the order they're submitted. Instead, validators can prioritize transactions based on their own profit motives. This creates opportunities for sophisticated actors to extract value in ways that disadvantage regular users. High-frequency trading bots scan the mempool (Ethereum's waiting room for transactions yet to be included in a block), searching for profitable opportunities. For example, if someone submits a large trade on a decentralized exchange like Uniswap, bots can jump ahead of them, buying the asset first and selling it back at a higher price. This is known as a *sandwich attack*, which is a form of front-running, and it's one of the most notorious forms of MEV.
+　MEVが発生するのは、トランザクションが送信された順序で処理されるとは限らないためです。バリデーターは自身の利益動機に基づいてトランザクションに優先順位をつけることができます。これにより、高度な技術を持つ行為者が一般ユーザーに不利な方法で価値を抽出する機会が生まれます。高頻度取引ボットはメンプール（ブロックに含まれるのを待っているトランザクションの待機場所）をスキャンし、利益を得る機会を探しています。たとえば、誰かがUniswapのような分散型取引所で大口取引を送信した場合、ボットはその前に割り込んで資産を先に購入し、より高い価格で売り戻すことができます。これは*サンドイッチ攻撃*として知られ、フロントランニングの一形態であり、MEVの中でも最も悪名高い手法の1つです。
 
-A mitigation that has been running for years is MEV-Boost, a protocol developed by Flashbots that makes MEV more democratic and transparent. However, the long-term fix is a more fundamental redesign: a native implementation of *proposer-builder separation* (PBS). We'll explore these solutions in more detail in the following section.
+　数年前から運用されている緩和策として、Flashbotsが開発したMEV-Boostプロトコルがあり、MEVをより民主的かつ透明にしています。しかし、長期的な解決策はより根本的な再設計、すなわちネイティブな*提案者-構築者分離*（PBS）の実装です。これらのソリューションについては、次のセクションでさらに詳しく解説します。
 
-> **Note**  
+> **注記**
 >
-> MEV is largely absent from most L2 chains because they typically rely on centralized transaction sequencers. A single centralized sequencer usually processes transactions in the exact order they're received, eliminating opportunities for transaction reordering or front-running. While this centralized approach significantly reduces MEV, it does introduce potential trade-offs related to decentralization and censorship resistance. Future L2 developments aim to balance these trade-offs by introducing decentralized sequencing mechanisms.
+> MEVは、ほとんどのL2チェーンでは集中型のトランザクション シーケンサーに依存しているため、ほぼ存在しません。単一の集中型シーケンサーは通常、受信した順序でトランザクションを処理するため、トランザクションの並べ替えやフロントランニングの機会がなくなります。この集中型アプローチはMEVを大幅に削減しますが、分散化と検閲耐性に関する潜在的なトレードオフが生じます。今後のL2開発では、分散型シーケンシング メカニズムの導入により、これらのトレードオフのバランスを取ることを目指しています。
 
-## Solutions
+## ソリューション
 
-What's being done to overcome Ethereum's scaling challenges? While there's no single, simple fix, developers are actively working on various improvements to make the network faster, cheaper, and better equipped for mass adoption. Let's take a closer look at the main strategies they're exploring.
+　イーサリアムのスケーリング課題を克服するために何が行われているのでしょうか。単一の簡単な解決策はありませんが、開発者たちはネットワークをより高速に、より安価に、そして大規模な普及により適したものにするためのさまざまな改善に積極的に取り組んでいます。主要な戦略を詳しく見ていきましょう。
 
-### Scaling the L1
+### L1のスケーリング
 
-Scaling Ethereum's base layer, Layer 1, is one of the hardest challenges we've faced since day one. The reality is that no single fix will solve everything; scaling isn't a binary switch we can flip. Instead, it's a long-term process: a combination of optimizations that gradually make Ethereum more efficient without sacrificing decentralization or security. While L2 rollups are our best bet for handling the majority of transactions, improving Ethereum's base layer is still important. If we can increase throughput and efficiency at L1, rollups become even more powerful, gas fees drop, and Ethereum stays competitive without resorting to centralization. Let's walk through some of the core ways we're improving Ethereum's base layer.
+　イーサリアムのベースレイヤーであるLayer 1のスケーリングは、初日から直面している最も困難な課題の1つです。現実には、すべてを解決する単一の修正はなく、スケーリングは切り替えるだけのバイナリ スイッチではありません。代わりに長期的なプロセスであり、分散化やセキュリティを犠牲にすることなくイーサリアムを段階的に効率化する最適化の組み合わせです。L2ロールアップがトランザクションの大部分を処理するための最善の手段ですが、イーサリアムのベースレイヤーを改善することも依然として重要です。L1でスループットと効率を向上させることができれば、ロールアップはさらに強力になり、ガス代は下がり、中央集権化に頼ることなくイーサリアムは競争力を維持できます。イーサリアムのベースレイヤーを改善する主要な方法を見ていきましょう。
 
-#### Raising the gas limit
+#### ガスリミットの引き上げ
 
-Ethereum's blocks aren't constrained by the number of transactions they can hold but by how much gas can fit inside each block. This is the *gas limit*. We can think of it like a budget. Every transaction consumes gas based on its complexity, and the available gas in a block is defined by the EIP-1559 mechanics. Raising the gas limit means we can fit more transactions in each block, effectively increasing Ethereum's throughput.
+　イーサリアムのブロックは、格納できるトランザクションの数ではなく、各ブロックに収まるガスの量によって制約されています。これが*ガスリミット*です。予算のようなものと考えることができます。すべてのトランザクションはその複雑さに応じてガスを消費し、ブロック内の利用可能なガスはEIP-1559のメカニズムによって定義されます。ガスリミットを引き上げることで、各ブロックにより多くのトランザクションを格納でき、イーサリアムのスループットを実質的に向上させることができます。
 
-But it's not as simple as just cranking up the gas limit. Bigger blocks take longer to propagate across the network, making Ethereum more susceptible to chain splits. They also increase hardware requirements for full nodes, pushing us closer to centralization. So increases in gas limit happen gradually and carefully, balancing throughput improvements with network health (see Figure 16-3).
+　しかし、ガスリミットを単純に引き上げればよいというものではありません。ブロックが大きくなるとネットワーク全体への伝播に時間がかかり、イーサリアムはチェーン スプリットの影響を受けやすくなります。また、フルノードのハードウェア要件も増加し、中央集権化に近づいてしまいます。そのため、ガスリミットの引き上げは、スループットの改善とネットワークの健全性のバランスを取りながら、段階的かつ慎重に行われます（図16-3参照）。
 
-![Historical gas limit changes](images/ch16/maet_1603.png)
+![ガスリミットの歴史的な変化](images/ch16/maet_1603.png)
 
-Figure 16-3. Historical gas limit changes
+図16-3 ガスリミットの歴史的な変化
 
-#### The future of parallel execution in Ethereum
+#### イーサリアムにおける並列実行の将来
 
-Ethereum processes transactions sequentially because of its shared-state model. This ensures security and consistency but limits scalability since transactions cannot be executed in parallel. In contrast, some newer blockchains like Solana and Aptos have adopted parallel execution, but they rely on more centralized architectures and require validators to use high-performance hardware.
+　イーサリアムは共有ステート モデルのためにトランザクションを逐次的に処理しています。これによりセキュリティと一貫性は確保されますが、トランザクションを並列に実行できないため、スケーラビリティが制限されます。対照的に、SolanaやAptosのような新しいブロックチェーンは並列実行を採用していますが、より中央集権的なアーキテクチャに依存しており、バリデーターには高性能なハードウェアが必要です。
 
-The challenge in Ethereum is that transactions often interact with the same state—for example, two DeFi trades modifying the same liquidity pool. Reordering them without a robust dependency-management system could break smart contract logic. Another complexity is that full nodes must verify all transactions, and introducing parallel execution would require careful synchronization across threads.
+　イーサリアムにおける課題は、トランザクションが同じステートと頻繁にやり取りすることです。たとえば、2つのDeFi取引が同じ流動性プールを変更するケースです。堅牢な依存関係管理システムなしにトランザクションの順序を変更すると、スマートコントラクトのロジックが壊れる可能性があります。もう1つの複雑さは、フルノードがすべてのトランザクションを検証しなければならず、並列実行を導入するにはスレッド間の慎重な同期が必要になることです。
 
-Ethereum researchers are actively exploring solutions to introduce partial parallel execution while maintaining decentralization. One approach is *stateless execution*, which reduces the reliance on full node storage, making transaction processing more efficient. Another is *optimistic concurrency*, where transactions are assumed to be independent and are rolled back only if conflicts arise. We'll explain these concepts in detail in the second part of this chapter.
+　イーサリアムの研究者たちは、分散化を維持しながら部分的な並列実行を導入するためのソリューションを積極的に検討しています。1つのアプローチは*ステートレス実行*で、フルノード ストレージへの依存を減らし、トランザクション処理をより効率的にします。もう1つは*オプティミスティック 並行性*で、トランザクションは独立していると仮定し、競合が発生した場合にのみロールバックする方式です。これらの概念については、本章の後半で詳しく説明します。
 
-Several experimental implementations of parallel EVM have emerged in EVM-compatible chains, including Monad, Polygon PoS, and Shardeum. Monad, for instance, implements an optimistic parallel execution model that achieves more than 10,000 TPS. Polygon PoS has achieved a 1.6x gas throughput increase with its Block-STM approach, allowing for partial parallelization of transactions. These advancements provide valuable insights, but Ethereum must implement parallelization while preserving decentralization, a balance that remains a key challenge. Recent studies suggest that about 64.85% of Ethereum transactions could be parallelized, highlighting significant potential for performance improvements. However, as of March 2025, there is no concrete plan for integrating parallel execution into Ethereum's mainnet. Discussions around parallelizing EVM through end-of-the-block virtual transactions are ongoing, but the complexity of Ethereum's execution model makes implementation challenging. The roadmap for Ethereum's scalability includes continued research into transaction-dependency resolution, alternative execution models, and gradual improvements to EVM efficiency.
+　並列EVMのいくつかの実験的実装が、Monad、Polygon PoS、Shardeumなど、EVM互換チェーンで登場しています。たとえばMonadは、10,000TPSを超えるオプティミスティック並列実行モデルを実装しています。Polygon PoSは、Block-STMアプローチにより1.6倍のガス スループット向上を達成し、トランザクションの部分的な並列化を可能にしています。これらの進歩は貴重な洞察を提供しますが、イーサリアムは分散化を保ちながら並列化を実装しなければならず、このバランスが依然として重要な課題です。最近の研究では、イーサリアムのトランザクションの約64.85%が並列化可能であることが示されており、パフォーマンス向上の大きな可能性が示唆されています。しかし、2025年3月時点で、並列実行をイーサリアムのメインネットに統合する具体的な計画はありません。ブロック末尾の仮想トランザクションを通じたEVMの並列化に関する議論は進行中ですが、イーサリアムの実行モデルの複雑さが実装を困難にしています。イーサリアムのスケーラビリティに向けたロードマップには、トランザクション依存関係の解決、代替実行モデル、EVMの効率の段階的改善に関する継続的な研究が含まれています。
 
-#### State growth and expiry
+#### ステートの増大と有効期限
 
-Ethereum's state, comprising the collection of all account balances, smart contract storage, and other on-chain data, just keeps growing. Every new contract adds more data, and once something is written to Ethereum's state, it stays there forever. This is great for decentralization and verifiability but terrible for scalability. Full nodes must store and process all this data, and as the state gets larger, the cost of running a node increases.
+　イーサリアムのステート（すべてのアカウント残高、スマートコントラクト ストレージ、その他のオンチェーン データの集合）は増大し続けています。新しいコントラクトが追加されるたびにデータが増え、一度イーサリアムのステートに書き込まれたデータは永遠にそこにとどまります。分散化と検証可能性にとっては素晴らしいことですが、スケーラビリティにとっては問題です。フルノードはこのすべてのデータを保存し処理しなければならず、ステートが大きくなるにつれてノード運用コストは増加します。
 
-Right now, the Ethereum state size is around 1.2 TB for full nodes, but archival nodes, which store the entire historical state and transaction data, need upward of 21 TB of storage. This massive data footprint makes it increasingly difficult for individuals to run archival nodes, concentrating this role in the hands of a few well-funded entities. It's worth mentioning that Erigon and Reth execution clients are optimized to require less storage, as both need around 2 TB for an archive node.
+　現在、イーサリアムのステート サイズはフルノードで約1.2TBですが、完全な履歴ステートとトランザクション データを保存するアーカイバル ノードは21TB以上のストレージが必要です。この膨大なデータ フットプリントにより、個人がアーカイバル ノードを運用することはますます困難になり、この役割は資金力のある少数のエンティティに集中しつつあります。なお、ErigonとRethの実行クライアントは、ストレージの使用量が少なく最適化されており、アーカイブ ノードでも約2TBで済むことを付記しておきます。
 
-There's often confusion between state expiry and history expiry, but they address different problems. *State expiry* aims to reduce the size of Ethereum's actively maintained state by requiring smart contracts to periodically pay rent for the storage they consume. If a contract doesn't pay, it becomes inaccessible until someone explicitly pays to revive it. This would significantly slow state growth and make it easier for full nodes to operate.
+　ステート有効期限と履歴有効期限は混同されがちですが、異なる問題に対処しています。*ステート有効期限*は、スマートコントラクトが消費するストレージに対して定期的にレントを支払うことを要求し、イーサリアムのアクティブに維持されるステートのサイズを削減することを目的としています。コントラクトが支払いを行わない場合、誰かが明示的に復活のための支払いを行うまでアクセスできなくなります。これによりステートの増大が大幅に抑制され、フルノードの運用が容易になります。
 
-*History expiry*, on the other hand, deals with the sheer size of past transaction data. Instead of forcing every node to store all historical transactions, Ethereum could prune older data, offloading it to external storage solutions. This wouldn't affect the live state but would make historical queries more reliant on third-party data providers. Both approaches have trade-offs, and research is ongoing to determine the best balance between efficiency and accessibility.
+　一方、*履歴有効期限*は、過去のトランザクション データの膨大なサイズに対処します。すべてのノードにすべての履歴トランザクションの保存を強制する代わりに、イーサリアムは古いデータをプルーニングし、外部ストレージ ソリューションにオフロードすることが可能になります。ライブ ステートには影響しませんが、履歴クエリはサードパーティのデータ プロバイダーにより依存するようになります。両方のアプローチにはトレードオフがあり、効率性とアクセシビリティの最適なバランスを見極めるための研究が進行中です。
 
-To explore this topic further, we recommend looking into EIP-4444, which covers history expiry. As for state expiry, it's still in the research phase, so there's no clear strategy yet, but you can find more information in the Ethereum roadmap.
+　このトピックをさらに深く探求するには、履歴有効期限を扱うEIP-4444を参照することをお勧めします。ステート有効期限については、まだ研究段階であり明確な戦略はありませんが、イーサリアムのロードマップで詳しい情報を見つけることができます。
 
-#### Proposer-builder separation
+#### 提案者-構築者分離
 
-MEV has been a persistent issue in Ethereum, even after the transition to PoS. Validators and specialized searchers engage in transaction reordering, front-running, and other strategies to extract profit at the expense of regular users. This isn't just an economic problem; it also affects network health, increasing congestion and making gas fees unpredictable.
+　MEVは、PoSへの移行後もイーサリアムにおいて根強い問題です。バリデーターや専門のサーチャーが、一般ユーザーを犠牲にしてトランザクションの並べ替え、フロントランニング、その他の戦略を用いて利益を抽出しています。これは経済的な問題だけでなく、ネットワークの健全性にも影響を与え、混雑を増加させ、ガス代を予測困難にしています。
 
-PBS is one of the most promising solutions for mitigating MEV. Right now, validators both propose and build blocks, meaning they have full control over transaction ordering. PBS changes this by splitting these roles: validators still propose blocks, but the actual block construction is outsourced to specialized builders through a competitive auction. This removes the direct incentive for validators to engage in MEV extraction and makes transaction inclusion more transparent.
+　PBSは、MEVを緩和するための最も有望なソリューションの1つです。現在、バリデーターはブロックの提案と構築の両方を行っており、トランザクションの順序を完全に制御しています。PBSはこれらの役割を分離することで変革をもたらします。バリデーターは引き続きブロックを提案しますが、実際のブロック構築は競争入札を通じて専門のビルダーに委託されます。これにより、バリデーターがMEV抽出に関与する直接的なインセンティブが取り除かれ、トランザクションの組み込みがより透明になります。
 
-PBS has already been tested in the form of MEV-Boost, which allows validators to outsource block construction to the highest bidder. However, it's important to understand that MEV-Boost and PBS won't eliminate MEV; they will just make it more transparent and fairer. MEV will still exist because the underlying incentives that drive arbitrage, front-running, and sandwich attacks won't go away. What PBS does is ensure that instead of a few insiders benefiting from opaque MEV strategies, the process of capturing MEV is more open, fair, and competitive. In the long run, additional solutions like order-flow auctions, encrypted mempools, and other MEV-mitigation techniques will need to be integrated alongside PBS to further reduce its negative impact.
+　PBSは、バリデーターがブロック構築を最高入札者に委託できるMEV-Boostの形ですでにテストされています。ただし、MEV-BoostとPBSはMEVを排除するわけではなく、より透明で公平なものにするだけであることを理解することが重要です。裁定取引、フロントランニング、サンドイッチ攻撃を駆動する根本的なインセンティブがなくならないため、MEVは引き続き存在します。PBSが保証するのは、少数のインサイダーが不透明なMEV戦略から利益を得るのではなく、MEVの獲得プロセスがよりオープンで公平かつ競争的になることです。長期的には、オーダーフロー オークション、暗号化メンプール、その他のMEV緩和技術がPBSと並行して統合され、MEVの悪影響をさらに低減する必要があります。
 
-### Rollups
+### ロールアップ
 
-Ethereum has faced persistent challenges with scalability, transaction throughput (measured in TPS), and high fees. To address these issues, the concept of rollups has emerged.
+　イーサリアムは、スケーラビリティ、トランザクション スループット（TPSで測定）、高い手数料に関する課題に持続的に直面してきました。これらの問題に対処するために、ロールアップの概念が登場しました。
 
-*Rollups* are mechanisms that execute transactions "off chain" on a dedicated L2, then post aggregated ("rolled up") data or proofs back to the L1 blockchain. Because the heavy lifting of computation and state updates occurs away from L1, the blockchain avoids its usual throughput bottlenecks, thereby increasing transaction speeds and lowering fees. In effect, the rollup's own execution environment handles signature checks, contract execution, and state transitions more efficiently, while L1 remains the authoritative "settlement layer."
+　*ロールアップ*は、専用のL2上で「オフチェーン」でトランザクションを実行し、集約（「ロールアップ」）されたデータまたは証明をL1ブロックチェーンに戻して投稿するメカニズムです。計算とステート更新の重い処理がL1から離れた場所で行われるため、ブロックチェーンは通常のスループット ボトルネックを回避し、トランザクション速度が向上して手数料が低下します。実質的に、ロールアップ自体の実行環境が署名チェック、コントラクト実行、ステート遷移をより効率的に処理し、L1は権威ある「決済レイヤー」として機能し続けます。
 
-Rollups aim to preserve as much of L1's security as possible. The security goals are ensuring data availability, verifying correct state transitions, and providing censorship resistance. Data availability requires all transaction and state information to be accessible so that in the event of a dispute, participants can independently verify the chain's state or safely withdraw funds by relying on data posted to (or guaranteed by) L1. State-transition integrity ensures that changes on L2 are valid according to the network rules, typically through validity proofs (such as zero-knowledge proofs) or fraud proofs. Finally, censorship resistance guarantees that no single entity or small group of participants can indefinitely block or withhold user transactions.
+　ロールアップは、L1のセキュリティをできる限り維持することを目指しています。セキュリティの目標は、データ可用性の確保、正しいステート遷移の検証、検閲耐性の提供です。データ可用性は、紛争が発生した場合に参加者が独立してチェーンのステートを検証したり、L1に投稿された（またはL1によって保証された）データに基づいて安全に資金を引き出したりできるよう、すべてのトランザクションとステート情報にアクセスできることを要求します。ステート遷移の整合性は、L2での変更がネットワーク ルールに従って有効であることを保証し、通常は有効性証明（ゼロ知識証明など）または不正証明を通じて実現されます。最後に、検閲耐性は、単一のエンティティまたは少数の参加者グループがユーザーのトランザクションを無期限にブロックまたは保留できないことを保証します。
 
-> **Note**  
+> **注記**
 >
-> Data availability and validity are essential components of secure rollup implementations, ensuring that malicious actors cannot forge transactions, steal funds, or artificially inflate balances. Data validity typically relies on one of two main approaches. The first approach uses zero-knowledge proofs, where each batch of the L2 transactions comes with a cryptographic proof attesting to correct execution. When this proof is submitted to L1, a smart contract verifies its correctness before accepting the new state root. The second approach uses fraud proofs under an optimistic assumption: the L2 operator posts new states to L1, and anyone can challenge those submissions by providing evidence of wrongdoing. If a fraud proof is upheld, the invalid batch is reversed, and the malicious actor faces penalties.
+> データ可用性と有効性は、安全なロールアップ実装の不可欠な要素であり、悪意ある行為者がトランザクションを偽造したり、資金を盗んだり、残高を不正に膨らませたりすることを防ぎます。データの有効性は通常、2つの主要なアプローチのいずれかに依存します。最初のアプローチはゼロ知識証明を使用するもので、L2トランザクションの各バッチに正しい実行を証明する暗号学的証明が付属します。この証明がL1に提出されると、スマートコントラクトが新しいステート ルートを受け入れる前にその正当性を検証します。2番目のアプローチは、オプティミスティックな仮定のもとで不正証明を使用します。L2オペレーターが新しいステートをL1に投稿し、誰でも不正行為の証拠を提示して提出に異議を申し立てることができます。不正証明が認められた場合、無効なバッチは取り消され、悪意ある行為者にはペナルティが科せられます。
 >
-> Beyond validity, data availability ensures that users can always reconstruct the chain if the L2 operator disappears or behaves dishonestly. Different methods exist to achieve this. Some systems store all transaction data directly on L1, often as Ethereum calldata, or more commonly nowadays, blobs, so it remains transparently recorded in blockchain logs. Other designs rely on off-chain data availability layers, specialized networks, or external storage solutions that offer cryptoeconomic incentives for maintaining and providing data. Hybrid approaches may combine both methods: critical information is placed on chain, while less essential data is stored off chain.
+> 有効性に加えて、データ可用性は、L2オペレーターが消失したり不正な行動を取ったりした場合でも、ユーザーが常にチェーンを再構築できることを保証します。これを実現するための方法はさまざまです。一部のシステムでは、すべてのトランザクション データをL1に直接保存します。多くの場合イーサリアムのcalldataとして、または最近ではよりblobとして保存し、ブロックチェーンのログに透明に記録します。他の設計では、オフチェーンのデータ可用性レイヤー、特殊なネットワーク、またはデータの維持と提供に暗号経済的インセンティブを提供する外部ストレージ ソリューションに依存します。ハイブリッド アプローチでは、両方の方法を組み合わせることもあります。重要な情報はオンチェーンに配置し、それほど重要でないデータはオフチェーンに保存します。
 
-Rollups rely on a specialized smart contract deployed on L1 that maintains the canonical state of all L2 accounts. This contract stores a root (commonly a Merkle root) representing the current L2 state, accepts batches of new transactions submitted by designated actors (sometimes called sequencers, aggregators, or operators), and verifies the validity of those batches. Depending on the type of rollup, it may check zero-knowledge proofs or handle fraud proofs to ensure that the state updates are legitimate. In the event of a detected violation (e.g., a successful fraud proof), the contract can revert the invalid batch.
+　ロールアップは、L1にデプロイされた専用のスマートコントラクトに依存しており、すべてのL2アカウントの正規ステートを維持しています。このコントラクトは、現在のL2ステートを表すルート（一般的にマークル ルート）を保存し、指定されたアクター（シーケンサー、アグリゲーター、またはオペレーターと呼ばれることもある）から送信された新しいトランザクションのバッチを受け入れ、それらのバッチの有効性を検証します。ロールアップのタイプに応じて、ゼロ知識証明のチェックや不正証明の処理を行い、ステート更新が正当であることを確認します。違反が検出された場合（たとえば、不正証明が成功した場合）、コントラクトは無効なバッチを取り消すことができます。
 
-Anyone meeting the rollup's requirements, such as staking a bond, can submit a state update of L2 transactions to the smart contract. This isn't always the case. In fact, as of now, most rollups with the highest transaction volume and total value locked are centralized at the sequencer level. While some rollups have achieved decentralization, for the majority it remains an end goal. Each state update includes the previous state root (to show continuity), a newly proposed state root (reflecting the result of the submitted transactions), and either compressed transaction data or references to it. If the rollup's rules are satisfied (and no valid challenges arise, in the case of optimistic rollups), the contract updates its stored state root to the new one, making it the canonical L2 state.
+　ロールアップの要件（ボンドのステーキングなど）を満たす人は誰でも、L2トランザクションのステート更新をスマートコントラクトに送信できます。ただし、常にそうとは限りません。実際、現時点では、トランザクション量とTotal Value Lockedが最も多いロールアップのほとんどがシーケンサー レベルで中央集権化されています。一部のロールアップは分散化を達成していますが、大多数にとってはまだ最終目標の段階です。各ステート更新には、前のステート ルート（連続性を示すため）、新しく提案されたステート ルート（送信されたトランザクションの結果を反映）、および圧縮されたトランザクション データまたはそのデータへの参照が含まれます。ロールアップのルールが満たされた場合（そしてオプティミスティック ロールアップの場合、有効な異議申し立てがない場合）、コントラクトは保存されたステート ルートを新しいものに更新し、正規のL2ステートとします。
 
-Different rollups deal with fraud or invalid state updates in distinct ways. Optimistic rollups assume by default that new state updates are correct but provide a challenge window (often lasting several days) for anyone to submit a fraud proof. If a proof is verified, the invalid state update is rolled back, and the malicious submitter's stake is slashed. Meanwhile, zero-knowledge rollups require a zero-knowledge proof to accompany each new state root. Since this proof is verified on chain, the chain immediately knows whether the updates are valid; if the proof is correct, no lengthy challenge period is necessary.
+　異なるロールアップは、不正または無効なステート更新に対して異なる方法で対処します。オプティミスティック ロールアップは、新しいステート更新がデフォルトで正しいと仮定しますが、誰でも不正証明を提出できるチャレンジ ウィンドウ（多くの場合数日間）を設けています。証明が検証されると、無効なステート更新はロールバックされ、悪意ある提出者のステークはスラッシュされます。一方、ZKロールアップは、新しいステート ルートごとにゼロ知識証明の添付を要求します。この証明がオンチェーンで検証されるため、チェーンは更新が有効かどうかを即座に判断できます。証明が正しければ、長い異議申し立て期間は不要です。
 
-#### Rollup stages
+#### ロールアップのステージ
 
-During their early phases, most rollups retain partial centralized controls, often called *training wheels*, which allow operators to swiftly intervene in the event of bugs or critical updates. Although this is practical for a new system, true decentralization demands that such training wheels be gradually removed.
+　初期段階では、ほとんどのロールアップは部分的な中央集権的制御を保持しています。これは*トレーニング ホイール*と呼ばれることが多く、バグや重要な更新が発生した場合にオペレーターが迅速に介入できるようにするものです。新しいシステムにとっては実用的ですが、真の分散化にはこのトレーニング ホイールを段階的に取り除く必要があります。
 
-To chart this transition, a framework has been proposed, building on Vitalik Buterin's initial milestones, that categorizes rollups into three maturity stages. Each stage indicates how much authority remains in centralized hands and how close the rollup is to inheriting Ethereum's base-layer security.
+　この移行を示すために、ヴィタリック・ブテリンの最初のマイルストーンに基づくフレームワークが提案されており、ロールアップを3つの成熟度ステージに分類しています。各ステージは、中央集権的な手に残されている権限の量と、ロールアップがイーサリアムのベースレイヤー セキュリティをどの程度継承しているかを示しています。
 
-At *stage 0*, a rollup calls itself a rollup but is still heavily operator controlled. It posts state roots to L1 and provides data availability on L1, enabling reconstruction of the L2 state if something goes wrong. However, at this point the system's "proof mechanism" (fraud or validity proofs) may not be fully enforced by an on-chain smart contract; operator intervention is the main fallback if errors occur. Essentially, stage 0 ensures the rudiments of a rollup—on-chain data, state roots, and user-facing node software—are in place, but governance remains centralized.
+　*ステージ0*では、ロールアップはロールアップを自称していますが、依然としてオペレーターによって大きく制御されています。ステート ルートをL1に投稿し、L1上でデータ可用性を提供することで、問題が発生した場合にL2ステートの再構築を可能にしています。しかし、この時点では、システムの「証明メカニズム」（不正証明または有効性証明）がオンチェーンのスマートコントラクトによって完全に強制されていない場合があります。エラーが発生した場合の主なフォールバックはオペレーターの介入です。基本的に、ステージ0はロールアップの基本要素（オンチェーン データ、ステート ルート、ユーザー向けノード ソフトウェア）が整っていることを保証しますが、ガバナンスは中央集権的なままです。
 
-> **Note**  
+> **注記**
 >
-> The requirements can change for this three-stage framework. For example, as of this writing (February 2025), Arbitrum is a stage 1 rollup, but with the new requirements, it might become a stage 0 rollup if it does not upgrade the network in time.
+> この3段階フレームワークの要件は変更される可能性があります。たとえば、本稿執筆時点（2025年2月）では、Arbitrumはステージ1のロールアップですが、新しい要件では、ネットワークを期限内にアップグレードしなければステージ0のロールアップに戻る可能性があります。
 
-*Stage 1* rollups need to have a proper proof system (fraud proofs for optimistic rollups or validity proofs for zero-knowledge rollups), and there must be at least five external actors who can submit these proofs. Users should also be able to withdraw or "exit" the system without needing operator cooperation, safeguarding them from censorship. Another criterion is a minimum seven-day exit window for users if they disagree with a proposed system upgrade, although a "Security Council" can still intervene more quickly if a critical bug emerges. This council must be formed via a multisig requiring at least 50% of eight or more signers,[^1] with half external to the rollup's main organization. While this council can fix bugs or revert malicious transactions, there is still a potential single point of failure.
+　*ステージ1*のロールアップは、適切な証明システム（オプティミスティック ロールアップの場合は不正証明、ZKロールアップの場合は有効性証明）を備えている必要があり、これらの証明を提出できる外部アクターが少なくとも5人いなければなりません。ユーザーはオペレーターの協力なしにシステムから資金を引き出したり「退出」したりできなければならず、検閲から保護されます。もう1つの基準は、ユーザーがシステム アップグレードの提案に同意しない場合に最低7日間の退出ウィンドウを設けることですが、「セキュリティ カウンシル」は重大なバグが発生した場合により迅速に介入できます。このカウンシルは、8人以上の署名者のうち少なくとも50%の承認を必要とするマルチシグで構成されなければならず[^1]、その半数はロールアップの主要組織の外部の者でなければなりません。このカウンシルはバグの修正や悪意あるトランザクションの取り消しを行えますが、依然として単一障害点となる可能性があります。
 
-[^1]: This was recently modified, and the requirements changed a little bit. We will not analyze the changes in this chapter; see Luca Donno's Medium article for more.
+[^1]: これは最近変更され、要件が少し変わりました。本章ではこの変更を詳しく分析しません。詳しくはルカ・ドンノのMedium記事を参照してください。
 
-*Stage 2* signifies that the rollup is truly decentralized, relying on permissionless proofs and robust user protections.[^2] The fraud or validity proof system must be open to anyone—no allowlists. A user must have at least 30 days to exit if a governance proposal or an upgrade is introduced, ensuring that they are not coerced into changes. The Security Council's role is strictly limited to on-chain, soundness-related errors, such as contradictory proofs being submitted, rather than broad governance or discretionary power. Thus, at this final stage, human intervention is narrowly scoped, and the rollup is governed mostly by smart contracts and community consensus, closely mirroring Ethereum's ethos of minimal trust.
+　*ステージ2*は、ロールアップが真に分散化されており、パーミッションレスな証明と堅牢なユーザー保護に依存していることを意味します[^2]。不正証明または有効性証明システムは誰にでも開かれていなければならず、許可リストは不可です。ガバナンス提案やアップグレードが導入された場合、ユーザーには退出までに少なくとも30日間の猶予が与えられ、変更を強制されないことが保証されます。セキュリティ カウンシルの役割は、矛盾する証明の提出などのオンチェーンの健全性関連エラーに厳密に限定され、広範なガバナンスや裁量権は持ちません。したがって、この最終ステージでは人間の介入は狭い範囲に限定され、ロールアップはほぼスマートコントラクトとコミュニティのコンセンサスによって統治され、最小限の信頼というイーサリアムの精神に近づいています。
 
-[^2]: Stage 2 does not indicate a better UX or more adoption; it just indicates more decentralization.
+[^2]: ステージ2はより良いUXやより多くの採用を示すものではなく、より多くの分散化を示すだけである。
 
-We want to extend a thank you to everyone involved in developing and updating this framework and anyone involved in analyzing and making public the information about the stages of the rollup; your service is very much appreciated and needed.
+　このフレームワークの開発と更新に関わったすべての方々、そしてロールアップのステージに関する情報の分析と公開に携わったすべての方々に感謝を申し上げます。皆さまの活動は非常に高く評価されており、また必要不可欠なものです。
 
-#### Optimistic rollups
+#### オプティミスティック ロールアップ
 
-Optimistic rollups rely on fraud proofs. The operator posts state roots to the L1 under the assumption that they are valid. Observers, however, retain the option to challenge batches they believe are fraudulent. If the challenge proves correct, the invalid batch is reverted, and the operator is penalized. Since validity is not instantly confirmed, users must often wait through a challenge window, sometimes a week or more, before confidently withdrawing funds or achieving finality. This design results in longer withdrawal times but offers easy compatibility with the EVM and lower proof complexity. Operators do not need to construct zero-knowledge circuits, which simplifies some aspects of running the system. Nonetheless, the delayed withdrawal times can affect the user experience, and there is a possibility of economic attacks if the operator's bond is smaller than the total locked value. Examples of optimistic rollups include Arbitrum, Optimism, Base, and several other projects inspired by the "Optimistic Ethereum" model.
+　オプティミスティック ロールアップは不正証明に依存しています。オペレーターはステート ルートが有効であるという前提でL1に投稿します。ただし、オブザーバーは不正であると思われるバッチに異議を申し立てる権利を保持しています。異議が正しいと証明された場合、無効なバッチは取り消され、オペレーターにペナルティが科せられます。有効性が即座に確認されないため、ユーザーは資金の引き出しやファイナリティの達成前に、チャレンジ ウィンドウ（場合によっては1週間以上）を待つ必要があります。この設計により引き出し時間は長くなりますが、EVMとの容易な互換性と低い証明の複雑さを実現しています。オペレーターはゼロ知識回路を構築する必要がないため、システム運用の一部の側面が簡素化されます。とはいえ、引き出しの遅延はユーザー体験に影響を与える可能性があり、オペレーターのボンドがロックされた総額よりも小さい場合には経済的攻撃の可能性も存在します。オプティミスティック ロールアップの例としては、Arbitrum、Optimism、Base、および「Optimistic Ethereum」モデルに触発された他のプロジェクトがあります。
 
-#### Zero-knowledge rollups
+#### ゼロ知識ロールアップ
 
-ZK rollups operate on a validity-proof basis. When a provider bundles transactions on L2, it generates cryptographic proofs (often SNARKs or STARKs) attesting to the correctness of state transitions. These proofs are verified on chain, offering near-instant finality because there is no need for an extended challenge window. Users benefit from fast withdrawals since no waiting period is needed to confirm legitimacy. The high security originates from the direct verification of proofs, reducing dependence on watchers or sizable operator stakes. Validating a proof on chain is typically more efficient than processing each transaction individually. However, implementing zero-knowledge proofs for general-purpose EVM computations is computationally expensive, potentially requiring specialized hardware.
+　ZKロールアップは有効性証明に基づいて動作します。プロバイダーがL2上でトランザクションをバンドルする際、ステート遷移の正当性を証明する暗号学的証明（多くの場合SNARKまたはSTARK）を生成します。これらの証明はオンチェーンで検証され、長い異議申し立て期間が不要なため、ほぼ即時のファイナリティを提供します。正当性の確認に待機期間が不要なため、ユーザーは高速な引き出しの恩恵を受けます。高いセキュリティは証明の直接検証から生まれ、ウォッチャーや大規模なオペレーターのステークへの依存を軽減します。オンチェーンでの証明の検証は、各トランザクションを個別に処理するよりも通常は効率的です。しかし、汎用EVMの計算に対するゼロ知識証明の実装は計算コストが高く、専用ハードウェアが必要になる可能性があります。
 
-##### The Risk of Zero-Knowledge Proofs
+##### ゼロ知識証明のリスク
 
-The reality is that bleeding-edge cryptography is risky. Let's take Zcash as an example. Zcash used part of the implementations presented in the paper "Succinct Non-Interactive Zero Knowledge for a von Neumann Architecture", which describes the zk-SNARK construction used in the original launch of Zcash.
+　最先端の暗号技術にはリスクが伴うというのが現実です。Zcashを例に取りましょう。Zcashは「Succinct Non-Interactive Zero Knowledge for a von Neumann Architecture」という論文で提示された実装の一部を使用しました。この論文は、Zcashの最初のローンチで使用されたzk-SNARK構造を記述したものです。
 
-In 2018, years after the release of this paper and dozens of peer reviews, Ariel Gabizon, a cryptographer employed by Zcash at the time, discovered a subtle cryptographic flaw that allowed for a counterfeiting vulnerability—essentially a double-spend attack. The vulnerability was fixed in the Zcash Sapling upgrade, and it seems that it was not exploited by anyone, but it had lain dormant in a very public and referenced paper for years before anyone noticed.
+　2018年、この論文の公開と数十回のピアレビューから数年後、当時Zcashに雇用されていた暗号学者アリエル・ガビゾンが、偽造脆弱性（本質的には二重支払い攻撃）を可能にする微妙な暗号学的欠陥を発見しました。この脆弱性はZcash Saplingアップグレードで修正され、誰にも悪用されなかったようですが、非常に公開され引用されている論文の中で、誰も気づかないまま何年も潜んでいたのです。
 
-In this chapter, we refer to zero-knowledge proofs as being high security and trustworthy. This is generally true, but it's a dangerous assumption if it is never challenged.
+　本章では、ゼロ知識証明を高セキュリティで信頼できるものとして言及しています。これは一般的に正しいのですが、一度も疑問を持たれなければ危険な仮定となります。
 
-Certain zero-knowledge systems also demand a *trusted setup*[^3] (common with SNARKs) to generate initial parameters, which carries its own security considerations. Leading ZK-rollup projects include ZKsync, Starknet, Scroll, and Aztec. The latter also incorporates privacy features under the label "ZK-ZK-rollup."
+　特定のゼロ知識システムは、初期パラメータを生成するための*トラステッド セットアップ*[^3]（SNARKでは一般的）も必要とし、独自のセキュリティ上の考慮事項があります。主要なZKロールアップ プロジェクトには、ZKsync、Starknet、Scroll、Aztecがあります。Aztecは「ZK-ZKロールアップ」というラベルでプライバシー機能も組み込んでいます。
 
-[^3]: As discussed in Chapter 4.
+[^3]: 第4章で説明した通り。
 
-ZK-rollups were originally well suited for simple tasks like token transfers or swaps but struggled with more complex functionalities. This changed with the emergence of *zk-EVM*, a development aiming to replicate the entire EVM off chain. By generating proofs for Turing-complete computations, including EVM bytecode execution, zk-EVM expands the scope of ZK rollups, allowing for a broad range of DApps to benefit from both scalability and zero-knowledge-level security.
+　ZKロールアップはもともとトークン送金やスワップなどの単純なタスクに適していましたが、より複雑な機能には苦戦していました。これは*zk-EVM*の登場によって変わりました。zk-EVMは、EVM全体をオフチェーンで再現することを目的とした開発です。チューリング完全な計算（EVMバイトコードの実行を含む）に対する証明を生成することで、zk-EVMはZKロールアップの範囲を拡大し、幅広いDAppsがスケーラビリティとゼロ知識レベルのセキュリティの両方の恩恵を受けられるようにしています。
 
-Projects take different paths to achieve zk-EVM functionality. One method uses a transpiler, which converts Solidity (or other EVM high-level languages) into a circuit-friendly language such as Cairo (used by StarkWare). Another approach directly interprets standard EVM bytecode, opcode by opcode, building circuits that reflect each instruction. Hybrid or multitype solutions adjust parts of the EVM (such as data structures or hashing algorithms) to make them more proof friendly while trying to maintain near-full Ethereum compatibility. We will not further expand on zk-EVMs in this chapter; this will be done in Chapter 17.
+　zk-EVM機能を実現するために、プロジェクトはさまざまな方法を採用しています。1つの方法はトランスパイラを使用するもので、Solidity（または他のEVM高水準言語）をCairo（StarkWareが使用）のような回路に適した言語に変換します。もう1つのアプローチは、標準的なEVMバイトコードをオプコードごとに直接解釈し、各命令を反映する回路を構築するものです。ハイブリッドまたはマルチタイプのソリューションは、EVMの一部（データ構造やハッシュ アルゴリズムなど）を証明に適したものに調整しつつ、イーサリアムとのほぼ完全な互換性を維持しようとしています。zk-EVMについては本章ではこれ以上詳しく展開しません。第17章で詳述します。
 
-### Other Types of Scaling Solutions
+### その他のスケーリング ソリューション
 
-Optimistic and ZK rollups are not the only kinds of scaling solutions; they are the two main ones that have been adopted for now, but this might change in the future. We will analyze other scaling solutions: briefly for the ones that are old and have less chance of becoming relevant now, and in more depth for the solutions that are upcoming and have a bright future.
+　オプティミスティック ロールアップとZKロールアップは唯一のスケーリング ソリューションではありません。現時点では主に採用されている2つですが、将来的には変わる可能性があります。古くて今後関連性が低いものについては簡潔に、今後有望なソリューションについてはより詳しく分析します。
 
-#### Validiums
+#### Validium
 
-*Validiums* do not store transaction data on Ethereum. Instead, they post proofs to Ethereum that verify the state of the L2 chain, as shown in Figure 16-4. Essentially, a validium is a rollup that uses alternative data availability solutions, such as Celestia, Avail, or EigenLayer.
+　*Validium*はトランザクション データをイーサリアム上に保存しません。代わりに、L2チェーンのステートを検証する証明をイーサリアムに投稿します（図16-4参照）。本質的に、validiumは代替的なデータ可用性ソリューション（Celestia、Avail、EigenLayerなど）を使用するロールアップです。
 
-![Validium architecture](images/ch16/maet_1604.png)
+![Validiumアーキテクチャ](images/ch16/maet_1604.png)
 
-Figure 16-4. Validium architecture
+図16-4 Validiumアーキテクチャ
 
-As an L2, a validium does not pay high gas fees associated with storing data on Ethereum. This approach is more cost-effective than rollups, meaning gas fees are much lower for users. However, validiums are typically considered less secure than other rollups since they store transaction data off of Ethereum using solutions such as a data availability committee or alternative data availability solutions.
+　L2として、validiumはイーサリアム上にデータを保存する際の高いガス代を支払いません。このアプローチはロールアップよりもコスト効率が高く、ユーザーのガス代は大幅に低くなります。しかし、validiumはデータ可用性委員会や代替的なデータ可用性ソリューションなどを使用してイーサリアム外にトランザクション データを保存するため、他のロールアップよりもセキュリティが低いと一般的に考えられています。
 
-#### Sidechains
+#### サイドチェーン
 
-A *sidechain* is a blockchain network operating in parallel with another blockchain (called a main chain). Typically, a sidechain connects with the main chain via a two-way bridge that permits transferring of assets and possibly arbitrary data like contract state, Merkle proofs, and results of specific transactions between the two networks.
+　*サイドチェーン*は、別のブロックチェーン（メインチェーンと呼ばれる）と並行して動作するブロックチェーン ネットワークです。通常、サイドチェーンは双方向ブリッジを介してメインチェーンと接続し、資産および場合によってはコントラクトのステート、マークル証明、特定のトランザクションの結果などの任意のデータを2つのネットワーク間で転送できます。
 
-Most sidechains have their consensus mechanisms and validator sets separate from the main chain. This allows sidechains to settle and finalize transactions without relying on another blockchain. However, it also means that the security of funds bridged to the sidechain depends on the existence of strong cryptoeconomic incentives to discourage malicious behavior among validators.
+　ほとんどのサイドチェーンは、メインチェーンとは別のコンセンサス メカニズムとバリデーター セットを持っています。これにより、サイドチェーンは他のブロックチェーンに依存せずにトランザクションの決済とファイナリティを実現できます。しかし同時に、サイドチェーンにブリッジされた資金のセキュリティは、バリデーター間の悪意ある行動を抑止する強力な暗号経済的インセンティブの存在に依存することも意味します。
 
-#### Based Rollups
+#### Basedロールアップ
 
-*Based rollups* rely on the native sequencing capabilities of an L1 blockchain. This design enables a seamless integration that leverages L1's decentralization, liveness, and security properties.
+　*Basedロールアップ*は、L1ブロックチェーンのネイティブ シーケンシング機能に依存しています。この設計により、L1の分散化、ライブネス、セキュリティ特性を活用したシームレスな統合が可能になります。
 
-Based rollups use a simpler approach to sequencing compared to traditional rollups. While most rollups implement their own sequencers, based rollups tap into the sequencer of the underlying Layer 1. Essentially, the main difference is that the L1 validators are the sequencers for the rollup instead of having an external one, as with optimistic rollups.
+　basedロールアップは、従来のロールアップと比較してよりシンプルなシーケンシング アプローチを使用しています。ほとんどのロールアップは独自のシーケンサーを実装していますが、basedロールアップは基盤となるLayer 1のシーケンサーを利用します。基本的な違いは、オプティミスティック ロールアップのように外部のシーケンサーを持つのではなく、L1のバリデーターがロールアップのシーケンサーを務めることです。
 
-The consensus, data availability, and settlement layers are all just Ethereum. The only component built into the rollup itself is the execution layer, which takes responsibility for executing transactions and updating their statuses. This design allows L1 block proposers to directly partner with L2 block builders and searchers to incorporate the next rollup block into the L1 block. Because based sequencing relies solely on the existing Ethereum validation approach, it does not depend on any external consensus.
+　コンセンサス、データ可用性、決済レイヤーはすべてイーサリアムそのものです。ロールアップ自体に組み込まれている唯一のコンポーネントは実行レイヤーであり、トランザクションの実行とステータスの更新を担当します。この設計により、L1ブロック プロポーザーはL2ブロック ビルダーやサーチャーと直接連携して、次のロールアップ ブロックをL1ブロックに組み込むことができます。basedシーケンシングは既存のイーサリアムの検証アプローチのみに依存するため、外部のコンセンサスには依存しません。
 
-> **Note**  
+> **注記**
 >
-> Based rollups are probably the most promising solution, and they might surpass optimistic rollups in usage. This is mainly because, since the finality is the same as Ethereum itself, there could be atomic transactions between based rollups without the challenge window. For example, DeFi liquidity could be aggregated between based rollups. Earlier, this was possible only on ZK rollups.
+> basedロールアップはおそらく最も有望なソリューションであり、利用においてオプティミスティック ロールアップを超える可能性があります。ファイナリティがイーサリアム自体と同じであるため、チャレンジ ウィンドウなしでbasedロールアップ間のアトミック トランザクションが可能になるからです。たとえば、DeFiの流動性をbasedロールアップ間で集約できるようになります。以前は、これはZKロールアップでのみ可能でした。
 
-#### Booster Rollups
+#### ブースター ロールアップ
 
-*Booster rollups* are rollups that process transactions as if they were directly executed on L1, granting them full access to the L1 state. At the same time, they maintain their own separate storage. In this way, both execution and storage scale at the L2 level, while the L1 framework serves as a shared base. Another way to see this is that each L2 reflects the L1, effectively adding new block space for all L1-deployed apps by sharding transaction execution and storage.
+　*ブースター ロールアップ*は、トランザクションがL1上で直接実行されたかのように処理し、L1ステートへの完全なアクセスを付与するロールアップです。同時に、独自の別個のストレージを維持します。このように、実行とストレージの両方がL2レベルでスケールし、L1フレームワークは共有ベースとして機能します。別の見方をすると、各L2がL1を反映し、トランザクション実行とストレージをシャーディングすることで、L1にデプロイされたすべてのアプリに新しいブロック スペースを効果的に追加しています。
 
-If Ethereum's future demands the use of hundreds or even thousands of rollups to handle the high scalability demands, having each rollup function as an isolated chain, complete with its own rule set and contracts, may not be ideal. Developers would find themselves duplicating code onto each rollup.
+　イーサリアムの将来が高いスケーラビリティ需要を処理するために何百、何千ものロールアップの使用を求めるなら、各ロールアップが独自のルールセットとコントラクトを持つ独立したチェーンとして機能することは理想的ではないかもしれません。開発者は各ロールアップにコードを複製することになってしまいます。
 
-Booster rollups, instead, directly add extra block space to any DApp running on L1. Rolling out a booster rollup can be thought of as adding additional CPU cores or more hard drive space to a computer. Whenever an application knows how to leverage multithreading (multirollup, in a blockchain sense), it can automatically make use of that expanded capacity. Developers simply have to consider how best to utilize that extra environment.
+　ブースター ロールアップは代わりに、L1上で稼働しているあらゆるDAppに直接追加のブロック スペースを提供します。ブースター ロールアップの展開は、コンピューターにCPUコアやハードドライブ容量を追加するようなものと考えることができます。アプリケーションがマルチスレッド（ブロックチェーンの文脈ではマルチ ロールアップ）の活用方法を知っている場合、拡張された容量を自動的に利用できます。開発者は、その追加環境を最適に活用する方法を検討するだけで済みます。
 
-#### Native Rollups
+#### ネイティブ ロールアップ
 
-The native rollup proposal introduces the `EXECUTE` precompile, designed to serve as a verifier for rollup state transitions; this significantly simplifies development of EVM-equivalent rollups by removing the need for complex infrastructure, such as fraud-proof games, SNARK circuits, and security councils. With `EXECUTE`, you can deploy minimal native and based rollups in just a few lines of Solidity code.
+　ネイティブ ロールアップの提案は、ロールアップのステート遷移の検証器として機能するよう設計された`EXECUTE`プリコンパイルを導入するものです。これにより、不正証明ゲーム、SNARK回路、セキュリティ カウンシルなどの複雑なインフラストラクチャが不要になり、EVM等価なロールアップの開発が大幅に簡素化されます。`EXECUTE`を使えば、わずか数行のSolidityコードで最小限のネイティブかつbasedなロールアップをデプロイできます。
 
-Because this new precompile closely parallels the "EVM in EVM" idea, it will be upgraded through Ethereum's normal hard-fork process, governed by social consensus. This alignment guarantees that updates to the EVM also apply to the precompile, so rollups inherit Ethereum's validation rules without requiring governance structures like security councils or multisigs, ultimately making them more secure for end users.
+　この新しいプリコンパイルは「EVM in EVM」のアイデアに密接に類似しているため、社会的コンセンサスによって統治されるイーサリアムの通常のハードフォーク プロセスを通じてアップグレードされます。この整合性により、EVMへの更新がプリコンパイルにも適用されることが保証されるため、ロールアップはセキュリティ カウンシルやマルチシグなどのガバナンス構造を必要とせずにイーサリアムの検証ルールを継承し、最終的にエンドユーザーにとってより安全なものとなります。
 
-The `EXECUTE` precompile validates EVM state transitions, allowing rollups to leverage Ethereum's native infrastructure at the application layer. It checks EVM state transitions using inputs such as `pre_state_root`, `post_state_root`, `trace`, and `gas_used` while employing an EIP-1559-like mechanism for gas pricing. To enforce correctness, validators may rely on reexecution or SNARK proofs, depending on how each rollup balances scale and complexity. This design, combined with a based rollup approach, where both sequencing and proof systems operate directly under Ethereum, simplifies the creation of "trustless rollups."
+　`EXECUTE`プリコンパイルはEVMのステート遷移を検証し、ロールアップがアプリケーション レイヤーでイーサリアムのネイティブ インフラストラクチャを活用できるようにします。`pre_state_root`、`post_state_root`、`trace`、`gas_used`などの入力を使用してEVMのステート遷移をチェックし、ガス価格設定にはEIP-1559のようなメカニズムを採用しています。正当性を強制するために、バリデーターは各ロールアップがスケールと複雑さのバランスをどのように取るかに応じて、再実行またはSNARK証明に依存する場合があります。この設計は、basedロールアップ アプローチ（シーケンシングと証明システムの両方がイーサリアム上で直接動作する）と組み合わせることで、「トラストレス ロールアップ」の作成を簡素化します。
 
-### Danksharding
+### ダンクシャーディング
 
-*Danksharding* is Ethereum's latest approach to sharding, offering notable simplifications over earlier designs.
+　*ダンクシャーディング*は、以前の設計に比べて大幅な簡素化を提供する、イーサリアムの最新のシャーディング アプローチです。
 
-> **Note**  
+> **注記**
 >
-> Since we are mentioning sharding for the first time, it makes sense to introduce the concept briefly. Keep in mind that this is a topic that can be researched much more. It is out of the scope for this book, but it's an interesting topic nonetheless.
+> シャーディングについて初めて言及するので、概念を簡単に紹介しておきます。これはさらに深く研究できるトピックであることを念頭に置いてください。本書の範囲外ですが、興味深いトピックです。
 >
-> The base concept of sharding is to split the network into different parts so that each shard can process a subset of transactions and improve performance and costs.
+> シャーディングの基本的な概念は、ネットワークを異なる部分に分割し、各シャードがトランザクションのサブセットを処理することで、パフォーマンスとコストを改善することです。
 >
-> This has already been implemented by other chains in different forms. In Ethereum, we will never actually reach the first, pure idea of sharding that was conceptualized years ago because it's not necessary anymore. The roadmap has gone toward the direction of scaling the L1 in a L2-centric way.
+> シャーディングは、他のチェーンでさまざまな形ですでに実装されています。イーサリアムでは、数年前に概念化された最初の純粋なシャーディングのアイデアには実際には到達しません。もはや必要ないからです。ロードマップはL2中心の方法でL1をスケーリングする方向に進んでいます。
 
-A key difference between Ethereum's recent sharding proposals (both danksharding and proto-danksharding) and most other sharding solutions lies in Ethereum's rollup-centric strategy. Rather than expanding transaction capacity directly, Ethereum sharding focuses on providing more space for large "blobs" of data that the core protocol does not interpret. (As for these blobs, we will explore them in more detail in a later section.) An important requirement for verifying these blobs of data is to check that they remain accessible—that is, they can be retrieved from the network. L2 rollup protocols will then use these data blobs to enable high-throughput transactions, as shown in Figure 16-5.
+　イーサリアムの最近のシャーディング提案（ダンクシャーディングとプロトダンクシャーディングの両方）と他のほとんどのシャーディング ソリューションとの重要な違いは、イーサリアムのロールアップ中心戦略にあります。トランザクション容量を直接拡大するのではなく、イーサリアムのシャーディングは、コア プロトコルが解釈しない大きなデータの「blob」のためのスペースをより多く提供することに焦点を当てています（blobについては、後のセクションでさらに詳しく解説します）。これらのデータblobを検証するための重要な要件は、データが依然としてアクセス可能であること、つまりネットワークから取得できることを確認することです。L2ロールアップ プロトコルは、これらのデータblobを使用して高スループット トランザクションを実現します（図16-5参照）。
 
-![Danksharding architecture](images/ch16/maet_1605.png)
+![ダンクシャーディングのアーキテクチャ](images/ch16/maet_1605.png)
 
-Figure 16-5. Danksharding architecture
+図16-5 ダンクシャーディングのアーキテクチャ
 
-Rollups store executed transactions in data blobs and generate a cryptographic "commitment"[^4] for verification. To create this commitment, they encode the data using a polynomial function. This polynomial can then be evaluated at specific points.
+　ロールアップは実行されたトランザクションをデータblobに保存し、検証のための暗号学的「コミットメント」[^4]を生成します。このコミットメントを作成するために、データを多項式関数を使用してエンコードします。この多項式は特定のポイントで評価できます。
 
-[^4]: A polynomial commitment is like a short, secure "summary" of a polynomial (a mathematical expression such as *f(x) = 2x − 1*) that allows you to prove specific values in it without revealing the entire polynomial. Imagine writing down a secret formula and placing it in a locked safe. Later, someone can ask, "What's the result if we set *x = 10*?" Without opening the safe or showing them your full formula, you can quickly and easily provide proof that the correct answer is a certain number. Polynomial commitments do exactly this but mathematically: they let you securely and efficiently prove the accuracy of specific points (such as *x = 10*) within a larger mathematical dataset, without exposing all the details. You'll find a more detailed explanation of polynomial commitments in Chapter 4.
+[^4]: 多項式コミットメントは、多項式（*f(x) = 2x − 1*のような数学的表現）の短くて安全な「要約」であり、多項式全体を公開せずに特定の値を証明できるものである。秘密の公式を書き留め、鍵のかかった金庫に入れることを想像してほしい。後で誰かが「*x = 10*にした場合の結果は何ですか」と尋ねることができる。金庫を開けたり完全な公式を見せたりすることなく、正しい答えが特定の数であることの証明を素早く簡単に提供できる。多項式コミットメントはまさにこれを数学的に行う。より大きな数学的データセット内の特定のポイント（*x = 10*など）の正確さを、すべての詳細を公開せずに安全かつ効率的に証明できる。多項式コミットメントのより詳細な説明は第4章にある。
 
-For example, consider a simple polynomial function such as *f(x) = 2x − 1*. Evaluating this function at points *x = 1, 2, 3* gives the values 1, 3, 5. A prover independently applies the same polynomial to the original data and checks its values at these points. If the underlying data changes even slightly, the polynomial—and thus, its evaluated values—will no longer match, alerting participants to inconsistencies.
+　たとえば、*f(x) = 2x − 1*のような単純な多項式関数を考えてみましょう。*x = 1, 2, 3*でこの関数を評価すると、値1, 3, 5が得られます。証明者は独立して同じ多項式を元データに適用し、これらのポイントでの値を確認します。基礎となるデータがわずかでも変更されると、多項式、したがって評価値が一致しなくなり、参加者に不整合を警告します。
 
-When a rollup posts data in a blob, it also provides a commitment published on chain. This commitment is created by fitting a polynomial to the data and evaluating that polynomial at specific points determined by random numbers produced during the KZG ceremony (discussed in Chapter 4). Provers independently evaluate the polynomial at these same points. If their evaluation matches the commitment values, the data is confirmed to be accurate. In practice, these commitments and their proofs are more complex since they are secured using cryptographic methods to ensure integrity.
+　ロールアップがblob内にデータを投稿する際、オンチェーンで公開されるコミットメントも提供します。このコミットメントは、データに多項式を当てはめ、KZGセレモニー（第4章で説明）で生成された乱数によって決定される特定のポイントでその多項式を評価することで作成されます。証明者は独立して同じポイントで多項式を評価します。評価がコミットメントの値と一致すれば、データは正確であることが確認されます。実際には、これらのコミットメントとその証明は暗号学的手法で保護されているため、より複雑です。
 
-Danksharding's main advancement is the introduction of a merged fee market, which is intended to be a combination of the gas fee market and the blob fee market. Rather than having multiple shards, each with its own block and proposer, danksharding designates a single proposer to select all transactions and data for each slot.
+　ダンクシャーディングの主な進歩は、統合手数料市場の導入です。これはガス手数料市場とblob手数料市場の組み合わせを意図しています。複数のシャードがそれぞれ独自のブロックとプロポーザーを持つのではなく、ダンクシャーディングでは各スロットのすべてのトランザクションとデータを選択する単一のプロポーザーを指定します。
 
-To prevent this approach from imposing high hardware requirements on validators, PBS is used. In PBS, specialized "block builders" compete by bidding for the right to assemble the slot's contents, while the proposer merely picks the valid header with the highest bid. Only block builders must handle the full block, and even this step can be decentralized further through specialized oracle protocols. Meanwhile, validators and users can rely on DAS to verify the block—remember, a large portion of the block is just data.
+　このアプローチがバリデーターに高いハードウェア要件を課すことを防ぐために、PBSが使用されます。PBSでは、専門の「ブロック ビルダー」がスロットのコンテンツを組み立てる権利を得るために入札で競争し、プロポーザーは最高入札額の有効なヘッダーを選択するだけです。フルブロックを処理する必要があるのはブロック ビルダーのみであり、このステップも専用のオラクル プロトコルによってさらに分散化できます。一方、バリデーターとユーザーはDASに依存してブロックを検証できます。ブロックの大部分はデータに過ぎないことを忘れないでください。
 
-> **Note**  
+> **注記**
 >
-> The terms *danksharding* and *proto-danksharding* carry the names of the two main figures of the Ethereum Foundation who helped shape this kind of sharding. Dank stands for Dankrad Feist and proto for Protolambda, aka Diederik Loerakker. Both are researchers: Feist works for the Ethereum Foundation, and Loerakker works for OP Labs at the time of writing.
+> *ダンクシャーディング*と*プロトダンクシャーディング*という用語には、このシャーディングの形成に貢献したイーサリアム ファウンデーションの2人の主要人物の名前が含まれています。ダンクはダンクラート・ファイストを、プロトはプロトラムダ、別名ディーデリック・ローラッカーを指しています。両者とも研究者であり、ファイストはイーサリアム ファウンデーションで、ローラッカーは執筆時点でOP Labsで勤務しています。
 
-### Proto-Danksharding
+### プロトダンクシャーディング
 
-*Proto-danksharding* (also known as EIP-4844) proposes implementing most of the foundational logic and infrastructure required for full danksharding, such as transaction formats and verification rules, but without actual DAS.[^5] Under proto-danksharding, validators and users still directly verify the complete availability of all data blobs.
+　*プロトダンクシャーディング*（EIP-4844とも呼ばれる）は、完全なダンクシャーディングに必要な基礎的なロジックとインフラストラクチャ（トランザクション フォーマットや検証ルールなど）のほとんどを実装することを提案していますが、実際のDASは含まれていません[^5]。プロトダンクシャーディングでは、バリデーターとユーザーが依然としてすべてのデータblobの完全な可用性を直接検証します。
 
-[^5]: Data availability sampling is a mechanism for verifying data availability without having to download all the data for a block.
+[^5]: データ可用性サンプリングは、ブロックのすべてのデータをダウンロードすることなくデータ可用性を検証するメカニズムである。
 
-The primary innovation introduced by proto-danksharding is a new transaction type, known as a *blob-carrying transaction*. These transactions (which we already analyzed in Chapter 6) function similarly to regular transactions but include an extra data component called a blob. Blobs are relatively large (approximately 125 KB) and can be significantly cheaper than an equivalent amount of calldata.[^6] However, blob data isn't directly accessible by the EVM; the EVM can only access a cryptographic commitment to the blob. The data in these blobs is also automatically deleted after a fixed time period (set to 4,096 epochs at the time of writing, or about 18 days).
+　プロトダンクシャーディングで導入された主要なイノベーションは、*blob搬送トランザクション*と呼ばれる新しいトランザクション タイプです。これらのトランザクション（すでに第6章で分析済み）は通常のトランザクションと同様に機能しますが、blobと呼ばれる追加のデータ コンポーネントを含んでいます。blobは比較的大きく（約125KB）、同等のcalldataよりも大幅に安価にすることができます[^6]。ただし、blobデータはEVMから直接アクセスできません。EVMはblobへの暗号学的コミットメントにのみアクセスできます。これらのblob内のデータは、一定期間（執筆時点で4,096エポック、約18日間に設定）が経過すると自動的に削除されます。
 
-[^6]: Raw data used for storing function arguments passed during external calls in the EVM.
+[^6]: EVMにおける外部呼び出し時に渡される関数引数の保存に使用される生データ。
 
-Because validators and clients must still download the complete contents of each blob, proto-danksharding limits data bandwidth to around 1 MB per slot. Despite this restriction, proto-danksharding still offers substantial scalability benefits since blob data does not compete directly with the gas costs of standard Ethereum transactions.
+　バリデーターとクライアントは各blobの完全な内容をダウンロードしなければならないため、プロトダンクシャーディングではデータ帯域幅が1スロットあたり約1MBに制限されています。この制限にもかかわらず、blobデータが標準的なイーサリアム トランザクションのガスコストと直接競合しないため、プロトダンクシャーディングは依然として大きなスケーラビリティの恩恵を提供します。
 
-A few questions might arise after you read this.
+　ここまで読むと、いくつかの疑問が浮かぶかもしれません。
 
-**Why is it OK to delete blobs data after 18 days? How would users access older blobs?**
+**18日後にblobデータを削除しても問題ないのはなぜですか。古いblobにはどうやってアクセスするのですか**
 
-Rollups publish cryptographic commitments to their transaction data on chain and simultaneously make the underlying transaction data available through data blobs. This arrangement allows independent provers to verify the accuracy of commitments or challenge incorrect data if necessary. At the network level, consensus clients temporarily store these data blobs and attest that the data has been propagated and made available across the Ethereum network. To prevent nodes from becoming excessively large and resource intensive over time, this data is automatically pruned after 18 days. The attestations provided by consensus clients guarantee that provers had adequate time and access to verify or challenge data during this period. After pruning, the actual data can continue to be stored off chain by rollup operators, users, or other third parties.
+　ロールアップはトランザクション データへの暗号学的コミットメントをオンチェーンに公開し、同時に基礎となるトランザクション データをデータblobを通じて利用可能にします。この仕組みにより、独立した証明者がコミットメントの正確性を検証したり、必要に応じて不正確なデータに異議を申し立てたりできます。ネットワーク レベルでは、コンセンサス クライアントがこれらのデータblobを一時的に保存し、データがイーサリアム ネットワーク全体に伝播され利用可能になったことを証明します。ノードが時間の経過とともに過度に大きくリソース集約的になることを防ぐため、このデータは18日後に自動的にプルーニングされます。コンセンサス クライアントによる証明は、この期間中に証明者がデータを検証または異議申し立てするための十分な時間とアクセスがあったことを保証します。プルーニング後も、実際のデータはロールアップ オペレーター、ユーザー、またはその他のサードパーティによってオフチェーンに保存し続けることができます。
 
-There are several practical methods for storing and making historical data easily accessible in the long term. For instance, application-specific protocols (such as individual rollups) can require their own nodes to retain the historical data relevant specifically to their applications. Since historical data loss poses no risk to Ethereum itself, only to individual applications, it makes sense for each application to independently manage its data storage. Other potential solutions include using decentralized systems like BitTorrent—for instance, to regularly generate and distribute daily snapshots of blob data—or leveraging Ethereum's Portal Network, which can be expanded to support historical data storage. Additionally, services such as block explorers, API providers, or third-party indexing platforms like The Graph are likely to maintain comprehensive archives. Finally, individual researchers, hobbyists, or academic institutions conducting data analysis could also keep complete historical records locally, benefiting from the convenience and performance gains of direct access to the data.
+　履歴データを長期的に保存し、容易にアクセスできるようにするための実用的な方法がいくつかあります。たとえば、アプリケーション固有のプロトコル（個々のロールアップなど）は、自身のアプリケーションに関連する履歴データを独自のノードに保持することを要求できます。履歴データの損失はイーサリアム自体にはリスクをもたらさず、個々のアプリケーションにのみ影響するため、各アプリケーションが独立してデータ ストレージを管理することは理にかなっています。その他の潜在的なソリューションには、BitTorrentのような分散型システム（たとえば、blobデータの日次スナップショットを定期的に生成・配布する用途）や、イーサリアムのPortal Network（履歴データ ストレージをサポートするよう拡張可能）の活用があります。さらに、ブロック エクスプローラー、APIプロバイダー、The Graphのようなサードパーティ インデキシング プラットフォームなどのサービスも包括的なアーカイブを維持する可能性があります。最後に、データ分析を行う個々の研究者、愛好家、学術機関も、データへの直接アクセスの利便性とパフォーマンスの恩恵を受けながら、完全な履歴記録をローカルに保持できます。
 
-**Wouldn't it be better to reduce the costs in the normal transaction's calldata instead of having 1 MB bandwidth per slot dedicated to blobs?**
+**blob用に1スロットあたり1MBの帯域幅を確保するのではなく、通常のトランザクションのcalldataコストを削減した方がよいのではないですか**
 
-The issue here relates to the difference between the average load on the Ethereum network and its worst-case (peak) load. Currently, Ethereum blocks average about 90 KB, although the theoretical maximum block size, achieved if all 36 million gas in a block were used entirely for calldata,[^7] is approximately 2 MB. Ethereum has occasionally processed blocks nearing this maximum size without major issues. However, if we simply lowered the gas cost of calldata tenfold while the average block size remained manageable, the potential worst-case block size would surge to around 20 MB, overwhelming the Ethereum network.
+　ここでの問題は、イーサリアム ネットワークの平均負荷と最悪ケース（ピーク時）の負荷の違いに関連しています。現在、イーサリアムのブロックは平均約90KBですが、理論上の最大ブロック サイズ（ブロック内の3,600万ガスすべてがcalldataのみに使用された場合[^7]に達成される）は約2MBです。イーサリアムはこの最大サイズに近いブロックを大きな問題なく処理したことがあります。しかし、単純にcalldataのガスコストを10分の1に引き下げて平均ブロック サイズが管理可能なままであっても、潜在的な最悪ケースのブロック サイズは約20MBに急増し、イーサリアム ネットワークを圧倒することになります。
 
-[^7]: Calldata refers to the portion of a transaction containing data that isn't executed directly but is posted on chain primarily for record-keeping and verification purposes.
+[^7]: calldataとは、直接実行されるのではなく、主に記録保持と検証の目的でオンチェーンに投稿されるデータを含むトランザクションの部分を指す。
 
-Ethereum's current gas-pricing model makes it difficult to separately manage average-load and worst-case scenarios because the ratio between these two depends on how users distribute their gas expenditure across calldata and other resources. As a result, Ethereum must price gas based on worst-case scenarios, artificially limiting average load below what the network can comfortably support. By introducing a multidimensional fee market, where gas pricing explicitly distinguishes between different resource types, we can better align average network usage with its actual capacity, safely accommodating more data per block. Proto-danksharding and EIP-4488 are two proposals designed specifically to address this issue by improving Ethereum's gas-pricing model.
+　イーサリアムの現在のガス価格モデルでは、平均負荷シナリオと最悪ケースのシナリオを個別に管理することが困難です。この2つの比率は、ユーザーがcalldataとその他のリソース間でガス支出をどのように配分するかに依存するためです。その結果、イーサリアムは最悪ケースのシナリオに基づいてガス価格を設定しなければならず、ネットワークが快適にサポートできる水準よりも人為的に平均負荷を制限しています。多次元手数料市場を導入し、ガス価格が異なるリソース タイプを明示的に区別することで、平均ネットワーク使用量をその実際の容量により適切に整合させ、1ブロックあたりにより多くのデータを安全に収容できるようになります。プロトダンクシャーディングとEIP-4488は、イーサリアムのガス価格モデルを改善することで、この問題に対処するために特別に設計された2つの提案です。
 
-> **Warning**  
+> **警告**
 >
-> EIP-4488 should not be confused with EIP-4844 (thanks for the not-at-all confusing numbers in these EIPs). EIP-4488 is an earlier, simpler attempt to solve the same problem of average-case/worst-case load mismatch. It is currently stagnant, so it will probably never be implemented. EIP-4844, on the other hand, is already live.
+> EIP-4488をEIP-4844と混同してはいけません（これらのEIPの紛らわしい番号には感謝です）。EIP-4488は、平均ケースと最悪ケースの負荷不一致という同じ問題を解決しようとする、より初期のシンプルな試みです。現在は停滞しているため、おそらく実装されることはないでしょう。一方、EIP-4844はすでに稼働しています。
 
-An ulterior motive is that the end goal is to allow nodes to not download all the blobs of data. This is possible with blobs but can't be done with calldata.
+　もう1つの隠れた動機は、最終目標としてノードがすべてのデータblobをダウンロードしなくてもよくなることです。これはblobでは可能ですが、calldataでは実現できません。
 
-> **Tip**  
+> **ヒント**
 >
-> You may have many more questions. For answers, see the full listing of further readings at the end of this chapter.
+> さらに多くの疑問があるかもしれません。回答については、本章末尾の参考文献の完全なリストを参照してください。
 
-### Stateless Ethereum
+### ステートレス イーサリアム
 
-The ability to run Ethereum nodes on modest hardware is crucial for achieving genuine decentralization. This is because operating a node enables users to independently verify blockchain information through cryptographic checks rather than relying on third parties. Running a node also allows users to submit transactions directly to Ethereum's P2P network without intermediaries. If these benefits are limited only to users with expensive equipment, true decentralization cannot be achieved. Therefore, Ethereum nodes must have minimal processing and memory requirements, ideally capable of running on everyday hardware like mobile phones, microcomputers, or inconspicuously on home computers.
+　控えめなハードウェアでイーサリアム ノードを運用できることは、真の分散化を実現するうえで極めて重要です。ノードの運用により、ユーザーはサードパーティに頼ることなく暗号学的チェックを通じてブロックチェーン情報を独立して検証できるためです。ノードの運用はまた、仲介者なしにイーサリアムのP2Pネットワークに直接トランザクションを送信することも可能にします。これらの利点が高価な機器を持つユーザーだけに限定されるなら、真の分散化は達成できません。したがって、イーサリアムのノードは最小限の処理能力とメモリ要件を持ち、理想的にはスマートフォン、マイクロコンピューター、または家庭用コンピューターで目立たずに動作できるものでなければなりません。
 
-Today, high disk space requirements are the primary obstacle preventing widespread access to Ethereum node operation. The main reason for this is the need to store Ethereum's extensive state data, which is important for correctly processing new blocks and transactions.
+　現在、イーサリアム ノードの運用への広範なアクセスを阻む主要な障害は、高いディスク スペース要件です。この主な原因は、新しいブロックとトランザクションを正しく処理するために重要な、イーサリアムの広範なステート データを保存する必要性にあります。
 
-While cheaper hard drives can store older data, they are typically too slow to manage incoming blocks efficiently. Merely making storage cheaper or more efficient offers only temporary relief because Ethereum's state data growth is effectively unbounded; storage needs will continuously increase, forcing technological improvements to constantly keep pace. A more sustainable approach involves developing new client methods for verifying blocks and transactions that don't rely on retrieving data from local storage.
+　より安価なハード ドライブで古いデータを保存できますが、受信ブロックを効率的に管理するには通常遅すぎます。ストレージを単に安価にしたり効率的にしたりすることは一時的な緩和にしかなりません。イーサリアムのステート データの増大は事実上無制限であり、ストレージのニーズは継続的に増加し、技術的な改善が常に追いつくことを強いるためです。より持続可能なアプローチは、ローカル ストレージからのデータ取得に依存しないブロックとトランザクションの検証のための新しいクライアント手法を開発することです。
 
-The term *statelessness* can be somewhat misleading since it doesn't actually eliminate the concept of state entirely. Rather, it changes how Ethereum nodes manage state data. There are two main types of statelessness: weak and strong. *Weak statelessness* allows most nodes to operate without storing state data by shifting that responsibility to a limited number of specialized nodes. In contrast, *strong statelessness* removes the requirement for any node to store the complete state data altogether.
+　*ステートレス性*という用語はやや誤解を招く可能性があります。実際にはステートの概念を完全に排除するものではなく、イーサリアム ノードがステート データを管理する方法を変更するものだからです。ステートレス性には主に2つのタイプがあります。弱いステートレス性と強いステートレス性です。*弱いステートレス性*は、限定された数の専門ノードにステート データの保存責任を移すことで、ほとんどのノードがステート データを保存せずに動作できるようにします。対照的に、*強いステートレス性*は、すべてのノードから完全なステート データの保存要件を完全に取り除きます。
 
-> **Tip**  
+> **ヒント**
 >
-> In the following subsections, we will explain weak statelessness and strong statelessness. It is also worth mentioning that these are not the only ways to reach a "stateless Ethereum," as we just said; statelessness here basically means changing how Ethereum nodes manage state data. Another way to do it is with light clients like Helios. Helios converts an untrusted, centralized RPC endpoint into a safe, nonmanipulable, local RPC for its users. It is light enough to be run on mobile devices and requires very little storage.
+> 以下のサブセクションでは、弱いステートレス性と強いステートレス性について説明します。ここで述べたように、「ステートレス イーサリアム」を実現する方法はこれらだけではないことも述べておく価値があります。ステートレス性は基本的にイーサリアム ノードがステート データを管理する方法を変更することを意味します。もう1つの方法は、Heliosのようなライト クライアントを使用することです。Heliosは、信頼できない集中型RPCエンドポイントを、安全で操作不可能なローカルRPCにユーザーのために変換します。モバイル デバイスで実行できるほど軽量で、ストレージもほとんど必要としません。
 
-#### Weak Statelessness
+#### 弱いステートレス性
 
-*Weak statelessness*, briefly mentioned in Chapter 14, involves changes to how Ethereum nodes verify state updates but does not entirely eliminate the necessity for state storage across the network. Instead, it places the responsibility of storing the complete state data onto specialized nodes known as block proposers or builders. All other nodes on the network can then verify blocks without needing to maintain the full state data locally. Under weak statelessness, creating (proposing) new blocks requires full access to Ethereum's state data, whereas verifying these blocks can be done without storing any state data at all.
+　*弱いステートレス性*は、第14章で簡単に触れましたが、イーサリアム ノードがステート更新を検証する方法の変更を伴いますが、ネットワーク全体でのステート ストレージの必要性を完全に排除するものではありません。代わりに、ブロック プロポーザーまたはビルダーと呼ばれる専門ノードに完全なステート データの保存責任を置きます。ネットワーク上の他のすべてのノードは、完全なステート データをローカルに維持する必要なくブロックを検証できるようになります。弱いステートレス性では、新しいブロックの作成（提案）にはイーサリアムのステート データへの完全なアクセスが必要ですが、ブロックの検証はステート データを一切保存せずに行えます。
 
-Implementing weak statelessness depends on Ethereum clients adopting a new data structure known as *Verkle trees* (covered in greater detail in the next section). Verkle trees replace Ethereum's current state storage structures and enable the creation of small, fixed-size witnesses[^8] that nodes exchange to verify blocks without referencing local databases. Additionally, PBS is necessary since it allows block builders—specialized nodes with stronger hardware—to handle the intensive task of maintaining full state data, while regular nodes operate statelessly.
+　弱いステートレス性の実装は、イーサリアムのクライアントが*ヴァークル ツリー*（次のセクションで詳述）と呼ばれる新しいデータ構造を採用することに依存しています。ヴァークル ツリーはイーサリアムの現在のステート ストレージ構造に取って代わり、ノードがローカル データベースを参照せずにブロックを検証するために交換する、小さく固定サイズのウィットネス[^8]の作成を可能にします。さらに、PBSも必要です。PBSにより、より強力なハードウェアを持つ専門ノードであるブロック ビルダーが完全なステート データの維持という集約的なタスクを処理でき、通常のノードはステートレスに動作できます。
 
-[^8]: Verifying a block means reexecuting its transactions, updating Ethereum's state, and confirming that the computed state root matches the one provided by the block proposer. Ethereum clients currently require the entire state trie, stored locally, to verify blocks. A witness includes only the necessary parts of the state data required to execute a block's transactions. However, using traditional Merkle trees, these witnesses become too large, making it difficult for nodes to download and process them quickly within Ethereum's 12-second slot time. This limitation favors nodes with fast internet connections, leading to centralization. Verkle trees solve this by significantly reducing witness sizes, enabling stateless verification without requiring local storage of the state.
+[^8]: ブロックの検証とは、ブロック内のトランザクションを再実行し、イーサリアムのステートを更新し、計算されたステート ルートがブロック プロポーザーによって提供されたものと一致することを確認することである。イーサリアムのクライアントは現在、ブロックを検証するためにローカルに保存されたステート トライ全体を必要としている。ウィットネスには、ブロックのトランザクションを実行するために必要なステート データの一部のみが含まれる。しかし、従来のマークル ツリーを使用すると、ウィットネスが大きくなりすぎ、イーサリアムの12秒のスロット時間内にノードがダウンロードして処理することが困難になる。この制限は高速インターネット接続を持つノードに有利であり、中央集権化につながる。ヴァークル ツリーはウィットネスのサイズを大幅に削減することでこの問題を解決し、ステートのローカル ストレージを必要とせずにステートレス検証を可能にする。
 
-#### Verkle Trees
+#### ヴァークル ツリー
 
-The term *Verkle tree* combines "vector commitment" and "Merkle tree" (which we explained in Chapter 14). Verkle trees are essential for enabling stateless Ethereum clients, which verify blocks without storing the entire Ethereum state locally. Instead, these clients rely on witnesses,[^9] accompanied by cryptographic proofs confirming their validity. Small witness sizes are critical because witnesses must be efficiently distributed and processed by nodes within Ethereum's 12-second slots. The current Merkle-based state data structure produces overly large witnesses, making it unsuitable for stateless verification. Verkle trees address this issue by significantly reducing witness sizes.
+　*ヴァークル ツリー*という用語は、「ベクトル コミットメント（vector commitment）」と「マークル ツリー（Merkle tree）」（第14章で説明）を組み合わせたものです。ヴァークル ツリーは、イーサリアムのステート全体をローカルに保存せずにブロックを検証するステートレス イーサリアム クライアントを実現するために不可欠です。これらのクライアントは、有効性を確認する暗号学的証明が付随するウィットネス[^9]に依存しています。ウィットネスのサイズが小さいことは極めて重要です。なぜなら、ウィットネスはイーサリアムの12秒のスロット内でノードによって効率的に配布・処理されなければならないからです。現在のマークル ベースのステート データ構造は過度に大きなウィットネスを生成し、ステートレス検証には不適切です。ヴァークル ツリーは、ウィットネスのサイズを大幅に削減することでこの問題に対処します。
 
-[^9]: Witnesses are compact collections of state data necessary to execute a block's transactions.
+[^9]: ウィットネスは、ブロックのトランザクションを実行するために必要なステート データのコンパクトな集合である。
 
-Just as the name indicates, Verkle trees use *vector commitments*: namely, KZG polynomial commitments, which are cryptographic commitments allowing efficient proof of data values at specific positions within a large dataset without revealing the whole dataset. They scale much better and have a faster computation than hashes that are currently used in Merkle trees, as shown in Figure 16-6. In Merkle trees, we have only the Merkle root (hash), while in Verkle trees, we also have the vector commitment.
+　名前が示すように、ヴァークル ツリーは*ベクトル コミットメント*（具体的にはKZG多項式コミットメント）を使用しています。ベクトル コミットメントは、データセット全体を公開せずに、大きなデータセット内の特定の位置にあるデータ値を効率的に証明できる暗号学的コミットメントです。図16-6に示すように、マークル ツリーで現在使用されているハッシュよりもはるかに優れたスケーラビリティと高速な計算を実現します。マークル ツリーではマークル ルート（ハッシュ）のみを持ちますが、ヴァークル ツリーではベクトル コミットメントも持ちます。
 
-![Merkle tree versus Verkle tree](images/ch16/maet_1606.png)
+![マークル ツリー対ヴァークル ツリー](images/ch16/maet_1606.png)
 
-Figure 16-6. Merkle tree versus Verkle tree
+図16-6 マークル ツリー対ヴァークル ツリー
 
-With only the hash, we are unable to prove that a certain element is present in a specific location in a certain vector of values; you need to pass the whole vector. But with a vector commitment and an opening—a small portion of the whole vector of values—it is possible to prove that a certain element exists in that specific location.
+　ハッシュのみでは、特定の値のベクトル内の特定の位置に特定の要素が存在することを証明できません。ベクトル全体を渡す必要があります。しかし、ベクトル コミットメントとオープニング（値のベクトル全体の小さな部分）があれば、特定の要素がその特定の位置に存在することを証明できます。
 
-Merkle trees allow Ethereum nodes to verify small parts of data without downloading the entire blockchain. However, when Merkle trees become very large, the size of the proof (the information needed to verify data) also grows significantly. These large proofs slow the network and make it difficult to maintain efficiency as Ethereum continues to scale, as shown in Figure 16-7.
+　マークル ツリーにより、イーサリアム ノードはブロックチェーン全体をダウンロードせずに小さなデータの一部を検証できます。しかし、マークル ツリーが非常に大きくなると、証明（データを検証するために必要な情報）のサイズも大幅に増加します。図16-7に示すように、これらの大きな証明はネットワークを遅くし、イーサリアムがスケールし続ける中で効率の維持を困難にします。
 
-![Merkle tree proof size](images/ch16/maet_1607.png)
+![マークル ツリーの証明サイズ](images/ch16/maet_1607.png)
 
-Figure 16-7. Merkle tree proof size
+図16-7 マークル ツリーの証明サイズ
 
-To prove that a specific leaf X is present in this Merkle tree, it is mandatory to pass all the siblings of a given node along the path; this is because the hash would not make sense without this piece of data.
+　特定のリーフXがこのマークル ツリーに存在することを証明するには、パスに沿った各ノードのすべての兄弟ノードを渡すことが必須です。このデータがなければハッシュが意味をなさないためです。
 
-Verkle trees address this issue by significantly reducing the size of these proofs. Instead of having proofs that get larger as the amount of data increases, Verkle trees use a cryptographic method called vector commitments. Vector commitments allow you to prove large amounts of data with very short, compact proofs. This means that even if Ethereum's blockchain gets bigger, the proofs stay small and efficient, as shown in Figure 16-8.
+　ヴァークル ツリーは、これらの証明のサイズを大幅に削減することでこの問題に対処しています。データの量が増えるにつれて証明が大きくなる代わりに、ヴァークル ツリーはベクトル コミットメントと呼ばれる暗号学的手法を使用します。ベクトル コミットメントにより、非常に短くコンパクトな証明で大量のデータを証明できます。図16-8に示すように、イーサリアムのブロックチェーンが大きくなっても、証明は小さく効率的なまま維持されます。
 
-![Verkle tree proof size](images/ch16/maet_1608.png)
+![ヴァークル ツリーの証明サイズ](images/ch16/maet_1608.png)
 
-Figure 16-8. Verkle tree proof size
+図16-8 ヴァークル ツリーの証明サイズ
 
-By utilizing the vector commitments analyzed before, we can avoid unnecessary data and reduce the proof size for the Verkle tree significantly.
+　前述のベクトル コミットメントを活用することで、不要なデータを省略し、ヴァークル ツリーの証明サイズを大幅に削減できます。
 
-The proof size for a Merkle tree is as follows (note that the proof sizes are calculated based on Figures 16-5 and 16-6):
+　マークル ツリーの証明サイズは以下の通りです（証明サイズは図16-5と図16-6に基づいて計算されています）。
 
-- Leaf data plus 15 siblings (unnecessary data sent for every level of depth, 32 bytes for each sibling) multiplied by the seven levels of depth = 3.58 MB for one thousand leaves
+- リーフ データに15の兄弟ノード（深さの各レベルで送信される不要なデータ、各兄弟ノード32バイト）を加え、7レベルの深さを掛ける = 1,000リーフで3.58MB
 
-The proof size for a Verkle tree is much smaller:
+　ヴァークル ツリーの証明サイズはこれよりはるかに小さくなります。
 
-- Leaf data plus a commitment (32 bytes) plus a value (32 bytes) plus an index (1 byte) multiplied by the four levels of depth plus some small constant-size data = 150 KB for one thousand leaves
+- リーフ データにコミットメント（32バイト）と値（32バイト）とインデックス（1バイト）を加え、4レベルの深さを掛け、さらに小さな定数サイズのデータを加える = 1,000リーフで150KB
 
-One small question that might arise after this explanation is: why did we account for seven levels of depth for the Merkle tree and only four for the Verkle tree? The answer is very simple: Merkle trees' nodes have only 15 siblings, while Verkle trees' nodes have 255. Since the width for each level is much larger with the same depth, we can store much more data in the Verkle trees.
+　この説明の後に浮かぶかもしれない小さな疑問が1つあります。マークル ツリーでは7レベルの深さを計算し、ヴァークル ツリーでは4レベルしか計算しなかったのはなぜでしょうか。答えは非常にシンプルです。マークル ツリーのノードは15の兄弟ノードしか持ちませんが、ヴァークル ツリーのノードは255の兄弟ノードを持ちます。各レベルの幅がはるかに大きいため、同じ深さでもヴァークル ツリーにはるかに多くのデータを格納できます。
 
-A Verkle tree organizes data into (key, value) pairs, where each key is 32 bytes consisting of a 31-byte "stem" and a single-byte "suffix," as shown in Figure 16-9. The key scheme is designed this way so that storage locations that are close have the same stem and a different suffix, making it cheaper to access "neighboring" storage positions.
+　ヴァークル ツリーはデータを（キー、値）ペアに整理します。各キーは32バイトで、31バイトの「ステム」と1バイトの「サフィックス」で構成されています（図16-9参照）。このキー スキームは、近接するストレージ位置が同じステムと異なるサフィックスを持つように設計されており、「隣接する」ストレージ位置へのアクセスをより安価にしています。
 
-![Verkle tree key structure](images/ch16/maet_1609.png)
+![ヴァークル ツリーのキー構造](images/ch16/maet_1609.png)
 
-Figure 16-9. Verkle tree key structure
+図16-9 ヴァークル ツリーのキー構造
 
-These keys are structured into three types of nodes:
+　これらのキーは、3種類のノードに構造化されています。
 
-- Extension (or leaf) nodes representing one stem with up to 256 different suffixes
-- Inner nodes containing up to 256 child nodes, potentially including other extension nodes
-- Empty nodes
+- 拡張（またはリーフ）ノード：1つのステムに最大256の異なるサフィックスを表す
+- 内部ノード：他の拡張ノードを含む可能性のある最大256の子ノードを含む
+- 空ノード
 
-To build a complete Verkle tree, you start from the leaf nodes and compute the polynomial commitments progressively upward (bottom-up) until you reach the top-level or root commitment. This root commitment succinctly represents the entire tree's data, allowing nodes to verify blockchain data quickly by only referencing this single root commitment. When a node needs to verify specific blockchain data, such as a user's account balance or transaction validity, it obtains this known root commitment along with a very small cryptographic proof, typically just a few hundred bytes.
+　完全なヴァークル ツリーを構築するには、リーフ ノードから始めて多項式コミットメントを段階的に上方向に（ボトムアップで）計算し、トップレベルまたはルート コミットメントに到達します。このルート コミットメントはツリー全体のデータを簡潔に表現し、ノードがこの単一のルート コミットメントを参照するだけでブロックチェーン データを迅速に検証できるようにします。ノードがユーザーのアカウント残高やトランザクションの有効性などの特定のブロックチェーン データを検証する必要がある場合、この既知のルート コミットメントとともに、通常わずか数百バイトの非常に小さな暗号学的証明を取得します。
 
-#### Strong Statelessness
+#### 強いステートレス性
 
-*Strong statelessness* eliminates the requirement for nodes to store any state data whatsoever. In this model, transactions include small witnesses that can be aggregated by block producers. These producers then need to store only the minimal amount of state necessary to generate witnesses for frequently accessed accounts. This shifts most of the responsibility for state management to the users themselves since users must provide these witnesses and specify precisely which accounts and storage keys their transactions interact with through access lists. While this approach would enable nodes to become extremely lightweight, it introduces certain trade-offs, notably increasing complexity and difficulty when interacting with smart contracts.
+　*強いステートレス性*は、ノードがステート データを一切保存する必要性を排除します。このモデルでは、トランザクションにブロック プロデューサーによって集約できる小さなウィットネスが含まれます。ブロック プロデューサーは、頻繁にアクセスされるアカウントのウィットネスを生成するために必要な最小限のステートのみを保存します。ステート管理の責任の大部分はユーザー自身に移されます。ユーザーはこれらのウィットネスを提供し、アクセス リストを通じてトランザクションがどのアカウントやストレージ キーとやり取りするかを正確に指定しなければなりません。このアプローチにより、ノードは極めて軽量に動作できますが、スマートコントラクトとのやり取りの複雑さと難しさが増すというトレードオフが生じます。
 
-Strong statelessness has been explored in research, but it is currently not planned for Ethereum's immediate roadmap. Ethereum is more likely to pursue weak statelessness since it appears sufficient to meet the network's scaling objectives for the foreseeable future.
+　強いステートレス性は研究で検討されてきましたが、現在イーサリアムの直近のロードマップには計画されていません。弱いステートレス性が、当面のネットワークのスケーリング目標を満たすのに十分と思われるため、イーサリアムは弱いステートレス性を追求する可能性が高いです。
 
-## Conclusion
+## まとめ
 
-Ethereum's approach to scaling isn't just about making things faster; it's about upgrading the whole system without sacrificing what makes it trustworthy: decentralization and security. Instead of quick fixes, Ethereum is using rollups and danksharding, and it is aiming for statelessness to build a layered system while continuing to improve the Layer 1. In this setup, L2 networks handle most of the execution work but still rely on Ethereum's base layer for security and final settlement. It's a thoughtful, modular path forward that keeps core values intact while laying the groundwork for long-term growth and innovation.
+　イーサリアムのスケーリングへのアプローチは、単に処理を高速化することだけではありません。信頼性を支える分散化とセキュリティを犠牲にすることなく、システム全体をアップグレードすることです。場当たり的な修正ではなく、イーサリアムはロールアップとダンクシャーディングを活用し、ステートレス性を目指しながらLayer 1の改善を継続することで、レイヤード システムを構築しています。このシステムでは、L2ネットワークが実行作業の大部分を処理しますが、セキュリティと最終的な決済についてはイーサリアムのベースレイヤーに依存し続けます。コアとなる価値観を維持しながら、長期的な成長とイノベーションの基盤を築く、思慮深いモジュラーな道筋です。
 
-For more, please see the following readings:
+　さらに詳しくは、以下の参考文献を参照してください。
 
-- Danksharding proposal
-- Proto-danksharding proposal
+- ダンクシャーディングの提案
+- プロトダンクシャーディングの提案
 - EIP-4844
-- Danksharding (easily comprehensible for anyone)
+- ダンクシャーディング（誰にでもわかりやすい解説）
 - EIP-4488
-- Verkle trees for statelessness
-- Verkle proofs
-- Verkle tree EIP
-- Verkle tree structure
-- Pairing-based cryptography report to better understand the BLS12-318 curve
-- BLS12-318 explained "simply"
+- ステートレス性のためのヴァークル ツリー
+- ヴァークル証明
+- ヴァークル ツリーのEIP
+- ヴァークル ツリーの構造
+- BLS12-318曲線をよりよく理解するためのペアリングベース暗号のレポート
+- BLS12-318の「簡単な」解説

@@ -36,213 +36,213 @@ As a smart contract programmer, you should be familiar with the most common secu
 
 The following antipatterns are often combined to execute an exploit, much like in Web2 security. Real-world exploits are usually more complex than the examples in this chapter.
 
-### Reentrancy
+### リエントランシー
 
-One of the features of Ethereum smart contracts is their ability to call and utilize code from other external contracts. Contracts also typically handle ether and as such, often send ether to various external user addresses. These operations require the contracts to submit external calls. These external calls can be hijacked by attackers, who can force the contracts to execute further code (through a callback: either a fallback function or some hook, usually `transfer`), including calls back into themselves. Attacks of this kind were used in the infamous and still remembered DAO hack from 2016. Even after all these years, [we’re still seeing a lot of attacks exploiting this vulnerability](https://oreil.ly/87VUR), even though it’s pretty straightforward to spot and inexpensive to fix.
+　イーサリアムのスマート コントラクトの特徴の一つは、外部コントラクトのコードを呼び出して利用できることです。また、コントラクトは通常Etherを扱うため、さまざまな外部ユーザーアドレスにEtherを送信することも多くあります。これらの操作ではコントラクトが外部呼び出しを行う必要があります。攻撃者はこの外部呼び出しを乗っ取り、コールバック（フォールバック関数やフックなど、通常は`transfer`）を通じてコントラクトにさらなるコードを実行させることができます。自身への呼び出しを含む再帰的な呼び出しも可能です。この種の攻撃は、2016年に発生した悪名高いDAOハッキングで使用されました。あれから何年も経った今でも、[この脆弱性を悪用した攻撃が多数確認されています](https://oreil.ly/87VUR)。発見は比較的容易であり、修正コストも低いにもかかわらずです。
 
-#### The vulnerability
+#### 脆弱性
 
-This type of attack happens when an attacker manages to take control during the execution of another contract before that contract has finished updating its state. Since the contract is still in the middle of its process, it has not yet updated its state (e.g., critical variables). The attacker can then “reenter” the contract at this vulnerable moment, taking advantage of the inconsistent state to trigger actions that weren’t intended or expected. This reentry allows the attacker to bypass safeguards, manipulate data, or drain funds, all because the contract hasn’t fully settled into a safe, consistent state yet.
+　この種の攻撃は、あるコントラクトが状態の更新を完了する前に、攻撃者がその実行中に制御を奪うことで発生します。コントラクトは処理の途中にあるため、まだ状態（例えば重要な変数）を更新していません。攻撃者はこの脆弱なタイミングでコントラクトに「再入」し、不整合な状態を利用して意図されていない動作を引き起こすことができます。この再入により、攻撃者はセーフガードを回避し、データを操作し、資金を流出させることが可能になります。コントラクトがまだ安全で整合性のある状態に落ち着いていないことが原因です。
 
-Reentrancy can be tricky to grasp without a practical example. Take a look at the simple vulnerable contract in Example 9-1, which acts as an Ethereum vault that allows depositors to withdraw only 1 ether per week.
+　リエントランシーは、実際の例がなければ理解が難しい概念です。例9-1のシンプルな脆弱性のあるコントラクトを見てみましょう。このコントラクトはイーサリアムの金庫として機能し、預金者が1週間に1 Etherのみ引き出せるようになっています。
 
-**Example 9-1. EtherStore: a contract vulnerable to reentrancy**
+**例9-1. EtherStore: リエントランシーに対して脆弱なコントラクト**
 
 ```solidity
 1 contract EtherStore {
-2      uint256 public withdrawalLimit = 1 ether;
-3      mapping(address => uint256) public lastWithdrawTime;
-4    mapping(address => uint256) balances;
+2      uint256 public withdrawalLimit = 1 ether;
+3      mapping(address => uint256) public lastWithdrawTime;
+4    mapping(address => uint256) balances;
 5
-6    function depositFunds() public payable{
-7      balances[msg.sender] += msg.value;
-8    }
+6    function depositFunds() public payable{
+7      balances[msg.sender] += msg.value;
+8    }
 9
-10    function withdrawFunds() public {
-11        require(block.timestamp >= lastWithdrawTime[msg.sender] + 1 weeks);
-12        uint256 _amt = balances[msg.sender];
-13        if(_amt > withdrawalLimit){
-14            _amt = withdrawalLimit;
-15        }
-16      (bool res, ) = address(msg.sender).call{value: _amt}("");
-17        require(res, "Transfer failed");
-18      balances[msg.sender] = 0;
-19        lastWithdrawTime[msg.sender] = block.timestamp;
-20    }
+10    function withdrawFunds() public {
+11        require(block.timestamp >= lastWithdrawTime[msg.sender] + 1 weeks);
+12        uint256 _amt = balances[msg.sender];
+13        if(_amt > withdrawalLimit){
+14            _amt = withdrawalLimit;
+15        }
+16      (bool res, ) = address(msg.sender).call{value: _amt}("");
+17        require(res, "Transfer failed");
+18      balances[msg.sender] = 0;
+19        lastWithdrawTime[msg.sender] = block.timestamp;
+20    }
 21 }
 ```
 
-This contract has two public functions, `depositFunds` and `withdrawFunds`. The `depositFunds` function simply increments the sender’s balance. The `withdrawFunds` function allows the sender to withdraw their balance. This function is intended to succeed only if a withdrawal has not occurred in the last week.
+　このコントラクトには`depositFunds`と`withdrawFunds`の2つのパブリック関数があります。`depositFunds`関数は単純に送信者の残高を増加させます。`withdrawFunds`関数は送信者が残高を引き出すことを可能にします。この関数は、直近1週間に引き出しが行われていない場合にのみ成功するように設計されています。
 
-The vulnerability is in line 17, where the contract sends the user their requested amount of ether. Consider an attacker who has created the contract in Example 9-2.
+　脆弱性は17行目にあります。コントラクトがユーザーに要求された量のEtherを送信する箇所です。例9-2のコントラクトを作成した攻撃者を考えてみましょう。
 
-**Example 9-2. Attack.sol: a contract used to exploit the reentrancy vulnerability in the EtherStore contract**
+**例9-2. Attack.sol: EtherStoreコントラクトのリエントランシー脆弱性を悪用するコントラクト**
 
 ```solidity
 1 contract Attack {
-2  EtherStore public etherStore;
+2  EtherStore public etherStore;
 3
-4  // initialize the etherStore variable with the contract address
-5  constructor(address _etherStoreAddress) {
-6      etherStore = EtherStore(_etherStoreAddress);
-7  }
+4  // etherStore変数をコントラクト アドレスで初期化
+5  constructor(address _etherStoreAddress) {
+6      etherStore = EtherStore(_etherStoreAddress);
+7  }
 8
-9  function attackEtherStore() public payable {
-10      // attack to the nearest ether
-11      require(msg.value >= 1 ether, "no bal");
-12      // send eth to the depositFunds() function
-13      etherStore.depositFunds{value: 1 ether}();
-14      // start the magic
-15      etherStore.withdrawFunds();
-16  }
+9  function attackEtherStore() public payable {
+10      // 最も近いether単位で攻撃
+11      require(msg.value >= 1 ether, "no bal");
+12      // depositFunds()関数にethを送信
+13      etherStore.depositFunds{value: 1 ether}();
+14      // 攻撃開始
+15      etherStore.withdrawFunds();
+16  }
 17
-18  function collectEther() public {
-19      payable(msg.sender).transfer(address(this).balance);
-20  }
+18  function collectEther() public {
+19      payable(msg.sender).transfer(address(this).balance);
+20  }
 21
-22  // receive function - the fallback() function would have worked out too
-23  receive() external payable {
-24      if (address(etherStore).balance >= 1 ether) {
-25          // reentrant call to victim contract
-26          etherStore.withdrawFunds();
-27      }
-28  }
+22  // receive関数 - fallback()関数でも同様に動作する
+23  receive() external payable {
+24      if (address(etherStore).balance >= 1 ether) {
+25          // 被害者コントラクトへのリエントラント呼び出し
+26          etherStore.withdrawFunds();
+27      }
+28  }
 29 }
 ```
 
-How might the exploit occur? First, the attacker would create the malicious contract (let’s say at the address `0x0...123`) with the `EtherStore`’s contract address as the sole constructor parameter. This would initialize and point the public variable `etherStore` to the contract to be attacked.
+　この攻撃はどのように行われるのでしょうか。まず、攻撃者は`EtherStore`のコントラクト アドレスを唯一のコンストラクター パラメーターとして、悪意あるコントラクト（アドレスを`0x0...123`とします）を作成します。これにより、パブリック変数`etherStore`が攻撃対象のコントラクトを指すように初期化されます。
 
-The attacker would then call the `attackEtherStore` function, with some amount of ether greater than or equal to 1—let’s assume 1 ether for the time being. In this example, we will also assume a number of other users have deposited ether into this contract, so its current balance is 10 ether. The following will then occur:
+　次に、攻撃者は1以上のEtherを指定して`attackEtherStore`関数を呼び出します。ここでは1 Etherと仮定します。この例では、他の複数のユーザーがこのコントラクトにEtherを預け入れており、現在の残高が10 Etherであると仮定します。以下の手順で攻撃が進行します。
 
-- *Attack.sol*, line 13: The `depositFunds` function of the `EtherStore` contract will be called with a `msg.value` of `1 ether` (and a lot of gas). The sender (`msg.sender`) will be the malicious contract (`0x0...123`). Thus, `balances[0x0..123] = 1 ether`.
-- *Attack.sol*, line 15: The malicious contract will then call the `withdrawFunds` function of the `EtherStore` contract. This will pass the requirement (line 11 of the `EtherStore` contract) as no previous withdrawals have been made.
-- *EtherStore.sol*, line 16: The contract will send `1 ether` back to the malicious contract.
-- *Attack.sol*, line 23: The payment to the malicious contract will then execute the `receive` function.
-- *Attack.sol*, line 24: The total balance of the `EtherStore` contract was 10 ether and is now 9 ether, so this `if` statement passes.
-- *Attack.sol*, line 26: The fallback function calls the `EtherStore` `withdrawFunds` function again and *reenters* the `EtherStore` contract.
-- *EtherStore.sol*, line 10: In this second call to `withdrawFunds`, the attacking contract’s balance is still 1 ether as line 18 has not yet been executed. Thus, we still have `balances[0x0..123] = 1 ether`. This is also the case for the `lastWithdrawTime` variable. Again, we pass the requirement.
-- *EtherStore.sol*, line 16: The attacking contract withdraws another `1 ether`.
-- Reenter the EtherStore contract until it is no longer the case that `EtherStore.balance >= 1`, as dictated by line 24 in *Attack.sol*.
-- *Attack.sol*, line 24: Once there is less than 1 ether left in the `EtherStore` contract, this `if` statement will fail. This will then allow lines 17–19 of the `EtherStore` contract to be executed (for each call to the `withdrawFunds` function).
-- *EtherStore.sol*, lines 18 and 19: The `balances` and `lastWithdrawTime` mappings will be set, and the execution will end.
+- *Attack.sol*、13行目: `EtherStore`コントラクトの`depositFunds`関数が`msg.value`として`1 ether`で呼び出される（大量のガスとともに）。送信者（`msg.sender`）は悪意あるコントラクト（`0x0...123`）である。したがって、`balances[0x0..123] = 1 ether`となる。
+- *Attack.sol*、15行目: 悪意あるコントラクトが`EtherStore`コントラクトの`withdrawFunds`関数を呼び出す。過去に引き出しが行われていないため、要件チェック（`EtherStore`コントラクトの11行目）を通過する。
+- *EtherStore.sol*、16行目: コントラクトが悪意あるコントラクトに`1 ether`を送り返す。
+- *Attack.sol*、23行目: 悪意あるコントラクトへの送金により`receive`関数が実行される。
+- *Attack.sol*、24行目: `EtherStore`コントラクトの残高は10 Etherから9 Etherになっているため、この`if`文は条件を満たす。
+- *Attack.sol*、26行目: フォールバック関数が`EtherStore`の`withdrawFunds`関数を再度呼び出し、`EtherStore`コントラクトに*再入*する。
+- *EtherStore.sol*、10行目: `withdrawFunds`への2回目の呼び出しにおいて、18行目がまだ実行されていないため、攻撃コントラクトの残高は依然として1 Etherである。つまり、`balances[0x0..123] = 1 ether`のままである。`lastWithdrawTime`変数も同様である。再び要件チェックを通過する。
+- *EtherStore.sol*、16行目: 攻撃コントラクトがさらに`1 ether`を引き出す。
+- *Attack.sol*の24行目で指定されているように、`EtherStore.balance >= 1`でなくなるまで`EtherStore`コントラクトへの再入が繰り返される。
+- *Attack.sol*、24行目: `EtherStore`コントラクトに1 Ether未満しか残っていない場合、この`if`文は条件を満たさなくなる。これにより、`EtherStore`コントラクトの17-19行目が（`withdrawFunds`関数の各呼び出しに対して）実行される。
+- *EtherStore.sol*、18行目と19行目: `balances`マッピングと`lastWithdrawTime`マッピングが設定され、実行が終了する。
 
-The final result is that the attacker has withdrawn all ether from the `EtherStore` contract in a single transaction.
+　最終的に、攻撃者は1回のトランザクションで`EtherStore`コントラクトからすべてのEtherを引き出すことに成功します。
 
-While native ether transfers intercepted by fallback functions are a common vector for reentrancy attacks, they are not the only mechanism that can introduce this risk. Several token standards, like ERC-721 and ERC-777, include callback mechanisms that can also enable reentrancy attacks. For instance, ERC-721’s `safeTransfer` function ensures that token transfers to contracts call the recipient’s `onERC721Received` function. Similarly, ERC-777 tokens allow hooks to be invoked via the `tokensReceived` function during transfers.
+　フォールバック関数で傍受されるネイティブEther送金はリエントランシー攻撃の一般的なベクトルですが、このリスクをもたらす唯一のメカニズムではありません。ERC-721やERC-777などの複数のトークン標準には、リエントランシー攻撃を可能にするコールバック メカニズムが含まれています。例えば、ERC-721の`safeTransfer`関数は、コントラクトへのトークン転送時に受信者の`onERC721Received`関数を呼び出すことを保証します。同様に、ERC-777トークンでは転送時に`tokensReceived`関数を通じてフックを起動できます。
 
-#### Beyond the Classic Reentrancy Pattern
-Reentrancy attacks aren’t limited to a single function or contract. While classic reentrancy involves reentering the same function before it finishes, there are variations that are harder to spot, such as cross-function reentrancy, cross-contract reentrancy, and, the trickiest of all, read-only reentrancy.
-Read-only reentrancy takes advantage of contracts that depend on view functions of other contracts. These functions don’t modify state but return data that other contracts rely on, often without reentrancy protection. The problem occurs when a reentrant call lets an attacker temporarily put the target contract into an inconsistent state, allowing them to use another contract (the victim) to query this unstable state through a view function.
-Let’s look at how it plays out:
-1. The attacker’s contract interacts with a vulnerable contract—let’s call it Contract A—which can be reentered. This contract holds data that other protocols rely on.
-2. Contract A triggers a callback to the attacker’s contract, allowing the attacker’s contract logic to run.
-3. While still in the fallback, the attacker’s contract calls a different protocol, Contract B, which is connected to Contract A and depends on the data it provides.
-4. Contract B, unaware of any issues, reads data from Contract A. However, the state of Contract A is outdated because it hasn’t finished updating yet.
-By the time this cycle ends, the attacker has already exploited Contract B by leveraging the outdated data from Contract A and then lets the callback and original call in Contract A complete as normal. The process is illustrated in Figure 9-1.
-Figure 9-1. Read-only reentrancy
+#### 古典的なリエントランシー パターンを超えて
+　リエントランシー攻撃は、単一の関数やコントラクトに限定されません。古典的なリエントランシーは、同じ関数が完了する前に再入するものですが、クロスファンクション リエントランシー、クロスコントラクト リエントランシー、そして最も発見が困難なリードオンリー リエントランシーなど、検出しにくいバリエーションが存在します。
+　リードオンリー リエントランシーは、他のコントラクトのview関数に依存するコントラクトを悪用します。view関数は状態を変更しませんが、他のコントラクトが依存するデータを返します。多くの場合、リエントランシー保護は適用されていません。リエントラント呼び出しによって攻撃者がターゲット コントラクトを一時的に不整合な状態にし、別のコントラクト（被害者）がview関数を通じてこの不安定な状態を問い合わせることで問題が発生します。
+　具体的な流れを見てみましょう。
+1. 攻撃者のコントラクトが、再入可能な脆弱なコントラクト（コントラクトAと呼びます）と対話する。このコントラクトは、他のプロトコルが依存するデータを保持している。
+2. コントラクトAが攻撃者のコントラクトへのコールバックをトリガーし、攻撃者のコントラクト ロジックが実行される。
+3. フォールバック内にいる間に、攻撃者のコントラクトが別のプロトコル、コントラクトBを呼び出す。コントラクトBはコントラクトAに接続されており、コントラクトAが提供するデータに依存している。
+4. コントラクトBは問題を認識せずにコントラクトAからデータを読み取る。しかし、コントラクトAの状態はまだ更新が完了していないため古いままである。
+　このサイクルが終了する時点で、攻撃者はすでにコントラクトAの古いデータを利用してコントラクトBを悪用しています。その後、コントラクトAのコールバックと元の呼び出しは通常通り完了します。このプロセスを図9-1に示します。
+図9-1. リードオンリー リエントランシー
 
 ![Read-only reentrancy](images/ch9/maet_0901.png)
 
-**Figure 1-1.** Read-only reentrancy
+**図1-1.** リードオンリー リエントランシー
 
-The key here is that Contract B trusts the data from Contract A, but Contract A’s state hasn’t caught up, allowing the attacker to exploit the lag. This type of attack is harder to defend against because developers often don’t protect view functions with reentrancy locks, thinking they are safe since they don’t modify state.
-Read-only reentrancy teaches us that even read-only functions can be dangerous when they’re relied upon by external contracts.
+　ここでの要点は、コントラクトBがコントラクトAのデータを信頼しているにもかかわらず、コントラクトAの状態がまだ追いついていないということです。攻撃者はこのタイムラグを悪用します。この種の攻撃に対する防御は困難です。開発者はview関数が状態を変更しないため安全だと考え、リエントランシー ロックで保護しないことが多いためです。
+　リードオンリー リエントランシーが教えてくれるのは、リードオンリー関数であっても、外部コントラクトから依存されている場合には危険になりうるということです。
 
-#### Preventative techniques
+#### 予防テクニック
 
-The first best practice to follow in order to prevent reentrancy issues is sticking to the check-effect-interaction pattern when writing smart contracts. This pattern is about ensuring that all changes to state variables happen before interacting with external contracts. For instance, in the *EtherStore.sol* contract, the lines that modify state variables should appear before any external calls. The goal is to ensure that any piece of code interacting with external addresses is the last thing executed in the function. This prevents external contracts from interfering with the internal state upon reentering because the necessary updates have already been made.
+　リエントランシーの問題を防ぐための最初のベスト プラクティスは、スマート コントラクトの記述時にcheck-effect-interactionパターンに従うことです。このパターンは、外部コントラクトとの対話の前にすべての状態変数の変更を行うことを保証するものです。例えば、*EtherStore.sol*コントラクトでは、状態変数を変更する行は外部呼び出しの前に配置されるべきです。目標は、外部アドレスと対話するコードが関数内で最後に実行されるようにすることです。再入時に外部コントラクトが内部状態に干渉することを防止できます。必要な更新がすでに完了しているためです。
 
-Another useful technique is applying a reentrancy lock. A *reentrancy lock* is a simple state variable that “locks” the contract while it’s executing a function, preventing other external calls from interrupting. This can be implemented with a modifier like this:
+　もう一つの有用なテクニックは、リエントランシー ロックの適用です。*リエントランシー ロック*は、関数の実行中にコントラクトを「ロック」するシンプルな状態変数であり、他の外部呼び出しによる割り込みを防ぎます。以下のようなmodifierで実装できます。
 
 ```solidity
 contract EtherStore {
-    bool lock;
-      uint256 public withdrawalLimit = 1 ether;
-      mapping(address => uint256) public lastWithdrawTime;
-    mapping(address => uint256) balances;
+    bool lock;
+      uint256 public withdrawalLimit = 1 ether;
+      mapping(address => uint256) public lastWithdrawTime;
+    mapping(address => uint256) balances;
 
-      modifier nonReentrant {
-      require(!lock, "Can't reenter");
-      lock = true;
-      _;
-      lock = false;
-    }
+      modifier nonReentrant {
+      require(!lock, "Can't reenter");
+      lock = true;
+      _;
+      lock = false;
+    }
 
-    function withdrawFunds() public nonReentrant{
-        [...]
-    }
+    function withdrawFunds() public nonReentrant{
+        [...]
+    }
 }
 ```
 
-In this example, the `nonReentrant` modifier uses the lock variable to prevent the `withdrawFunds` function from being reentered while it’s still running. The `nonReentrant` modifier locks the contract when it starts and unlocks it once the function finishes. However, we shouldn’t reinvent the wheel. Instead of crafting our own reentrancy locks, it’s better to rely on well-tested libraries like OpenZeppelin’s ReentrancyGuard. These libraries provide secure, gas-optimized solutions.
+　この例では、`nonReentrant` modifierがlock変数を使用して、`withdrawFunds`関数の実行中に再入されることを防いでいます。`nonReentrant` modifierは開始時にコントラクトをロックし、関数の完了後にアンロックします。しかし、車輪の再発明をすべきではありません。独自のリエントランシー ロックを作成する代わりに、OpenZeppelinのReentrancyGuardのようなよくテストされたライブラリーを利用する方が望ましいです。これらのライブラリーは安全でガス効率の良いソリューションを提供しています。
 
 > **Note**
 >
-> With the advent of transient storage on Ethereum in Solidity 0.8.24, OpenZeppelin has introduced ReentrancyGuardTransient, a new variant of ReentrancyGuard that leverages transient storage for significantly lower gas costs. Transient storage, enabled by [EIP-1153](https://oreil.ly/fRvKl), provides a cheaper way to store data that’s needed only for the duration of a single transaction, making it ideal for reentrancy guards and similar temporary logic. However, ReentrancyGuardTransient can be used only on chains where EIP-1153 is available, so make sure your target chain supports this feature before implementing it.
+> Solidity 0.8.24でイーサリアムにトランジエント ストレージが導入されたことに伴い、OpenZeppelinはReentrancyGuardTransientを導入しました。これはReentrancyGuardの新しいバリアントであり、トランジエント ストレージを活用して大幅に低いガス コストを実現しています。[EIP-1153](https://oreil.ly/fRvKl)によって有効化されたトランジエント ストレージは、単一のトランザクション期間中にのみ必要なデータをより安価に保存する方法を提供し、リエントランシー ガードや類似の一時的なロジックに最適です。ただし、ReentrancyGuardTransientはEIP-1153が利用可能なチェーンでのみ使用できるため、実装前にターゲット チェーンがこの機能をサポートしていることを確認してください。
 
-One more approach is to use Solidity’s built-in `transfer` and `send` functions to send ether. These functions forward only a limited amount of gas (2,300 units), which typically is not enough for the receiving contract to execute a reentrant call, so they are a simple way to guard against reentrancy. However, they come with notable drawbacks. If the recipient is a smart contract with nonmalicious logic in its fallback or receive function, the transfer might fail, potentially locking funds. This risk is becoming more relevant with the introduction of EIP-7702, which allows EOAs to have attached code, including fallback logic. As more EOAs adopt this capability, transactions using `transfer` or `send` are more likely to revert during regular execution of the transactions due to insufficient gas. And from a security perspective, this approach isn’t future proof: if a future hard fork reduces the gas cost of certain operations, 2,300 units might become sufficient to reenter, breaking assumptions that were previously safe. So, while `transfer` and `send` can still be helpful in narrow cases, we need to use them with caution and not rely on them as our primary defense.
+　もう一つのアプローチは、Solidityの組み込み関数である`transfer`および`send`を使用してEtherを送信することです。これらの関数は限られた量のガス（2,300ユニット）のみを転送するため、通常、受信コントラクトがリエントラント呼び出しを実行するには不十分です。そのため、リエントランシーに対するシンプルな防御策となります。しかし、注目すべき欠点があります。受信者がフォールバック関数やreceive関数に悪意のないロジックを持つスマート コントラクトの場合、送金が失敗し、資金がロックされる可能性があります。EIP-7702の導入により、このリスクはさらに高まっています。EIP-7702はEOAにフォールバック ロジックを含むコードを付与することを可能にします。より多くのEOAがこの機能を採用するにつれ、`transfer`や`send`を使用するトランザクションは、ガス不足によりトランザクションの通常の実行中にリバートする可能性が高くなります。セキュリティの観点からも、このアプローチは将来にわたって安全とは言えません。将来のハードフォークで特定の操作のガス コストが削減された場合、2,300ユニットでも再入に十分となり、それまで安全だった前提が崩れる可能性があります。したがって、`transfer`や`send`は限定的なケースでは依然として有用ですが、慎重に使用し、主要な防御策として依存すべきではありません。
 
-Read-only and cross-contract reentrancy deserve special attention: these exploits can be tricky because they might involve two separate protocols, making coordinated prevention a challenge. When our project relies on external protocols for data, we need to dig into how the combined logic works. Even if each project is secure on its own, vulnerabilities can pop up during integration.
+　リードオンリーおよびクロスコントラクト リエントランシーには特別な注意が必要です。これらの攻撃は2つの異なるプロトコルが関与する可能性があるため、協調的な予防が課題となります。プロジェクトがデータのために外部プロトコルに依存している場合、統合されたロジックがどのように機能するかを深く調査する必要があります。各プロジェクトが単独では安全であっても、統合時に脆弱性が現れる可能性があります。
 
-#### Real-world example: The DAO attack
+#### 実例: DAO攻撃
 
-Reentrancy played a major role in the DAO attack that occurred in 2016 and was one of the major hacks during the early development of Ethereum. At the time, the contract held more than $150 million, 15% of the circulating supply of ether. To revert the effects of the hack, the Ethereum community ultimately opted for a hard fork that split the Ethereum blockchain. As a result, Ethereum Classic (ETC) continued as the original chain, while the forked version with updated rules to reverse the hack became the Ethereum we know today.
+　リエントランシーは、2016年に発生したDAO攻撃において主要な役割を果たしました。この攻撃はイーサリアムの初期開発段階における最大のハッキングの一つでした。当時、コントラクトには1億5,000万ドル以上が保有されており、これはEtherの流通供給量の15%に相当しました。ハッキングの影響を元に戻すために、イーサリアム コミュニティは最終的にイーサリアム ブロックチェーンを分割するハードフォークを選択しました。その結果、Ethereum Classic（ETC）がオリジナルのチェーンとして存続し、ハッキングの影響を元に戻すためのルール更新が適用されたフォーク版が、現在知られているイーサリアムとなりました。
 
-#### Real-world example: Libertify
+#### 実例: Libertify
 
-A recent exploit where reentrancy was the sole attack vector is the July 2023 case involving Libertify, a DeFi protocol that was breached for $400,000. Let’s check the code of the exploited function and see how it happened:
+　リエントランシーが唯一の攻撃ベクトルであった最近の事例として、2023年7月に発生したLibertifyの事件があります。DeFiプロトコルであるLibertifyは40万ドルの被害を受けました。悪用された関数のコードを確認し、どのように攻撃が行われたかを見てみましょう。
 
 ```solidity
 function _deposit(
-    uint256 assets,
-    address receiver,
-    bytes calldata data,
-    uint256 nav
+    uint256 assets,
+    address receiver,
+    bytes calldata data,
+    uint256 nav
 ) private returns (uint256 shares) {
-        /*
-        validations
-    */
-    uint256 returnAmount = 0;
-    uint256 swapAmount = 0;
-    if (BASIS_POINT_MAX > invariant) {
-        swapAmount = assetsToToken1(assets);
-        returnAmount = userSwap( // External call
-            data,
-            address(this),
-            swapAmount,
-            address(asset),
-            address(other)
-        );
-    }
-    uint256 supply = totalSupply(); // State update
-    if (0 < supply) {
-        uint256 valueToken0 = getValueInNumeraire(
-            asset,
-            assets - swapAmount,
-            MathUpgradeable.Rounding.Down
-        );
-        uint256 valueToken1 = getValueInNumeraire(
-            other,
-            returnAmount,
-            MathUpgradeable.Rounding.Down
-        );
-        shares = supply.mulDiv(
-            valueToken0 + valueToken1,
-            nav,
-            MathUpgradeable.Rounding.Down
-        );
-    } else {
-        shares = INITIAL_SHARE;
-    }
-    uint256 feeAmount = shares.mulDiv(
-        entryFee, BASIS_POINT_MAX, MathUpgradeable.Rounding.Down
-    );
-    _mint(receiver, shares - feeAmount);
-    _mint(owner(), feeAmount);
+        /*
+        バリデーション
+    */
+    uint256 returnAmount = 0;
+    uint256 swapAmount = 0;
+    if (BASIS_POINT_MAX > invariant) {
+        swapAmount = assetsToToken1(assets);
+        returnAmount = userSwap( // 外部呼び出し
+            data,
+            address(this),
+            swapAmount,
+            address(asset),
+            address(other)
+        );
+    }
+    uint256 supply = totalSupply(); // 状態の更新
+    if (0 < supply) {
+        uint256 valueToken0 = getValueInNumeraire(
+            asset,
+            assets - swapAmount,
+            MathUpgradeable.Rounding.Down
+        );
+        uint256 valueToken1 = getValueInNumeraire(
+            other,
+            returnAmount,
+            MathUpgradeable.Rounding.Down
+        );
+        shares = supply.mulDiv(
+            valueToken0 + valueToken1,
+            nav,
+            MathUpgradeable.Rounding.Down
+        );
+    } else {
+        shares = INITIAL_SHARE;
+    }
+    uint256 feeAmount = shares.mulDiv(
+        entryFee, BASIS_POINT_MAX, MathUpgradeable.Rounding.Down
+    );
+    _mint(receiver, shares - feeAmount);
+    _mint(owner(), feeAmount);
 }
 ```
 
-This is a classic example of a reentrancy issue—you don’t see one this straightforward very often these days! The core problem here was the lack of reentrancy protection. The `userSwap()` function allowed the attacker to reenter the `deposit()` function before the original call updated `totalSupply`. This meant the attacker could mint more shares than they were actually owed, exploiting the contract for a profit.
+　これはリエントランシーの問題の典型的な例です。これほど分かりやすいものは最近ではなかなか見られません。根本的な問題はリエントランシー保護の欠如でした。`userSwap()`関数により、攻撃者は元の呼び出しが`totalSupply`を更新する前に`deposit()`関数に再入することができました。これにより、攻撃者は実際に受け取るべき量よりも多くのシェアをミントし、コントラクトから利益を搾取しました。
 
 ### DELEGATECALL
 
