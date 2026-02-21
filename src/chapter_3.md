@@ -1,214 +1,214 @@
-# Chapter 3. Ethereum Nodes
+# 第3章　Ethereumノード
 
-An Ethereum node is a software application that implements the Ethereum specification and communicates over the P2P network with other Ethereum nodes.
+　Ethereumノードとは、Ethereumの仕様を実装し、P2Pネットワークを通じて他のEthereumノードと通信するソフトウェア アプリケーションです。
 
-Initially, a node only had to run a single client to completely implement all the requirements to be part of the Ethereum ecosystem. On September 15, 2022, The Merge hard fork happened, changing the consensus protocol from a PoW-based scheme to Gasper, the new PoS-based consensus protocol. This also led to the separation of concerns—consensus and execution—and the creation of a new type of Ethereum client: a consensus client.
+　当初、ノードはEthereumエコシステムに参加するために必要なすべての要件を満たす単一のクライアントを実行するだけで十分でした。2022年9月15日にThe Mergeハードフォークが行われ、コンセンサス プロトコルがPoWベースの方式からGasperという新しいPoSベースのコンセンサス プロトコルに変更されました。この変更により、コンセンサスと実行という関心の分離が進み、新しいタイプのEthereumクライアントであるコンセンサス クライアントが誕生しました。
 
-And so, at the time of writing, an Ethereum node must run two pieces of software at the same time to be compatible with the latest spec, as shown in Figure 3-1, with the definitions as follows:
+　そのため、本書執筆時点では、図3-1に示すように、Ethereumノードは最新の仕様に準拠するために2つのソフトウェアを同時に実行する必要があります。それぞれの定義は以下のとおりです。
 
-**Consensus client**
+**コンセンサス クライアント**
 
-This new software is now in charge of the consensus protocol that lets all nodes agree on a single history of the blockchain.
+　すべてのノードがブロックチェーンの単一の履歴に合意できるようにするコンセンサス プロトコルを担当する新しいソフトウェアである。
 
-**Execution client**
+**実行クライアント**
 
-This software focuses on receiving all the blocks and transactions happening on the network, executing them inside the EVM, and verifying their correctness.
+　ネットワーク上で発生するすべてのブロックとトランザクションを受信し、EVM内で実行して正しさを検証することに特化したソフトウェアである。
 
-![Figure 3-1. The architecture of an Ethereum node](./images/ch3/maet_0301.png)
+![図3-1. Ethereumノードのアーキテクチャ](./images/ch3/maet_0301.png)
 
-Different Ethereum clients—both execution and consensus clients—interoperate if they comply with the reference specification and the standardized communication protocols. While these different clients are implemented by different teams and in different programming languages, they all “speak” the same protocol and follow the same rules. As such, they can all be used to operate and interact with the same Ethereum network.
+　異なるEthereumクライアント（実行クライアントとコンセンサス クライアントの両方）は、リファレンス仕様と標準化された通信プロトコルに準拠していれば相互運用が可能です。これらのクライアントは異なるチームによって異なるプログラミング言語で実装されていますが、すべて同じプロトコルを「話し」、同じルールに従います。そのため、すべてのクライアントを使用して同じEthereumネットワークを操作し、やり取りすることができます。
 
-Ethereum is an open source project, and the source code for all major clients is available under open source licenses (e.g., LGPL v3.0), free to download and use for any purpose. Open source means more than simply free to use, though. It also means that Ethereum is developed by an open community of volunteers and can be modified by anyone. More eyes mean more trustworthy code.
+　Ethereumはオープン ソース プロジェクトであり、すべての主要クライアントのソースコードはオープン ソース ライセンス（LGPL v3.0など）の下で提供されており、自由にダウンロードして利用できます。ただし、オープン ソースとは単に無料で使えるという意味だけではありません。Ethereumはボランティアのオープン コミュニティによって開発されており、誰でも変更を加えることができるということでもあります。多くの人の目に触れることで、より信頼性の高いコードが実現します。
 
-Ethereum was originally defined by a single formal specification called the “Yellow Paper,” which was written by one of the original coauthors of this book, Gavin Wood. Even though this specification is periodically updated as major changes are made to Ethereum, there is a clear path toward two different reference implementations, one for execution clients and one for consensus clients. These reference implementations are written in Python and prioritize readability and simplicity.
+　Ethereumは当初、本書の原著者の1人であるギャヴィン・ウッドが執筆した「イエローペーパー」と呼ばれる単一の形式仕様記述によって定義されていました。Ethereumに大きな変更が加えられるたびにこの仕様は定期的に更新されてきましたが、実行クライアント用とコンセンサス クライアント用の2つの異なるリファレンス実装に向けた明確な方向性があります。これらのリファレンス実装はPythonで書かれており、可読性とシンプルさを重視しています。
 
-> **Note**  
+> **注記**
 >
-> These specs are not intended to be full-node implementations. They serve as executable pseudocode specifications.
+> これらの仕様はフル ノードの実装を意図したものではありません。実行可能な擬似コード仕様として機能するものです。
 
-This is in contrast to Bitcoin, for example, which is not defined in any formal way. Where Bitcoin’s “specification” is the reference implementation Bitcoin Core, Ethereum’s execution specification is documented in a paper that combines an English and a mathematical (formal) specification. This formal specification, in addition to various Ethereum Improvement Proposals (EIPs) and the new consensus specification written in Python, defines the standard behavior of an Ethereum node.
+　これはたとえばビットコインとは対照的です。ビットコインは形式的な方法で定義されておらず、ビットコインの「仕様」はリファレンス実装であるビットコイン コアです。一方、Ethereumの実行仕様は、英語と数学的（形式的）仕様を組み合わせた論文に記述されています。この形式仕様は、さまざまなEthereum Improvement Proposals（EIP）やPythonで書かれた新しいコンセンサス仕様とともに、Ethereumノードの標準的な動作を定義しています。
 
-As a result of Ethereum’s clear formal specification, there are a number of independently developed yet interoperable software implementations of an Ethereum client. Ethereum has a greater diversity of implementations running on the network than any other blockchain, which is generally regarded as a good thing. Indeed, this has, for example, proven to be an excellent way of defending against attacks on the network because exploitation of a particular client’s implementation strategy simply hassles the developers while they patch the exploit, while other clients keep the network running almost unaffected.
+　Ethereumの明確な形式仕様の結果として、独立して開発されながらも相互運用可能なEthereumクライアントの多数のソフトウェア実装が存在します。Ethereumは他のどのブロックチェーンよりも多様な実装がネットワーク上で動作しており、これは一般的に良いことだと考えられています。実際、たとえば特定のクライアントの実装戦略を悪用するネットワーク攻撃に対する優れた防御手段であることが証明されています。特定のクライアントの脆弱性が悪用されても、開発者がパッチを当てる間、他のクライアントがほぼ影響を受けずにネットワークを稼働させ続けるからです。
 
-## Ethereum Networks
+## Ethereumネットワーク
 
-A variety of Ethereum-based networks exist that largely conform to the formal specification defined in the original Ethereum “Yellow Paper” but that may or may not interoperate with one another.
+　Ethereumの「イエローペーパー」で定義された形式仕様に概ね準拠するEthereumベースのネットワークが多数存在しますが、相互運用できるかどうかは必ずしも保証されていません。
 
-Several EVM-compatible chains, such as Ethereum Classic, BNB Chain, and Polygon, share large portions of the execution spec, though many deviate in consensus and parameters. While they are mostly compatible at the protocol level, these networks often have features or attributes that require maintainers of Ethereum client software to make small changes to support each network. Because of this, not every version of Ethereum client software runs every Ethereum-based blockchain.
+　Ethereum Classic、BNB Chain、PolygonなどのEVM互換チェーンは実行仕様の大部分を共有していますが、コンセンサスやパラメーターにおいて異なる点も多くあります。プロトコル レベルではほぼ互換性がありますが、これらのネットワークにはEthereumクライアント ソフトウェアのメンテナーが各ネットワークをサポートするために小さな変更を加える必要がある機能や属性が含まれていることがよくあります。そのため、Ethereumクライアント ソフトウェアのすべてのバージョンがすべてのEthereumベースのブロックチェーンで動作するわけではありません。
 
-As of June 2025, there are five main implementations of the Ethereum execution protocol, written in four different languages, and five implementations of the Ethereum consensus protocol, written in five different languages:
+　2025年6月時点で、4つの異なる言語で書かれたEthereum実行プロトコルの5つの主要な実装と、5つの異なる言語で書かれたEthereumコンセンサス プロトコルの5つの実装があります。
 
-The execution clients are:
+実行クライアントは以下のとおりです。
 
-- Geth, written in Go
-- Nethermind, written in C#
-- Besu, written in Java
-- Erigon, written in Go
-- Reth, written in Rust
+- Geth（Goで実装）
+- Nethermind（C#で実装）
+- Besu（Javaで実装）
+- Erigon（Goで実装）
+- Reth（Rustで実装）
 
-The consensus clients are:
+コンセンサス クライアントは以下のとおりです。
 
-- Lighthouse, written in Rust
-- Lodestar, written in TypeScript
-- Nimbus, written in Nim
-- Prysm, written in Go
-- Teku, written in Java
+- Lighthouse（Rustで実装）
+- Lodestar（TypeScriptで実装）
+- Nimbus（Nimで実装）
+- Prysm（Goで実装）
+- Teku（Javaで実装）
 
-In this section, we will look at the following two execution clients:
+　本セクションでは、以下の2つの実行クライアントについて見ていきます。
 
 **Geth**
 
-The oldest and most widely used execution client, maintained by the Ethereum Foundation
+　イーサリアムファンデーションが保守する、最も古く最も広く使われている実行クライアントである。
 
 **Reth**
 
-A new Rust-based execution client created by Paradigm after Parity/OpenEthereum was discontinued
+　Parity/OpenEthereumの開発終了後にParadigmが開発した、新しいRustベースの実行クライアントである。
 
-And we will look at the following two consensus clients:
+そして、以下の2つのコンセンサス クライアントについて見ていきます。
 
 **Prysm**
 
-The first consensus client, now maintained by Offchain Labs
+　最初のコンセンサス クライアントであり、現在はOffchain Labsが保守している。
 
 **Lighthouse**
 
-The most used consensus client, maintained by Sigma Prime
+　最も使用されているコンセンサス クライアントであり、Sigma Primeが保守している。
 
-We’ll show how to set up a node using each client. Specifically, we’ll use the Geth-Prysm and Reth-Lighthouse combinations, and we’ll explore some of their command-line options and APIs.
+　各クライアントを使用してノードをセットアップする方法を紹介します。具体的には、Geth-PrysmとReth-Lighthouseの組み合わせを使用し、コマンドライン オプションやAPIについても探っていきます。
 
-> **Note**  
+> **注記**
 >
-> These pairs are just examples; you can choose to combine whatever execution and consensus clients you like the most to run an Ethereum node.
+> これらのペアはあくまで例にすぎません。Ethereumノードを実行するには、好みの実行クライアントとコンセンサス クライアントを自由に組み合わせることができます。
 
-## Should I Run a Full Node?
+## フル ノードを実行すべきか
 
-The health, resilience, and censorship resistance of blockchains depend on them having many independently operated and geographically dispersed full nodes—that is, nodes that download the entirety of the blockchain and keep data indefinitely. Each full node can help other new nodes obtain the block data to bootstrap their operations as well as offer the operator an authoritative and independent verification of all transactions and contracts.
+　ブロックチェーンの健全性、レジリエンス、検閲耐性は、多数の独立して運用され地理的に分散したフル ノードに依存しています。フル ノードとは、ブロックチェーンの全体をダウンロードし、データを無期限に保持するノードのことです。各フル ノードは、新しいノードがブロック データを取得して運用を開始する手助けをするとともに、すべてのトランザクションとコントラクトの権威ある独立した検証をオペレーターに提供できます。
 
-> **Note**
+> **注記**
 >
-> To be really precise, there is a distinction between these nodes:  
+> 正確に言えば、これらのノードには以下の区別があります。
 >
-> **Archive nodes**  
-> Ethereum nodes that keep all data indefinitely  
+> **アーカイブ ノード**
+> すべてのデータを無期限に保持するEthereumノード
 >
-> **Full nodes**  
-> Ethereum nodes that discard historical state and receipts—usually the default option when you spin up a node
+> **フル ノード**
+> 過去のステートとレシートを破棄するEthereumノード。通常、ノードを起動する際のデフォルト オプションである
 
-However, running a full node will incur a cost in hardware resources and bandwidth. A full node must download at least 2 TB of data (as of June 2025, depending on the client configuration) and store it on a local hard drive. This data burden increases quite rapidly every day as new transactions and blocks are added. We discuss this topic in greater detail in the later section “Hardware Requirements for a Full Node”.
+　ただし、フル ノードの運用にはハードウェア リソースと帯域幅のコストが発生します。フル ノードは少なくとも2 TBのデータをダウンロードし（2025年6月時点、クライアントの設定による）、ローカルのハードディスクに保存する必要があります。このデータ量は新しいトランザクションやブロックが追加されるたびに急速に増加します。このトピックについては後のセクション「フル ノードのハードウェア要件」で詳しく説明します。
 
-A full node running on a live mainnet network is not necessary for Ethereum development. You can do almost everything you need to do with a testnet node (which connects you to one of the smaller public test blockchains), with a local private blockchain like Anvil, or with a hosted node API offered by a service provider like Infura or Alchemy.
+　ライブのメインネット ネットワークでフル ノードを実行することはEthereum開発に必須ではありません。テストネット ノード（小規模なパブリック テスト ブロックチェーンの1つに接続するノード）、Anvilのようなローカルのプライベート ブロックチェーン、またはInfuraやAlchemyのようなサービス プロバイダーが提供するホスティッド ノードAPIを使用すれば、必要なことのほぼすべてを実行できます。
 
-You also have the option of running a remote client, which does not store a local copy of the blockchain or validate blocks and transactions. These clients offer the functionality of a wallet and can create and broadcast transactions. Remote clients can be used to connect to existing networks, such as your own full node, a public blockchain, a public or permissioned (proof-of-authority) testnet, or a private local blockchain. In practice, you will likely use a remote client, such as MetaMask, Rabby Wallet, or Coinbase Wallet, as a convenient way to switch between all the different node options.
+　リモート クライアントを実行するという選択肢もあります。リモート クライアントはブロックチェーンのローカル コピーを保存せず、ブロックやトランザクションの検証も行いません。リモート クライアントはウォレットの機能を提供し、トランザクションの作成とブロードキャストが可能です。リモート クライアントは、自分自身のフル ノード、パブリック ブロックチェーン、パブリックまたはパーミッションド（proof-of-authority）テストネット、プライベートなローカル ブロックチェーンなど、既存のネットワークへの接続に使用できます。実際には、MetaMask、Rabby Wallet、Coinbase Walletなどのリモート クライアントを、さまざまなノード オプションを切り替える便利な手段として使用することが多いでしょう。
 
-The terms remote client and wallet are used interchangeably, although there are some differences. Usually, a remote client offers an API (such as the web3.js API) in addition to the transaction functionality of a wallet.
+　リモート クライアントとウォレットという用語は互換的に使用されますが、いくつかの違いがあります。通常、リモート クライアントはウォレットのトランザクション機能に加えてAPI（web3.js APIなど）を提供します。
 
-Do not confuse the concept of a remote client in Ethereum with that of a light client (which is analogous to a Simplified Payment Verification [SPV] client in Bitcoin). Light clients validate block headers and use Merkle proofs to validate the inclusion of transactions in the blockchain and determine their effects, giving them a similar level of security as a full node. Conversely, Ethereum remote clients do not validate block headers or transactions. They entirely trust a full node to give them access to the blockchain and hence lose significant security and anonymity guarantees. You can mitigate these problems by using a full node you run yourself.
+　Ethereumにおけるリモート クライアントの概念を、軽量クライアント（ビットコインにおけるSimplified Payment Verification〔SPV〕クライアントに相当するもの）と混同しないでください。軽量クライアントはブロック ヘッダーを検証し、マークル証明を使用してブロックチェーンへのトランザクションの包含を検証してその影響を判定することで、フル ノードと同等のセキュリティ レベルを提供します。一方、Ethereumのリモート クライアントはブロック ヘッダーやトランザクションを検証しません。リモート クライアントはフル ノードを完全に信頼してブロックチェーンへのアクセスを提供するため、セキュリティと匿名性の保証が大幅に低下します。自分自身で運用するフル ノードを使用することで、これらの問題を軽減できます。
 
-### Full Node Advantages and Disadvantages
+### フル ノードの利点と欠点
 
-Choosing to run a full node helps with the operation of the networks you connect it to but also incurs some mild to moderate costs for you. Let’s look at some of the advantages and disadvantages.
+　フル ノードを実行すると、接続先のネットワークの運用に貢献できますが、軽微から中程度のコストが発生します。利点と欠点を見てみましょう。
 
-**Advantages**:
+**利点：**
 
-- Supports the resilience and censorship resistance of Ethereum-based networks
-- Authoritatively validates all transactions
-- Can interact with any contract on the public blockchain without an intermediary
-- Can directly deploy contracts into the public blockchain without an intermediary
-- Can query (read only) the blockchain status (accounts, contracts, etc.) offline
-- Can query the blockchain without letting a third party know the information you’re reading
+- Ethereumベースのネットワークのレジリエンスと検閲耐性をサポートする
+- すべてのトランザクションを権威をもって検証する
+- 仲介者なしにパブリック ブロックチェーン上の任意のコントラクトとやり取りできる
+- 仲介者なしにパブリック ブロックチェーンにコントラクトを直接デプロイできる
+- ブロックチェーンの状態（アカウント、コントラクトなど）をオフラインで照会（読み取り専用）できる
+- 第三者に読み取っている情報を知らせることなくブロックチェーンを照会できる
 
-**Disadvantages**:
+**欠点：**
 
-- Requires significant and growing hardware and bandwidth resources
-- May require several days to fully sync when first started
-- Must be maintained, upgraded, and kept online to remain synced
+- 大量の、かつ増加し続けるハードウェアと帯域幅のリソースが必要である
+- 最初の起動時に完全な同期に数日かかる場合がある
+- 同期を維持するために、メンテナンス、アップグレード、オンラインの維持が必要である
 
-### Public Testnet Advantages and Disadvantages
+### パブリック テストネットの利点と欠点
 
-Whether or not you choose to run a full node, you will probably want to run a public testnet node. Let’s look at some of the advantages and disadvantages of using a public testnet.
+　フル ノードを実行するかどうかにかかわらず、パブリック テストネットのノードを実行したくなることが多いでしょう。パブリック テストネットの利用における利点と欠点を見てみましょう。
 
-**Advantages:**
+**利点：**
 
-- A testnet node needs to sync and store much less data—about 100–300 GB depending on the network (as of June 2025).
-- A testnet node can fully sync in a few hours.
-- Deploying contracts or making transactions requires test ether, which has no value and can be acquired for free from several “faucets.”
-- Testnets are public blockchains with many other users and contracts, running “live.”
+- テストネット ノードの同期と保存に必要なデータ量は少なく、ネットワークにもよるが約100〜300 GB程度である（2025年6月時点）。
+- テストネット ノードは数時間で完全に同期できる。
+- コントラクトのデプロイやトランザクションの実行にはテスト用etherが必要だが、テスト用etherは価値がなく、いくつかの「フォーセット」から無料で取得できる。
+- テストネットは多くのユーザーやコントラクトが存在し、「ライブ」で動作するパブリック ブロックチェーンである。
 
-**Disadvantages:**
+**欠点：**
 
-- You can’t use “real” money on a testnet; it runs on test ether. Consequently, you can’t test security against real adversaries, as there is nothing at stake.
-- There are some aspects of a public blockchain that you cannot test realistically on a testnet. For example, transaction fees, although necessary to send transactions, are not a consideration on a testnet, since gas is free (meaning that testnet ETH doesn’t have any real economic value). Further, the testnets do not experience network congestion like the public mainnet sometimes does.
-- Some testnets are designed for specific purposes, and they could be slightly different than Ethereum mainnet.
+- テストネットでは「本物の」お金は使えず、テスト用etherで動作する。そのため、経済的な利害関係がないため、実際の攻撃者に対するセキュリティをテストすることはできない。
+- パブリック ブロックチェーンの一部の側面は、テストネットでは現実的にテストできない。たとえば、トランザクション手数料はトランザクションの送信に必要であるが、テストネットではガスが無料であるため（テストネットのETHには実際の経済的価値がないため）考慮事項にはならない。さらに、テストネットはパブリック メインネットで時折発生するようなネットワーク混雑を経験しない。
+- 特定の目的のために設計されたテストネットもあり、Ethereumメインネットとわずかに異なる場合がある。
 
-### Local Blockchain Simulation Advantages and Disadvantages
+### ローカル ブロックチェーン シミュレーションの利点と欠点
 
-For many testing purposes, the best option is to launch a single-instance private blockchain. Anvil is one of the most popular local blockchain simulations that you can run and interact with without any other participants.
+　多くのテスト目的において、最良の選択肢はシングル インスタンスのプライベート ブロックチェーンを起動することです。Anvilは最も人気のあるローカル ブロックチェーン シミュレーションの1つであり、他の参加者なしに実行してやり取りすることができます。
 
-**Advantages:**
+**利点：**
 
-- No syncing and almost no data on disk; you produce the first block yourself.
-- No need to obtain test ether; you “award” yourself block rewards that you can use for testing.
-- No other users, just you.
-- No other contracts, just the ones you deploy after you launch it.
+- 同期が不要で、ディスク上のデータもほぼゼロ。最初のブロックを自分自身で生成する。
+- テスト用etherを入手する必要がない。テストに使用できるブロック報酬を自分自身に「付与」する。
+- 他のユーザーがいない。自分だけである。
+- 他のコントラクトがない。起動後にデプロイするもののみ。
 
-**Disadvantages:**
+**欠点：**
 
-- Having no other users means that your local chain doesn’t behave the same as a public blockchain. There’s no competition for transaction space or sequencing of transactions.
-- No block producers other than you means that block production is more predictable; therefore, you can’t test some scenarios that occur on a public blockchain. It’s worth mentioning that Anvil (and other tools like Hardhat) let you configure the block production modes to try to reproduce mainnet-like behavior, but still, it’s not the same as being on Ethereum mainnet.
-- Having no other contracts means you have to deploy everything you want to test, including dependencies and contract libraries. Luckily for you, tools like Anvil let you fork the Ethereum mainnet chain at arbitrary blocks and experiment with your smart contracts in a mainnet-like state.
+- 他のユーザーがいないため、ローカル チェーンはパブリック ブロックチェーンと同じようには動作しない。トランザクション スペースの競争やトランザクションの順序付けがない。
+- 自分以外のブロック プロデューサーがいないため、ブロック生成がより予測可能であり、パブリック ブロックチェーンで発生する一部のシナリオをテストできない。Anvil（やHardhatなどの他のツール）ではブロック生成モードを設定してメインネットに近い挙動を再現できるが、それでもEthereumメインネット上にいるのとは同じではない。
+- 他のコントラクトがないため、テストしたいものをすべてデプロイする必要がある（依存関係やコントラクト ライブラリを含む）。ただし、AnvilのようなツールではEthereumメインネットのチェーンを任意のブロックでフォークし、メインネットに近い状態でスマート コントラクトを実験することができる。
 
-## Running an Ethereum Node
+## Ethereumノードの実行
 
-If you have the time and resources, you should attempt to run a full node, even if only to learn more about the process. In this section, we cover how to download, compile, and run the Ethereum clients Geth-Prysm and Reth-Lighthouse. This requires some familiarity with using the command-line interface (CLI) on your operating system. It’s worth installing these clients, whether you choose to run them as full nodes, as testnet nodes, or as clients to a local private blockchain.
+　時間とリソースがあるならば、プロセスについて学ぶだけでも、フル ノードの実行を試みるべきです。本セクションでは、EthereumクライアントであるGeth-PrysmおよびReth-Lighthouseのダウンロード、コンパイル、実行方法について説明します。オペレーティング システムのコマンドライン インターフェース（CLI）の使用にある程度精通している必要があります。フル ノード、テストネット ノード、またはローカルのプライベート ブロックチェーンのクライアントとして実行するかどうかにかかわらず、これらのクライアントをインストールする価値はあります。
 
-### Hardware Requirements for a Full Node
+### フル ノードのハードウェア要件
 
-Before we get started, you should ensure that you have a computer with sufficient resources to run an Ethereum full node. You will need at least 2 TB of disk space to store a full copy of the Ethereum blockchain. If you also want to run a full node on the Ethereum testnet, you will need at least an additional 100–400 GB. Downloading 2 TB of blockchain data can take a long time, so it’s recommended that you work on a fast internet connection.
+　始める前に、Ethereumフル ノードを実行するのに十分なリソースを持つコンピューターがあることを確認してください。Ethereumブロックチェーンの完全なコピーを保存するには、少なくとも2 TBのディスク スペースが必要です。Ethereumテストネットのフル ノードも実行したい場合は、少なくとも追加で100〜400 GBが必要になります。2 TBのブロックチェーン データのダウンロードには長い時間がかかるため、高速なインターネット接続で作業することが推奨されます。
 
-Syncing the Ethereum blockchain is very input/output (I/O) intensive. It is best to have a solid-state drive (SSD). If you have a mechanical hard-disk drive (HDD), you will need at least 8 GB of RAM to use as cache. Otherwise, you may discover that your system is too slow to keep up and fully sync.
+　Ethereumブロックチェーンの同期は、I/O（入出力）集約型の処理です。ソリッド ステート ドライブ（SSD）の使用が最適です。機械式ハードディスク ドライブ（HDD）を使用する場合は、キャッシュとして少なくとも8 GBのRAMが必要です。そうでなければ、システムが遅すぎて完全な同期に追いつけないことに気付くかもしれません。
 
-Here is a summary of the minimum requirements to sync a full copy of an Ethereum-based blockchain:
+　Ethereumベースのブロックチェーンの完全なコピーを同期するための最小要件の概要は以下のとおりです。
 
-- CPU with 2 or more cores
-- At least 2 TB free storage space
-- 8 GB RAM minimum with an SSD, or 8+ GB if you have an HDD (SSD is highly preferable)
-- 7+ Mbps download internet service
+- 2コア以上のCPU
+- 少なくとも2 TBの空きストレージ スペース
+- SSD使用時は最低8 GBのRAM、HDD使用時は8 GB以上（SSDを強く推奨）
+- 7 Mbps以上のダウンロード インターネット サービス
 
-If you want to sync in a reasonable amount of time and store all the development tools, libraries, clients, and blockchains we discuss in this book, you will want a more capable computer. Here are our recommended specifications:
+　妥当な時間で同期し、本書で説明するすべての開発ツール、ライブラリ、クライアント、ブロックチェーンを保存したい場合は、より高性能なコンピューターが必要になります。推奨スペックは以下のとおりです。
 
-- Fast CPU with 4+ cores—a higher clock speed is more important than core count
-- 16+ GB RAM
-- Fast NVMe SSD with at least 2 TB free space
-- 24+ Mbps download internet service
-	
-It’s difficult to predict how fast a blockchain’s size will increase and when more disk space will be required, so it’s recommended to check the blockchain’s latest size before you start syncing.
+- 4コア以上の高速CPU。コア数よりもクロック速度が重要
+- 16 GB以上のRAM
+- 少なくとも2 TBの空き容量がある高速NVMe SSD
+- 24 Mbps以上のダウンロード インターネット サービス
 
-> **Note**
+　ブロックチェーンのサイズがどのくらいのペースで増加し、いつさらなるディスク スペースが必要になるかを予測することは困難です。同期を開始する前にブロックチェーンの最新サイズを確認することを推奨します。
+
+> **注記**
 >
-> The disk-size requirements listed here assume you will be running a node with default settings, where the blockchain is “pruned” of old state data. If you instead run a full “archival” node, where all state is kept on disk, it will likely require more than 2 TB (up to 12–15 TB) of disk space, depending on the client. Always consult the latest hardware requirements on the official client website before running a node.
+> ここに記載されているディスク サイズの要件は、ブロックチェーンが古いステート データを「プルーニング」するデフォルト設定でノードを実行することを前提としています。代わりにすべてのステートをディスク上に保持する完全な「アーカイブ」ノードを実行する場合、クライアントによっては2 TB以上（最大12〜15 TB）のディスク スペースが必要になる可能性があります。ノードを実行する前に、公式クライアントのウェブサイトで最新のハードウェア要件を必ず確認してください。
 
-### Software Requirements for Building and Running a Client
+### クライアントのビルドと実行のソフトウェア要件
 
-This section covers Geth-Prysm and Reth-Lighthouse client software. It also assumes you are using a Unix-like command-line environment. The examples show the commands and output as they appear on macOS running the Bash shell (command-line execution environment). Instructions work unchanged on most Linux distros. Windows users can use Windows Subsystem for Linux (WSL2).
+　本セクションでは、Geth-PrysmとReth-Lighthouseのクライアント ソフトウェアについて説明します。また、Unix系のコマンドライン環境を使用していることを前提としています。以下の例では、Bashシェル（コマンドライン実行環境）を実行するmacOSでのコマンドと出力を示しています。ほとんどのLinuxディストリビューションでも同じ手順が変更なしで動作します。Windowsユーザーは、Windows Subsystem for Linux（WSL2）を使用できます。
 
-> **Tip**
+> **ヒント**
 >
-> In many of the examples in this chapter, we will be using the operating system’s CLI (also known as a shell), accessed via a terminal application. The shell will display a prompt; you type a command, and the shell responds with some text and a new prompt for your next command. The prompt may look different on your system, but in the following examples, it is denoted by a $ symbol. In the examples, when you see text after a $ symbol, don’t type the $ symbol but type the command immediately following it (shown in bold), then press Enter to execute the command. In the examples, the lines below each command are the operating system’s responses to that command. When you see the next $ prefix, you’ll know it’s a new command and you should repeat the process.
+> この章の多くの例では、ターミナル アプリケーションからアクセスできるオペレーティング システムのCLI（シェルとも呼ばれる）を使用します。シェルはプロンプトを表示し、コマンドを入力すると、シェルがテキストで応答し、次のコマンドのための新しいプロンプトを表示します。プロンプトはシステムによって異なりますが、以下の例では$記号で示されています。$記号の後にテキストが表示されている場合は、$記号は入力せずにその直後のコマンド（太字で示されています）を入力し、Enterキーを押してコマンドを実行してください。例では、各コマンドの下の行はそのコマンドに対するオペレーティング システムの応答です。次の$プレフィックスが表示されたら、新しいコマンドであることがわかりますので、同じプロセスを繰り返してください。
 
-Before we get started, you may need to install some software. If you’ve never done any software development on the computer you are currently using, you will probably need to install some basic tools. For the examples that follow, you will need to install git, the source-code management system; golang, the Go programming language and standard libraries; and Rust, a systems programming language.
+　始める前に、いくつかのソフトウェアのインストールが必要になる場合があります。現在使用しているコンピューターでソフトウェア開発をしたことがない場合は、基本的なツールのインストールが必要になるでしょう。以降の例では、ソースコード管理システムであるgit、Goプログラミング言語と標準ライブラリであるgolang、そしてシステム プログラミング言語であるRustのインストールが必要です。
 
-Here are the documentation pages for the four clients we’ll use in this example:
+　この例で使用する4つのクライアントのドキュメント ページは以下のとおりです。
 
 - [Geth](https://oreil.ly/zYviP)
 - [Prysm](https://oreil.ly/9-2FC)
 - [Reth](https://oreil.ly/KDmMt)
 - [Lighthouse](https://oreil.ly/RRpAs)
 
-Feel free to consult these websites to understand more details about each client’s architecture and for troubleshooting during installation.
+　各クライアントのアーキテクチャについてより詳しく理解し、インストール中のトラブルシューティングに役立てるために、これらのウェブサイトを自由に参照してください。
 
-### Preparation Phase
+### 準備フェーズ
 
-Starting from your home directory, create a folder in your computer called *ethereum-node1* and then two subfolders within it called *execution* and *consensus*:
+　ホーム ディレクトリから始めて、コンピューター上に*ethereum-node1*というフォルダを作成し、その中に*execution*と*consensus*という2つのサブフォルダを作成します。
 
 ```bash
 $ mkdir ethereum-node1
@@ -217,7 +217,7 @@ $ mkdir execution
 $ mkdir consensus
 ```
 
-Now you should have a folder structure like this:
+　これで以下のようなフォルダ構造になっているはずです。
 
 ```bash
 ethereum-node1
@@ -225,23 +225,23 @@ ethereum-node1
 └── execution
 ```
 
-Repeat the previous step with a new folder called *ethereum-node2*:
+　前のステップを*ethereum-node2*という新しいフォルダで繰り返します。
 
 ```bash
-$ cd .. # this command is used to go back to your home directory
+$ cd .. # このコマンドはホームディレクトリに戻るために使用する
 $ mkdir ethereum-node2
 $ cd ethereum-node2
 $ mkdir execution
 $ mkdir consensus
 ```
 
-In the end you should have two root folders — *ethereum-node1* and *ethereum-node2* — with two subfolders within each root folder: *execution* and *consensus*.
+　最終的に、2つのルート フォルダ（*ethereum-node1*と*ethereum-node2*）があり、それぞれのルート フォルダ内に*execution*と*consensus*の2つのサブフォルダが存在するはずです。
 
-You will also need to install [Go](https://golang.org/) and [Rust](https://www.rust-lang.org/). You can have a look at their official websites for a guide on how to install them.
+　また、[Go](https://golang.org/)と[Rust](https://www.rust-lang.org/)のインストールも必要です。インストール方法については各公式ウェブサイトのガイドを参照してください。
 
 ### Geth-Prysm
 
-Go into the newly created folder *ethereum-node1*:
+　新しく作成した*ethereum-node1*フォルダに移動します。
 
 ```bash
 $ cd ethereum-node1
@@ -249,24 +249,24 @@ $ cd ethereum-node1
 
 #### Geth
 
-First we’re going to install Geth by building it from the source code. Geth is a Go language implementation of the execution specs that is actively developed by the Ethereum Foundation, so it is considered the “official” implementation of the Ethereum client. Typically, every Ethereum-based blockchain will have its own Geth implementation. If you’re running Geth, then you’ll want to make sure you grab the correct version for your blockchain using one of the following repository links:
+　まず、ソースコードからビルドしてGethをインストールします。GethはGo言語による実行仕様の実装であり、イーサリアムファンデーションによって活発に開発されているため、Ethereumクライアントの「公式」実装と見なされています。通常、すべてのEthereumベースのブロックチェーンには独自のGeth実装があります。Gethを使用する場合は、以下のレポジトリ リンクのいずれかを使用して、自分のブロックチェーンに適したバージョンを取得するようにしてください。
 
 - [Ethereum](https://oreil.ly/qzK-O)
 - [BNB Chain](https://oreil.ly/tGtL3)
 - [Polygon PoS](https://oreil.ly/ZWhh3)
 
-> **Note**
+> **注記**
 >
-> You can skip these instructions and install a precompiled binary for your platform of choice. The precompiled releases are much easier to install and can be found in the “releases” section of any of the repositories listed here. However, you may learn more by downloading and compiling the software yourself.
+> これらの手順をスキップして、プラットフォームに合ったプリコンパイル済みバイナリをインストールすることもできます。プリコンパイル済みのリリースはインストールがはるかに簡単で、ここに記載されているレポジトリの「releases」セクションから入手できます。ただし、ソフトウェアを自分でダウンロードしてコンパイルすることで、より多くのことを学べるかもしれません。
 
-**Cloning the repository**. The first step is to clone the Git repository to get a copy of the source code. To make a local clone of your chosen repository, use the git command as follows in the execution subfolder:
+**レポジトリのクローン**。最初のステップは、Gitレポジトリをクローンしてソースコードのコピーを取得することです。executionサブフォルダ内で、以下のようにgitコマンドを使用してレポジトリのローカル クローンを作成します。
 
 ```bash
 $ cd execution
 $ git clone https://github.com/ethereum/go-ethereum.git
 ```
 
-You should see a progress report as the repository is copied to your local system:
+　レポジトリがローカル システムにコピーされる際の進捗レポートが表示されるはずです。
 
 ```bash
 Cloning into 'go-ethereum'...
@@ -278,16 +278,16 @@ Receiving objects: 100% (130745/130745), 204.15 MiB | 6.13 MiB/s, done.
 Resolving deltas: 100% (80729/80729), done.
 ```
 
-Great! Now that you have a local copy of Geth, you can compile an executable for your platform.
+　これでGethのローカル コピーが取得できましたので、プラットフォーム用の実行可能ファイルをコンパイルできます。
 
-**Building Geth from source code**. To build Geth, change to the directory where the source code was downloaded and use the make command after selecting the latest release—right now, it’s v1.14.3, but you can always check for the latest one:
+**ソースコードからのGethのビルド**。Gethをビルドするには、ソースコードがダウンロードされたディレクトリに移動し、最新リリースを選択した後にmakeコマンドを使用します。現時点ではv1.14.3ですが、最新のものは常に確認できます。
 
 ```bash
 $ cd go-ethereum
 $ git checkout v1.14.3$ make geth
 ```
 
-If all goes well, you will see the Go compiler building each component until it produces the Geth executable:
+　すべてがうまくいけば、GoコンパイラがGethの実行可能ファイルが完成するまで各コンポーネントをビルドしている様子が表示されます。
 
 ```bash
 go run build/ci.go install ./cmd/geth
@@ -301,7 +301,7 @@ Done building.
 Run "./build/bin/geth" to launch geth.
 ```
 
-Let’s make sure Geth works without actually starting it:
+　実際に起動せずにGethが動作するか確認してみましょう。
 
 ```bash
 $ ./build/bin/geth version
@@ -314,47 +314,47 @@ Operating System: darwin
 [...]
 ```
 
-Your `geth version` command may show slightly different information, but you should see a version report much like the one shown here.
+　`geth version`コマンドの出力はわずかに異なるかもしれませんが、ここに示されているようなバージョン レポートが表示されるはずです。
 
-Don’t run Geth yet because we still need to install a consensus client to let the Ethereum node sync up to the tip of the chain.
+　まだGethを実行しないでください。チェーンの先端まで同期するために、コンセンサス クライアントをインストールする必要があります。
 
 #### Prysm
 
-Now it’s the consensus client’s turn. Prysm is a Go language implementation of the consensus specs that is actively developed by Offchain Labs. Initially, it was by far the most used consensus client after The Merge. Now, thanks to a great community effort to boost client diversity, its share of the market is greatly reduced, standing at 37%.
+　次はコンセンサス クライアントの番です。Prysmはコンセンサス仕様のGo言語実装であり、Offchain Labsによって活発に開発されています。当初、The Merge後のコンセンサス クライアントとしては圧倒的に最も多く使用されていました。現在は、クライアントの多様性を高めるコミュニティの大きな取り組みのおかげで、市場シェアは大幅に減少し37%となっています。
 
-**Installing the binary**. Prysm can be built from source code as we did for Geth, but it’s a bit more complicated. The suggested way to install it is the following method. First, go to the *consensus* folder:
+**バイナリのインストール**。PrysmはGethと同様にソースコードからビルドすることもできますが、少し複雑です。推奨されるインストール方法は以下のとおりです。まず、*consensus*フォルダに移動します。
 
 ```bash
-$ cd ../.. # this command is used to go back in the ethereum-node1 folder
+$ cd ../.. # このコマンドはethereum-node1フォルダに戻るために使用する
 $ cd consensus
 ```
 
-Now, run the following command:
+　次に、以下のコマンドを実行します。
 
 ```bash
 $ curl https://raw.githubusercontent.com/prysmaticlabs/prysm/master/prysm.sh --output prysm.sh && chmod +x prysm.sh
 ```
 
-**Generating a JWT Secret**. The execution and consensus clients that made up an Ethereum node are two distinct pieces of software, but they always have to interact with each other. To achieve that, there is a sort of password that is used by both the execution and the consensus client to authenticate their connection. Now we need to generate it:
+**JWTシークレットの生成**。Ethereumノードを構成する実行クライアントとコンセンサス クライアントは2つの別々のソフトウェアですが、常に相互にやり取りする必要があります。そのために、実行クライアントとコンセンサス クライアントの両方が接続の認証に使用する一種のパスワードがあります。ここではそのパスワードを生成します。
 
 ```bash
 $ ./prysm.sh beacon-chain generate-auth-secret
 ```
 
-A *jwt.hex* file should appear. Let’s move it to the parent folder:
+　*jwt.hex*ファイルが生成されるはずです。親フォルダに移動しましょう。
 
 ```bash
 $ mv jwt.hex ../jwt.hex
 ```
 
-#### Run the node
+#### ノードの実行
 
-Now that you have both the execution and the consensus clients and you have correctly generated the JWT secret, you can spin up the clients and have an Ethereum full node running.
+　実行クライアントとコンセンサス クライアントの両方をインストールし、JWTシークレットを正しく生成できたので、クライアントを起動してEthereumフル ノードを稼働させることができます。
 
-**Running the execution client**. First, you need to run the execution client, Geth. Navigate back to the *execution* folder and run this command:
+**実行クライアントの実行**。まず、実行クライアントであるGethを実行する必要があります。*execution*フォルダに戻り、以下のコマンドを実行します。
 
 ```bash
-$ cd .. # this command is used to go back in the ethereum-node1 folder
+$ cd .. # このコマンドはethereum-node1フォルダに戻るために使用する
 $ cd execution
 $ ./go-ethereum/build/bin/geth --mainnet \
 	--http \
@@ -362,7 +362,7 @@ $ ./go-ethereum/build/bin/geth --mainnet \
 	--authrpc.jwtsecret=../jwt.hex
 ```
 
-If you see something like this, everything is running fine:
+　以下のような表示が出れば、正常に動作しています。
 
 ```bash
 INFO [06-08|17:56:38.738] Starting Geth on Ethereum mainnet...
@@ -374,7 +374,7 @@ INFO [06-08|17:56:38.771] Allocated trie memory caches             clean=614.00M
 INFO [06-08|17:56:38.772] Using pebble as the backing database…
 ```
 
-**Running the consensus client**. Now you should run the consensus client, Prysm. Don’t close the terminal tab in which the execution client lives. Just open a new terminal window or tab and navigate to the *consensus* folder:
+**コンセンサス クライアントの実行**。次に、コンセンサス クライアントであるPrysmを実行します。実行クライアントが動作しているターミナル タブを閉じないでください。新しいターミナル ウィンドウまたはタブを開き、*consensus*フォルダに移動します。
 
 ```bash
 $ cd ethereum-node1
@@ -387,20 +387,20 @@ $ ./prysm.sh beacon-chain \
 	--genesis-beacon-api-url=https://beaconstate.info
 ```
 
-You could be asked to accept Prysm terms and conditions. If that’s the case, type **accept**, and you should be done:
+　Prysmの利用規約への同意を求められる場合があります。その場合は**accept**と入力すれば完了です。
 
 ```bash
 Prysm Terms of Use
-By downloading, accessing or using the Prysm implementation (“Prysm”), you (referenced
-herein as “you” or the “user”) certify that you have read and agreed to the terms and
+By downloading, accessing or using the Prysm implementation ("Prysm"), you (referenced
+herein as "you" or the "user") certify that you have read and agreed to the terms and
 conditions below.
 TERMS AND CONDITIONS: https://github.com/prysmaticlabs/prysm/blob/develop/TERMS_OF_SERVICE.md
-Type “accept” to accept this terms and conditions [accept/decline]: (default: decline):
+Type "accept" to accept this terms and conditions [accept/decline]: (default: decline):
 ```
 
-And you’re done! You should see both the execution and consensus client start logging lots of data on the terminal.
+　以上で完了です。実行クライアントとコンセンサス クライアントの両方がターミナルに大量のデータをログ出力し始めるはずです。
 
-Execution client:
+実行クライアント：
 
 ```bash
 INFO [06-08|18:08:49.039] Forkchoice requested sync to new head    number=20,048,206 hash=8df21a..4afb49 finalized=unknown
@@ -410,7 +410,7 @@ INFO [06-08|18:09:00.508] Syncing beacon headers                   downloaded=37
 INFO [06-08|18:09:01.637] Forkchoice requested sync to new head    number=20,048,207 hash=d99dab..0293c9 finalized=unknown
 ```
 
-Consensus client:
+コンセンサス クライアント：
 
 ```bash
 [2024-06-08 18:09:24]  INFO blockchain: Called new payload with optimistic block payloadBlockHash=0xd44520a09a7a slot=9253245
@@ -421,21 +421,21 @@ Consensus client:
 [2024-06-08 18:09:28]  INFO sync: Subscribed to topic=/eth2/6a95a1a9/beacon_attestation_35/ssz_snappy[2024-06-08 18:09:36]  INFO blockchain: Called new payload with optimistic block payloadBlockHash=0xff879102f29e slot=9253246
 ```
 
-Now you have an Ethereum full node that is syncing up to the tip of the chain. Note that the synchronization can take a lot of time (hours or days depending on your hardware and internet connectivity).
+　これでチェーンの先端に向けて同期中のEthereumフル ノードが稼働しています。同期にはかなりの時間がかかる場合があります（ハードウェアとインターネット接続速度に応じて数時間から数日）。
 
-> **Note**
+> **注記**
 >
-> If you want to learn more about the specific commands and CLI flags we’ve used in this example, the official docs for [Geth](https://oreil.ly/zYviP) and [Prysm](https://oreil.ly/4sn6-) are the best places to look.
+> この例で使用した具体的なコマンドやCLIフラグについて詳しく知りたい場合は、[Geth](https://oreil.ly/zYviP)と[Prysm](https://oreil.ly/4sn6-)の公式ドキュメントが最適な情報源です。
 
 ### Reth-Lighthouse
 
-Let’s do the same thing but using two different clients: Reth as the execution client and Lighthouse as the consensus client.
+　同じことを、RethとLighthouseという2つの異なるクライアントを使用して行ってみましょう。Rethを実行クライアント、Lighthouseをコンセンサス クライアントとして使用します。
 
 #### Reth
 
-First, you need to install Reth. Go into the *ethereum-node2* folder and then into the execution folder.
+　まず、Rethをインストールする必要があります。*ethereum-node2*フォルダに移動し、executionフォルダに入ります。
 
-**Cloning the repository**. The first step is to clone the Git repository to get a copy of the source code. Go back to your home directory and type the following commands:
+**レポジトリのクローン**。最初のステップは、Gitレポジトリをクローンしてソースコードのコピーを取得することです。ホーム ディレクトリに戻り、以下のコマンドを入力します。
 
 ```bash
 $ cd ethereum-node2
@@ -443,22 +443,22 @@ $ cd execution
 $ git clone https://github.com/paradigmxyz/reth
 ```
 
-Great! Now that you have a local copy of Reth, you can compile an executable for your platform.
+　これでRethのローカル コピーが取得できましたので、プラットフォーム用の実行可能ファイルをコンパイルできます。
 
-**Building Reth from source code**. To build Reth, you need to run the following command:
+**ソースコードからのRethのビルド**。Rethをビルドするには、以下のコマンドを実行する必要があります。
 
 ```bash
 $ cd reth
 $ cargo install --locked --path bin/reth --bin reth
 ```
 
-It could take more than 10 minutes to complete the installation. When it’s done, you can check if Reth is correctly installed by running:
+　インストールの完了までに10分以上かかる場合があります。完了したら、以下を実行してRethが正しくインストールされたかを確認できます。
 
 ```bash
 $ reth --version
 ```
 
-You should see something like (the version can change):
+　以下のような表示がされるはずです（バージョンは変わることがあります）。
 
 ```bash
 reth Version: 0.2.0-beta.6-dev
@@ -469,30 +469,30 @@ Build Features: jemallocBuild Profile: maxperf+
 
 #### Lighthouse
 
-Now you need to install Lighthouse, the consensus client. Go back to the *ethereum-node2* folder and dive into the *consensus* folder:
+　次に、コンセンサス クライアントであるLighthouseをインストールする必要があります。*ethereum-node2*フォルダに戻り、*consensus*フォルダに入ります。
 
 ```bash
-$ cd .. # this command is used to go back in the ethereum-node2 folder
+$ cd .. # このコマンドはethereum-node2フォルダに戻るために使用する
 $ cd consensus
 ```
 
-You have to install some dependencies first. If you are on a macOS, you need to run:
+　まずいくつかの依存関係をインストールする必要があります。macOSの場合は、以下を実行します。
 
 ```bash
 $ brew install cmake
 ```
 
-If you’re using a different operating system, you can refer to the [Lighthouse official documentation](https://oreil.ly/vEghS).
+　別のオペレーティング システムを使用している場合は、[Lighthouseの公式ドキュメント](https://oreil.ly/vEghS)を参照してください。
 
-**Cloning the repository**. The first step is to clone the Git repository to get a copy of the source code:
+**レポジトリのクローン**。最初のステップは、Gitレポジトリをクローンしてソースコードのコピーを取得することです。
 
 ```bash
 $ git clone https://github.com/sigp/lighthouse.git
 ```
 
-Great! Now that you have a local copy of Lighthouse, you can compile an executable for your platform.
+　これでLighthouseのローカル コピーが取得できましたので、プラットフォーム用の実行可能ファイルをコンパイルできます。
 
-**Building Lighthouse from source code**. To build Lighthouse, you need to run the following command:
+**ソースコードからのLighthouseのビルド**。Lighthouseをビルドするには、以下のコマンドを実行する必要があります。
 
 ```bash
 $ cd lighthouse
@@ -500,22 +500,22 @@ $ git checkout stable
 $ make
 ```
 
-This could take more than 10 minutes to complete.
+　完了までに10分以上かかる場合があります。
 
-#### Run the node
+#### ノードの実行
 
-Again, you need to run the execution client, Reth, first.
+　ここでも、まず実行クライアントであるRethを実行する必要があります。
 
-**Running the execution client**. Navigate back to the *execution* folder and run this command:
+**実行クライアントの実行**。*execution*フォルダに戻り、以下のコマンドを実行します。
 
 ```bash
-$ cd ../.. # this command is used to go back to the ethereum-node2 folder
-$ cp ../ethereum-node1/jwt.hex ./jwt.hex # we use the same jwt.hex file we generated before
+$ cd ../.. # このコマンドはethereum-node2フォルダに戻るために使用する
+$ cp ../ethereum-node1/jwt.hex ./jwt.hex # 以前生成したjwt.hexファイルを再利用する
 $ cd execution
 $ reth node --full --http --http.api all --authrpc.jwtsecret=../jwt.hex
 ```
 
-If you see something like this, everything is running fine:
+　以下のような表示が出れば、正常に動作しています。
 
 ```bash
 2024-06-08T16:58:43.498297Z  INFO Starting reth version="0.2.0-beta.6-dev (ac29b4b73)"
@@ -525,7 +525,7 @@ If you see something like this, everything is running fine:
 2024-06-08T16:58:43.514917Z  INFO Pre-merge hard forks (block based):…
 ```
 
-**Running the consensus client**. Now you should run the consensus client, Lighthouse. Don’t close the terminal tab in which the execution client lives. Just open a new terminal window or tab and navigate into the *consensus* folder:
+**コンセンサス クライアントの実行**。次に、コンセンサス クライアントであるLighthouseを実行します。実行クライアントが動作しているターミナル タブを閉じないでください。新しいターミナル ウィンドウまたはタブを開き、*consensus*フォルダに移動します。
 
 ```bash
 $ cd ethereum-node2
@@ -538,9 +538,9 @@ $ lighthouse bn \
 	--http
 ```
 
-And you’re done! You should see both the execution and consensus client start logging lots of data on the terminal.
+　以上で完了です。実行クライアントとコンセンサス クライアントの両方がターミナルに大量のデータをログ出力し始めるはずです。
 
-Execution client:
+実行クライアント：
 
 ```bash
 2024-06-08T17:03:03.355648Z  INFO Received headers total=10000 from_block=18458372 to_block=18448373
@@ -549,7 +549,7 @@ Execution client:
 2024-06-08T17:03:04.913377Z  INFO Received headers total=10000 from_block=18428372 to_block=18418373
 ```
 
-Consensus client:
+コンセンサス クライアント：
 
 ```bash
 Jun 08 17:03:24.929 INFO New block received                      root: 0xa49c057026cea3190df38548d49963e271ebdc4d6f93d2301adc4034d6563113, slot: 9253515
@@ -557,43 +557,43 @@ Jun 08 17:03:29.001 WARN Head is optimistic                      execution_block
 Jun 08 17:03:29.001 INFO Synced                                  slot: 9253515, block: 0xa49c…3113, epoch: 289172, finalized_epoch: 289170, finalized_root: 0xca35…2b06, exec_hash: 0x5a14…a7a5 (unverified), peers: 31, service: slot_notifier
 ```
 
-Now you have an Ethereum full node that is syncing up to the tip of the chain. Note that the synchronization can take a lot of time (hours or days depending on your hardware and internet connectivity).
+　これでチェーンの先端に向けて同期中のEthereumフル ノードが稼働しています。同期にはかなりの時間がかかる場合があります（ハードウェアとインターネット接続速度に応じて数時間から数日）。
 
-> **Note**
+> **注記**
 >
-> If you want to learn more about the specific commands and CLI flags we’ve used in this example, the official docs for [Reth](https://reth.rs) and [Lighthouse](https://oreil.ly/vEghS) are the best places to look.
+> この例で使用した具体的なコマンドやCLIフラグについて詳しく知りたい場合は、[Reth](https://reth.rs)と[Lighthouse](https://oreil.ly/vEghS)の公式ドキュメントが最適な情報源です。
 
-The next section explains the challenges with the initial synchronization of Ethereum’s blockchain.
+　次のセクションでは、Ethereumのブロックチェーンの初回同期における課題について説明します。
 
-> **Tip**
+> **ヒント**
 >
-> Do all these steps look complicated and confusing to you? But you would still like to contribute to the network and really don’t depend on any trusted third party running your own Ethereum full node?
+> これらのステップは複雑で分かりにくく感じますか。それでも信頼できる第三者に頼ることなく、自分自身のEthereumフル ノードを実行してネットワークに貢献したいですか。
 >
-> There is a perfect solution for you: it’s the BuidlGuidl Client, a project that created a one-line command that lets you run an Ethereum node. You don’t believe it? [See it yourself](https://oreil.ly/9FKZd).
+> ぴったりのソリューションがあります。BuidlGuidl Clientというプロジェクトで、1行のコマンドでEthereumノードを実行できるようにしたものです。信じられませんか。[ご自身でご確認ください](https://oreil.ly/9FKZd)。
 >
-> Another option is to use [Dappnode](https://dappnode.com). You can choose two different solutions:
+> もう1つの選択肢は[Dappnode](https://dappnode.com)を使用することです。2つのソリューションから選択できます。
 >
-> - Buy a plug-n-play device that comes with an Ethereum full node built in.
+> - Ethereumフル ノードが組み込まれたプラグアンドプレイ デバイスを購入する。
 >
-> - Install Dappnode Core software that makes it really easy to launch an Ethereum full node.
+> - Dappnode Coreソフトウェアをインストールして、Ethereumフル ノードを非常に簡単に起動できるようにする。
 
-## The First Synchronization of Ethereum-Based Blockchains
+## Ethereumベースのブロックチェーンの初回同期
 
-Normally when syncing an Ethereum blockchain, your client will download and validate every block and every transaction since the very start—that is, from the genesis block. While it is possible to fully sync the blockchain this way, the sync will take a very long time and has high resource requirements (it will need much more RAM and will take a very long time indeed if you don’t have fast storage).
+　通常、Ethereumブロックチェーンを同期する際、クライアントはジェネシス ブロックから始めてすべてのブロックとすべてのトランザクションをダウンロードして検証します。この方法でブロックチェーンを完全に同期することは可能ですが、同期には非常に長い時間がかかり、高いリソース要件が求められます（はるかに多くのRAMが必要であり、高速なストレージがなければ非常に長い時間がかかります）。
 
-Many Ethereum-based blockchains were the victims of DoS attacks at the end of 2016. Affected blockchains will tend to sync slowly when doing a full sync. For example, on Ethereum, a new client will make rapid progress until it reaches block 2,283,397. This block was mined on September 18, 2016, and marks the beginning of the DoS attacks. From this block to block 2,700,031 (November 26, 2016), the validation of transactions becomes extremely slow, memory intensive, and I/O intensive. This results in validation times exceeding one minute per block on contemporary 2016 hardware. Ethereum implemented a series of upgrades, using hard forks, to address the underlying vulnerabilities that were exploited in the DoS attacks. These upgrades also cleaned up the blockchain by removing some 20 million empty accounts created by spam transactions.
+　Ethereumベースのブロックチェーンの多くは、2016年末にDoS攻撃の被害を受けました。影響を受けたブロックチェーンはフル同期を行うと同期が遅くなる傾向があります。たとえば、Ethereumでは新しいクライアントはブロック2,283,397まで急速に進みます。このブロックは2016年9月18日にマイニングされ、DoS攻撃の始まりを示しています。このブロックからブロック2,700,031（2016年11月26日）まで、トランザクションの検証が極端に遅くなり、メモリ集約型かつI/O集約型になります。2016年当時のハードウェアでは、ブロックあたりの検証時間が1分を超える結果となりました。Ethereumは一連のアップグレードをハードフォークを通じて実施し、DoS攻撃で悪用された根本的な脆弱性に対処しました。これらのアップグレードにより、スパム トランザクションによって作成された約2,000万の空アカウントのクリーンアップも行われました。
 
-If you are syncing with full validation, your client will slow, and it may take several days, or perhaps even longer, to validate the blocks affected by the DoS attacks. Fortunately, most Ethereum clients include an option to perform a “fast” synchronization that skips the full validation of transactions until it has synced to the tip of the blockchain, then resumes full validation starting from the new tip of the chain. For execution clients, the option to enable fast synchronization is typically snap sync. For consensus clients, the option for fast synchronization is checkpoint sync.
+　完全な検証で同期する場合、クライアントの処理速度は低下し、DoS攻撃の影響を受けたブロックの検証には数日、場合によってはそれ以上かかることがあります。幸い、ほとんどのEthereumクライアントには、ブロックチェーンの先端まで同期が完了するまでトランザクションの完全な検証をスキップし、チェーンの新しい先端から完全な検証を再開する「高速」同期オプションが含まれています。実行クライアントでは、高速同期を有効にするオプションは通常snap syncです。コンセンサス クライアントでは、高速同期のオプションはcheckpoint syncです。
 
-In this tutorial, we’ve been using by default fast synchronization both with snap sync on the execution client and checkpoint sync on the consensus client, with the exception of Reth, which doesn’t support snap sync yet (as of June 2025).
+　このチュートリアルでは、実行クライアントではsnap sync、コンセンサス クライアントではcheckpoint syncを使用して、デフォルトで高速同期を行ってきました。ただしRethは例外で、2025年6月時点ではまだsnap syncをサポートしていません。
 
-## The JSON-RPC Interface
+## JSON-RPCインターフェース
 
-Ethereum clients offer an API and a set of RPC commands, which are encoded as JSON. You will see this referred to as the JSON-RPC API. Essentially, the JSON-RPC API is an interface that allows us to write programs that use an Ethereum client as a gateway to an Ethereum network and blockchain.
+　Ethereumクライアントは、JSONでエンコードされたAPIとRPCコマンドのセットを提供します。これはJSON-RPC APIと呼ばれます。JSON-RPC APIは本質的に、Ethereumクライアントをゲートウェイとして使用してEthereumネットワークとブロックチェーンにアクセスするプログラムを書くためのインターフェースです。
 
-Usually, the RPC interface is offered as an HTTP service on port 8545. For security reasons, it is restricted by default to accept connections only from localhost (the IP address of your own computer, which is 127.0.0.1).
+　通常、RPCインターフェースはポート8545上のHTTPサービスとして提供されます。セキュリティ上の理由から、デフォルトではlocalhost（自分のコンピューターのIPアドレスである127.0.0.1）からの接続のみを受け付けるように制限されています。
 
-To access the JSON-RPC API, you can use a specialized library (written in the programming language of your choice) that provides “stub” function calls corresponding to each available RPC command, or you can manually construct HTTP requests and send/receive JSON-encoded requests. You can even use a generic command-line HTTP client like curl to call the RPC interface. Let’s try that. First, ensure that you have the execution client configured and running. Then, switch to a new terminal window and type the following command:
+　JSON-RPC APIにアクセスするには、利用可能な各RPCコマンドに対応する「スタブ」関数呼び出しを提供する専用ライブラリ（好みのプログラミング言語で書かれたもの）を使用するか、手動でHTTPリクエストを構築してJSONエンコードされたリクエストを送受信することができます。curlのような汎用のコマンドライン HTTPクライアントを使用してRPCインターフェースを呼び出すこともできます。試してみましょう。まず、実行クライアントが設定され実行中であることを確認します。次に、新しいターミナル ウィンドウに切り替えて、以下のコマンドを入力します。
 
 ```bash
 $ curl -X POST -H "Content-Type: application/json" --data \
@@ -603,64 +603,64 @@ $ curl -X POST -H "Content-Type: application/json" --data \
 {"jsonrpc":"2.0","id":1,"result":"Geth/1.14.3-stable/darwin-arm64/go1.22.2"}
 ```
 
-In this example, we use curl to make an HTTP connection to the address *http://localhost:8545*. We are already running the execution client, which offers the JSON-RPC API as an HTTP service on port 8545. We instruct curl to use the HTTP POST method and to identify the content as type **application/json**. Finally, we pass a JSON-encoded request as the data component of our HTTP request. Most of our command line is just setting up curl to make the HTTP connection correctly. The interesting part is the actual JSON-RPC command we issue:
+　この例では、curlを使用して*http://localhost:8545*へのHTTP接続を行っています。すでに実行クライアントを起動しており、ポート8545上でJSON-RPC APIをHTTPサービスとして提供しています。curlにHTTP POSTメソッドを使用するよう指示し、コンテンツ タイプを**application/json**として識別しています。最後に、HTTPリクエストのデータ コンポーネントとしてJSONエンコードされたリクエストを渡しています。コマンドラインの大部分は、curlがHTTP接続を正しく行うための設定です。興味深い部分は、実際に発行するJSON-RPCコマンドです。
 
 ```bash
 {"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":1}
 ```
 
-The JSON-RPC request is formatted according to the [JSON-RPC 2.0 specification](https://oreil.ly/m0HLL). Each request contains four elements:
+　JSON-RPCリクエストは[JSON-RPC 2.0仕様](https://oreil.ly/m0HLL)に従ってフォーマットされます。各リクエストには4つの要素が含まれます。
 
 **jsonrpc**
 
-Version of the JSON-RPC protocol. This must be exactly "2.0".
+　JSON-RPCプロトコルのバージョン。正確に「2.0」でなければならない。
 
 **method**
 
-The name of the method to be invoked.
+　呼び出すメソッドの名前。
 
 **params**
 
-A structured value that holds the parameter values to be used during the invocation of the method. This member may be omitted.
+　メソッドの呼び出し時に使用されるパラメーター値を保持する構造化された値。このメンバーは省略可能である。
 
 **id**
 
-An identifier established by the client that must contain a string, number, or NULL value if included. The server must reply with the same value in the response object if included. This member is used to correlate the context between the two objects.
+　クライアントによって設定される識別子であり、含まれる場合は文字列、数値、またはNULL値でなければならない。含まれる場合、サーバーはレスポンス オブジェクトで同じ値で応答しなければならない。このメンバーは2つのオブジェクト間のコンテキストを関連付けるために使用される。
 
-> **Tip**
+> **ヒント**
 >
-> The id parameter is used primarily when you are making multiple requests in a single JSON-RPC call, a practice called batching. Batching is used to avoid the overhead of a new HTTP and TCP connection for every request. In the Ethereum context, for example, we would use batching if we wanted to retrieve thousands of transactions over one HTTP connection. When batching, you set a different id for each request and then match it to the id in each response from the JSON-RPC server. The easiest way to implement this is to maintain a counter and increment the value for each request.
+> idパラメーターは主に、単一のJSON-RPC呼び出しで複数のリクエストを行う場合に使用されます。この方法はバッチングと呼ばれます。バッチングは、リクエストごとに新しいHTTPおよびTCP接続を行うオーバーヘッドを避けるために使用されます。Ethereumの文脈では、たとえば1つのHTTP接続で数千のトランザクションを取得したい場合にバッチングを使用します。バッチングでは各リクエストに異なるidを設定し、JSON-RPCサーバーからのレスポンスのidと照合します。最も簡単な実装方法は、カウンターを管理して各リクエストごとに値をインクリメントすることです。
 
-The response we receive is:
+　受信するレスポンスは以下のとおりです。
 
 ```bash
 {"jsonrpc":"2.0","id":1,"result":"Geth/1.14.3-stable/darwin-arm64/go1.22.2"}
 ```
 
-This tells us that the JSON-RPC API is being served by Geth client version 1.14.3-stable.
+　これは、JSON-RPC APIがGethクライアント バージョン1.14.3-stableによって提供されていることを示しています。
 
-Let’s try something a bit more interesting. In the next example, we ask the JSON-RPC API for the current price of gas in wei:
+　もう少し面白いことを試してみましょう。次の例では、JSON-RPC APIに現在のガス価格をweiで問い合わせます。
 
 ```bash
 $ curl -X POST -H "Content-Type: application/json" --data \
 	'{"jsonrpc":"2.0","method":"eth_gasPrice","params":[],"id":4213}' \
 	http://localhost:8545
-	
+
 {"jsonrpc":"2.0","id":4213,"result":"0x1B1717FC7"}
 ```
 
 
-The response, 0x1B1717FC7, tells us that the current gas price is 7.27 gwei (gigawei or billion wei). If, like us, you don’t think in hexadecimal, you can convert it to decimal on the command line with a little Bash-fu:
+　レスポンスの0x1B1717FC7は、現在のガス価格が7.27 gwei（gigaweiまたは10億wei）であることを示しています。16進数で考えるのが得意でない場合は、コマンドライン上でBashのテクニックを使って10進数に変換できます。
 
 ```bash
 $ echo $((0x1B1717FC7))7271972807
 ```
 
-The full JSON-RPC API can be investigated on the [Ethereum wiki](https://oreil.ly/lO2Z0).
+　完全なJSON-RPC APIは[Ethereum wiki](https://oreil.ly/lO2Z0)で調べることができます。
 
-> **Tip**
+> **ヒント**
 >
-> In this section, we used raw curl requests to show the Ethereum JSON-RPC interface. In real life, you probably want to access it through a better, more programmatic way. Here is where libraries come into play. Feel free to explore the three most famous and used ones:
+> このセクションでは、EthereumのJSON-RPCインターフェースを示すために生のcurlリクエストを使用しました。実際にはより優れた、よりプログラマティックな方法でアクセスしたいと思うでしょう。ここでライブラリの出番です。最も有名で広く使用されている3つのライブラリを自由に探索してみてください。
 >
 > - [ethers.js](https://oreil.ly/JKvSJ)
 >
@@ -668,88 +668,88 @@ The full JSON-RPC API can be investigated on the [Ethereum wiki](https://oreil.l
 >
 > - [alloy](https://alloy.rs)
 
-## Remote Ethereum Clients
+## リモートEthereumクライアント
 
-Remote clients offer a subset of the functionality of a full client. They do not store the full Ethereum blockchain, so they are faster to set up and require far less data storage.
+　リモート クライアントは、フル クライアントの機能のサブセットを提供します。リモート クライアントは完全なEthereumブロックチェーンを保存しないため、セットアップが速く、必要なデータ ストレージもはるかに少なくて済みます。
 
-These clients typically provide the ability to do one or more of the following:
+　これらのクライアントは通常、以下の機能の1つ以上を提供します。
 
-- Manage private keys and Ethereum addresses in a wallet
-- Create, sign, and broadcast transactions
-- Interact with smart contracts using the data payload
-- Browse and interact with DApps
-- Offer links to external services, such as block explorers
-- Convert ether units and retrieve exchange rates from external sources
-- Inject a Web3 instance into the web browser as a JavaScript object
-- Use a Web3 instance provided or injected into the browser by another client
-- Access RPC services on a local or remote Ethereum node
+- ウォレット内で秘密鍵とEthereumアドレスを管理する
+- トランザクションの作成、署名、ブロードキャストを行う
+- データ ペイロードを使用してスマート コントラクトとやり取りする
+- DAppを閲覧してやり取りする
+- ブロック エクスプローラーなどの外部サービスへのリンクを提供する
+- etherの単位変換と外部ソースからの為替レートの取得を行う
+- Web3インスタンスをJavaScriptオブジェクトとしてウェブ ブラウザーに注入する
+- 別のクライアントによって提供または注入されたWeb3インスタンスを使用する
+- ローカルまたはリモートのEthereumノード上のRPCサービスにアクセスする
 
-Remote clients commonly offer some of the functions of a full-node Ethereum client without synchronizing a local copy of the Ethereum blockchain by connecting to a full node being run elsewhere—for example, by you locally on your machine or on a web server or by a third party on its server.
+　リモート クライアントは通常、ローカルにあるマシン上やウェブ サーバー上、あるいは第三者のサーバー上で動作しているフル ノードに接続することで、Ethereumブロックチェーンのローカル コピーを同期することなく、フル ノードEthereumクライアントの一部の機能を提供します。
 
-Let’s look at some of the most popular remote clients and the functions they offer.
+　最も人気のあるリモート クライアントと、提供される機能について見てみましょう。
 
-### Mobile (Smartphone) Wallets
+### モバイル（スマートフォン）ウォレット
 
-Most production mobile wallets operate as remote clients because smartphones do not have adequate resources to run a full Ethereum client. Light clients are in development and are not in general use for Ethereum. The most famous one is [Helios](https://oreil.ly/4joTo), which is still experimental software.
+　ほとんどの本番環境向けモバイル ウォレットは、スマートフォンにはEthereumフル クライアントを実行するための十分なリソースがないため、リモート クライアントとして動作します。軽量クライアントは開発中であり、Ethereumで一般的に使用されてはいません。最も有名なものは[Helios](https://oreil.ly/4joTo)であり、まだ実験的なソフトウェアです。
 
-Popular mobile wallets include the following (we list these merely as examples; this is not an endorsement or an indication of the security or functionality of these wallets):
+　人気のあるモバイル ウォレットには以下のものがあります（これらは単なる例であり、これらのウォレットのセキュリティや機能を推奨したり保証したりするものではありません）。
 
 **Coinbase Wallet**
 
-A mobile wallet that supports a bunch of different chains, such as Ethereum (and all L2s), EVM-compatible L1s, Bitcoin, Solana, Litecoin, and Dogecoin. It can also connect to a Coinbase account.
+　Ethereum（およびすべてのL2）、EVM互換L1、ビットコイン、Solana、Litecoin、Dogecoinなど、多数のチェーンをサポートするモバイル ウォレットである。Coinbaseアカウントとの接続も可能である。
 
 **Phantom**
 
-Phantom is another multichain wallet that is compatible with Ethereum, Solana, Bitcoin, and Polygon.
+　Ethereum、Solana、ビットコイン、Polygonに対応するもう1つのマルチチェーン ウォレットである。
 
 **Trust Wallet**
 
-A mobile multichain wallet that supports more than one hundred blockchains. Trust Wallet is available for iOS and Android.
+　100を超えるブロックチェーンをサポートするモバイル マルチチェーン ウォレットである。Trust WalletはiOSとAndroidで利用可能である。
 
 **Uniswap Wallet**
 
-A mobile wallet that supports only Ethereum and EVM-compatible L2s and L1s. It’s made by the Uniswap team. It’s quite new, available both for iOS and Android.
+　EthereumとEVM互換のL2およびL1のみをサポートするモバイル ウォレットである。Uniswapチームによって開発された。比較的新しく、iOSとAndroidの両方で利用可能である。
 
-### Browser Wallets
+### ブラウザー ウォレット
 
-A variety of wallets and DApp browsers are available as plug-ins or extensions of web browsers like Chrome and Firefox. These are remote clients that run inside your browser. Some of the more popular ones include:
+　ChromeやFirefoxなどのウェブ ブラウザーのプラグインまたは拡張機能として、さまざまなウォレットやDAppブラウザーが利用可能です。これらはブラウザー内で動作するリモート クライアントです。人気のあるものには以下があります。
 
 **MetaMask**
 
-[MetaMask](https://metamask.io), introduced in [Chapter 2](https://masteringethereum.xyz/chapter_2.html#getting-started-with-metamask), is a versatile browser-based wallet, RPC client, and basic contract explorer. It is available on Chrome, Firefox, Opera, and Brave Browser.
+　[MetaMask](https://metamask.io)は[第2章](https://masteringethereum.xyz/chapter_2.html#getting-started-with-metamask)で紹介した、多機能なブラウザー ベースのウォレット、RPCクライアント、および基本的なコントラクト エクスプローラーです。Chrome、Firefox、Opera、Brave Browserで利用可能です。
 
 **Phantom**
 
-Phantom also has a web browser wallet that has a very nice and clean UI.
+　Phantomにはウェブ ブラウザー ウォレットもあり、非常に洗練されたきれいなUIを備えています。
 
 **Rabby Wallet**
 
-Rabby is a new multichain web browser wallet that supports more than one hundred different blockchains (EVM-compatible chains).
+　Rabbyは100を超える異なるブロックチェーン（EVM互換チェーン）をサポートする新しいマルチチェーン ウェブ ブラウザー ウォレットです。
 
 **Coinbase Wallet**
 
-Coinbase Wallet also has the web browser wallet. It has the same features as the mobile version.
+　Coinbase Walletにはウェブ ブラウザー ウォレットもあります。モバイル版と同じ機能を備えています。
 
-### Hardware Wallets
+### ハードウェア ウォレット
 
-The majority of mobile and browser wallets can be coupled with the higher security of hardware wallets: offline devices designed to never connect to the internet and built to resist tampering and other forms of physical attacks, providing a higher level of security. Several companies are building these kinds of devices, but two of the most widely used are Ledger and Trezor.
+　大半のモバイルおよびブラウザー ウォレットは、ハードウェア ウォレットの高いセキュリティと組み合わせることができます。ハードウェア ウォレットとは、インターネットに接続しないように設計されたオフライン デバイスであり、改ざんやその他の物理的攻撃に耐えるように作られており、より高いレベルのセキュリティを提供します。このようなデバイスを製造する企業は複数ありますが、最も広く使用されているのはLedgerとTrezorの2社です。
 
-## Conclusion
+## まとめ
 
-In this chapter, we explored Ethereum clients. You downloaded, installed, and synchronized a client, becoming a participant in the Ethereum network and contributing to the health and stability of the system by replicating the blockchain on your own computer.
+　この章では、Ethereumクライアントについて探りました。クライアントのダウンロード、インストール、同期を行い、Ethereumネットワークの参加者となり、自分のコンピューターにブロックチェーンを複製することでシステムの健全性と安定性に貢献しました。
 
-In the future, new types of Ethereum clients will be available since the research and development around Ethereum is huge. Interesting areas include:
+　将来的に、Ethereumに関する研究開発が非常に盛んであるため、新しいタイプのEthereumクライアントが登場するでしょう。興味深い分野には以下のものがあります。
 
-**History pruning**
+**履歴のプルーニング**
 
-Prune historical data to lower the storage requirement for a full node
+　フル ノードのストレージ要件を低減するために過去のデータを削除する
 
-**Verkle trees and statelessness**
+**Verkleツリーとステートレス性**
 
-Be able to verify a block without having the full Ethereum state
+　Ethereumの完全なステートを保持することなくブロックを検証できるようにする
 
 **zk-EVM**
 
-Verify the correctness of a block by verifying a zero-knowledge proof without having to reexecute all the transactions in the block
+　ブロック内のすべてのトランザクションを再実行することなく、ゼロ知識証明を検証することでブロックの正しさを検証する
 
-We’ll explore each of these concepts in the following chapters, but first, we need to uncover the true magic that makes all this possible: cryptography.
+　これらの概念については以降の章で探っていきますが、まずはこのすべてを可能にする真の魔法、すなわち暗号学について明らかにする必要があります。
