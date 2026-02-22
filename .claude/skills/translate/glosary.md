@@ -19,7 +19,7 @@
 | ether / ETH | ether / ETH |
 | gas | ガス |
 | fork | フォーク |
-| hard fork | ハード フォーク |
+| hard fork | ハードフォーク |
 | finality | ファイナリティ |
 | slot | スロット |
 | epoch | エポック |
@@ -35,10 +35,10 @@
 | safety | セーフティ |
 | reorg / reversion | リオーグ / リバージョン |
 | fork choice rule | フォーク選択ルール |
-| Genesis block | ジェネシス ブロック |
-| canonical chain | カノニカル チェーン |
+| Genesis block | ジェネシスブロック |
+| canonical chain | カノニカルチェーン |
 | supermajority | スーパーマジョリティ |
-| supermajority link | スーパーマジョリティ リンク |
+| supermajority link | スーパーマジョリティリンク |
 | justification | ジャスティフィケーション（正当化） |
 | finalization | ファイナライゼーション（確定） |
 | justified | 正当化された |
@@ -52,8 +52,8 @@
 | PBFT | PBFT |
 | MEV | MEV |
 | execution client | 実行クライアント |
-| consensus client | コンセンサス クライアント |
-| Beacon Chain | ビーコン チェーン |
+| consensus client | コンセンサスクライアント |
+| Beacon Chain | ビーコンチェーン |
 | Merge | マージ |
 | Gasper | Gasper |
 | LMD-GHOST | LMD-GHOST |
@@ -63,8 +63,8 @@
 | Vyper | Vyper |
 | DApps | DApps |
 | P2P | P2P |
-| difficulty bomb | ディフィカルティ ボム |
-| Dencun hard fork | Dencunハード フォーク |
+| difficulty bomb | ディフィカルティボム |
+| Dencun hard fork | Dencunハードフォーク |
 | proposer boost | proposer boost |
 | single-slot finality | single-slot finality |
 | Shapella | Shapella |
@@ -73,7 +73,7 @@
 | accountable safety | 説明責任のあるセーフティ |
 | plausible liveness | もっともらしいライブネス |
 | economic finality | 経済的ファイナリティ |
-| timing games | タイミング ゲーム |
+| timing games | タイミングゲーム |
 # Glossary
 
 | English Term | Japanese |
@@ -104,7 +104,7 @@
 | EVM (Ethereum Virtual Machine) | EVM（イーサリアム仮想マシン） |
 | DApp (Decentralized Application) | DApp（分散型アプリケーション） |
 | EOA (Externally Owned Account) | EOA（外部所有アカウント） |
-| contract account | コントラクト アカウント |
+| contract account | コントラクトアカウント |
 | nonce | ナンス |
 | block | ブロック |
 | mining | マイニング |
@@ -139,11 +139,11 @@
 | brute-force search | 総当たり探索 |
 | determinism | 決定性 |
 | Merkle tree | マークル木 |
-| Merkle root | マークル ルート |
+| Merkle root | マークルルート |
 | BLS signature | BLS署名 |
 | KZG commitment | KZGコミットメント |
-| polynomial commitment scheme | 多項式コミットメント スキーム |
-| trusted setup | トラステッド セットアップ |
+| polynomial commitment scheme | 多項式コミットメントスキーム |
+| trusted setup | トラステッドセットアップ |
 | data availability sampling (DAS) | データ可用性サンプリング（DAS） |
 | Layer 2 (L2) | レイヤー2（L2） |
 | blob transaction | blobトランザクション |
@@ -154,8 +154,8 @@
 | ECDSA | ECDSA |
 | secp256k1 | secp256k1 |
 | BLS12-381 | BLS12-381 |
-| ENS (Ethereum Name Service) | ENS（イーサリアム ネーム サービス） |
+| ENS (Ethereum Name Service) | ENS（イーサリアムネームサービス） |
 | hard fork | ハードフォーク |
 | roadmap | ロードマップ |
 | P2P (peer-to-peer) | P2P（ピアツーピア） |
-| gossip layer | ゴシップ レイヤー |
+| gossip layer | ゴシップレイヤー |

@@ -1,209 +1,209 @@
-# Chapter 11. Oracles
+# 第11章 オラクル
 
-In this chapter, we discuss *oracles*, which are systems that can provide external data sources to Ethereum smart contracts. The term *oracle* comes from Greek mythology, where it referred to a person in communication with the gods who could see visions of the future. In the context of blockchains, an oracle is a system that can answer questions that are external to Ethereum. Ideally, oracles are systems that are trustless, meaning that they do not need to be trusted because they operate on decentralized principles.
+　この章では、イーサリアムのスマートコントラクトに外部データソースを提供するシステムである*オラクル*について説明します。*オラクル*という用語はギリシャ神話に由来し、神々と通信して未来のビジョンを見ることができる人物を指していました。ブロックチェーンの文脈では、オラクルはイーサリアムの外部にある質問に答えることができるシステムです。理想的には、オラクルはトラストレスなシステムであり、分散化の原則に基づいて動作するため、信頼する必要がありません。
 
-## Why Oracles Are Needed
+## オラクルが必要な理由
 
-A key component of the Ethereum platform is the EVM, with its ability to execute programs and update the state of Ethereum, constrained by consensus rules, on any node in the decentralized network. To maintain consensus, EVM execution must be totally deterministic and based only on the shared context of the Ethereum state and signed transactions. This has two particularly important consequences: the first is that there can be no intrinsic source of randomness for the EVM and smart contracts to work with, and the second is that extrinsic data can only be introduced as the data payload of a transaction.
+　イーサリアムプラットフォームの重要な構成要素はEVMであり、分散ネットワーク内のあらゆるノードでコンセンサスルールに制約されながら、プログラムを実行しイーサリアムの状態を更新する能力を持っています。コンセンサスを維持するために、EVMの実行は完全に決定論的でなければならず、イーサリアムの状態と署名済みトランザクションという共有コンテクストのみに基づく必要があります。これには特に重要な2つの結果があります。1つ目は、EVMとスマートコントラクトが利用できるランダム性の固有のソースが存在しないこと、2つ目は、外部データはトランザクションのデータペイロードとしてのみ導入できることです。
 
-Let's unpack those two consequences further. To understand the prohibition of a true random function in the EVM to provide randomness for smart contracts, consider the effect on attempts to achieve consensus after the execution of such a function: node A would execute the command and store 3 on behalf of the smart contract in its storage, while node B, executing the same smart contract, would store 7 instead. Thus, nodes A and B would come to different conclusions about what the resulting state should be, despite having run exactly the same code in the same context. Indeed, it could be that a different resulting state would be achieved every time the smart contract is evaluated. As such, there would be no way for the network, with its multitude of nodes running independently around the world, to ever come to a decentralized consensus on what the resulting state should be. In practice, it would get much worse than this example very quickly because knock-on effects, including ether transfers, would build up exponentially.
+　この2つの結果についてさらに掘り下げてみましょう。EVMにおける真のランダム関数の禁止を理解するために、スマートコントラクトにランダム性を提供するそのような関数の実行後にコンセンサスを達成しようとした場合の影響を考えてみてください。ノードAはコマンドを実行してスマートコントラクトのストレージに3を格納する一方、同じスマートコントラクトを実行するノードBは代わりに7を格納します。したがって、ノードAとノードBは、まったく同じコードをまったく同じコンテクストで実行したにもかかわらず、結果の状態がどうあるべきかについて異なる結論に達します。実際には、スマートコントラクトが評価されるたびに異なる結果の状態が得られる可能性があります。そのため、世界中で独立して動作する多数のノードを持つネットワークが、結果の状態がどうあるべきかについて分散型のコンセンサスに到達する方法はありません。実際にはetherの送金を含む連鎖的な影響が指数関数的に蓄積されるため、この例よりもはるかに深刻な事態になります。
 
-Note that pseudorandom functions, such as cryptographically secure hash functions (which are deterministic and therefore can be—and indeed are—part of the EVM), are not enough for many applications. Take a gambling game that simulates coin flips to resolve bet payouts, which needs to randomize heads or tails: a block proposer can gain an advantage by playing the game and only including their transactions in blocks for which they will win. So how do we get around this problem? Well, all nodes can agree on the contents of signed transactions, so extrinsic information, including sources of randomness, price information, weather forecasts, and so on, can be introduced as the data part of transactions sent to the network. However, such data simply cannot be trusted because it comes from unverifiable sources. As such, we have just deferred the problem. We use oracles to attempt to solve these problems, which we will discuss in detail in the rest of this chapter.
+　暗号学的に安全なハッシュ関数のような擬似ランダム関数（決定論的であり、したがってEVMの一部となり得る、そして実際に一部である）は、多くのアプリケーションにとって十分ではないことに注意してください。賭けの支払いを解決するためにコイン投げをシミュレートするギャンブルゲームを考えてみましょう。このゲームは表か裏をランダム化する必要があります。ブロック提案者はゲームをプレイし、自分が勝つブロックにのみトランザクションを含めることで有利に立てます。では、この問題をどう回避するのでしょうか。すべてのノードは署名済みトランザクションの内容について合意できるため、ランダム性のソース、価格情報、天気予報などの外部情報は、ネットワークに送信されるトランザクションのデータ部分として導入できます。しかし、そのようなデータは検証不可能なソースから来ているため、単純に信頼することはできません。つまり、問題を先送りにしただけです。この章の残りの部分で詳しく説明するオラクルを使用して、これらの問題の解決を試みます。
 
-## Oracle Use Cases and Examples
+## オラクルのユースケースと例
 
-Oracles, ideally, provide a trustless (or at least near-trustless) way of getting extrinsic (i.e., "real-world" or off-chain) information, such as the results of football games, the price of gold, or truly random numbers, onto the Ethereum platform for smart contracts to use. They can also be used to relay data securely to DApp frontends directly. Oracles can therefore be thought of as a mechanism for bridging the gap between the off-chain world and smart contracts. Mostly, they are used to pass information between different blockchains, such as token prices.
+　オラクルは理想的には、フットボールの試合結果、金の価格、真の乱数など、外部の（すなわち「現実世界の」またはオフチェーンの）情報を、スマートコントラクトが使用できるようにイーサリアムプラットフォームに取り込むためのトラストレス（または少なくともほぼトラストレス）な方法を提供します。オラクルはDAppフロントエンドに直接データを安全に中継するためにも使用できます。したがって、オラクルはオフチェーンの世界とスマートコントラクトの間のギャップを埋めるメカニズムと考えることができます。オラクルは主に、トークン価格など、異なるブロックチェーン間で情報を受け渡すために使用されます。
 
-Allowing smart contracts to enforce contractual relationships based on real-world events and data broadens their scope dramatically. However, this can also introduce external risks to Ethereum's security model. Consider a "smart will" contract that distributes assets when a person dies. This is something frequently discussed in the smart contract space and highlights the risks of a trusted oracle. If the inheritance amount controlled by such a contract is high enough, the incentive to hack[^1] the oracle and trigger distribution of assets before the owner dies is very high.
+　スマートコントラクトが現実世界のイベントやデータに基づいて契約関係を強制できるようにすることで、スマートコントラクトの適用範囲は劇的に広がります。しかし、イーサリアムのセキュリティモデルに外部リスクをもたらす可能性もあります。人が亡くなった際に資産を分配する「スマート遺言」コントラクトを考えてみましょう。スマートコントラクトの分野で頻繁に議論されるこの事例は、信頼されたオラクルのリスクを浮き彫りにしています。そのようなコントラクトが管理する相続額が十分に高ければ、オラクルをハッキング[^1]して所有者が亡くなる前に資産の分配をトリガーするインセンティブは非常に高くなります。
 
-[^1]: This could also mean corrupting the human operator of a centralized oracle.
+[^1]: これは中央集権型オラクルの人間のオペレーターを買収することも意味し得る。
 
-Note that some oracles provide data that is particular to a specific private data source, such as academic certificates or government IDs. The source of such data, such as a university or government department, is fully trusted, and the truth of the data is subjective (truth is only determined by appeal to the authority of the source). Such data cannot therefore be provided trustlessly—that is, without trusting a source—as there is no independently verifiable objective truth. As such, we include these data sources in our definition of what counts as "oracles" because they also provide a data bridge for smart contracts. The data they provide generally takes the form of attestations, such as passports or records of achievement. Attestations will become a big part of the success of blockchain platforms in the future, particularly with regard to the related issues of verifying identity or reputation, so it is important to explore how they can be served by blockchain platforms.
+　一部のオラクルは、学業証明書や政府発行の身分証明書のような、特定の非公開データソースに固有のデータを提供することに注意してください。大学や政府機関のようなデータのソースは完全に信頼されており、データの真実性は主観的です（真実はソースの権威への訴えによってのみ決定されます）。したがって、そのようなデータはトラストレスに提供することはできません。つまり、ソースを信頼せずに提供することはできません。独立して検証可能な客観的真実が存在しないからです。そのため、スマートコントラクトへのデータブリッジも提供するという理由から、これらのデータソースも「オラクル」としてカウントされるものの定義に含めています。オラクルが提供するデータは一般的に、パスポートや業績記録のようなアテステーション（証明）の形を取ります。アテステーションは、特にアイデンティティやレピュテーションの検証に関連する問題において、ブロックチェーンプラットフォームの将来の成功の大きな部分を占めるようになるため、ブロックチェーンプラットフォームがどのようにアテステーションを提供できるかを探ることは重要です。
 
-Some more examples of data that oracles may provide include:
+　オラクルが提供し得るデータのその他の例を以下に示します:
 
-- Random numbers or entropy from physical sources, such as quantum or thermal processes (e.g., to fairly select a winner in a lottery smart contract)
+- 量子過程や熱過程などの物理的ソースからの乱数またはエントロピー（例: 宝くじスマートコントラクトの当選者を公正に選出するため）
 
-- Parametric triggers indexed to natural hazards (e.g., triggering of catastrophe bond smart contracts, such as Richter scale measurements for an earthquake bond)
+- 自然災害に連動するパラメトリックトリガー（例: 地震債券のリヒタースケール測定値のような大災害債券スマートコントラクトのトリガー）
 
-- Exchange rate data (e.g., for accurate pegging of cryptocurrencies to fiat currency)
+- 為替レートデータ（例: 暗号通貨の法定通貨への正確なペッギングのため）
 
-- Capital markets data (e.g., pricing baskets of tokenized assets or securities)
+- 資本市場データ（例: トークン化された資産や証券のバスケットの価格決定）
 
-- Benchmark reference data (e.g., incorporating interest rates into smart financial derivatives)
+- ベンチマーク参照データ（例: スマート金融デリバティブへの金利の組み込み）
 
-- Static or pseudostatic data (e.g., security identifiers, country codes, currency codes, etc.)
+- 静的または準静的データ（例: 証券識別子、国コード、通貨コードなど）
 
-- Time and interval data for event triggers grounded in precise time measurements
+- 正確な時間測定に基づくイベントトリガーの時刻およびインターバルデータ
 
-- Weather data (e.g., insurance premium calculations based on weather forecasts)
+- 気象データ（例: 天気予報に基づく保険料計算）
 
-- Political events for prediction-market resolution
+- 予測市場の解決のための政治イベント
 
-- Sporting events for prediction-market resolution and fantasy sports contracts
+- 予測市場の解決およびファンタジースポーツコントラクトのためのスポーツイベント
 
-- Geolocation data (e.g., as used in supply chain tracking)
+- ジオロケーションデータ（例: サプライチェーン追跡で使用）
 
-- Damage verification for insurance contracts
+- 保険コントラクトのための損害検証
 
-- Events occurring on other blockchains for interoperability functions
+- 相互運用性機能のための他のブロックチェーンで発生したイベント
 
-- Ether market price (e.g., for fiat gas price oracles)
+- Etherの市場価格（例: 法定通貨ガス価格オラクルのため）
 
-- Flight statistics (e.g., as used by groups and clubs for flight ticket pooling)
+- フライト統計データ（例: 航空券のプーリングのためにグループやクラブが使用）
 
-In the following sections, we will examine some of the ways oracles can be implemented, including basic oracle patterns, computation oracles, decentralized oracles, and oracle client implementations in Solidity.
+　以下のセクションでは、基本的なオラクルパターン、計算オラクル、分散型オラクル、SolidityでのオラクルClientの実装を含む、オラクルの実装方法のいくつかについて検討します。
 
-## Oracle Design Patterns
+## オラクルの設計パターン
 
-All oracles provide a few key functions by definition. These include the ability to:
+　すべてのオラクルは、定義上いくつかの主要な機能を提供します。これらには以下の能力が含まれます:
 
-- Collect data from an off-chain source
+- オフチェーンソースからデータを収集する
 
-- Transfer the data on chain with a signed message
+- 署名されたメッセージでデータをオンチェーンに転送する
 
-- Make the data available
+- データを利用可能にする
 
-Once the data is available in a smart contract, it can be accessed by other smart contracts via message calls that invoke a `retrieve` function of the oracle's smart contract; it can also be accessed by Ethereum nodes or network-enabled clients directly.
+　データがスマートコントラクトで利用可能になると、オラクルのスマートコントラクトの`retrieve`関数を呼び出すメッセージコールを通じて他のスマートコントラクトからアクセスできます。また、イーサリアムノードやネットワーク対応クライアントから直接アクセスすることもできます。
 
-The three main ways to set up an oracle can be categorized as immediate-read, publish-subscribe, and request-response.
+　オラクルを構築する3つの主要な方法は、即時読み取り、パブリッシュ-サブスクライブ、およびリクエスト-レスポンスに分類できます。
 
-### Immediate-Read
+### 即時読み取り
 
-Let's start with the simplest type of oracle. Immediate-read oracles are those that provide data that is needed only for an immediate decision, such as, "What is the address for ethereumbook.info?" or "Is this person over 18?" This is illustrated in Figure 11-1.
+　最もシンプルなタイプのオラクルから始めましょう。即時読み取りオラクルは、「ethereumbook.infoのアドレスは何ですか」や「この人は18歳以上ですか」のような、即座の判断にのみ必要なデータを提供するものです。図11-1にこれを示します。
 
-![Immediate-read oracle](images/ch11/maet_1101.png)
+![即時読み取りオラクル](images/ch11/maet_1101.png)
 
-Figure 11-1. Immediate-read oracle
+図11-1. 即時読み取りオラクル
 
-Those who wish to query this kind of data tend to do so on a "just-in-time" basis; the lookup is done when the information is needed and possibly never again. Examples of such oracles include those that hold data about or that are issued by organizations, such as academic certificates, dial codes, institutional memberships, airport identifiers, self-sovereign IDs, and the like.
+　この種のデータを照会したい人は、「ジャストインタイム」ベースで照会する傾向があります。情報が必要な時に照会が行われ、二度と行われないかもしれません。このようなオラクルの例には、学業証明書、ダイヤルコード、機関の会員資格、空港識別子、自己主権ID（self-sovereign ID）などの組織に関するデータや組織が発行したデータを保持するものがあります。
 
-This type of oracle stores data once in its contract storage where any other smart contract can look it up using a request call to the oracle contract. It may be updated. The data in the oracle's storage is also available for direct lookup by blockchain-enabled (i.e., Ethereum client–connected) applications without having to go through the palaver and incur the gas costs of issuing a transaction. A shop that needs to check the age of a customer who wants to purchase alcohol could use an oracle in this way. This type of oracle is attractive to an organization or company that might otherwise have to run and maintain servers to answer such data requests.
+　このタイプのオラクルは、他のスマートコントラクトがオラクルコントラクトへのリクエストコールを使用して検索できるように、データをコントラクトストレージに一度保存します。更新される可能性もあります。オラクルのストレージ内のデータは、トランザクションを発行する手間やガスコストを負担することなく、ブロックチェーン対応の（つまりイーサリアムクライアントに接続された）アプリケーションから直接検索することもできます。アルコールを購入しようとする顧客の年齢を確認する必要がある店舗は、この方法でオラクルを使用できます。このタイプのオラクルは、そうでなければそのようなデータリクエストに応答するためにサーバを運用・保守しなければならない組織や企業にとって魅力的です。
 
-Note that the data stored by the oracle is likely not to be the raw data that the oracle is serving—for efficiency or privacy reasons, for example. A university might set up an oracle for the certificates of academic achievement of past students. However, storing the full details of the certificates (which could run to pages of courses taken and grades achieved) would be excessive. Instead, a hash of the certificate is sufficient. Likewise, a government might want to put citizen IDs onto the Ethereum platform where clearly the details included need to be kept private. Again, hashing the data (more carefully, in Merkle trees with salts) and only storing the root hash in the smart contract's storage would be an efficient way to organize such a service.
+　オラクルが保存するデータは、効率性やプライバシーの理由から、オラクルが提供する生データそのものではない可能性が高いことに注意してください。大学は過去の学生の学業成績証明書のためにオラクルを設定するかもしれません。しかし、証明書の完全な詳細（履修したコースや取得した成績のページにも及ぶ可能性がある）を保存するのは過剰です。代わりに、証明書のハッシュで十分です。同様に、政府は市民IDをイーサリアムプラットフォーム上に置きたいと考えるかもしれませんが、含まれる詳細情報は明らかにプライベートに保つ必要があります。この場合も、データをハッシュ化し（ソルト付きのマークル木でより慎重に）、ルートハッシュのみをスマートコントラクトのストレージに保存することが、そのようなサービスを組織する効率的な方法です。
 
-### Publish-Subscribe
+### パブリッシュ-サブスクライブ
 
-The next setup is publish-subscribe, where an oracle that effectively provides a broadcast service for data that is expected to change (perhaps both regularly and frequently) is either polled by a smart contract on chain or watched by an off-chain daemon for updates, as shown in Figure 11-2.
+　次の構成はパブリッシュ-サブスクライブです。変更が予想される（おそらく定期的かつ頻繁に）データのブロードキャストサービスを効果的に提供するオラクルが、オンチェーンのスマートコントラクトによってポーリングされるか、オフチェーンのデーモンによって更新が監視されます。図11-2に示します。
 
-![Publish-subscribe oracle](images/ch11/maet_1102.png)
+![パブリッシュ-サブスクライブオラクル](images/ch11/maet_1102.png)
 
-Figure 11-2. Publish-subscribe oracle
+図11-2. パブリッシュ-サブスクライブオラクル
 
-> **Note**  
+> **注記**
 >
-> It is also possible to remove the off-chain daemon. The oracle can save the timestamp of the update and pass it to the smart contract when the data is being read. This way, the smart contract knows the last update of the data and can choose to use it or not.
+> オフチェーンのデーモンを削除することも可能である。オラクルは更新のタイムスタンプを保存し、データが読み取られる際にスマートコントラクトに渡すことができる。この方法で、スマートコントラクトはデータの最終更新日時を知り、使用するかどうかを選択できる。
 
-This category has a pattern similar to RSS feeds, WebSub, and the like, where the oracle is updated with new information and a flag signals that new data is available to those who consider themselves "subscribed." Interested parties must either poll the oracle to check whether the latest information has changed or listen for updates to oracle contracts and act when they occur. Examples include price feeds, weather information, economic or social statistics, traffic data, and so on.
+　このカテゴリはRSSフィード、WebSubなどと類似のパターンを持っています。オラクルは新しい情報で更新され、フラグが「サブスクライブ済み」と自認する人々に新しいデータが利用可能であることを通知します。関心のある当事者は、最新の情報が変更されたかどうかを確認するためにオラクルをポーリングするか、オラクルコントラクトへの更新をリッスンして発生時に対応する必要があります。例としては、価格フィード、気象情報、経済・社会統計、交通データなどがあります。
 
-Polling is very inefficient in the world of web servers but not so in the P2P context of blockchain platforms. Ethereum clients have to keep up with all state changes, including changes to contract storage, so polling for data changes is a local call to a synced client. Ethereum event logs make it particularly easy for applications to look out for oracle updates, so this pattern can in some ways even be considered a "push" service.
+　ポーリングはWebサーバの世界では非常に非効率的ですが、ブロックチェーンプラットフォームのP2Pコンテクストではそうではありません。イーサリアムクライアントはコントラクトストレージの変更を含むすべての状態変化に追従する必要があるため、データ変更のポーリングは同期済みクライアントへのローカルコールです。イーサリアムのイベントログにより、アプリケーションがオラクルの更新を監視することが特に容易になるため、このパターンはある意味で「プッシュ」サービスとさえ見なすことができます。
 
-### Request-Response
+### リクエスト-レスポンス
 
-The request-response category is the most complicated: this is where the data space is too huge to be stored in a smart contract and users are expected to need only a small part of the overall dataset at a time, as shown in Figure 11-3. It is also an applicable model for data-provider businesses.
+　リクエスト-レスポンスのカテゴリは最も複雑です。データ空間が大きすぎてスマートコントラクトに保存できず、ユーザーは一度にデータセット全体のごく一部しか必要としないことが予想される場合です。図11-3に示します。データプロバイダビジネスにも適用可能なモデルです。
 
-![Request-response oracle](images/ch11/maet_1103.png)
+![リクエスト-レスポンスオラクル](images/ch11/maet_1103.png)
 
-Figure 11-3. Request-response oracle
+図11-3. リクエスト-レスポンスオラクル
 
-In practical terms, such an oracle might be implemented as a system of on-chain smart contracts and off-chain infrastructure used to monitor requests and retrieve and return data. A request for data from a decentralized application would typically be an asynchronous process involving a number of steps. In this pattern, first an EOA transacts with a decentralized application, resulting in an interaction with a function defined in the oracle smart contract. This function initiates the request to the oracle, with the associated arguments detailing the data requested in addition to supplementary information that might include callback functions and scheduling parameters. Once this transaction has been validated, the oracle request can be observed as an EVM event emitted by the oracle contract or as a state change; the arguments can be retrieved and used to perform the actual query of the off-chain data source. The oracle may also require payment for processing the request, gas payment for the callback, and permissions to access the requested data. Finally, the resulting data is signed by the oracle owner, attesting to the validity of the data at a given time, and delivered in a transaction to the decentralized application that made the request—either directly or via the oracle contract, as shown in Figure 11-3. Depending on the scheduling parameters, the oracle may broadcast further transactions updating the data at regular intervals (e.g., end-of-day pricing information).
+　実際には、このようなオラクルは、オンチェーンのスマートコントラクトと、リクエストを監視してデータを取得・返却するために使用されるオフチェーンのインフラストラクチャのシステムとして実装される可能性があります。分散型アプリケーションからのデータリクエストは通常、複数のステップを含む非同期プロセスです。このパターンでは、まずEOAが分散型アプリケーションとトランザクションを行い、オラクルスマートコントラクトに定義された関数とのインタラクションが発生します。この関数はオラクルへのリクエストを開始し、リクエストされたデータの詳細を記述する関連引数に加えて、コールバック関数やスケジューリングパラメータを含む補足情報を伴います。このトランザクションが検証されると、オラクルリクエストはオラクルコントラクトが発行したEVMイベントとして、または状態変更として観察できます。引数を取得して、オフチェーンデータソースの実際のクエリを実行するために使用できます。オラクルはリクエストの処理に対する支払い、コールバックのためのガス支払い、リクエストされたデータへのアクセス許可も要求する場合があります。最終的に、結果のデータはオラクルの所有者によって署名され、特定の時点でのデータの有効性が証明され、リクエストを行った分散型アプリケーションにトランザクションで配信されます。配信は直接またはオラクルコントラクトを介して行われます（図11-3参照）。スケジューリングパラメータに応じて、オラクルは定期的にデータを更新するさらなるトランザクションをブロードキャストする場合があります（例: 日末の価格情報）。
 
-The steps for a request-response oracle can be summarized as follows:
+　リクエスト-レスポンスオラクルの手順は以下のように要約できます:
 
-1. Receive a query from a DApp.
+1. DAppからクエリを受信する。
 
-2. Parse the query.
+2. クエリを解析する。
 
-3. Check that payment and data access permissions are provided.
+3. 支払いとデータアクセス権限が提供されていることを確認する。
 
-4. Retrieve relevant data from an off-chain source (and encrypt it if necessary).
+4. オフチェーンソースから関連データを取得する（必要に応じて暗号化する）。
 
-5. Sign the transaction(s) with the data included.
+5. データを含むトランザクションに署名する。
 
-6. Broadcast the transaction(s) to the network.
+6. トランザクションをネットワークにブロードキャストする。
 
-7. Schedule any further necessary transactions, such as notifications and the like.
+7. 通知などのさらなる必要なトランザクションをスケジューリングする。
 
-A range of other schemes is also possible; for example, data can be requested from and returned directly by an EOA, removing the need for an oracle smart contract. Similarly, the request and response could be made to and from an Internet of Things–enabled hardware sensor. Therefore, oracles can be human, software, or hardware.
+　他にもさまざまなスキームが可能です。例えば、データはEOAから直接リクエストして返却することができ、オラクルスマートコントラクトが不要になります。同様に、リクエストとレスポンスはIoT対応のハードウェアセンサとの間で行うこともできます。したがって、オラクルは人間、ソフトウェア、またはハードウェアであり得ます。
 
-The request-response pattern described here is commonly seen in client-server architectures. While this is a useful messaging pattern that allows applications to have a two-way conversation, it is perhaps inappropriate under certain conditions. For example, a smart bond requiring an interest rate from an oracle might have to request the data on a daily basis under a request-response[^2] pattern to ensure that the rate is always correct. Given that interest rates change infrequently, a publish-subscribe pattern may be more appropriate here—especially when taking into consideration Ethereum's limited bandwidth.
+　ここで説明したリクエスト-レスポンスパターンは、クライアント-サーバアーキテクチャでよく見られます。アプリケーションが双方向の対話を行うことを可能にする有用なメッセージングパターンですが、特定の条件下では不適切な場合もあります。例えば、オラクルから金利を要求するスマート債券は、レートが常に正確であることを保証するために、リクエスト-レスポンス[^2]パターンの下で毎日データをリクエストしなければならない場合があります。金利はめったに変わらないため、ここではパブリッシュ-サブスクライブパターンの方がより適切かもしれません。特にイーサリアムの限られた帯域幅を考慮に入れると、なおさらです。
 
-[^2]: Due to this asynchronicity, the requesting DApp/contract needs to be designed to handle delayed responses and cannot expect data immediately in the same transaction.
+[^2]: この非同期性のため、リクエストを行うDApp/コントラクトは遅延レスポンスを処理できるように設計する必要があり、同じトランザクション内で即座にデータを期待することはできない。
 
-Publish-subscribe is a pattern where publishers (in this context, oracles) do not send messages directly to receivers but instead categorize published messages into distinct classes. Subscribers are able to express an interest in one or more classes and retrieve only those messages that are of interest. Under such a pattern, an oracle might write the interest rate to its own internal storage each time it changes. Multiple subscribed DApps can simply read it from the oracle contract, thereby reducing the impact on network bandwidth while minimizing storage costs.
+　パブリッシュ-サブスクライブは、パブリッシャー（このコンテクストではオラクル）がレシーバーに直接メッセージを送信するのではなく、公開されたメッセージを個別のクラスに分類するパターンです。サブスクライバーは1つ以上のクラスへの関心を表明し、関心のあるメッセージのみを取得できます。このようなパターンの下では、オラクルは金利が変更されるたびに自身の内部ストレージに書き込みます。複数のサブスクライブ済みDAppはオラクルコントラクトから読み取るだけでよく、ネットワーク帯域幅への影響を軽減しながらストレージコストも最小化できます。
 
-In a broadcast or multicast pattern, an oracle would post all messages to a channel, and subscribing contracts would listen to the channel under a variety of subscription modes. For example, an oracle might publish messages to a cryptocurrency exchange rate channel. A subscribing smart contract could request the full content of the channel if it required the time series for, say, a moving average calculation; another might require only the latest rate for a spot price calculation. A broadcast pattern is appropriate where the oracle does not need to know the identity of the subscribing contract.
+　ブロードキャストまたはマルチキャストパターンでは、オラクルはすべてのメッセージをチャネルに投稿し、サブスクライブするコントラクトはさまざまなサブスクリプションモードでチャネルをリッスンします。例えば、オラクルは暗号通貨の為替レートチャネルにメッセージを公開するかもしれません。サブスクライブするスマートコントラクトは、移動平均計算のための時系列が必要な場合にはチャネルの全コンテンツをリクエストでき、別のスマートコントラクトはスポット価格計算のための最新レートのみを必要とするかもしれません。ブロードキャストパターンは、オラクルがサブスクライブするコントラクトのアイデンティティを知る必要がない場合に適しています。
 
-## Data Authentication
+## データ認証
 
-If we assume that the source of data being queried by a DApp is both authoritative and trustworthy (a not insignificant assumption), an outstanding question remains: given that the oracle and the request-response mechanism may be operated by distinct entities, how are we able to trust this mechanism? There is a distinct possibility that data may be tampered with in transit, so it is critical that off-chain methods are able to attest to the returned data's integrity. Two common approaches to data authentication are *authenticity proofs* and *trusted execution environments* (TEEs).
+　DAppが照会するデータのソースが権威的かつ信頼できると仮定した場合（これは小さくない仮定です）、未解決の疑問が残ります。オラクルとリクエスト-レスポンスのメカニズムが異なるエンティティによって運用される可能性がある場合、このメカニズムをどのように信頼できるのでしょうか。データが転送中に改ざんされる可能性は十分にあるため、オフチェーンの方法が返却されたデータの完全性を証明できることが重要です。データ認証への2つの一般的なアプローチは、*真正性証明*（authenticity proofs）と*信頼できる実行環境*（TEE: Trusted Execution Environment）です。
 
-Authenticity proofs rely on cryptographic guarantees that data has not been altered on its way from the source to the blockchain. These proofs shift reliance from the transport mechanism to a verifiable attestor, such as a data provider, a secure third party, or even a decentralized network of nodes. By validating cryptographic signatures or zero-knowledge attestations on chain, a smart contract can confirm that the information it receives indeed comes from the proper authority and has not been tampered with, often without needing the original data source to implement special signing logic.
+　真正性証明は、データがソースからブロックチェーンに至る途中で改変されていないことを暗号学的に保証するものです。これらの証明は、転送メカニズムへの依存を、データプロバイダ、セキュアなサードパーティ、あるいは分散型ノードネットワークなどの検証可能な証明者へとシフトさせます。暗号署名やゼロ知識証明をオンチェーンで検証することにより、スマートコントラクトは受信した情報が確かに適切な権限者から来ており改ざんされていないことを確認できます。多くの場合、元のデータソースが特別な署名ロジックを実装する必要はありません。
 
-> **Note**  
+> **注記**
 >
-> One practical example would be Chainlink VRF. From the documentation on Chainlink, we can read, "For each request, Chainlink VRF generates one or more random values and cryptographic proof of how those values were determined. The proof is published and verified on-chain before any consuming applications can use it." So Chainlink VRF is able to prove how it generated the random value, and that is in fact an authenticity proof.
+> 実用的な例としてChainlink VRFがある。Chainlinkのドキュメントには、「各リクエストに対して、Chainlink VRFは1つ以上のランダム値と、それらの値がどのように決定されたかの暗号学的証明を生成する。証明はオンチェーンで公開・検証された後に、消費アプリケーションが使用できるようになる」と記載されている。つまりChainlink VRFはランダム値の生成方法を証明でき、これがまさに真正性証明である。
 >
-> Chainlink VRF works by having a deployed smart contract request a random number from the Chainlink oracle network, providing a hint that the oracle cannot predict. Each oracle uses its private key to generate a random number off chain and then publishes the result and a corresponding cryptographic proof on chain. The smart contract can use the oracle's public key and the original hint to verify that this random output has not been manipulated. Since the proof is validated entirely on chain, an attacker cannot tamper with the result without invalidating the cryptographic checks. In the event that a node is compromised or becomes unresponsive, its failure is recorded on chain, and it is ultimately excluded from providing further randomness.
+> Chainlink VRFは、デプロイされたスマートコントラクトがChainlinkオラクルネットワークにランダム数をリクエストし、オラクルが予測できないヒントを提供することで動作する。各オラクルは秘密鍵を使用してオフチェーンでランダム数を生成し、結果と対応する暗号学的証明をオンチェーンに公開する。スマートコントラクトはオラクルの公開鍵と元のヒントを使用して、このランダム出力が操作されていないことを検証できる。証明は完全にオンチェーンで検証されるため、攻撃者は暗号学的チェックを無効にすることなく結果を改ざんすることはできない。ノードが侵害されたり応答しなくなったりした場合、その障害はオンチェーンに記録され、最終的にそのノードはさらなるランダム性の提供から除外される。
 
-TEEs reinforce these guarantees by leveraging specialized hardware enclaves that protect and attest to code and data. When a computation runs inside such an enclave, the CPU ensures that outside processes cannot interfere with it or see the underlying data, thus preserving both integrity and confidentiality. The enclave can then provide a digitally signed "attestation" (or proof) that a particular piece of code, identified by a cryptographic hash, is running inside the secure environment. This allows smart contracts to have stronger assurances that any external data or computation hasn't been maliciously altered before arriving on chain. Secure enclaves also enable privacy features since sensitive inputs can be encrypted and processed inside the enclave without ever being revealed to the wider world.
+　TEEは、コードとデータを保護・証明する特殊なハードウェアエンクレーブを活用することで、これらの保証を強化します。計算がそのようなエンクレーブ内で実行されると、CPUは外部プロセスが計算に干渉したり基礎データを見たりできないようにし、完全性と機密性の両方を保持します。エンクレーブは、暗号学的ハッシュで識別される特定のコードがセキュアな環境内で実行されていることのデジタル署名された「アテステーション」（または証明）を提供できます。これにより、スマートコントラクトは、外部データや計算がオンチェーンに到着する前に悪意を持って改変されていないことについて、より強力な保証を得ることができます。セキュアエンクレーブはプライバシー機能も実現します。機密性の高い入力を暗号化し、エンクレーブ内で処理することで、外部に公開することなく処理できるためです。
 
-In many modern oracle networks, these methods can be combined to further strengthen data authentication. Some rely on decentralized sets of independent nodes that pull and verify data from different sources, then reach consensus on the correct result. This multioperator system greatly reduces the risk that a single bad actor could compromise the data feed since nodes are incentivized and often economically bonded to remain honest. Others incorporate advanced cryptographic protocols to prove that data was sourced from a particular endpoint without exposing the underlying details, thus reducing dependence on fully centralized verifiers. Certain network operators also deploy hardware enclaves to run their data-fetching logic, ensuring that even if the host environment is compromised, the final results submitted to the blockchain remain unaltered and can be independently verified.
+　多くの最新のオラクルネットワークでは、これらの方法を組み合わせてデータ認証をさらに強化できます。一部のオラクルネットワークは、異なるソースからデータを取得・検証する独立したノードの分散型セットに依存し、正しい結果についてコンセンサスに達します。このマルチオペレータシステムにより、単一の不正行為者がデータフィードを侵害するリスクが大幅に軽減されます。ノードはインセンティブを与えられ、多くの場合、正直であり続けるために経済的に結合されているからです。他のオラクルネットワークは、高度な暗号プロトコルを組み込み、基礎的な詳細を公開することなくデータが特定のエンドポイントからソースされたことを証明し、完全に中央集権化された検証者への依存を軽減します。特定のネットワークオペレータは、データ取得ロジックを実行するためにハードウェアエンクレーブも展開し、ホスト環境が侵害されても、ブロックチェーンに送信される最終結果が改変されず独立して検証できることを保証します。
 
-Regardless of the specific implementation, the biggest challenge is to ensure that any data retrieved and passed into a DApp is precise and trustworthy. Authenticity proofs provide a robust way to track and verify where and how data was obtained, while TEEs offer a hardware-backed means of safeguarding the entire process of collecting and relaying off-chain information.
+　具体的な実装にかかわらず、最大の課題は、DAppに取得・渡されるすべてのデータが正確で信頼できることを保証することです。真正性証明は、データがどこでどのように取得されたかを追跡・検証する堅牢な方法を提供し、TEEはオフチェーン情報の収集と中継のプロセス全体を保護するハードウェアに裏打ちされた手段を提供します。
 
-> **Warning**  
+> **警告**
 >
-> Because TEEs are relatively new, they remain largely untested and could contain numerous undiscovered vulnerabilities, making it likely that new exploits will be discovered and compromised in the future.
+> TEEは比較的新しいため、大部分はまだテストが不十分であり、多くの未発見の脆弱性が含まれている可能性がある。将来、新たなエクスプロイトが発見され侵害される可能性が高い。
 
-## Computation Oracles
+## 計算オラクル
 
-So far, we have only discussed oracles in the context of requesting and delivering data. However, oracles can also be used to perform arbitrary computation, a function that can be especially useful given Ethereum's inherent block gas limit and comparatively expensive computation costs. Rather than just relaying the results of a query, computation oracles can be used to perform computation on a set of inputs and return a calculated result that may have been infeasible to calculate on chain. For example, you could use a computation oracle to perform a computationally intensive regression calculation in order to estimate the yield of a bond contract.
+　ここまでは、データのリクエストと配信のコンテクストでのみオラクルについて説明してきました。しかし、オラクルは任意の計算を実行するためにも使用できます。この機能は、イーサリアムの固有のブロックガスリミットと比較的高い計算コストを考えると特に有用です。単にクエリの結果を中継するだけでなく、計算オラクルを使用して一連の入力に対して計算を実行し、オンチェーンでは計算が不可能であった可能性のある算出結果を返すことができます。例えば、計算オラクルを使用して計算集約的な回帰計算を実行し、債券コントラクトの利回りを推定できます。
 
-Lagrange and Brevis, known as *ZK coprocessors*, enable smart contracts to run intensive computations off chain while still ensuring on-chain verification. Brevis, for example, lets DApps request complex tasks or historical data without generating an upfront zero-knowledge proof. Instead, the network posts results "optimistically," assuming they are correct. Once the results are published on chain, there is a challenge window when anyone can dispute them. If the results are challenged, the proposer must then produce a full zero-knowledge proof to validate the outcome. If no proof is provided or if the proof shows that the initial results were incorrect, challengers are rewarded, and those who submitted false results are penalized. If no challenges arise, the results are accepted as valid, dramatically cutting down on the number of zero-knowledge proofs required and reducing costs.
+　*ZKコプロセッサ*として知られるLagrangeとBrevisは、スマートコントラクトがオンチェーンでの検証を保証しながら、集中的な計算をオフチェーンで実行できるようにします。例えばBrevisは、DAppが前もってゼロ知識証明を生成することなく、複雑なタスクや履歴データをリクエストできるようにします。代わりに、ネットワークは結果を「楽観的に」投稿し、正しいと仮定します。結果がオンチェーンに公開されると、誰でも異議を申し立てられるチャレンジ期間があります。結果が異議を申し立てられた場合、提案者は結果を検証するための完全なゼロ知識証明を作成する必要があります。証明が提供されない場合、または証明により初期結果が不正確であったことが示された場合、チャレンジャーは報酬を受け取り、偽の結果を提出した者はペナルティを受けます。異議が発生しなければ結果は有効として承認され、必要なゼロ知識証明の数を劇的に削減し、コストを低減します。
 
-## Decentralized Oracles
+## 分散型オラクル
 
-While centralized data or computation oracles suffice for many applications, they represent single points of failure in the Ethereum network. A number of schemes have been proposed around the idea of decentralized oracles as a means of ensuring data availability and the creation of a network of individual data providers with an on-chain data aggregation system.
+　中央集権型のデータまたは計算オラクルは多くのアプリケーションには十分ですが、イーサリアムネットワークにおける単一障害点となります。データの可用性を確保し、個々のデータプロバイダのネットワークとオンチェーンのデータ集約システムを構築する手段として、分散型オラクルのアイデアを中心にいくつかのスキームが提案されています。
 
-Chainlink has proposed a decentralized oracle network consisting of three key smart contracts—a reputation contract, an order-matching contract, and an aggregation contract—and an off-chain registry of data providers. The reputation contract is used to keep track of data providers' performance. Scores in the reputation contract are used to populate the off-chain registry. The order-matching contract selects bids from oracles using the reputation contract. It then finalizes a service-level agreement, which includes query parameters and the number of oracles required. This means that the purchaser needn't transact with the individual oracles directly. The aggregation contract collects responses (submitted using a commit-reveal scheme) from multiple oracles, calculates the final collective result of the query, and finally feeds the results back into the reputation contract.
+　Chainlinkは、レピュテーションコントラクト、注文マッチングコントラクト、集約コントラクトの3つの主要なスマートコントラクトと、データプロバイダのオフチェーンレジストリで構成される分散型オラクルネットワークを提案しています。レピュテーションコントラクトはデータプロバイダのパフォーマンスを追跡するために使用されます。レピュテーションコントラクトのスコアはオフチェーンレジストリにデータを供給します。注文マッチングコントラクトはレピュテーションコントラクトを使用してオラクルからの入札を選択します。その後、クエリパラメータと必要なオラクルの数を含むサービスレベルアグリーメントを確定します。これは、購入者が個々のオラクルと直接トランザクションを行う必要がないことを意味します。集約コントラクトは複数のオラクルからのレスポンス（コミット-リビールスキームを使用して送信される）を収集し、クエリの最終的な集合結果を計算し、最終的に結果をレピュテーションコントラクトにフィードバックします。
 
-One of the main challenges with such a decentralized approach is the formulation of the aggregation function. Chainlink proposes calculating a weighted response, allowing a validity score to be reported for each oracle response. Detecting an invalid score here is nontrivial since that relies on the premise that outlying data points, measured by deviations from responses provided by peers, are incorrect. Calculating a validity score based on the location of an oracle response among a distribution of responses risks penalizing correct answers over average ones. Therefore, Chainlink offers a standard set of aggregation contracts but also allows customized aggregation contracts to be specified.
+　このような分散型アプローチの主要な課題の1つは、集約関数の定式化です。Chainlinkは加重レスポンスの計算を提案しており、各オラクルのレスポンスに対して有効性スコアを報告できるようにしています。無効なスコアの検出は自明ではありません。ピアが提供したレスポンスからの偏差で測定される外れ値のデータポイントが不正であるという前提に依存しているためです。レスポンスの分布の中でのオラクルレスポンスの位置に基づいて有効性スコアを計算すると、平均的な回答よりも正しい回答にペナルティを科すリスクがあります。したがって、Chainlinkは標準的な集約コントラクトのセットを提供していますが、カスタマイズされた集約コントラクトの指定も可能にしています。
 
-A related idea is the *SchellingCoin protocol*. Here, multiple participants report values, and the median is taken as the "correct" answer. Reporters are required to provide a deposit that is redistributed in favor of values that are closer to the median, therefore incentivizing the reporting of values that are similar to others. A common value, also known as the *Schelling point*, which respondents might consider as the natural and obvious target around which to coordinate, is expected to be close to the actual value.
+　関連するアイデアとして*シェリングコインプロトコル*があります。ここでは、複数の参加者が値を報告し、中央値が「正しい」回答として採用されます。報告者はデポジットを提供する必要があり、中央値に近い値に有利になるように再分配されるため、他の参加者と類似した値の報告にインセンティブが与えられます。回答者が調整のための自然で明白な目標と考える*シェリングポイント*と呼ばれる共通の値は、実際の値に近いと予想されます。
 
-## Cross-Chain Messaging Protocols
+## クロスチェーンメッセージングプロトコル
 
-Numerous applications frequently call for data transfers and interactions among several chains, each with its own community governance, consensus rules, and token standards. Cross-chain protocols have emerged as critical tools for facilitating communication among blockchains, allowing smart contracts and decentralized applications to access a wider range of services, liquidity, and data. While oracles bridge external information into a single blockchain, cross-chain protocols extend that concept by connecting entire ecosystems.
+　多くのアプリケーションは、それぞれ独自のコミュニティガバナンス、コンセンサスルール、トークン標準を持つ複数のチェーン間でのデータ転送やインタラクションを頻繁に必要とします。クロスチェーンプロトコルは、ブロックチェーン間の通信を促進する重要なツールとして登場し、スマートコントラクトや分散型アプリケーションがより広範なサービス、流動性、データにアクセスできるようにしています。オラクルが外部情報を単一のブロックチェーンにブリッジするのに対し、クロスチェーンプロトコルはエコシステム全体を接続することでその概念を拡張しています。
 
-One way to understand cross-chain protocols is as specialized "communication layers" that connect blockchains. Instead of being used solely to ingest external data, these protocols facilitate the transfer of information between chains.
+　クロスチェーンプロトコルを理解する1つの方法は、ブロックチェーンを接続する特殊な「通信レイヤー」として捉えることです。外部データを取り込むためだけに使用されるのではなく、チェーン間の情報転送を促進するプロトコルです。
 
-Among the popular cross-chain initiatives, LayerZero offers a framework for lightweight message passing across blockchains. It aims to provide a more efficient and flexible interoperability layer by focusing on the "transport" and "validation" of messages. LayerZero's design revolves around two key off-chain entities—the Oracle and the Relayer—that collaborate to verify cross-chain transactions, as illustrated in Figure 11-4.
+　人気のあるクロスチェーンイニシアチブの中で、LayerZeroはブロックチェーン間の軽量メッセージパッシングのフレームワークを提供しています。メッセージの「トランスポート」と「バリデーション」に焦点を当てることで、より効率的で柔軟な相互運用性レイヤーを提供することを目指しています。LayerZeroの設計は、クロスチェーントランザクションを検証するために協力する2つの主要なオフチェーンエンティティ、OracleとRelayerを中心に構成されています。図11-4に示します。
 
-![LayerZero cross-chain architecture](images/ch11/maet_1104.png)
+![LayerZeroクロスチェーンアーキテクチャ](images/ch11/maet_1104.png)
 
-Figure 11-4. LayerZero cross-chain architecture
+図11-4. LayerZeroクロスチェーンアーキテクチャ
 
-The Oracle performs an independent query on a transaction's proof or block header, whereas the Relayer passes the proof itself. A user-configurable set of Oracles and Relayers can be used to decentralize trust. If the Oracle and Relayer provide the same data, LayerZero's smart contracts on the destination chain accept the message as valid, allowing developers to create complex interoperability solutions without relying on a single bridging provider or centralized entity.
+　Oracleはトランザクションの証明またはブロックヘッダに対する独立したクエリを実行し、Relayerは証明自体を渡します。信頼を分散化するために、ユーザーが設定可能なOracleとRelayerのセットを使用できます。OracleとRelayerが同じデータを提供した場合、宛先チェーン上のLayerZeroのスマートコントラクトはメッセージを有効として受け入れ、開発者は単一のブリッジングプロバイダや中央集権的なエンティティに依存することなく、複雑な相互運用性ソリューションを作成できます。
 
-Another well-known project, Wormhole, originated to enable transfers primarily between Solana and Ethereum. It has since expanded to include other networks, such as Binance Smart Chain, Hyperliquid, and Avalanche. Wormhole's approach is based on a network of guardians that monitor events on a single chain and sign messages attesting to them. Once enough guardians have signed, the attestation is considered valid, allowing the corresponding event (such as a token transfer) to be recognized on the destination chain, as illustrated in Figure 11-5. This scheme can help not only with token bridging but also with more complex tasks, such as cross-chain governance proposals and NFT transfers. Wormhole seeks to reduce the risk of a single point of failure by utilizing the combined security of several guardians; however, this necessitates careful selection and upkeep of guardian sets.
+　もう1つの有名なプロジェクトであるWormholeは、主にSolanaとイーサリアム間の転送を可能にするために誕生しました。その後、Binance Smart Chain、Hyperliquid、Avalancheなどの他のネットワークにも拡大しています。Wormholeのアプローチは、単一のチェーン上のイベントを監視し、イベントを証明するメッセージに署名するガーディアンのネットワークに基づいています。十分な数のガーディアンが署名すると、アテステーションは有効と見なされ、対応するイベント（トークン転送など）が宛先チェーンで認識されるようになります。図11-5に示します。このスキームはトークンブリッジングだけでなく、クロスチェーンガバナンス提案やNFT転送などのより複雑なタスクにも役立ちます。Wormholeは複数のガーディアンの複合的なセキュリティを活用することで単一障害点のリスクを軽減しようとしていますが、ガーディアンセットの慎重な選定と維持が必要です。
 
-![Wormhole cross-chain architecture](images/ch11/maet_1105.png)
+![Wormholeクロスチェーンアーキテクチャ](images/ch11/maet_1105.png)
 
-Figure 11-5. Wormhole cross-chain architecture
+図11-5. Wormholeクロスチェーンアーキテクチャ
 
-Chainlink's Cross-Chain Interoperability Protocol (CCIP) builds on the organization's existing oracle network to provide a generalized framework for secure messaging and token transfers between blockchains. Its focus is on delivering a high level of trust minimization, relying on decentralized oracles to verify events across different networks. CCIP can lock or burn tokens on a source chain, then mint or unlock them on the destination chain, making it possible for DApps to extend their functionalities across multiple ecosystems. By reusing the robust infrastructure that Chainlink has developed for decentralized data feeds and verifiable randomness, CCIP offers a natural path for projects already relying on these services to expand into cross-chain operations.
+　ChainlinkのCross-Chain Interoperability Protocol（CCIP）は、組織の既存のオラクルネットワークを基盤として、ブロックチェーン間のセキュアなメッセージングとトークン転送のための汎用フレームワークを提供しています。異なるネットワーク間のイベントを検証するために分散型オラクルに依存し、高レベルの信頼最小化の提供に焦点を当てています。CCIPはソースチェーン上でトークンをロックまたはバーンし、宛先チェーン上でミントまたはアンロックできるため、DAppが複数のエコシステムにまたがって機能を拡張することが可能になります。Chainlinkが分散型データフィードや検証可能なランダム性のために開発した堅牢なインフラストラクチャを再利用することで、CCIPはこれらのサービスにすでに依存しているプロジェクトがクロスチェーン操作に拡大するための自然なパスを提供します。
 
-> **Note**  
+> **注記**
 >
-> Circle's Cross-Chain Transfer Protocol (CCTP) is also worth mentioning. It works similarly to CCIP, but its use is primarily to bridge USDC between different chains. CCTP has been integrated by Chainlink into CCIP.
+> CircleのCross-Chain Transfer Protocol（CCTP）も言及に値する。CCIPと同様に動作するが、主にUSDCを異なるチェーン間でブリッジするために使用される。CCTPはChainlinkによってCCIPに統合されている。
 
-Alongside these protocols, an increasing number of interoperability layers and bridging solutions are available, each of which fills a slightly different niche. Projects like Polkadot and Cosmos, for instance, were built from the ground up with cross-chain capabilities, utilizing designs like parachains and hubs to promote seamless asset and data exchange. The Inter-Blockchain Communication (IBC) protocol in Cosmos uses client verification, where each connected chain stores "light clients" of other chains. Polkadot secures parachains via a shared set of validators in the Relay Chain, bundling transactions from each parachain into a unified consensus. These architectures prioritize scalability and security but introduce their own learning curves, especially for developers who are accustomed to Ethereum-like environments.
+　これらのプロトコルに加えて、それぞれわずかに異なるニッチを埋める、増加し続ける相互運用性レイヤーやブリッジングソリューションが利用可能です。例えば、PolkadotやCosmosのようなプロジェクトは、パラチェーンやハブのような設計を活用してシームレスな資産とデータの交換を促進するために、最初からクロスチェーン機能を備えて構築されました。CosmosのInter-Blockchain Communication（IBC）プロトコルはクライアント検証を使用し、接続された各チェーンが他のチェーンの「ライトクライアント」を保存します。Polkadotはリレーチェーン内のバリデーターの共有セットを通じてパラチェーンを保護し、各パラチェーンからのトランザクションを統一されたコンセンサスにバンドルします。これらのアーキテクチャはスケーラビリティとセキュリティを優先していますが、特にイーサリアムライクな環境に慣れている開発者にとっては、独自の学習曲線を伴います。
 
-## Conclusion
+## まとめ
 
-As you can see, cross-chain protocols and oracles give smart contracts an essential function by bringing outside information into the contract's execution. With that, of course, oracles also introduce a significant risk—if they are trusted sources and can be compromised, they can result in compromised execution of the smart contracts they feed. When you are considering using an oracle, you should generally be very careful about the trust model. Your smart contract may be vulnerable to potentially erroneous inputs if you presume the oracle can be relied upon. However, if the security assumptions are carefully thought out, oracles can be very helpful.
+　ご覧のように、クロスチェーンプロトコルとオラクルは、外部情報をコントラクトの実行に取り込むことで、スマートコントラクトに不可欠な機能を提供しています。もちろん、オラクルは重大なリスクも伴います。信頼されたソースであり侵害される可能性がある場合、オラクルはフィードするスマートコントラクトの実行が侵害される結果をもたらす可能性があります。オラクルの使用を検討する際は、信頼モデルについて十分に注意する必要があります。オラクルが信頼できると仮定すると、スマートコントラクトは潜在的に誤った入力に対して脆弱になる可能性があります。しかし、セキュリティの前提条件が慎重に検討されれば、オラクルは非常に役立ちます。
 
-Decentralized oracles can resolve some of these concerns and offer trustless external data for Ethereum smart contracts. Choose carefully, and you can start exploring the bridge between Ethereum and the "real world" that oracles offer.
+　分散型オラクルはこれらの懸念の一部を解決し、イーサリアムのスマートコントラクトにトラストレスな外部データを提供できます。慎重に選択すれば、オラクルが提供するイーサリアムと「現実世界」の間のブリッジの探索を始めることができます。
 
-We also looked at how cross-chain protocols act as a bridge between Ethereum and other ecosystems, carrying over much of the potential and risk associated with oracles but expanding the range of use cases and functionalities even further.
+　また、クロスチェーンプロトコルがイーサリアムと他のエコシステムの間のブリッジとしてどのように機能するかも見てきました。オラクルに関連する潜在性とリスクの多くを引き継ぎながら、ユースケースと機能の範囲をさらに拡大しています。

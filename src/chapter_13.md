@@ -1,95 +1,95 @@
-# Chapter 13. Decentralized Finance
+# 第13章 分散型金融（DeFi）
 
-Ethereum's smart contracts have opened up a world of possibilities beyond simple cryptocurrency transactions. *Decentralized finance* (DeFi) takes this to the next level by creating a complete financial ecosystem that operates entirely on the blockchain. Imagine traditional financial services like lending, borrowing, trading, and investing but without the need for banks, brokers, or any centralized authority. Instead, smart contracts on the Ethereum blockchain handle everything, bringing about a new era of financial autonomy and innovation.
+　イーサリアムのスマートコントラクトは、単純な暗号通貨の取引を超えた可能性の世界を切り開きました。*分散型金融*（DeFi）は、ブロックチェーン上で完全に動作する包括的な金融エコシステムを構築することで、この可能性をさらに一段上へと引き上げています。貸し付け、借り入れ、取引、投資といった従来の金融サービスを、銀行やブローカー、あるいはいかなる中央集権的な機関も必要とせずに提供することを想像してみてください。イーサリアムブロックチェーン上のスマートコントラクトがすべてを処理し、金融における自律性とイノベーションの新時代をもたらしています。
 
-This decentralized approach democratizes access to financial services and introduces a level of transparency and security that is often missing in traditional finance. Every transaction on the blockchain is publicly recorded and immutable, allowing anyone to verify the authenticity and integrity of the data. This level of transparency reduces the risk of fraud and corruption, creating a more trustworthy financial environment.
+　この分散型のアプローチは、金融サービスへのアクセスを民主化し、従来の金融では欠けていることが多い透明性とセキュリティをもたらします。ブロックチェーン上のすべてのトランザクションは公開的に記録され、変更不可能であるため、誰でもデータの真正性と完全性を検証できます。この透明性により、不正や腐敗のリスクが低減し、より信頼性の高い金融環境が構築されます。
 
-DeFi also opens opportunities for financial inclusion on a global scale. In regions where traditional banking infrastructure is underdeveloped or inaccessible, DeFi provides a viable alternative. People can participate in the global economy using just a smartphone and an internet connection. This capability can potentially uplift millions by providing access to credit, savings accounts, and investment opportunities that were previously out of reach. The programmability of Ethereum's smart contracts allows for the creation of complex financial instruments and services that are difficult or impossible to implement in the traditional financial system.
+　DeFiはまた、グローバル規模での金融包摂の機会を開きます。従来の銀行インフラが未発達またはアクセス不可能な地域では、DeFiが実行可能な代替手段を提供します。人々はスマートフォンとインターネット接続さえあれば、グローバル経済に参加できます。この能力は、以前は手が届かなかった信用、貯蓄口座、投資機会へのアクセスを提供することで、何百万もの人々を潜在的に向上させることができます。イーサリアムのスマートコントラクトのプログラマビリティにより、従来の金融システムでは実装が困難または不可能な複雑な金融商品やサービスの作成が可能になります。
 
-Currently, the primary users of DeFi are probably not the underbanked or unbanked populations of developing countries, but rather individuals from first-world nations looking to capitalize on the highly speculative nature of cryptocurrencies. While there will always be room for speculation, it's important to ensure that inclusive financial products are accessible to everyone worldwide.
+　現在、DeFiの主要なユーザーは、おそらく発展途上国の銀行口座を持たない人々ではなく、暗号通貨の高度に投機的な性質を利用しようとする先進国の個人です。投機の余地は常にありますが、包括的な金融商品が世界中の誰もがアクセスできるようにすることが重要です。
 
-## DeFi Versus Traditional Finance
+## DeFiと従来の金融の比較
 
-DeFi is the cryptopunk response to the traditional financial (TradFi) system, representing a field that is still evolving but has already found its niche of dedicated users and innovative builders. The distinction between DeFi and TradFi is complex. However, the most significant differences lie in the mediums of exchange and the inherent properties of the blockchain, such as openness and transparency. DeFi primarily uses cryptocurrencies, which are often decentralized to varying degrees, while TradFi relies on fiat currencies, which are always centralized to the maximum degree.
+　DeFiは、従来の金融（TradFi）システムに対する暗号パンクの回答であり、まだ進化中ではあるものの、すでに熱心なユーザーと革新的なビルダーの独自のニッチを見つけている分野です。DeFiとTradFiの区別は複雑です。しかし、最も重要な違いは交換媒体とブロックチェーンの固有の特性（オープン性や透明性など）にあります。DeFiは主に暗号通貨を使用し、暗号通貨はさまざまな程度で分散化されていることが多いのに対し、TradFiは法定通貨に依存しており、法定通貨は常に最大限に中央集権化されています。
 
-TradFi systems often have high barriers to entry. Opening a bank account, obtaining a loan, or investing in financial markets typically requires significant documentation and compliance with various regulatory requirements. This process can exclude large segments of the global population, particularly those in underbanked regions. This can be seen in Figure 13-1.
+　TradFiシステムは、多くの場合、参入障壁が高いです。銀行口座の開設、ローンの取得、金融市場への投資には、通常、多くの書類と各種規制要件への準拠が必要です。このプロセスは、特に銀行サービスが行き届いていない地域の人々を中心に、世界の人口の大部分を排除する可能性があります。これは図13-1で確認できます。
 
 ![Traditional finance versus DeFi loan requirements](images/ch13/maet_1301.png)
 
-Figure 13-1. Traditional finance versus DeFi loan requirements
+図13-1. 従来の金融とDeFiのローン要件
 
-A regular user needs many prerequisites to open a loan application, such as an ID, a provable physical address, a Social Security number, a bank account, signed documents, and a good credit score. Even with all these, the request might still be denied, and if it is approved, that will probably take a long time to happen.
+　一般的なユーザーがローンを申し込むには、身分証明書、証明可能な住所、社会保障番号、銀行口座、署名済み書類、良好なクレジットスコアなど、多くの前提条件が必要です。これらすべてを揃えても、リクエストが拒否される可能性があり、承認されたとしても、おそらく長い時間がかかります。
 
-In DeFi, only three prerequisites are needed: a phone, an internet connection, and enough assets to overcollateralize the loan. Once these are in place, the loan is instant, decentralized, and permissionless.
+　DeFiでは、必要な前提条件は3つだけです。電話、インターネット接続、そしてローンを過剰担保するのに十分な資産です。これらが揃えば、ローンは即時、分散型、かつパーミッションレスです。
 
-DeFi, by design, is more accessible. Anyone with an internet connection can interact with DeFi protocols, which opens financial services to billions of people who are excluded from the traditional system. The high accessibility of DeFi makes it difficult or impossible to apply TradFi's mechanisms for assessing creditworthiness and resolving fraud, which some view as a drawback and others as an improvement.
+　DeFiは設計上、よりアクセスしやすくなっています。インターネット接続さえあれば誰でもDeFiプロトコルとやり取りでき、従来のシステムから排除されている何十億もの人々に金融サービスを開放します。DeFiの高いアクセス性は、TradFiの信用力評価や不正解決のメカニズムを適用することを困難または不可能にしており、ある人々はこれを欠点と見なし、別の人々は改善と見なしています。
 
-Another fascinating aspect of DeFi is its ability to create new financial instruments that are impossible within the traditional financial system. For example, flash loans allow users to borrow funds without collateral as long as the loan is repaid within the same transaction. This capability, which is unique to DeFi, opens a range of possibilities for arbitrage, collateral swaps, and other complex financial maneuvers that simply cannot be replicated in TradFi.
+　DeFiのもう1つの魅力的な側面は、従来の金融システムでは不可能な新しい金融商品を作り出す能力です。たとえば、フラッシュローンは、ローンが同一トランザクション内で返済される限り、担保なしで資金を借りることができます。DeFiに固有のこの機能は、裁定取引、担保スワップ、その他の複雑な金融操作の可能性を広げるものであり、TradFiでは単純に再現できません。
 
-## DeFi Primitives
+## DeFiの基本要素
 
-While cryptocurrencies like Bitcoin aim to improve and decentralize the concept of money, DeFi projects build on this foundation to decentralize and improve financial services. To fully grasp the financial services offered by DeFi, it is essential to understand several key concepts.
+　Bitcoinのような暗号通貨が貨幣の概念を改善し分散化することを目指す一方で、DeFiプロジェクトはこの基盤の上に構築し、金融サービスを分散化し改善します。DeFiが提供する金融サービスを完全に理解するには、いくつかの重要な概念を理解する必要があります。
 
-### Acceptability of Tokens in DeFi
+### DeFiにおけるトークンの受容性
 
-In Ethereum's DeFi ecosystem, each token operates as a distinct contract. This can cause confusion for beginners since there may be tokens with similar names and functions that are, in reality, entirely different forms of money.
+　イーサリアムのDeFiエコシステムでは、各トークンは個別のコントラクトとして動作します。名前や機能が類似しているものの、実際にはまったく異なる形態の通貨であるトークンが存在する可能性があるため、初心者には混乱を招くことがあります。
 
-Take, for instance, the Arbitrum rollup on Ethereum, where two tokens, USDC.e and USDC, appear almost identical but differ significantly in terms of risk and acceptability. Both USDC.e and USDC aim to maintain a value pegged to one dollar. However, USDC is natively issued on the Arbitrum chain, while USDC.e is a bridged version of USDC, representing tokens that have been transferred from another chain to Arbitrum.
+　たとえば、イーサリアム上のArbitrumロールアップでは、USDC.eとUSDCという2つのトークンがほぼ同一に見えますが、リスクと受容性の点で大きく異なります。USDC.eとUSDCの両方とも1ドルにペッグされた価値を維持することを目指しています。しかし、USDCはArbitrumチェーン上でネイティブに発行されているのに対し、USDC.eはUSDCのブリッジ版であり、別のチェーンからArbitrumに転送されたトークンを表しています。
 
-The risk profiles of these two tokens are markedly different. USDC.e carries all the inherent risks of USDC but adds the additional risk associated with the bridging process, such as the potential for smart contract vulnerabilities. Acceptability, defined by how widely a coin or token is accepted across various DeFi financial services, also varies between the two. Some protocols may only support USDC.e, others may exclusively support USDC, and some may accept both.
+　これら2つのトークンのリスクプロファイルは著しく異なります。USDC.eはUSDC固有のすべてのリスクを抱えつつ、スマートコントラクトの脆弱性の可能性など、ブリッジプロセスに関連する追加リスクも負っています。各種DeFi金融サービスでコインやトークンがどの程度広く受け入れられているかを示す受容性も、両者で異なります。一部のプロトコルはUSDC.eのみをサポートし、別のプロトコルはUSDCのみをサポートし、両方を受け入れるプロトコルもあります。
 
-### Decentralized Exchanges
+### 分散型取引所
 
-A *decentralized exchange* (DEX) is a platform where you can trade cryptocurrencies directly with other users without needing a central authority or intermediary. Instead of relying on a company to facilitate the trades, DEXs use smart contracts to manage transactions automatically. This allows you to maintain control of your funds.
+　*分散型取引所*（DEX）は、中央機関や仲介者を必要とせずに、他のユーザーと直接暗号通貨を取引できるプラットフォームです。企業に取引の仲介を依頼する代わりに、DEXはスマートコントラクトを使用してトランザクションを自動的に管理します。これにより、ユーザーは自分の資金の管理権を維持できます。
 
-#### The Evolution of DEXs
+#### DEXの進化
 
-If you have ever traded on a centralized exchange, you are familiar with the order book model. In this model, buy and sell orders are listed with the prices users are willing to pay or accept. When a buy order matches a sell order, the trade is executed. The order book shows all pending orders, allowing traders to see market depth and liquidity.
+　中央集権型取引所で取引したことがあれば、オーダーブックモデルに馴染みがあるでしょう。このモデルでは、買い注文と売り注文が、ユーザーが支払いたいまたは受け入れたい価格とともにリストされます。買い注文と売り注文が一致すると、取引が執行されます。オーダーブックはすべての未決注文を表示し、トレーダーは市場の深さと流動性を確認できます。
 
-On chain, this model never really caught on because blockchains are much slower and more expensive to use than traditional websites. The latency in trading on the order book and the need to pay for the transaction of every order made the user experience terrible. In 2017–2018, EtherDelta attempted to implement an on-chain order book, and a few other pure order book models were tried afterward, but they didn't gain much traction.
+　オンチェーンでは、ブロックチェーンが従来のウェブサイトよりもはるかに遅く、使用コストが高いため、このモデルは本格的に普及しませんでした。オーダーブックでの取引のレイテンシと、すべての注文のトランザクションに対する手数料の支払いの必要性により、ユーザー体験は劣悪なものでした。2017年から2018年にかけて、EtherDeltaがオンチェーンオーダーブックの実装を試み、その後いくつかの純粋なオーダーブックモデルが試されましたが、大きな牽引力を得ることはありませんでした。
 
-Bancor was the first to pioneer the *automated market maker* (AMM) model. Unlike the order book model, AMMs don't rely on buyers and sellers placing orders. Instead, they use liquidity pools, where users provide pairs of tokens.[^1] The prices are determined by a formula based on the ratio of tokens in the pool. This model allows for continuous liquidity and trading.
+　Bancorは、*自動マーケットメーカー*（AMM）モデルを最初に開拓しました。オーダーブックモデルとは異なり、AMMは買い手と売り手による注文の発注に依存しません。代わりに、ユーザーがトークンのペアを提供する流動性プールを使用します。[^1]価格はプール内のトークンの比率に基づく数式で決定されます。このモデルにより、継続的な流動性と取引が可能になります。
 
-Uniswap significantly improved and popularized the AMM model with its simple yet effective *x × y = k* formula, where the product of the quantities of the two tokens remains constant. In this formula, *x* and *y* represent the quantities of the two tokens in the pool, and *k* is a constant value. When a trade is made, the quantities of the tokens change, but the product of the two quantities remains the same, ensuring that the pool always provides liquidity. This innovation made trading more accessible and efficient on decentralized exchanges.
+　Uniswapは、シンプルかつ効果的な*x × y = k*の数式でAMMモデルを大幅に改善し、普及させました。この数式では、2つのトークンの数量の積が一定に保たれます。*x*と*y*はプール内の2つのトークンの数量を表し、*k*は定数です。取引が行われると、トークンの数量は変化しますが、2つの数量の積は同じままであり、プールが常に流動性を提供することを保証します。このイノベーションにより、分散型取引所での取引がよりアクセスしやすく効率的になりました。
 
-[^1]: The tokens might not always be in pairs because some liquidity pools can have three or more tokens, but the most common and simplest arrangement is in pairs.
+[^1]: トークンは常にペアであるとは限らない。3つ以上のトークンを持つ流動性プールも存在するが、最も一般的でシンプルな構成はペアである。
 
-A DEX enables anyone to become a market maker by providing liquidity and earning fees for their contributions. As long as there is sufficient liquidity, trades can occur quickly and without the need for permission from a central authority, as can be seen in Figure 13-2.[^2]
+　DEXは、流動性を提供し、その貢献に対する手数料を得ることで、誰でもマーケットメーカーになることを可能にします。十分な流動性がある限り、図13-2に示すように、取引は迅速に、かつ中央機関の許可なしに行われます。[^2]
 
-[^2]: From Figure 13-2, it may appear that BTC is natively exchangeable on DEXs. However, this is not the case. BTC on DEXs is often represented by derivative contracts like Wrapped Bitcoin (WBTC), which are assets pegged to the price of BTC but carrying significantly more risk than native BTC on the BTC blockchain. Native assets are typically only available on their respective native chains. In this example, the BTC used in the pool is not native BTC but a derivative, similar to how stablecoins represent fiat money.
+[^2]: 図13-2からは、BTCがDEXでネイティブに交換可能であるように見えるかもしれない。しかし、実際にはそうではない。DEX上のBTCは、Wrapped Bitcoin（WBTC）のようなデリバティブコントラクトで表されることが多い。WBTCはBTCの価格にペッグされた資産であるが、BTCブロックチェーン上のネイティブBTCよりもはるかに多くのリスクを伴う。ネイティブ資産は通常、それぞれのネイティブチェーンでのみ利用可能である。この例では、プールで使用されるBTCはネイティブBTCではなく、ステーブルコインが法定通貨を表すのと同様のデリバティブである。
 
 ![Decentralized exchange liquidity pool](images/ch13/maet_1302.png)
 
-Figure 13-2. Decentralized exchange liquidity pool
+図13-2. 分散型取引所の流動性プール
 
-#### Impermanent Loss
+#### インパーマネントロス
 
-Providing liquidity on a DEX is not risk free. Beyond smart contract hacks, there's a more subtle risk called *impermanent loss*. To understand impermanent loss, we first need to grasp the basic Uniswap V2 pool model.
+　DEXで流動性を提供することはリスクフリーではありません。スマートコントラクトのハッキングに加えて、*インパーマネントロス*と呼ばれる、より微妙なリスクがあります。インパーマネントロスを理解するには、まず基本的なUniswap V2プールモデルを理解する必要があります。
 
-Many popular DEXs, like Uniswap V2, use the constant product formula *x × y = k*, where *x* and *y* are the quantities of two tokens in a liquidity pool and *k* is a constant. The price of a token is determined by the ratio of the tokens in the pool. For example, if a pool contains 100 USDC and 10 ETH, the price of 1 ETH is 100 ÷ 10 = 10 USDC. If the pool changes to 200 USDC and 10 ETH (due to trades), the price of 1 ETH becomes 200 ÷ 10 = 20 USDC.
+　Uniswap V2のような多くの人気DEXは、定積数式*x × y = k*を使用します。ここで*x*と*y*は流動性プール内の2つのトークンの数量、*k*は定数です。トークンの価格は、プール内のトークンの比率によって決定されます。たとえば、プールに100 USDCと10 ETHが含まれている場合、1 ETHの価格は100 ÷ 10 = 10 USDCとなります。取引によりプールが200 USDCと10 ETHに変化した場合、1 ETHの価格は200 ÷ 10 = 20 USDCとなります。
 
-This formula is a simplified way to understand how pools work. By providing liquidity, you act as a market maker. When users buy ETH from the pool, you sell ETH and receive USDC; when they sell ETH, you buy ETH and give USDC. In return, you earn trading fees. However, this process exposes you to impermanent loss, which occurs when the price of the tokens in the pool changes compared to when you deposited them. If the price of ETH rises or falls significantly, the value of your pool holdings may be less than if you had simply held the original tokens, even though you collect fees.
+　この数式は、プールがどのように機能するかを理解するための簡略化された方法です。流動性を提供することで、ユーザーはマーケットメーカーとして行動します。ユーザーがプールからETHを購入すると、流動性提供者はETHを売却してUSDCを受け取ります。ユーザーがETHを売却すると、流動性提供者はETHを購入してUSDCを渡します。その見返りとして、取引手数料を得ます。しかし、このプロセスはインパーマネントロスにさらされます。インパーマネントロスは、プール内のトークンの価格が預け入れ時と比較して変化した場合に発生します。ETHの価格が大幅に上昇または下落した場合、手数料を徴収しているにもかかわらず、プールの保有資産の価値は、元のトークンを単純に保有していた場合よりも低くなる可能性があります。
 
-This openness also presents a significant challenge for DEXs. Since anyone can create a blockchain and launch a DEX, there are now more than one hundred DEXs (likely many more) across various blockchains. This abundance fragments liquidity, making swaps—where users exchange one cryptocurrency for another—less efficient than they would be on platforms with consolidated liquidity. This fragmentation can lead to higher *slippage*, which is the difference between the expected price of a trade and the actual price at which the trade is executed. High slippage occurs when there is insufficient liquidity, causing trades to be executed at less favorable prices than anticipated.
+　このオープン性は、DEXにとって重要な課題も提示しています。誰でもブロックチェーンを作成してDEXを立ち上げることができるため、現在、さまざまなブロックチェーンにわたって100以上（おそらくそれ以上）のDEXが存在します。この豊富さは流動性を断片化し、ユーザーがある暗号通貨を別の暗号通貨に交換するスワップを、流動性が統合されたプラットフォームよりも非効率的にしています。この断片化は、*スリッページ*の増大につながる可能性があります。スリッページとは、取引の期待価格と実際に取引が執行される価格の差のことです。流動性が不十分な場合に高いスリッページが発生し、取引が予想よりも不利な価格で執行されます。
 
-#### Why the Constant Product Formula Works
+#### 定積数式が機能する理由
 
-The elegance of the *x × y = k* formula lies in its mathematical shape: a hyperbola. This isn't just a coincidence—it's a deliberate design choice that protects liquidity pools from being completely drained.
+　*x × y = k*の数式のエレガンスは、その数学的形状、すなわち双曲線にあります。これは単なる偶然ではなく、流動性プールが完全に枯渇することを防ぐ意図的な設計上の選択です。
 
-**The Problem with Linear Pricing**
+**線形価格設定の問題**
 
-Imagine if a DEX used a simple linear pricing formula instead, where swapping 1 ETH always gives you exactly 2 USDC regardless of how much liquidity remains. This creates a catastrophic vulnerability:
+　DEXが代わりにシンプルな線形価格設定の数式を使用し、残りの流動性に関係なく1 ETHのスワップで常に正確に2 USDCが得られる場合を想像してみてください。これは壊滅的な脆弱性を生み出します。
 
-1. An attacker could swap all their USDC for ETH, completely draining the ETH from the pool
-2. The pool would now hold 0 ETH and all USDC
-3. Since prices don't adjust based on remaining liquidity, the attacker could then reverse the attack
-4. With a series of trades, the entire pool could be drained to zero on both sides
+1. 攻撃者はすべてのUSDCをETHにスワップし、プールからETHを完全に枯渇させることができる
+2. プールは0 ETHとすべてのUSDCを保持することになる
+3. 残りの流動性に基づいて価格が調整されないため、攻撃者は攻撃を逆転させることができる
+4. 一連の取引により、プール全体が両サイドでゼロまで枯渇する可能性がある
 
-This is why fixed-price or linear curves are fundamentally unsuitable for AMMs—they allow complete pool drainage.
+　これが、固定価格または線形曲線がAMMに根本的に適さない理由です。プールの完全な枯渇を許してしまうためです。
 
-**The Hyperbola Solution**
+**双曲線による解決**
 
-The constant product formula *x × y = k* produces a hyperbolic curve that has a critical property: it never touches either axis. As you try to buy more and more of one token, the price increases exponentially, making it mathematically impossible to drain either token to zero.
+　定積数式*x × y = k*は、重要な特性を持つ双曲線を生成します。この曲線はどちらの軸にも接しません。一方のトークンをますます多く購入しようとすると、価格は指数関数的に上昇し、どちらのトークンもゼロまで枯渇させることは数学的に不可能になります。
 
 ```
 Token Y (e.g., USDC)
@@ -110,220 +110,220 @@ Token Y (e.g., USDC)
     0        50       100       150       200
 ```
 
-Consider a pool with 100 ETH and 200 USDC (k = 20,000):
+　100 ETHと200 USDC（k = 20,000）のプールを考えてみましょう。
 
-- **Swapping 1 ETH for USDC**: You receive approximately 1.98 USDC (close to the 1:2 ratio)
-- **Swapping 50 ETH for USDC**: You receive only 66.67 USDC (not 100 as a linear model would suggest)
-- **Trying to get all 200 USDC**: You would need to provide infinite ETH
+- **1 ETHをUSDCにスワップ**: 約1.98 USDC（1:2の比率に近い）を受け取る
+- **50 ETHをUSDCにスワップ**: 66.67 USDCしか受け取れない（線形モデルが示す100ではない）
+- **200 USDC全額を取得しようとした場合**: 無限のETHを提供する必要がある
 
-The formula for calculating output is:
+　出力を計算する数式は以下のとおりです。
 
 ```
 Δy = (y × Δx) / (x + Δx)
 ```
 
-Where *Δx* is the input amount and *Δy* is the output amount. As *Δx* approaches infinity, *Δy* approaches *y* (the total reserve) but never reaches it.
+　ここで*Δx*は入力量、*Δy*は出力量です。*Δx*が無限大に近づくと、*Δy*は*y*（準備金の総額）に近づきますが、到達することはありません。
 
-This asymptotic behavior is what makes AMMs secure. The larger the trade relative to the pool size, the worse the exchange rate becomes. This creates *slippage*—the difference between the expected price and the actual execution price—which naturally discourages trades that would significantly deplete the pool.
+　この漸近的な振る舞いが、AMMを安全にしているものです。プールサイズに対する取引が大きくなるほど、交換レートは悪化します。これにより*スリッページ*、つまり期待価格と実際の執行価格の差が生じ、プールを大幅に枯渇させる取引を自然に抑止します。
 
-The hyperbolic curve ensures that liquidity pools are self-protecting: the scarcer a token becomes, the more expensive it gets, creating an economic barrier that prevents complete drainage. This elegant mathematical property is what made Uniswap's simple formula revolutionary in enabling trustless, permissionless trading.
+　双曲線は、流動性プールが自己保護的であることを保証します。トークンが希少になるほど価格が高くなり、完全な枯渇を防ぐ経済的障壁を生み出します。このエレガントな数学的特性こそが、Uniswapのシンプルな数式をトラストレスかつパーミッションレスな取引の実現において革命的にしたものです。
 
-> **Note**
+> **注記**
 >
-> Uniswap, which is arguably one of the most significant projects in the current DeFi landscape, was inspired by a 2016 Reddit post by Vitalik Buterin. Hayden Adams, who reportedly had no prior coding experience, took a year to develop Uniswap V1 using the Vyper programming language.
+> DeFiの現在の状況において最も重要なプロジェクトの1つと言えるUniswapは、ヴィタリック・ブテリンの2016年のReddit投稿に触発されたものです。報道によればプログラミング経験がなかったとされるヘイデン・アダムスが、Vyperプログラミング言語を使用してUniswap V1を開発するのに1年を費やしました。
 
-### Lending Markets
+### レンディングマーケット
 
-A *lending market* or *money market* is a decentralized platform that facilitates the lending and borrowing of cryptocurrencies, using smart contracts to automate and secure the entire process. Unlike traditional financial systems, lending markets operate without intermediaries like banks, providing a more transparent and efficient way to handle loans.
+　*レンディングマーケット*（*マネーマーケット*とも呼ばれる）は、スマートコントラクトを使用してプロセス全体を自動化し保護する、暗号通貨の貸し借りを促進する分散型プラットフォームです。従来の金融システムとは異なり、レンディングマーケットは銀行のような仲介者なしで運営され、ローンを処理するためのより透明で効率的な方法を提供します。
 
-In a lending market, users who want to earn interest on their crypto assets can deposit their funds into a lending pool. These deposits contribute to the overall liquidity of the platform. Lenders earn interest on their deposits, with rates often determined algorithmically based on the supply and demand within the pool. The more demand there is for borrowing, the higher the interest rates are, incentivizing more lenders to contribute their assets to the pool.
+　レンディングマーケットでは、暗号資産で利子を得たいユーザーは、資金をレンディングプールに預け入れることができます。これらの預金は、プラットフォームの全体的な流動性に貢献します。貸し手はプール内の需要と供給に基づいてアルゴリズムで決定されることが多い利率で預金に対する利子を得ます。借り入れの需要が高いほど利率も高くなり、より多くの貸し手がプールに資産を提供するインセンティブが生まれます。
 
-Borrowers, on the other hand, can access these funds by providing collateral, which is typically worth more than the amount they wish to borrow. This overcollateralization is critical in lending to mitigate the risk of default, primarily because most crypto assets are very volatile and could leave the lending market with bad debt[^3] if the loan were not overcollateralized. The collateral is locked in a smart contract, ensuring that if the borrower fails to repay the loan, the collateral can be liquidated to cover the outstanding amount.
+　一方、借り手は担保を提供することでこれらの資金にアクセスできます。担保は通常、借り入れたい金額よりも高い価値が必要です。この過剰担保は、デフォルトのリスクを軽減するためにレンディングにおいて重要です。主な理由は、ほとんどの暗号資産が非常にボラティリティが高く、ローンが過剰担保されていなければ不良債権[^3]をレンディングマーケットに残す可能性があるためです。担保はスマートコントラクトにロックされ、借り手がローンを返済できない場合、担保が清算されて未返済額を補填できるようにします。
 
-[^3]: Bad debt occurs when a borrower defaults on a loan and the remaining collateral is insufficient to cover the owed amount. This can happen because of sudden market volatility or improper collateral valuation. Unlike liquidation, where collateral is sold to cover the debt, bad debt remains uncollectible, causing a loss to the lending protocol and its users.
+[^3]: 不良債権とは、借り手がローンの返済を怠り、残りの担保が未払い額を補填するのに不十分な場合に発生する。突然の市場変動や不適切な担保評価によって起こり得る。担保を売却して債務を補填する清算とは異なり、不良債権は回収不能のまま残り、レンディングプロトコルとそのユーザーに損失をもたらす。
 
-This system protects lenders and ensures that the lending pool remains solvent. A simplified version of this can be seen in Figure 13-3: the lender provides liquidity and collects annual interest paid by the borrower, who withdraws the provided liquidity.
+　このシステムは貸し手を保護し、レンディングプールの支払い能力を維持します。図13-3にこの簡略版を示します。貸し手が流動性を提供し、借り手が支払う年間利子を徴収し、借り手は提供された流動性を引き出します。
 
 ![Lending market basic flow](images/ch13/maet_1303.png)
 
-Figure 13-3. Lending market basic flow
+図13-3. レンディングマーケットの基本フロー
 
-The interest rates in lending markets are dynamic, fluctuating based on market conditions. The platform's algorithms continuously adjust rates to balance the supply of available funds and the demand for loans. This creates an efficient and responsive financial ecosystem where both lenders and borrowers can benefit from fair market-driven rates.
+　レンディングマーケットの利率は動的で、市場状況に応じて変動します。プラットフォームのアルゴリズムは、利用可能な資金の供給とローンの需要のバランスを取るために、利率を継続的に調整します。これにより、貸し手と借り手の両方が公正な市場主導型の利率から恩恵を受けることができる、効率的で反応性の高い金融エコシステムが構築されます。
 
-Collateralization ratios are another important aspect of lending markets. These ratios determine the amount of collateral needed to secure a loan. For instance, a common collateralization ratio might be 150%, meaning that to borrow $100 worth of cryptocurrency, a borrower would need to deposit at least $150 worth of collateral, as shown in Figure 13-4. This ensures that there is a buffer to absorb potential losses from price volatility.
+　担保率はレンディングマーケットのもう1つの重要な側面です。担保率は、ローンを確保するために必要な担保の量を決定します。たとえば、一般的な担保率は150%で、100ドル相当の暗号通貨を借りるには、図13-4に示すように少なくとも150ドル相当の担保を預け入れる必要があります。これにより、価格変動による潜在的な損失を吸収するバッファが確保されます。
 
 ![Lending market collateralization](images/ch13/maet_1304.png)
 
-Figure 13-4. Lending market collateralization
+図13-4. レンディングマーケットの担保
 
-If the value of the collateral falls below a certain threshold, the platform's smart contracts initiate a liquidation process. This involves selling the collateral to repay the loan, thus protecting the lenders from potential losses. Liquidation mechanisms are essential for maintaining the stability and solvency of the lending pool.
+　担保の価値が一定の閾値を下回ると、プラットフォームのスマートコントラクトが清算プロセスを開始します。これは担保を売却してローンを返済することを含み、貸し手を潜在的な損失から保護します。清算メカニズムは、レンディングプールの安定性と支払い能力を維持するために不可欠です。
 
-#### Incentives in DeFi
+#### DeFiにおけるインセンティブ
 
-Most aspects of DeFi are open and rely heavily on proper incentives to function effectively. For instance, the liquidation process in most lending markets depends on users continuously monitoring for loans that can be liquidated. When they identify such loans, they proceed to liquidate them. To motivate users to perform these tasks, they receive a portion of the liquidated amount as a reward.
+　DeFiのほとんどの側面はオープンであり、効果的に機能するために適切なインセンティブに大きく依存しています。たとえば、ほとんどのレンディングマーケットの清算プロセスは、清算可能なローンを継続的に監視するユーザーに依存しています。そのようなローンを特定すると、ユーザーはそれらを清算します。これらのタスクを実行するようユーザーを動機づけるために、清算額の一部を報酬として受け取ります。
 
-This concept of incentivization is a fundamental part of blockchain and DeFi. Many mechanisms within these systems are designed around game theory principles to ensure that participants act in ways that maintain and improve the network's functionality and security. Incentives align user actions with the overall goals of the protocol, creating a self-sustaining ecosystem.
+　このインセンティブの概念は、ブロックチェーンとDeFiの基本的な部分です。これらのシステム内の多くのメカニズムは、参加者がネットワークの機能性とセキュリティを維持し改善する方法で行動することを確保するために、ゲーム理論の原則に基づいて設計されています。インセンティブはユーザーの行動をプロトコルの全体的な目標に合わせ、自己持続的なエコシステムを構築します。
 
-As with most things in DeFi, composability is key. On their own, lending markets may not seem particularly impressive, especially since most require overcollateralization to request a loan. However, when you combine the ability to request a loan with other DeFi primitives, you unlock a powerful aggregation that can achieve a variety of outcomes.
+　DeFiにおけるほとんどのものと同様に、コンポーザビリティが鍵となります。単独では、レンディングマーケットは特に印象的に見えないかもしれません。ローンを申請するために過剰担保を必要とするものが多いためです。しかし、ローンをリクエストする能力を他のDeFiの基本要素と組み合わせると、さまざまな結果を達成できる強力な集合体が解放されます。
 
-For example, you can re-create a financial instrument called *shorting* by combining a lending market with a DEX. Shorting is a strategy used when you expect the price of an asset to drop. Essentially, you borrow the asset and sell it at the current price, hoping to buy it back later at a lower price, return the borrowed asset, and pocket the difference.
+　たとえば、レンディングマーケットとDEXを組み合わせることで、*ショート*と呼ばれる金融商品を再現できます。ショートは、資産の価格が下落すると予想する場合に使用される戦略です。基本的には、資産を借りて現在の価格で売却し、後でより低い価格で買い戻し、借りた資産を返却して差額を得ることを期待します。
 
-Here's how you can achieve a short in DeFi:
+　DeFiでショートを実現する方法は以下のとおりです。
 
-1. **Collateralize Asset A**: deposit Asset A as collateral in a lending market.
+1. **資産Aを担保化する**: レンディングマーケットに資産Aを担保として預け入れる。
 
-2. **Take a loan for Asset B**: borrow Asset B, which you want to short.
+2. **資産Bのローンを取得する**: ショートしたい資産Bを借りる。
 
-3. **Sell Asset B on a DEX**: sell the borrowed Asset B on a decentralized exchange.
+3. **DEXで資産Bを売却する**: 借りた資産Bを分散型取引所で売却する。
 
-By doing this, you effectively short Asset B with a leverage of 1x.[^4] If the price of Asset B drops, you can buy it back at the lower price, repay the loan, and keep the difference, as shown in Figure 13-5. This demonstrates how the composability of DeFi protocols can re-create traditional financial strategies in a decentralized environment.
+　これにより、1倍のレバレッジで効果的に資産Bをショートできます。[^4]資産Bの価格が下落した場合、より低い価格で買い戻し、ローンを返済して差額を保持できます。これは図13-5に示されています。これは、DeFiプロトコルのコンポーザビリティが、従来の金融戦略を分散型環境で再現できることを示しています。
 
-[^4]: The short position's size is directly related to the borrowed amount.
+[^4]: ショートポジションのサイズは借り入れ額に直接関連する。
 
 ![Shorting strategy using DeFi](images/ch13/maet_1305.png)
 
-Figure 13-5. Shorting strategy using DeFi
+図13-5. DeFiを使用したショート戦略
 
-The applications for a lending market are extensive and may not be immediately apparent. You may wonder: why take an overcollateralized loan when you have the money? Why not just use your own funds? In some scenarios, that would be true. However, lending markets combined with DEXs can re-create financial instruments and even allow for "longing" an asset instead of shorting it. Another benefit of lending markets is the ability to avoid taxable events. In many jurisdictions, borrowing an asset is not considered a taxable event, whereas selling an asset is.
+　レンディングマーケットの用途は広範で、すぐには明らかでないかもしれません。お金があるのに、なぜ過剰担保のローンを取るのかと疑問に思うかもしれません。自分の資金を使えばよいのではないかと。一部のシナリオではそのとおりです。しかし、レンディングマーケットとDEXを組み合わせることで、金融商品を再現でき、さらにはショートの代わりに資産の「ロング」も可能になります。レンディングマーケットのもう1つの利点は、課税対象イベントの回避です。多くの法域では、資産の借り入れは課税対象イベントとみなされませんが、資産の売却は課税対象です。
 
-The potential uses of lending markets are vast and go beyond the scope of this book. However, lending markets improve capital efficiency and, when combined with other protocols, provide users with significant flexibility. There are also lending markets that do not require overcollateralization, although they currently lack significant traction.
+　レンディングマーケットの潜在的な用途は広大で、本書の範囲を超えています。しかし、レンディングマーケットは資本効率を向上させ、他のプロトコルと組み合わせることで、ユーザーに大きな柔軟性を提供します。過剰担保を必要としないレンディングマーケットも存在しますが、現在のところ大きな牽引力を持っていません。
 
-### Oracles
+### オラクル
 
-An oracle for Ethereum, which we discussed in detail in Chapter 11, is a service that brings real-world data onto the blockchain, allowing smart contracts to interact with external information. For example, it can provide price data for cryptocurrencies, weather conditions, or sports scores, enabling smart contracts to execute based on this external data.
+　イーサリアムのオラクルは、第11章で詳しく説明したとおり、現実世界のデータをブロックチェーンに取り込み、スマートコントラクトが外部情報とやり取りできるようにするサービスです。たとえば、暗号通貨の価格データ、気象条件、スポーツのスコアを提供し、スマートコントラクトがこの外部データに基づいて実行できるようにします。
 
-Oracles are essential for many aspects of DeFi, including the security of lending markets. In these markets, the price of a token can be sourced from DEXs. However, relying solely on these exchanges can make the lending market vulnerable to flash-loan attacks. In such an attack, an attacker borrows a large sum of money, manipulates the price of a coin or token on a DEX, and exploits this price change for profit.
+　オラクルは、レンディングマーケットのセキュリティを含む、DeFiの多くの側面に不可欠です。レンディングマーケットでは、トークンの価格をDEXから取得できます。しかし、DEXのみに依存すると、レンディングマーケットがフラッシュローン攻撃に対して脆弱になる可能性があります。このような攻撃では、攻撃者は大量の資金を借り入れ、DEX上のコインやトークンの価格を操作し、この価格変動を利益のために悪用します。
 
-Another vital function of oracles is their ability to bring pseudorandom numbers on chain. Since Ethereum is deterministic, every computation must produce the same result every time, enabling nodes to validate every block and transaction consistently. However, this deterministic nature means that true randomness cannot exist within Ethereum's components. For instance, if you were building a casino platform, generating random numbers would be essential. Using block timestamps, hashes, or transaction counts to create pseudorandom numbers is one method, but this approach is vulnerable to attacks since block proposers could predict or manipulate these properties in advance to exploit the casino.
+　オラクルのもう1つの重要な機能は、擬似乱数をオンチェーンに取り込む能力です。イーサリアムは決定論的であるため、すべての計算は毎回同じ結果を生成する必要があり、ノードがすべてのブロックとトランザクションを一貫して検証できるようにしています。しかし、この決定論的な性質は、イーサリアムのコンポーネント内に真の乱数が存在できないことを意味します。たとえば、カジノプラットフォームを構築する場合、乱数の生成は不可欠です。ブロックタイムスタンプ、ハッシュ、トランザクションカウントを使用して擬似乱数を作成する方法もありますが、ブロックプロポーザーがこれらのプロパティを事前に予測または操作してカジノを悪用できるため、このアプローチは攻撃に対して脆弱です。
 
-Oracles let the Ethereum blockchain use external data, opening up a lot more possibilities for different applications.
+　オラクルにより、イーサリアムブロックチェーンは外部データを使用でき、さまざまなアプリケーションに対してより多くの可能性を開きます。
 
-> **Tip**  
+> **ヒント**
 >
-> From this description, it may seem that oracles are a central entity, making DeFi, which is supposed to be decentralized, dependent on them. However, while some aspects of DeFi do rely on oracles, the oracles themselves are often highly decentralized and do not have a single point of failure.
+> この説明からは、オラクルが中央集権的な存在であり、分散型であるべきDeFiがオラクルに依存しているように見えるかもしれません。しかし、DeFiの一部の側面はオラクルに依存しているものの、オラクル自体は多くの場合高度に分散化されており、単一障害点を持ちません。
 
-### Stablecoins
+### ステーブルコイン
 
-*Stablecoins* are a type of cryptocurrency designed to maintain a stable value, typically pegged to a reserve asset like the US dollar, the euro, or a basket of goods. They aim to combine the benefits of cryptocurrencies, such as security and decentralization, with the stability of traditional fiat currencies.
+　*ステーブルコイン*は、通常、米ドル、ユーロ、または商品のバスケットなどの準備資産にペッグされた安定した価値を維持するように設計された暗号通貨の一種です。セキュリティや分散化などの暗号通貨の利点と、従来の法定通貨の安定性を組み合わせることを目指しています。
 
-Stablecoins achieve their stability via different mechanisms. *Fiat-collateralized stablecoins* are backed by reserves of fiat currency held in banks or other trusted custodians. For instance, each USDC or USDT token is usually backed by an equivalent amount in US dollars (USD).
+　ステーブルコインは、さまざまなメカニズムによって安定性を実現します。*法定通貨担保型ステーブルコイン*は、銀行やその他の信頼できるカストディアンに保有される法定通貨の準備金によって裏付けられています。たとえば、各USDCまたはUSDTトークンは、通常、同等額の米ドル（USD）によって裏付けられています。
 
-*Cryptocollateralized stablecoins* take a different approach by being backed by other cryptocurrencies. Given the volatile nature of crypto assets, these stablecoins are often overcollateralized to ensure that they can maintain their peg. A well-known example is MakerDAO's DAI,[^5] where users lock up Ethereum or other cryptocurrencies as collateral to mint DAI. The overcollateralization provides a buffer against the volatility of the underlying assets.
+　*暗号通貨担保型ステーブルコイン*は、他の暗号通貨によって裏付けられるという異なるアプローチを取ります。暗号資産のボラティリティの高い性質を考慮して、ペッグを維持できるよう、多くの場合、過剰担保されています。よく知られた例はMakerDAOのDAI[^5]で、ユーザーはイーサリアムやその他の暗号通貨を担保としてロックアップしてDAIを発行します。過剰担保は、基礎となる資産のボラティリティに対するバッファを提供します。
 
-[^5]: MakerDAO is now Sky, and DAI is now USDS.
+[^5]: MakerDAOは現在Skyに、DAIは現在USDSに名称変更されている。
 
-Then there are *algorithmic stablecoins*, which do not rely on collateral but instead use algorithms and smart contracts to manage the supply of the stablecoin to keep its value stable. These stablecoins adjust the supply based on market demand, expanding or contracting to maintain the target price. TerraUSD (UST) was a notable example of an algorithmic stablecoin, although it faced significant issues, which led to its collapse.
+　さらに、*アルゴリズム型ステーブルコイン*があります。担保に依存せず、代わりにアルゴリズムとスマートコントラクトを使用してステーブルコインの供給を管理し、価値を安定に保ちます。市場の需要に基づいて供給を拡大または縮小し、目標価格を維持します。TerraUSD（UST）はアルゴリズム型ステーブルコインの著名な例でしたが、重大な問題に直面し、崩壊に至りました。
 
-There has not been a successful and well-capitalized algorithmic stablecoin; every attempt at building one either failed catastrophically or did not find product-market fit.
+　成功し、十分な資本を持つアルゴリズム型ステーブルコインはまだ存在していません。構築のすべての試みは、壊滅的に失敗するか、プロダクトマーケットフィットを見つけることができませんでした。
 
-Stablecoins also contribute significantly to liquidity in DEXs. By providing a stable and predictable asset, they facilitate smoother trading and better market efficiency. Traders can easily move in and out of positions without worrying about price fluctuations, which is important for efficient market operations.
+　ステーブルコインはまた、DEXの流動性に大きく貢献しています。安定した予測可能な資産を提供することで、よりスムーズな取引と優れた市場効率を促進します。トレーダーは、効率的な市場運営にとって重要な価格変動を心配することなく、ポジションの出入りが容易にできます。
 
-#### Limitations of Fiat-Collateralized Stablecoins
+#### 法定通貨担保型ステーブルコインの限界
 
-An interesting concept is that stablecoins like USDC or USDT, which can be redeemed for dollars on platforms like Coinbase and Bitfinex, respectively, have a limited potential for growth in terms of market cap size. *Market cap*, or market capitalization, is the total value of all the coins in circulation, calculated by multiplying the current price of the coin by the total supply.
+　興味深い概念として、CoinbaseやBitfinexなどのプラットフォームでドルと交換できるUSDCやUSDTのようなステーブルコインは、時価総額の成長において限られた可能性を持っています。*時価総額*とは、流通しているすべてのコインの総価値であり、コインの現在の価格に総供給量を掛けて計算されます。
 
-The reason for this limitation is that if the total value of the stablecoin on a particular blockchain exceeds the cost of attacking that blockchain, it creates significant incentives for malicious actors to attempt an attack. This is because the potential rewards of compromising the blockchain could outweigh the costs, making it a real and quantifiable risk.
+　この限界の理由は、特定のブロックチェーン上のステーブルコインの総価値がそのブロックチェーンを攻撃するコストを超えると、悪意のある行為者が攻撃を試みる重大なインセンティブが生まれるためです。ブロックチェーンを侵害することの潜在的な報酬がコストを上回る可能性があり、現実的かつ定量化可能なリスクとなります。
 
-Fortunately, attacking a robust and secure blockchain like Ethereum is neither easy nor cheap. The high cost and the complexity of such an attack provide strong deterrents. However, it's important to always keep this concept in mind when considering the scalability and security of stablecoins on any blockchain.
+　幸いなことに、イーサリアムのような堅牢で安全なブロックチェーンを攻撃することは容易でも安価でもありません。このような攻撃の高いコストと複雑さが強力な抑止力を提供します。しかし、あらゆるブロックチェーン上のステーブルコインのスケーラビリティとセキュリティを考慮する際には、この概念を常に念頭に置くことが重要です。
 
-### Liquid Staking
+### リキッドステーキング
 
-*Liquid staking* is a mechanism that allows users to stake their cryptocurrency assets in a PoS network while retaining the liquidity of those assets. Typically, when tokens are staked, they are locked up and cannot be accessed or traded until the staking period is over. Liquid staking solves this problem by issuing a derivative token that represents the staked assets. This derivative token can be traded, transferred, or used in other DeFi protocols, enabling users to maintain liquidity while still earning staking rewards.
+　*リキッドステーキング*は、ユーザーがPoSネットワークに暗号通貨資産をステーキングしつつ、それらの資産の流動性を維持できるメカニズムです。通常、トークンがステーキングされると、ステーキング期間が終了するまでロックされ、アクセスや取引ができません。リキッドステーキングは、ステーキングされた資産を表すデリバティブトークンを発行することでこの問題を解決します。このデリバティブトークンは、取引、転送、または他のDeFiプロトコルで使用でき、ユーザーがステーキング報酬を得ながら流動性を維持できるようにします。
 
-For example, if you stake ETH on a liquid staking platform, you might receive a derivative token like stETH. While your ETH remains staked and continues to earn rewards, the stETH token can be freely traded or used in other DeFi activities, providing the benefits of staking without losing access to your funds.
+　たとえば、リキッドステーキングプラットフォームでETHをステーキングすると、stETHのようなデリバティブトークンを受け取ることができます。ETHはステーキングされたまま報酬を得続けますが、stETHトークンは自由に取引したり、他のDeFi活動で使用したりでき、資金へのアクセスを失うことなくステーキングの恩恵を得られます。
 
-> **Note**  
+> **注記**
 >
-> A new type of derivative is emerging that is similar to liquid staking, known as *liquid restaking*. With protocols like EigenLayer, tokens are not only staked for the Ethereum chain but are also used to secure other services in a process called restaking. This new development has raised concerns about potentially overloading the Ethereum consensus mechanism.
+> リキッドステーキングに類似した新しいタイプのデリバティブが登場しつつあります。*リキッドリステーキング*として知られるものです。EigenLayerのようなプロトコルでは、トークンはイーサリアムチェーンのためにステーキングされるだけでなく、リステーキングと呼ばれるプロセスで他のサービスを保護するためにも使用されます。この新しい展開は、イーサリアムのコンセンサスメカニズムに過負荷をかける可能性があるという懸念を引き起こしています。
 
-The token received, such as stETH issued by Lido, acts like a stablecoin pegged to the price of ETH. This means it carries not only the typical risks associated with stablecoins, such as those pegged to the dollar, but additional risks related to slashing. Liquid staking protocols take the ETH deposited by users, create validator nodes, and earn staking rewards, which are then redistributed to the holders of the derivative token. This process introduces the risk of slashing, where part of the staked ETH could be lost if the validator nodes fail to operate correctly.
+　Lidoが発行するstETHなどの受け取ったトークンは、ETHの価格にペッグされたステーブルコインのように機能します。つまり、ドルにペッグされたステーブルコインのような典型的なリスクだけでなく、スラッシングに関連する追加のリスクも伴います。リキッドステーキングプロトコルは、ユーザーが預け入れたETHを使用してバリデーターノードを作成し、ステーキング報酬を得て、デリバティブトークンの保有者に再分配します。このプロセスは、バリデーターノードが正しく運用されなかった場合にステーキングされたETHの一部が失われるスラッシングのリスクをもたらします。
 
-Beyond these risks, liquid staking might create systemic risks for the blockchain itself. For example, at the time of writing, Lido has 29% of all staked ETH. If this percentage increases to 33% or higher, that could pose significant problems.[^6] In June 2022, there was a vote in the Lido DAO to limit Lido's staking power and prevent it from surpassing the 33% mark to avoid potential systemic risk for Ethereum. Unfortunately, the vote did not pass.
+　これらのリスクに加えて、リキッドステーキングはブロックチェーン自体にシステミックリスクを生み出す可能性があります。たとえば、執筆時点で、Lidoはステーキングされた全ETHの29%を保有しています。この割合が33%以上に増加した場合、重大な問題を引き起こす可能性があります。[^6]2022年6月、Lido DAOにおいて、Lidoのステーキングパワーを制限し、33%のラインを超えることを防いでイーサリアムの潜在的なシステミックリスクを回避するための投票が行われました。残念ながら、この投票は可決されませんでした。
 
-[^6]: If any staker has more than 33% of the staked ETH, they could in theory attack the chain and stop the finalization process.
+[^6]: いかなるステーカーもステーキングされたETHの33%以上を保有している場合、理論上、チェーンを攻撃してファイナリティプロセスを停止させることができる。
 
-> **Note**  
+> **注記**
 >
-> There was also controversy surrounding the vote since most of the opposition came from just a few wallets.
+> 反対票の大部分がわずか数個のウォレットから来たものであったため、投票を巡って論争もありました。
 
-### Real-World Assets
+### 現実世界の資産
 
-In the context of DeFi, *real-world assets* (RWAs) refer to tangible or traditional financial assets that are tokenized and brought onto the blockchain. These can include anything from real estate and commodities to stocks, bonds, and even fine art. The tokenization of these assets involves converting their value into digital tokens that can be traded, lent, or borrowed on blockchain platforms.
+　DeFiの文脈において、*現実世界の資産*（RWA）とは、トークン化されてブロックチェーン上に取り込まれた有形資産や従来の金融資産を指します。不動産やコモディティから株式、債券、さらにはファインアートまで、あらゆるものが含まれる可能性があります。これらの資産のトークン化は、それらの価値をブロックチェーンプラットフォーム上で取引、貸し付け、借り入れが可能なデジタルトークンに変換することを意味します。
 
-RWAs are somewhat controversial because they often require a custodian, which contradicts the trustless principle of blockchains. This sector is one of the last in DeFi to truly emerge, and so far, there haven't been any major issues with RWA protocols. Despite going against the core ethos of crypto, RWAs unlock numerous new possibilities.
+　RWAはやや議論の余地があります。多くの場合カストディアンを必要とし、ブロックチェーンのトラストレスの原則と矛盾するためです。このセクターはDeFiにおいて本格的に台頭した最後のセクターの1つであり、これまでのところRWAプロトコルで重大な問題は発生していません。暗号通貨の基本理念に反するにもかかわらず、RWAは多くの新しい可能性を解放します。
 
-One significant application of RWAs has been bringing bonds on chain, allowing users to access the relative risk-free rate. This has enabled non-US citizens to access the 5% interest rates that were available in the United States in 2023–2024. Another valuable use for RWAs is the fractionalization of tokenized assets, such as owning a fraction of real estate.
+　RWAの重要な応用の1つは、債券をオンチェーンに持ち込み、ユーザーが相対的にリスクフリーの利率にアクセスできるようにしたことです。これにより、米国以外の市民が2023年から2024年に米国で利用可能であった5%の金利にアクセスできるようになりました。RWAのもう1つの価値ある用途は、不動産の一部を所有するなど、トークン化された資産の分割所有です。
 
-Given that this sector is still in its infancy, we have yet to uncover all its potential. However, the risks associated with custodianship are real and concerning.
+　このセクターはまだ初期段階にあるため、その潜在能力をすべて明らかにしたわけではありません。しかし、カストディアンシップに関連するリスクは現実的で懸念すべきものです。
 
-### Bridges and Omnichain Protocols
+### ブリッジとオムニチェーンプロトコル
 
-As the blockchain ecosystem evolves, a wide variety of networks with unique features and benefits has developed. However, these networks often operate in isolation, which limits the seamless transfer of assets and data between them. Bridges and omnichain protocols aim to solve this problem by facilitating cross-chain interactions, ultimately creating a more interconnected blockchain ecosystem.
+　ブロックチェーンエコシステムが進化するにつれて、固有の特徴と利点を持つ多種多様なネットワークが発展してきました。しかし、これらのネットワークはしばしば孤立して運用されており、ネットワーク間の資産やデータのシームレスな転送が制限されています。ブリッジとオムニチェーンプロトコルは、クロスチェーンのインタラクションを促進することでこの問題を解決し、最終的にはより相互接続されたブロックチェーンエコシステムの構築を目指しています。
 
-> **Note**  
+> **注記**
 >
-> Bridges are often very centralized because most blockchains are agnostic about the state of other chains. When transferring funds from chain A to chain B, there is typically a central authority that approves the bridging operation and unlocks the liquidity on chain B. This centralization is one of the reasons why bridges are among the most frequently hacked protocols in DeFi.
+> ブリッジは、ほとんどのブロックチェーンが他のチェーンの状態を関知しないため、非常に中央集権的であることが多いです。チェーンAからチェーンBに資金を転送する場合、ブリッジ操作を承認してチェーンB上の流動性をアンロックする中央機関が通常存在します。この中央集権化が、ブリッジがDeFiにおいて最も頻繁にハッキングされるプロトコルの1つである理由の1つです。
 
-*Bridges* are specialized protocols that facilitate the transfer of assets and data between different blockchains, as shown in Figure 13-6. They act as connectors, allowing tokens and other digital assets to move from one chain to another. For instance, if you want to transfer your tokens from Ethereum to Binance Smart Chain (BSC), you would use a bridge.
+　*ブリッジ*は、図13-6に示すように、異なるブロックチェーン間での資産やデータの転送を促進する特化型プロトコルです。コネクターとして機能し、トークンやその他のデジタル資産があるチェーンから別のチェーンに移動できるようにします。たとえば、トークンをイーサリアムからBinance Smart Chain（BSC）に転送したい場合、ブリッジを使用します。
 
 ![Bridge connecting two blockchains](images/ch13/maet_1306.png)
 
-Figure 13-6. Bridge connecting two blockchains
+図13-6. 2つのブロックチェーンを接続するブリッジ
 
-There are many different models for bridging tokens from one chain to another. Every bridge uses a specific model. The most common are as follows:
+　あるチェーンから別のチェーンにトークンをブリッジするモデルは数多くあります。すべてのブリッジは特定のモデルを使用します。最も一般的なものは以下のとおりです。
 
-**Wrapped-token bridges (lock and mint)**
+**ラップドトークンブリッジ（ロックとミント）**
 
-In this model, a bridge receives tokens on chain A, locks them in a smart contract, and mints a wrapped (or "proprietary") token on chain B. The wrapped token acts as a receipt representing the locked tokens. To retrieve the original tokens, the wrapped token is burned on chain B, unlocking the tokens on chain A.
+　このモデルでは、ブリッジがチェーンA上でトークンを受け取り、スマートコントラクトにロックし、チェーンB上でラップド（または「プロプライエタリ」な）トークンをミントします。ラップドトークンは、ロックされたトークンを表す受領証として機能します。元のトークンを取得するには、チェーンB上でラップドトークンをバーンし、チェーンA上のトークンをアンロックします。
 
-For example, suppose you use the "Mastering Bridge" to transfer ETH from Ethereum to BSC. You send ETH to the bridge's smart contract on Ethereum, and the bridge mints a wrapped token, such as "MasteringETH," on BSC. To return to Ethereum, you burn MasteringETH on BSC, and the bridge releases the original ETH. These wrapped tokens often need to be swapped on a DEX to obtain the native token on chain B.
+　たとえば、「Mastering Bridge」を使用してETHをイーサリアムからBSCに転送するとします。イーサリアム上のブリッジのスマートコントラクトにETHを送り、ブリッジはBSC上で「MasteringETH」のようなラップドトークンをミントします。イーサリアムに戻るには、BSC上のMasteringETHをバーンし、ブリッジが元のETHをリリースします。これらのラップドトークンは、チェーンB上でネイティブトークンを取得するためにDEXでスワップする必要があることが多いです。
 
-**Mint and burn**
+**ミントとバーン**
 
-This model is commonly used by projects that control their token's minting and burning functions. Instead of locking tokens, the bridge burns tokens on chain A (reducing the supply) and mints an equivalent amount on chain B. This requires the project to have authority over the token's smart contract. For example, a project could burn ETH-based tokens on Ethereum and mint the same token on BSC, maintaining the total supply across chains.
+　このモデルは、トークンのミントおよびバーン機能を管理するプロジェクトで一般的に使用されます。トークンをロックする代わりに、ブリッジはチェーンA上でトークンをバーン（供給量を減少）し、チェーンB上で同等量をミントします。これにはプロジェクトがトークンのスマートコントラクトに対する権限を持っている必要があります。たとえば、プロジェクトはイーサリアム上のETHベースのトークンをバーンし、BSC上で同じトークンをミントして、チェーン間で総供給量を維持できます。
 
-**Liquidity bridges**
+**流動性ブリッジ**
 
-The most common type, liquidity bridges rely on pools of tokens on multiple chains. When you bridge a token, the bridge uses its liquidity to send you the equivalent token on the destination chain, typically for a fee. Unlike wrapped-token bridges, no new tokens are minted; the bridge already holds tokens on both chains.
+　最も一般的なタイプである流動性ブリッジは、複数のチェーン上のトークンプールに依存します。トークンをブリッジすると、ブリッジはその流動性を使用して、通常は手数料と引き換えに、宛先チェーン上で同等のトークンを送ります。ラップドトークンブリッジとは異なり、新しいトークンはミントされません。ブリッジは両方のチェーン上にすでにトークンを保有しています。
 
-Following the earlier example, if you bridge ETH from Ethereum to BSC, you send ETH to the bridge on Ethereum. The bridge then releases ETH from its liquidity pool on BSC. If the bridge doesn't control minting, it must maintain sufficient liquidity on BSC to facilitate transfers. This model is popular because of its simplicity but depends on the bridge's ability to manage liquidity securely.
+　先ほどの例に従い、イーサリアムからBSCにETHをブリッジする場合、イーサリアム上のブリッジにETHを送ります。ブリッジはBSC上の流動性プールからETHをリリースします。ブリッジがミントを管理しない場合、転送を促進するためにBSC上に十分な流動性を維持する必要があります。このモデルはシンプルさから人気がありますが、ブリッジが安全に流動性を管理する能力に依存します。
 
-*Omnichain protocols*, discussed in Chapter 11 as cross-chain messaging protocols, extend the concept of cross-chain interactions by enabling seamless communication and interoperability across multiple blockchains simultaneously. These protocols aim to create a unified layer where different blockchains can interact without friction, allowing the transfer of assets, data, and even smart contract functionalities across chains. Figure 13-7 demonstrates a simple omnichain messaging protocol that allows users to initiate a swap on Ethereum and complete the swap, receiving the funds, on BSC.
+　第11章でクロスチェーンメッセージングプロトコルとして議論した*オムニチェーンプロトコル*は、複数のブロックチェーンにわたるシームレスな通信と相互運用性を同時に可能にすることで、クロスチェーンインタラクションの概念を拡張します。これらのプロトコルは、異なるブロックチェーンが摩擦なくインタラクションできる統一レイヤーを構築し、チェーン間での資産、データ、さらにはスマートコントラクトの機能の転送を可能にすることを目指しています。図13-7は、ユーザーがイーサリアム上でスワップを開始し、BSC上でスワップを完了して資金を受け取ることができるシンプルなオムニチェーンメッセージングプロトコルを示しています。
 
 ![Omnichain protocol example](images/ch13/maet_1307.png)
 
-Figure 13-7. Omnichain protocol example
+図13-7. オムニチェーンプロトコルの例
 
-## (De)centralized Finance
+## 分散型（？）金融
 
-Decentralization is always difficult to define, and more often than not, it's more of a way to express a desired outcome than to describe a reality. Most DeFi protocols are not truly decentralized; they often rely on addresses with significant privileges or decisions made by a core development team, creating a centralization of power within a supposedly decentralized system.
+　分散化を定義することは常に困難であり、多くの場合、現実を記述するというよりも、望ましい結果を表現する手段です。ほとんどのDeFiプロトコルは真に分散化されていません。重要な権限を持つアドレスやコア開発チームによる意思決定に依存していることが多く、分散型であるはずのシステム内に権力の集中を生み出しています。
 
-DeFi is still in its early stages, and it's up to early adopters to shape its future and steer it in the right direction. While decentralization is the objective, it's important to recognize that it is not always the current reality. Emerging markets like DeFi can benefit from some degree of centralization to make decisions and implement changes quickly. This centralized decision making can provide the agility needed to adapt and grow in a rapidly evolving environment.
+　DeFiはまだ初期段階にあり、その未来を形作り正しい方向に導くのはアーリーアダプターの役割です。分散化は目標ですが、常に現在の現実ではないことを認識することが重要です。DeFiのような新興市場は、迅速な意思決定と変更の実施のために、ある程度の中央集権化から恩恵を受けることができます。この中央集権的な意思決定は、急速に進化する環境で適応し成長するために必要な俊敏性を提供できます。
 
-As DeFi continues to mature, the objective should be to progressively reduce centralization and shift toward a more decentralized model. Early adopters are very significant in this transition, balancing the current need for efficiency and rapid decision making with the ultimate vision of decentralization. By understanding and addressing the inherent trade-offs, the DeFi community can guide the system's evolution to better align with its foundational principles of openness, transparency, and inclusivity.
+　DeFiが成熟し続けるにつれて、中央集権化を段階的に削減し、より分散型のモデルへと移行することが目標であるべきです。アーリーアダプターは、効率性と迅速な意思決定に対する現在のニーズと、分散化の究極的なビジョンのバランスを取るこの移行において、非常に重要な役割を果たしています。固有のトレードオフを理解し対処することで、DeFiコミュニティは、オープン性、透明性、包括性という基本原則により良く沿うようにシステムの進化を導くことができます。
 
-## Risks and Challenges in DeFi
+## DeFiにおけるリスクと課題
 
-DeFi comes with its own set of risks and challenges, which are often misunderstood by users, including experts. Every DeFi protocol carries specific economic risks and general smart contract risks. Additionally, depending on the degree of decentralization, there can be custodian risks or centralization problems.
+　DeFiには、専門家を含むユーザーにしばしば誤解される独自のリスクと課題があります。すべてのDeFiプロトコルは、特定の経済的リスクと一般的なスマートコントラクトリスクを伴います。さらに、分散化の程度に応じて、カストディアンリスクや中央集権化の問題が存在する場合があります。
 
-Smart contract risks are easier to generalize: smart contracts can be hacked, and custodians can act maliciously or make mistakes. Economic risks are more complex and specific to each DeFi primitive or protocol. For example, the risk in a lending market is liquidation, which can sometimes occur wrongfully if the market does not use a proper oracle. The risk in providing liquidity to a DEX is impermanent loss. For stablecoins or liquid staking, the primary risk is the loss of the peg.
+　スマートコントラクトリスクはより一般化しやすいです。スマートコントラクトはハッキングされる可能性があり、カストディアンは悪意を持って行動したりミスを犯したりする可能性があります。経済的リスクはより複雑で、各DeFiの基本要素やプロトコルに特有です。たとえば、レンディングマーケットにおけるリスクは清算であり、適切なオラクルを使用しないマーケットでは不当に発生する場合があります。DEXで流動性を提供するリスクはインパーマネントロスです。ステーブルコインやリキッドステーキングの場合、主なリスクはペッグの喪失です。
 
-Understanding all the risks involved with a DeFi protocol before using it is crucial. Beyond risks, DeFi faces significant challenges. Many protocols are forks of existing ones, attempting to "vampire attack" incumbents without offering real innovation. This not only fragments liquidity and users but also dilutes the overall effectiveness of the ecosystem.
+　DeFiプロトコルを使用する前に、関連するすべてのリスクを理解することが極めて重要です。リスクに加えて、DeFiは重大な課題に直面しています。多くのプロトコルは既存プロトコルのフォークであり、真のイノベーションを提供せずに既存プロジェクトに対して「ヴァンパイア攻撃」を試みています。これは流動性とユーザーを断片化するだけでなく、エコシステム全体の有効性を希釈します。
 
-Liquidity is essential for most protocols. While they may function well in a booming market, they often degrade significantly during downturns. Most DeFi protocols are not self-sufficient and tend to work only when usage is incentivized, either because users are not genuinely interested in the product or because the costs outweigh the gains.
+　流動性はほとんどのプロトコルにとって不可欠です。好況市場ではうまく機能するかもしれませんが、低迷期には大幅に劣化することが多いです。ほとんどのDeFiプロトコルは自給自足ではなく、使用がインセンティブ化されている場合にのみ機能する傾向があります。ユーザーが製品に真に関心がないか、コストが利益を上回るためです。
 
-While DeFi shows some product-market fit, its future remains uncertain. It could evolve into a compelling piece of global infrastructure, which is the most likely outcome, or remain a niche market for a select group of users.
+　DeFiはある程度のプロダクトマーケットフィットを示していますが、その将来は不確実です。最も可能性の高い結果であるグローバルインフラの魅力的な一部へと進化する可能性もあれば、一部のユーザーのためのニッチ市場にとどまる可能性もあります。
 
-One significant challenge for DeFi is regulation. The regulatory environment varies greatly across countries and regulatory bodies, with most regulators opposing a fully decentralized system. While regulators cannot directly stop such systems—if a smart contract is immutable and deployed on chain, regulators cannot intervene directly—they can target developers and users, making it difficult for them to use these smart contracts.
+　DeFiにとっての重要な課題の1つは規制です。規制環境は国や規制機関によって大きく異なり、ほとんどの規制当局は完全に分散化されたシステムに反対しています。スマートコントラクトが不変でオンチェーンにデプロイされている場合、規制当局は直接介入することはできませんが、開発者やユーザーをターゲットにして、スマートコントラクトの使用を困難にすることは可能です。
 
-A case in point is Tornado Cash, whose developer, Alexey Pertsev, was jailed for 64 months in the Netherlands. He was arrested in August 2022 on charges of money laundering, following the US Department of the Treasury's blocklisting of Tornado Cash for its alleged use by the North Korean hacking group Lazarus to launder illicit funds. The Tornado Cash protocol remains available, but its liquidity has significantly decreased, leading to a poorer user experience. Additionally, addresses using Tornado Cash are flagged on centralized exchanges, complicating its use.
+　その好例がTornado Cashです。開発者のアレクセイ・ペルツェフは、オランダで64か月の禁固刑を宣告されました。北朝鮮のハッキンググループLazarusによる不正資金の洗浄にTornado Cashが使用されたとされることを受けて、米国財務省がTornado Cashをブロックリストに追加した後、2022年8月にマネーロンダリングの容疑で逮捕されました。Tornado Cashプロトコルは引き続き利用可能ですが、その流動性は大幅に減少し、ユーザー体験の悪化につながっています。さらに、Tornado Cashを使用したアドレスは中央集権型取引所でフラグが立てられ、その使用を複雑にしています。
 
-Similar situations are occurring in other ecosystems. For example, developers of the Samourai Wallet have also faced legal actions. This pattern illustrates that while regulators cannot attack the blockchain itself, they can target its users and developers.
+　同様の状況が他のエコシステムでも発生しています。たとえば、Samourai Walletの開発者も法的措置に直面しています。このパターンは、規制当局がブロックチェーン自体を攻撃できないものの、そのユーザーや開発者をターゲットにできることを示しています。
 
-> **Note**  
+> **注記**
 >
-> Although the authors of this book may not have the legal expertise to fully understand the cases involving Samourai Wallet or Tornado Cash and other similar instances, we do not support legal actions taken against individuals for writing decentralized code. Code should remain free, and the creator of a tool should not be punished for its misuse by others. Hopefully, no more developers will have to face such unjust consequences.
+> 本書の著者は、Samourai WalletやTornado Cash、その他の類似事例に関する法的専門知識を十分に持ち合わせていませんが、分散型コードを書いたことを理由に個人に対して取られる法的措置を支持しません。コードは自由であるべきであり、ツールの制作者が他者によるその悪用のために罰せられるべきではありません。今後、このような不当な結果に直面する開発者が出ないことを願います。
 
-## Conclusion
+## まとめ
 
-DeFi enables users to be more flexible with their money, creating new opportunities and innovative financial primitives, such as flash loans. As an emerging market within the crypto space, DeFi is rapidly developing but has yet to find a proper market fit beyond token exchanges, stablecoins, and derivative creation.
+　DeFiは、ユーザーが自分のお金をより柔軟に活用できるようにし、フラッシュローンのような新しい機会と革新的な金融の基本要素を生み出しています。暗号通貨分野における新興市場として、DeFiは急速に発展していますが、トークン交換、ステーブルコイン、デリバティブの作成を超えた適切なマーケットフィットをまだ見つけていません。

@@ -121,3 +121,5 @@
 | Brian Wu | ブライアン・ウー |  |  |  |
 | Gonçalo Magalhães | ゴンサロ・マガリャンイス |  |  |  |
 | Alan Turing | アラン・チューリング |  |  |  |
+| Hayden Adams | ヘイデン・アダムス |  |  |  |
+| Alexey Pertsev | アレクセイ・ペルツェフ |  |  |  |
