@@ -4,3 +4,6 @@ book
 # Service account keys (reverse sync)
 service-account-*.json
 ethereum-book-*.json
+
+# Translation scripts
+translate_ch9.py
