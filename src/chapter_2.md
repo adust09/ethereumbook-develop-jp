@@ -1,24 +1,24 @@
-# Chapter 2. Ethereum Basics
+# 第2章　イーサリアムの基礎
 
-In this chapter, we will start exploring Ethereum. We'll discuss how to use wallets, create transactions, and run a basic smart contract.
+　この章では、イーサリアムの探索を始めます。ウォレットの使い方、トランザクションの作成方法、そして基本的なスマート コントラクトの実行方法について説明します。
 
-## Ether Currency Units
+## etherの通貨単位
 
-Ethereum's currency unit is called *ether*, identified also as ETH or with the symbols Ξ (from the Greek letter *Xi* that looks like a stylized capital *E*) or, less often, ♦: for example, 1 ether, 1 ETH, Ξ1, or ♦1.
+　イーサリアムの通貨単位は*ether*と呼ばれ、ETHや記号Ξ（装飾的な大文字の*E*に似たギリシャ文字*Xi*に由来）、またはあまり一般的ではありませんが♦でも表記されます。例えば、1 ether、1 ETH、Ξ1、♦1のように表記します。
 
-> **Tip**  
+> **ヒント**
 >
-> Use Unicode characters U+039E for Ξ and U+2666 for ♦.
+> ΞにはUnicode文字U+039Eを、♦にはU+2666を使用する。
 
-Ether is subdivided into smaller units, down to the smallest unit possible, which is named *wei*. One ether is 1 quintillion wei (1 × 10^18^, or 1,000,000,000,000,000,000). You may hear people refer to the currency as "Ethereum," too, but this is a common beginner's mistake. Ethereum is the system; ether is the currency.
+　etherはより小さな単位に細分化され、最小単位は*wei*と呼ばれます。1 etherは100京wei（1 × 10^18^、つまり1,000,000,000,000,000,000）です。通貨を「Ethereum」と呼ぶ人もいますが、これはよくある初心者の間違いです。Ethereumはシステムであり、etherが通貨です。
 
-The value of ether is always represented internally in Ethereum as an unsigned integer value denominated in wei. When you transact 1 ether, the transaction encodes 1,000,000,000,000,000,000 wei as the value.
+　etherの値はイーサリアム内部では常にwei建ての符号なし整数値として表現されます。1 etherのトランザクションを行う場合、トランザクションは値として1,000,000,000,000,000,000 weiをエンコードします。
 
-Ether's various denominations have both a scientific name using the International System of Units (SI) and a colloquial name that pays homage to many of the great minds of computing and cryptography. Table 2-1 lists the various units, their colloquial (common) names, and their SI names. In keeping with the internal representation of value, the table shows all denominations in wei (first row), with ether shown as 10^18^ wei in the seventh row.
+　etherのさまざまな単位は、国際単位系（SI）に基づく科学的な名称と、コンピューティングや暗号学の偉大な頭脳たちに敬意を表す通称の両方を持っています。表2-1は、さまざまな単位とその通称（一般名）、およびSI名を示しています。値の内部表現に合わせて、この表ではすべての単位をwei（最初の行）で表示し、etherは7番目の行で10^18^ weiとして示しています。
 
-**Table 2-1. Ether denominations and unit names**
+**表2-1. etherの単位と単位名**
 
-| Value (in wei) | Exponent | Common name | SI name |
+| 値（wei） | 指数 | 通称 | SI名 |
 |---|---|---|---|
 | 1 | 1 | Wei | Wei |
 | 1,000 | 10^3^ | Babbage | Kilowei or femtoether |
@@ -30,371 +30,371 @@ Ether's various denominations have both a scientific name using the Internationa
 | 1,000,000,000,000,000,000,000 | 10^21^ | Grand | Kiloether |
 | 1,000,000,000,000,000,000,000,000 | 10^24^ | | Megaether |
 
-## Choosing an Ethereum Wallet
+## イーサリアム ウォレットの選択
 
-The term *wallet* has come to mean many things, although the definitions are all related, and on a day-to-day basis, they all boil down to pretty much the same thing. We will use the term *wallet* to refer to a software application that helps you manage your Ethereum account. In short, an Ethereum wallet is your gateway to the Ethereum system. It holds your keys and can create and broadcast transactions on your behalf. Choosing an Ethereum wallet can be difficult because there are many options with different features and designs. Some are more suitable for beginners, and some are more suitable for experts. The Ethereum platform itself is still being improved, and the "best" wallets are often the ones that adapt to the changes that come with the platform upgrades.
+　*ウォレット*という用語はさまざまな意味を持つようになりましたが、定義はすべて関連しており、日常的にはほぼ同じものを指しています。本書では、イーサリアム アカウントの管理を支援するソフトウェア アプリケーションを*ウォレット*と呼びます。簡単に言えば、イーサリアム ウォレットはイーサリアム システムへの入口です。秘密鍵を保持し、あなたに代わってトランザクションを作成・ブロードキャストできます。イーサリアム ウォレットの選択は難しい場合があります。さまざまな機能やデザインを持つ多くの選択肢があるからです。初心者に適したものもあれば、上級者に適したものもあります。イーサリアム プラットフォーム自体がまだ改善途上にあり、「最良の」ウォレットは、プラットフォームのアップグレードに伴う変更に適応するものであることが多いです。
 
-But don't worry! If you choose a wallet and don't like how it works—or if you like it at first but later want to try something else—you can change wallets quite easily. All you have to do is make a transaction that sends your funds from the old wallet to the new wallet or export your private keys and import them into the new one.
+　しかし心配は無用です。ウォレットを選んで使い心地が気に入らなくても、あるいは最初は気に入っていても後で別のものを試したくなっても、簡単にウォレットを変更できます。古いウォレットから新しいウォレットに資金を送るトランザクションを作成するか、秘密鍵をエクスポートして新しいウォレットにインポートするだけです。
 
-Remember that for a wallet application to work, it must have access to your private keys, so it is vital that you only download and use wallet applications from sources you trust. Fortunately, in general, the more popular a wallet application is, the more trustworthy it is likely to be. Nevertheless, it is good practice to avoid "putting all your eggs in one basket" and have your Ethereum accounts spread across a couple of wallets and seed phrases.
+　ウォレット アプリケーションが機能するためには秘密鍵にアクセスする必要があるため、信頼できるソースからのみウォレット アプリケーションをダウンロードして使用することが重要です。幸いなことに、一般的にウォレット アプリケーションが人気であればあるほど、信頼性が高い傾向にあります。とはいえ、「すべての卵を一つのかごに入れない」のが良い慣行であり、イーサリアム アカウントを複数のウォレットとシード フレーズに分散させることをお勧めします。
 
-The following are some good starter wallets; the selection of these wallets is not an endorsement of their quality or security. They are simply a good starting place for demonstrations and testing. All of the following wallets are both browser-extension wallets and mobile wallets:
+　以下は初心者に適したウォレットの例です。これらのウォレットの選択は品質やセキュリティの保証ではなく、デモやテストの出発点として適しているだけです。以下のウォレットはすべて、ブラウザ拡張ウォレットとモバイル ウォレットの両方に対応しています：
 
 **MetaMask**
 
-MetaMask is easy to use and convenient for testing as it is able to connect to a variety of Ethereum nodes and test blockchains.
+MetaMaskは使いやすく便利であり、さまざまなイーサリアム ノードやテスト ブロックチェーンに接続できるため、テストに適しています。
 
 **Rabby Wallet**
 
-Rabby is often a good choice for new users as it is designed for simplicity and ease of use. It has a lot of security features built in.
+Rabbyはシンプルさと使いやすさを重視して設計されているため、新規ユーザーにとって良い選択肢となることが多いです。多くのセキュリティ機能が組み込まれています。
 
 **Phantom**
 
-Phantom is a wallet that can connect only to Ethereum, among other non-EVM chains.
+Phantomは、イーサリアムだけでなく他の非EVMチェーンにも接続できるウォレットです。
 
-## Control and Responsibility
+## 管理と責任
 
-Open blockchains like Ethereum are important because they operate as a *decentralized* system. That means lots of things, but one crucial aspect is that each user of Ethereum can—and should—control their own *private keys*, which control access to funds and smart contracts. We sometimes call the combination of access to funds and smart contracts an *account* or *wallet*. These terms can get quite complex in their functionality, so we will go into this in more detail later. As a fundamental principle, however, it is as easy as one private key equals one "account." Some users choose to give up control over their private keys by using a third-party custodian, such as an online centralized exchange. In this book, we will teach you how to take control and manage your own private keys.
+　イーサリアムのようなオープン ブロックチェーンは、*非中央集権*的なシステムとして運営されるため重要です。これは多くのことを意味しますが、決定的な側面の一つは、イーサリアムの各ユーザーが自身の*秘密鍵*を管理でき、また管理すべきであるということです。秘密鍵は資金やスマート コントラクトへのアクセスを制御します。資金とスマート コントラクトへのアクセスの組み合わせを*アカウント*や*ウォレット*と呼ぶことがあります。これらの用語は機能的にかなり複雑になることがあるため、後で詳しく説明します。しかし基本原則としては、一つの秘密鍵が一つの「アカウント」に対応するという単純なものです。一部のユーザーはオンラインの中央集権型取引所などのサードパーティ カストディアンに秘密鍵の管理を委ねることを選択します。本書では、秘密鍵を自分で管理する方法を教えます。
 
-With control comes a big responsibility. If you lose your private keys, you lose access to your funds and contracts. No one can help you regain access—your funds will be locked forever. Here are a few tips to help you manage this responsibility:
+　管理には大きな責任が伴います。秘密鍵を失うと、資金やコントラクトへのアクセスを失います。アクセスの回復を助けてくれる人はいません。資金は永久にロックされます。この責任を管理するためのヒントをいくつか紹介します：
 
-- Do not improvise security. Use tried-and-tested standard approaches.
+- 即興的なセキュリティ対策は避ける。実績のある標準的なアプローチを使用すること
 
-- The more important the account (e.g., the higher the value of the funds controlled compared to your total net worth), the higher the security measures that should be taken.
+- アカウントが重要であるほど（例えば、管理する資金の価値が総資産に対して高いほど）、より高いセキュリティ対策を講じるべきである
 
-- One of the highest security levels is gained from a hardware wallet device, but this level is not required for every account.
+- 最高レベルのセキュリティの一つはハードウェア ウォレット デバイスから得られるが、すべてのアカウントにこのレベルが必要なわけではない
 
-- Never store your private key in plain form, especially digitally. Fortunately, most user interfaces today won't even let you see the raw private key without throwing multiple warnings.
+- 秘密鍵を平文で保存してはならない（特にデジタル形式で）。幸いなことに、現在のほとんどのユーザー インターフェースは、複数の警告を表示せずに生の秘密鍵を表示することさえしない
 
-- When you are prompted to back up a key as a mnemonic word sequence, use pen and paper to make a physical backup. Do not leave that task "for later"; you will forget. These backups can be used to rebuild your private key in case you lose all the data saved on your system or if you forget or lose your password. However, they can also be used by attackers to get your private keys, so never store them digitally and keep at least one physical copy stored securely.
+- 鍵をニーモニック ワード シーケンスとしてバックアップするよう求められた場合は、ペンと紙を使って物理的なバックアップを作成する。この作業を「後で」にしてはならない。忘れてしまうからである。これらのバックアップは、システムに保存されたすべてのデータを失った場合や、パスワードを忘れたり紛失した場合に秘密鍵を再構築するために使用できる。ただし、攻撃者が秘密鍵を入手するためにも使用できるため、デジタルで保存せず、少なくとも一部の物理的なコピーを安全に保管すること
 
-- Before transferring any large amounts (especially to new addresses), first do a small test transaction (e.g., less than $1 value) and wait for confirmation of receipt.
+- 大額（特に新しいアドレスへの）の送金の前に、まず少額のテスト トランザクション（例えば1ドル未満の価値）を行い、受領の確認を待つこと
 
-- When you create a new account, start by sending only a small test transaction to the new address. Once you receive the test transaction, try sending it back again from that account. There are lots of reasons account creation can go wrong, and if it has gone wrong, it is better to find out with a small loss. If the tests work, all is well (also a testnet could be used to avoid any kind of loss).
+- 新しいアカウントを作成する際は、まず新しいアドレスに少額のテスト トランザクションのみを送信する。テスト トランザクションを受け取ったら、そのアカウントから再び送り返してみる。アカウント作成がうまくいかない理由はたくさんあり、問題があった場合は少額の損失で済む方がよい。テストが成功すれば問題ない（テストネットを使用すればいかなる損失も避けられる）
 
-- Public block explorers are an easy way to independently see whether a transaction has been accepted by the network; while this information is already public on the blockchain, block explorers make it incredibly easy to access. However, this convenience has a negative impact on your privacy because you reveal your addresses to block explorers, which can track you.
+- パブリック ブロック エクスプローラーは、トランザクションがネットワークに受け入れられたかどうかを独立して確認する簡単な方法である。この情報はすでにブロックチェーン上で公開されているが、ブロック エクスプローラーはアクセスを非常に容易にしてくれる。ただし、この利便性はプライバシーに悪影響を与える。アドレスをブロック エクスプローラーに公開することで、追跡される可能性があるからである
 
-- Public block explorers are usually reliable, but not all the time—do not trust them blindly.
+- パブリック ブロック エクスプローラーは通常信頼性があるが、常にそうとは限らない。盲目的に信頼してはならない
 
-- Do not send money to any of the addresses shown in this book. The private keys are listed in the book, and someone could immediately take that money.
+- 本書に表示されているアドレスにお金を送らないこと。秘密鍵は本書に記載されており、誰かがすぐにそのお金を取ることができる
 
-Now that we've covered some basic best practices for key management and security, let's get to work using MetaMask!
+　基本的な鍵管理とセキュリティのベスト プラクティスについて説明したので、MetaMaskを使って作業を始めましょう。
 
-## Getting Started with MetaMask
+## MetaMaskを使い始める
 
-Open the Google Chrome browser and navigate to [Extensions](https://oreil.ly/0rOvX). Search for "MetaMask" and click on the logo of a fox. You should see something similar to Figure 2-1.
+　Google Chromeブラウザを開き、[拡張機能](https://oreil.ly/0rOvX)に移動します。「MetaMask」を検索し、キツネのロゴをクリックします。図2-1のような画面が表示されるはずです。
 
-![The detail page of the MetaMask Chrome extension](images/ch2/maet_0201.png)
+![MetaMask Chrome拡張機能の詳細ページ](images/ch2/maet_0201.png)
 
-Figure 2-1. The detail page of the MetaMask Chrome extension
+**図2-1.** MetaMask Chrome拡張機能の詳細ページ
 
-It's important to verify that you are downloading the real MetaMask extension because sometimes people are able to sneak malicious extensions past Google's filters. The real one does the following:
+　本物のMetaMask拡張機能をダウンロードしていることを確認することが重要です。悪意のある拡張機能がGoogleのフィルターをすり抜けることがあるからです。本物の拡張機能は以下の特徴を持っています：
 
-- Shows the ID `nkbihfbeogaeaoehlefnkodbefgpgknn` in the address bar
+- アドレスバーにID `nkbihfbeogaeaoehlefnkodbefgpgknn` が表示される
 
-- Is offered by [*https://metamask.io*](https://metamask.io)
+- [*https://metamask.io*](https://metamask.io) が提供元として表示される
 
-- Has more than 5,400 reviews
+- 5,400件以上のレビューがある
 
-- Has more than 15 million users
+- 1,500万人以上のユーザーがいる
 
-Once you confirm that you are looking at the correct extension, click "Add to Chrome" to install it.
+　正しい拡張機能であることを確認したら、「Chromeに追加」をクリックしてインストールします。
 
-### Creating a Wallet
+### ウォレットの作成
 
-Once MetaMask is installed, you should see a new icon (the head of a fox) in your browser's toolbar. Click it to get started. You will be asked to accept the terms and conditions and then to create your new Ethereum wallet by entering a password (see Figure 2-2).
+　MetaMaskがインストールされると、ブラウザのツールバーに新しいアイコン（キツネの顔）が表示されます。クリックして開始します。利用規約への同意を求められ、その後パスワードを入力して新しいイーサリアム ウォレットを作成します（図2-2を参照）。
 
-![The password page of the MetaMask Chrome extension](images/ch2/maet_0202.png)
+![MetaMask Chrome拡張機能のパスワード ページ](images/ch2/maet_0202.png)
 
-Figure 2-2. The password page of the MetaMask Chrome extension
+**図2-2.** MetaMask Chrome拡張機能のパスワード ページ
 
-> **Tip**  
+> **ヒント**
 >
-> The password controls access to MetaMask so that it can't be used by anyone with access to your browser. This password is only for your local device; if an attacker gains access to the private key or seed phrase, they will be able to access the funds in your addresses. The password is not needed if the attacker has the private key or seed phrase.
+> パスワードはMetaMaskへのアクセスを制御し、ブラウザにアクセスできる誰もがMetaMaskを使用できないようにするものである。このパスワードはローカル デバイスのみに適用される。攻撃者が秘密鍵やシード フレーズにアクセスした場合、アドレス内の資金にアクセスできてしまう。攻撃者が秘密鍵やシード フレーズを持っている場合、パスワードは不要である。
 
-Once you've set a password, MetaMask will generate a wallet for you and show you a *mnemonic backup* consisting of 12 English words (see Figure 2-3). These words can be used in any compatible wallet to recover access to your funds should something happen to MetaMask or your computer. You do not need the password for this recovery; the 12 words are sufficient.
+　パスワードを設定すると、MetaMaskはウォレットを生成し、12個の英単語からなる*ニーモニック バックアップ*を表示します（図2-3を参照）。これらの単語は、MetaMaskやコンピューターに何かあった場合に、互換性のある任意のウォレットで資金へのアクセスを回復するために使用できます。この回復にパスワードは不要です。12個の単語で十分です。
 
-![The mnemonic backup of your wallet created by MetaMask](images/ch2/maet_0203.png)
+![MetaMaskが作成したウォレットのニーモニック バックアップ](images/ch2/maet_0203.png)
 
-Figure 2-3. The mnemonic backup of your wallet created by MetaMask
+**図2-3.** MetaMaskが作成したウォレットのニーモニック バックアップ
 
-> **Tip**  
+> **ヒント**
 >
-> Back up your mnemonic (12 words) on paper, twice. Store the two paper backups in two separate secure locations, such as a fire-resistant safe, a locked drawer, or a safe deposit box. Treat the paper backups like cash of equivalent value to what you store in your Ethereum wallet. Anyone with access to these words can gain access to and steal your money. We will go into much more detail on how to keep your seed phrase safe in Chapter 5.
+> ニーモニック（12単語）を紙に2部バックアップする。2つの紙のバックアップを、耐火金庫、施錠された引き出し、貸金庫など、2つの異なる安全な場所に保管する。紙のバックアップは、イーサリアム ウォレットに保管している資金と同等の価値がある現金のように扱うこと。これらの単語にアクセスできる人は誰でも、資金にアクセスして盗むことができる。シード フレーズを安全に保つ方法については、第5章で詳しく説明する。
 
-Once you have confirmed that you have stored the mnemonic securely, you'll be able to see the details of your Ethereum account, as shown in Figure 2-4.
+　ニーモニックを安全に保管したことを確認すると、図2-4のようにイーサリアム アカウントの詳細を確認できるようになります。
 
-![Your Ethereum account in MetaMask](images/ch2/maet_0204.png)
+![MetaMaskのイーサリアム アカウント](images/ch2/maet_0204.png)
 
-Figure 2-4. Your Ethereum account in MetaMask
+**図2-4.** MetaMaskのイーサリアム アカウント
 
-> **Note**  
+> **注記**
 >
-> Do not send any assets to the addresses shown in this book. The seed phrase is public for educational purposes, and every asset sent to these addresses will probably be lost.
+> 本書に表示されているアドレスにアセットを送らないこと。シード フレーズは教育目的で公開されており、これらのアドレスに送られたすべてのアセットはおそらく失われる。
 
-Your account page shows the name of your account ("Account 1" by default), an Ethereum address (`0xaa529…f17f` in the example), and a colorful icon to help you visually distinguish this account from other accounts. At the top of the account page, you can see which Ethereum network you are currently working on ("Main Network" in the example).
+　アカウント ページには、アカウント名（デフォルトでは「Account 1」）、イーサリアム アドレス（この例では`0xaa529…f17f`）、およびこのアカウントを他のアカウントと視覚的に区別するためのカラフルなアイコンが表示されます。アカウント ページの上部には、現在使用しているイーサリアム ネットワーク（この例では「Main Network」）が表示されます。
 
-Congratulations! You have set up your first Ethereum wallet.
+　おめでとうございます。最初のイーサリアム ウォレットのセットアップが完了しました。
 
-### Switching Networks
+### ネットワークの切り替え
 
-As you can see on the MetaMask account page, you can choose among multiple Ethereum networks. By default, MetaMask will try to connect to the main network. The other choices are public testnets, any Ethereum node of your choice, or nodes running private blockchains on your own computer (localhost):
+　MetaMaskのアカウント ページに表示されているように、複数のイーサリアム ネットワークから選択できます。デフォルトでは、MetaMaskはメイン ネットワークへの接続を試みます。その他の選択肢は、パブリック テストネット、任意のイーサリアム ノード、またはローカルコンピューター（localhost）上でプライベート ブロックチェーンを実行するノードです：
 
-**Main Ethereum Network**
+**メイン イーサリアム ネットワーク**
 
-The main public Ethereum blockchain. Real ETH, real value, and real consequences.
+メインのパブリック イーサリアム ブロックチェーン。本物のETH、本物の価値、そして本物の結果がある。
 
-**Sepolia Test Network**
+**Sepoliaテスト ネットワーク**
 
-Launched in October 2021 as a proof-of-authority network by Ethereum's core developers, Sepolia has since transitioned to a PoS consensus, mirroring Ethereum's mainnet environment.
+2021年10月にイーサリアムのコア開発者によってproof-of-authorityネットワークとしてローンチされたSepoliaは、その後PoSコンセンサスに移行し、イーサリアムのメインネット環境を反映している。
 
-**Holesky Test Network**
+**Holeskyテスト ネットワーク**
 
-The Holesky Testnet is Ethereum's advanced testing ground for staking, infrastructure, and protocol development.
+Holeskyテストネットは、ステーキング、インフラ、プロトコル開発のためのイーサリアムの高度なテスト環境である。
 
 **Localhost 8545**
 
-Connects to a node running on the same computer as the browser. The node can be part of any public blockchain (main or testnet) or a private testnet.
+ブラウザと同じコンピューター上で実行されているノードに接続する。このノードはパブリック ブロックチェーン（メインまたはテストネット）またはプライベート テストネットの一部である場合がある。
 
-**Custom RPC**
+**カスタムRPC**
 
-Allows you to connect MetaMask to any node with a Geth-compatible remote procedure call (RPC) interface. The node can be part of any public or private blockchain.
+Geth互換のリモート プロシージャ コール（RPC）インターフェースを持つ任意のノードにMetaMaskを接続できる。このノードはパブリックまたはプライベートの任意のブロックチェーンの一部である場合がある。
 
-> **Note**  
+> **注記**
 >
-> Your MetaMask wallet uses the same private key and Ethereum address on all the networks it connects to. However, your Ethereum address balance on each Ethereum network will be different. For instance, if you use your keys to send ether on the Sepolia testnet, your balances on other networks will remain unaffected.
+> MetaMaskウォレットは、接続するすべてのネットワークで同じ秘密鍵とイーサリアム アドレスを使用する。ただし、各イーサリアム ネットワーク上のイーサリアム アドレスの残高は異なる。例えば、Sepoliaテストネットでetherを送信するために鍵を使用しても、他のネットワーク上の残高には影響しない。
 
-### Getting Some Test Ether
+### テスト用etherの入手
 
-Your first task is to get your wallet funded. You won't be doing that on the main network because real ether costs money and handling it requires a bit more experience. For now, you'll load your wallet with some testnet ether.
+　最初のタスクは、ウォレットに資金を入れることです。メイン ネットワークでは行いません。本物のetherにはお金がかかり、扱うにはもう少し経験が必要だからです。今のところ、テストネットのetherでウォレットに入金します。
 
-Switch MetaMask to the Sepolia Test Network by clicking the Ethereum icon on the top left; toggle the option "Show test networks" and click Sepolia, as shown in Figure 2-5.
+　図2-5のように、左上のイーサリアム アイコンをクリックしてMetaMaskをSepoliaテスト ネットワークに切り替えます。「テスト ネットワークを表示」オプションを切り替えて、Sepoliaをクリックします。
 
-![MetaMask networks](images/ch2/maet_0205.png)
+![MetaMaskのネットワーク](images/ch2/maet_0205.png)
 
-Figure 2-5. MetaMask networks
+**図2-5.** MetaMaskのネットワーク
 
-Click Buy, then navigate to one of the faucets in [this list](https://oreil.ly/VE0t0). Once you have decided which faucet you want to use—they are all pretty much equivalent—you can request ethers on the test network, as shown in Figure 2-6.
+　「購入」をクリックし、[このリスト](https://oreil.ly/VE0t0)のフォーセットの一つに移動します。使用するフォーセットを決めたら（どれもほぼ同等です）、図2-6のようにテスト ネットワーク上でetherをリクエストできます。
 
-![MetaMask Sepolia test faucet](images/ch2/maet_0206.png)
+![MetaMask Sepoliaテスト フォーセット](images/ch2/maet_0206.png)
 
-Figure 2-6. MetaMask Sepolia test faucet
+**図2-6.** MetaMask Sepoliaテスト フォーセット
 
-The transaction ID for the request of testnet ether looks like this:
+　テストネットetherのリクエストのトランザクションIDは以下のようになります：
 
     0x471273d9417e98e7f1adaae61e53a353b2d2313de2e71fc4b6184bf5a63fa0ae
 
-In a few seconds, the new transaction will be processed by the Sepolia network, and your MetaMask wallet will show a balance of 0.05 ETH (this depends on how much ether the faucet is willing to send). Now, click to the first transaction in your browser extension and click "View on block explorer," as shown in Figure 2-7. This will navigate to a *block explorer*, which is a website that allows you to visualize and explore blocks, addresses, and transactions.
+　数秒後、新しいトランザクションがSepoliaネットワークで処理され、MetaMaskウォレットに0.05 ETHの残高が表示されます（フォーセットが送信するetherの量によって異なります）。次に、ブラウザ拡張機能で最初のトランザクションをクリックし、図2-7のように「ブロック エクスプローラーで表示」をクリックします。*ブロック エクスプローラー*に移動します。ブロック エクスプローラーは、ブロック、アドレス、トランザクションを可視化して探索できるウェブサイトです。
 
-![Transaction viewed from MetaMask](images/ch2/maet_0207.png)
+![MetaMaskから確認したトランザクション](images/ch2/maet_0207.png)
 
-Figure 2-7. Transaction viewed from MetaMask
+**図2-7.** MetaMaskから確認したトランザクション
 
-MetaMask uses the [Etherscan block explorer](https://etherscan.io), one of the more popular Ethereum block explorers. The transaction containing the payment from the Sepolia test faucet is shown in Figure 2-8.
+　MetaMaskは、人気のあるイーサリアム ブロック エクスプローラーの一つである[Etherscanブロック エクスプローラー](https://etherscan.io)を使用します。Sepoliaテスト フォーセットからの支払いを含むトランザクションが図2-8に表示されています。
 
-![Etherscan Sepolia block explorer](images/ch2/maet_0208.png)
+![Etherscan Sepoliaブロック エクスプローラー](images/ch2/maet_0208.png)
 
-Figure 2-8. Etherscan Sepolia block explorer
+**図2-8.** Etherscan Sepoliaブロック エクスプローラー
 
-The transaction has been recorded on the Sepolia blockchain and can be viewed at any time by anyone, simply by searching for the transaction ID. Try entering the transaction hash into the [*sepolia.etherscan.io* website](http://sepolia.etherscan.io) to see it for yourself:
+　トランザクションはSepoliaブロックチェーンに記録されており、トランザクションIDを検索するだけで、いつでも誰でも閲覧できます。[*sepolia.etherscan.io*ウェブサイト](http://sepolia.etherscan.io)にトランザクション ハッシュを入力して、自分で確認してみてください：
 
     0x471273d9417e98e7f1adaae61e53a353b2d2313de2e71fc4b6184bf5a63fa0ae
 
-### Sending Ether from MetaMask
+### MetaMaskからetherを送信する
 
-Once you've received your first test ether from the Sepolia test faucet, you can experiment with sending ether by trying to send some back to the faucet or to any other address. In this example, we will be trying to send some testnet ether to Vitalik Buterin, as shown in Figure 2-9.
+　Sepoliaテスト フォーセットから最初のテスト用etherを受け取ったら、フォーセットに返送したり、他のアドレスに送信したりしてetherの送信を試すことができます。この例では、図2-9のように、テストネットのetherをヴィタリック・ブテリンに送信してみます。
 
-![Sending 0.05 ether to an address](images/ch2/maet_0209.png)
+![0.05 etherをアドレスに送信する](images/ch2/maet_0209.png)
 
-Figure 2-9. Sending 0.05 ether to an address
+**図2-9.** 0.05 etherをアドレスに送信する
 
-Oops! You probably noticed that you can't complete the transaction—MetaMask says you have an insufficient balance. At first glance, this may seem confusing: you have 0.05 ETH, you want to send 0.05 ETH, so why is MetaMask saying you have insufficient funds?
+　あれ、トランザクションを完了できないことに気づいたかもしれません。MetaMaskが残高不足だと表示しています。一見すると不思議に思えるかもしれません。0.05 ETHを持っていて、0.05 ETHを送りたいのに、なぜMetaMaskは残高不足だと言うのでしょうか。
 
-The answer is because of the cost of gas. Every Ethereum transaction requires payment of a fee, which is collected by the network to validate the transaction. The fees in Ethereum are charged in a virtual currency called *gas*. You pay for the gas with ether, as part of the transaction.
+　その答えはガスのコストにあります。すべてのイーサリアム トランザクションには手数料の支払いが必要であり、ネットワークがトランザクションを検証するために徴収されます。イーサリアムの手数料は*ガス*と呼ばれる仮想通貨で課金されます。ガスの支払いにはetherを使用し、トランザクションの一部として支払います。
 
-> **Note**  
+> **注記**
 >
-> Fees are required on the test networks, too. Without fees, a test network would behave differently from the main network, making it an inadequate testing platform. Fees also protect the test networks from DoS attacks and poorly constructed contracts (e.g., infinite loops), much like they protect the main network.
+> テスト ネットワークでも手数料が必要である。手数料がなければ、テスト ネットワークはメイン ネットワークとは異なる挙動をし、適切なテスト プラットフォームとはならない。手数料は、メイン ネットワークを保護するのと同様に、テスト ネットワークもDoS攻撃や不適切に構築されたコントラクト（例：無限ループ）から保護する。
 
-When you send the transaction, MetaMask will calculate the average gas price of recent successful transactions—for example, at 3 gwei, which stands for gigawei. Wei is the smallest subdivision of the ether currency, as we discussed in "Ether Currency Units". The gas limit is set at the cost of sending a basic transaction: 21,000 gas units, which is the smallest amount of gas that can be used to send a transaction. Therefore, the maximum amount of ETH you will spend is 3 × 21,000 gwei = 63,000 gwei = 0.000063 ETH. (Be advised that average gas prices can fluctuate. We will see in a later chapter how you can increase or decrease your gas limit to ensure that your transaction takes precedence if need be.)
+　トランザクションを送信する際、MetaMaskは最近の成功したトランザクションの平均ガス価格を計算します。例えば3 gwei（gigaweiの略）です。weiはether通貨の最小の細分化単位であり、「etherの通貨単位」で説明した通りです。ガス リミットは基本的なトランザクションを送信するコストに設定されています。それは21,000ガス単位であり、トランザクションの送信に使用できるガスの最小量です。したがって、使用するETHの最大量は3 × 21,000 gwei = 63,000 gwei = 0.000063 ETHとなります（平均ガス価格は変動する可能性があることに注意してください。後の章で、必要に応じてトランザクションに優先順位を付けるためにガス リミットを増減させる方法を説明します）。
 
-All this is to say that making a 0.05 ETH transaction costs 0.050063 ETH. Click Reject to cancel this transaction. Let's try again, this time by sending 0.01 ETH.
+　つまり、0.05 ETHのトランザクションを行うには0.050063 ETHが必要ということです。「拒否」をクリックしてこのトランザクションをキャンセルしましょう。今度は0.01 ETHを送信してみましょう。
 
-### Exploring the Transaction History of an Address
+### アドレスのトランザクション履歴の確認
 
-By now, you have become an expert in using MetaMask to send and receive test ether. Your wallet has received and sent payments. You can view all these transactions using the [*sepolia.etherscan.io* block explorer](http://sepolia.etherscan.io). You can either copy your wallet address and paste it into the block explorer's search box or have MetaMask open the page for you. Next to your account icon in MetaMask, you will see a button showing three dots. Click it to show a menu of account-related options (see Figure 2-10).
+　ここまでで、MetaMaskを使用してテスト用etherを送受信するエキスパートになりました。ウォレットは支払いの受領と送信を行いました。これらすべてのトランザクションは、[*sepolia.etherscan.io*ブロック エクスプローラー](http://sepolia.etherscan.io)を使用して確認できます。ウォレット アドレスをコピーしてブロック エクスプローラーの検索ボックスに貼り付けるか、MetaMaskにページを開いてもらうことができます。MetaMaskのアカウント アイコンの横に、3つの点を示すボタンがあります。クリックすると、アカウント関連のオプションのメニューが表示されます（図2-10を参照）。
 
-![MetaMask account context menu](images/ch2/maet_0210.png)
+![MetaMaskアカウント コンテキスト メニュー](images/ch2/maet_0210.png)
 
-Figure 2-10. MetaMask account context menu
+**図2-10.** MetaMaskアカウント コンテキスト メニュー
 
-> **Tip**  
+> **ヒント**
 >
-> The default settings of MetaMask are not very privacy centric. It is advisable to carefully analyze the settings found in Settings → Security and Privacy. Once you are familiar with how MetaMask works, it is also advisable to change the Ethereum mainnet network from the default one to one that uses an RPC with privacy settings that suit your needs. The most private solution would be to have your own node with an RPC to which you can connect; we will see how to do that in Chapter 3.
+> MetaMaskのデフォルト設定はあまりプライバシー重視ではない。「設定」→「セキュリティとプライバシー」にある設定を慎重に分析することをお勧めする。MetaMaskの仕組みに慣れたら、イーサリアム メインネット ネットワークをデフォルトのものから、ニーズに合ったプライバシー設定を持つRPCを使用するものに変更することも推奨する。最もプライベートなソリューションは、接続可能な独自のRPCを持つ独自のノードを持つことである。第3章でその方法を説明する。
 
-Select "View account on Etherscan" to open a web page in the block explorer showing your account's transaction history, as shown in Figure 2-11.
+　「Etherscanでアカウントを表示」を選択すると、図2-11のように、ブロック エクスプローラーでアカウントのトランザクション履歴を表示するウェブ ページが開きます。
 
-![Address transaction history on Etherscan](images/ch2/maet_0211.png)
+![Etherscanでのアドレス トランザクション履歴](images/ch2/maet_0211.png)
 
-Figure 2-11. Address transaction history on Etherscan
+**図2-11.** Etherscanでのアドレス トランザクション履歴
 
-Here you can see the entire transaction history of your Ethereum address. It shows all the transactions recorded on the Sepolia blockchain where your address is the sender or recipient. Click on a few of these transactions to see more details.
+　ここでは、イーサリアム アドレスの全トランザクション履歴を確認できます。Sepoliaブロックチェーンに記録された、あなたのアドレスが送信者または受信者であるすべてのトランザクションが表示されます。いくつかのトランザクションをクリックして、詳細を確認してみてください。
 
-> **Warning**  
+> **警告**
 >
-> Beware, there is a known attack, called *address poisoning*, that can display transactions with spoofed addresses on the block explorer. The block explorer should be used for a quick check, but the information shown might not be accurate.
+> *アドレス ポイズニング*と呼ばれる既知の攻撃があり、ブロック エクスプローラー上で偽装されたアドレスのトランザクションを表示させることができる。ブロック エクスプローラーは簡易的な確認のために使用するべきであるが、表示される情報は正確でない場合がある。
 
-You can explore the transaction history of any address. Take a look at the transaction history of the Sepolia test faucet address (hint: it is the "sender" address listed in the oldest payment to your address). You can see all the test ether sent from the faucet to you and to other addresses. Every transaction you see can lead you to more addresses and more transactions. Before long, you will be lost in the maze of interconnected data. Public blockchains contain an enormous wealth of information, all of which can be explored programmatically, as we will see in future examples.
+　任意のアドレスのトランザクション履歴を調べることができます。Sepoliaテスト フォーセットのアドレスのトランザクション履歴を見てみましょう（ヒント：あなたのアドレスへの最も古い支払いに記載されている「送信者」アドレスです）。フォーセットからあなたや他のアドレスに送られたすべてのテスト用etherを確認できます。表示されるすべてのトランザクションは、さらに多くのアドレスやトランザクションにつながります。やがて、相互接続されたデータの迷宮の中で迷子になるでしょう。パブリック ブロックチェーンには膨大な量の情報が含まれており、今後の例で見るように、すべてプログラムで探索できます。
 
-## Introducing the World Computer
+## ワールド コンピューターの紹介
 
-You've now created a wallet and sent and received ether. So far, we've treated Ethereum as a cryptocurrency. But Ethereum is much, much more. In fact, the cryptocurrency function is subservient to Ethereum's function as a decentralized world computer. Ether is meant to be used to pay for running *smart contracts*, which are computer programs that run on an emulated computer called the *EVM*.
+　ウォレットを作成し、etherの送受信を行いました。ここまでは、イーサリアムを暗号通貨として扱ってきました。しかし、イーサリアムはそれ以上のものです。実際、暗号通貨の機能は、非中央集権的なワールド コンピューターとしてのイーサリアムの機能に従属するものです。etherは、*スマート コントラクト*と呼ばれるコンピューター プログラムを実行するために使用されることが意図されています。スマート コントラクトは*EVM*と呼ばれるエミュレートされたコンピューター上で実行されます。
 
-The EVM is a global singleton, meaning that it operates as if it were a global single-instance computer, running everywhere. Each node on the Ethereum network runs a local copy of the EVM to validate contract execution, while the Ethereum blockchain records the changing *state* of this world computer as it processes transactions and smart contracts. We'll discuss this in much greater detail in Chapter 14.
+　EVMはグローバル シングルトンです。つまり、グローバルな単一インスタンス コンピューターであるかのように動作します。イーサリアム ネットワーク上の各ノードはEVMのローカル コピーを実行してコントラクトの実行を検証し、イーサリアム ブロックチェーンはトランザクションとスマート コントラクトを処理する際のこのワールド コンピューターの変化する*状態*を記録します。これについては第14章でさらに詳しく説明します。
 
-## Externally Owned Accounts and Contracts
+## 外部所有アカウントとコントラクト
 
-The type of account you created in the MetaMask wallet is called an *externally owned account* (EOA). EOAs are those that have a private key; having the private key means control over access to funds or contracts.
+　MetaMaskウォレットで作成したアカウントの種類は、*外部所有アカウント*（EOA）と呼ばれます。EOAは秘密鍵を持つアカウントであり、秘密鍵を持つことは資金やコントラクトへのアクセスの制御を意味します。
 
-You're probably guessing that there is another type of account. That other type of account is a *contract account*. A contract account has smart contract code, which a simple EOA can't have. Furthermore, a contract account does not have a private key. Instead, it is owned (and controlled) by the logic of its smart contract code: the software program recorded on the Ethereum blockchain at the contract account's creation and executed by the EVM.
+　もう一つの種類のアカウントがあることを推測しているかもしれません。そのもう一つのアカウントは*コントラクト アカウント*です。コントラクト アカウントはスマート コントラクト コードを持っていますが、単純なEOAにはそれがありません。さらに、コントラクト アカウントは秘密鍵を持ちません。その代わりに、スマート コントラクト コードのロジックによって所有（および制御）されます。スマート コントラクト コードは、コントラクト アカウントの作成時にイーサリアム ブロックチェーン上に記録され、EVMによって実行されるソフトウェア プログラムです。
 
-Contracts have addresses, just like EOAs. Contracts can also send and receive ether, just like EOAs. However, when a transaction destination is a contract address, it causes that contract to *run* in the EVM, using the transaction—and the transaction's data—as its input. In addition to ether, transactions can contain *data* indicating which specific function in the contract to run and what parameters to pass to that function. In this way, transactions can *call* functions within contracts.
+　コントラクトにはEOAと同様にアドレスがあります。コントラクトもEOAと同様にetherを送受信できます。しかし、トランザクションの宛先がコントラクト アドレスの場合、そのコントラクトはEVM上で*実行*され、トランザクションとそのデータが入力として使用されます。etherに加えて、トランザクションにはコントラクト内のどの特定の関数を実行するか、およびその関数にどのパラメーターを渡すかを示す*データ*を含めることができます。このようにして、トランザクションはコントラクト内の関数を*呼び出す*ことができます。
 
-Note that because a contract account does not have a private key, it cannot *initiate* a transaction. Only EOAs can initiate transactions, but contracts can *react* to transactions by calling other contracts, building complex execution paths.
+　コントラクト アカウントは秘密鍵を持たないため、トランザクションを*開始*することはできないことに注意してください。EOAのみがトランザクションを開始できますが、コントラクトは他のコントラクトを呼び出すことでトランザクションに*反応*し、複雑な実行パスを構築できます。
 
-In the next few sections, we will write our first contract. You will then learn how to create, fund, and use that contract with your MetaMask wallet and test ether on the Sepolia test network.
+　次のいくつかのセクションでは、最初のコントラクトを作成します。その後、MetaMaskウォレットとSepoliaテスト ネットワーク上のテスト用etherを使って、そのコントラクトを作成し、資金を提供し、使用する方法を学びます。
 
-## A Simple Contract: A Test Ether Faucet
+## シンプルなコントラクト：テスト用etherフォーセット
 
-Ethereum has a few different high-level languages, all of which can be used to write a contract and produce EVM bytecode. You can read about the most prominent and interesting ones in Chapter 7. One high-level language is by far the dominant choice for smart contract programming: Solidity. Solidity was created by Gavin Wood and has become the most widely used language in Ethereum (and beyond). We'll use Solidity to write our first contract.
+　イーサリアムにはいくつかの異なる高水準言語があり、そのすべてがコントラクトの作成とEVMバイトコードの生成に使用できます。最も著名で興味深い言語については第7章で説明します。スマート コントラクト プログラミングにおいて圧倒的に主流の高水準言語はSolidityです。Solidityはギャヴィン・ウッドによって作成され、イーサリアム（およびそれ以外）で最も広く使用されている言語になりました。Solidityを使って最初のコントラクトを作成します。
 
-For our first example (Example 2-1), we will write a contract that controls a faucet. You've already used a faucet to get test ether on the Sepolia test network. A *faucet* is a relatively simple thing: it gives out ether to any address that asks and can be refilled.
+　最初の例（例2-1）として、フォーセットを制御するコントラクトを作成します。Sepoliaテスト ネットワークでテスト用etherを取得するためにすでにフォーセットを使用しました。*フォーセット*は比較的シンプルなものです。要求するアドレスにetherを配布し、補充することができます。
 
-##### Example 2-1. *Faucet.sol*: a Solidity contract implementing a faucet
+##### 例2-1. *Faucet.sol*：フォーセットを実装するSolidityコントラクト
 
 ```solidity
 pragma solidity 0.8.26;
 // SPDX-License-Identifier: GPL-3.0
 
-// Our first contract is a faucet!
+// 最初のコントラクトはフォーセット！
 contract Faucet {
 
-    // Give out ether to anyone who asks
+    // 要求する人にetherを配布する
     function withdraw(uint256 _withdrawAmount, address payable _to) public {
 
-        // Limit withdrawal amount
+        // 引き出し額を制限する
         require(_withdrawAmount <= 1000000000000);
 
-        // Send the amount to the address that requested it
+        // リクエストしたアドレスに金額を送信する
         _to.transfer(_withdrawAmount);
     }
 
-    // Function to receive Ether. msg.data must be empty
+    // Etherを受け取る関数。msg.dataは空でなければならない
     receive() external payable {}
 
-    // Fallback function is called when msg.data is not empty
+    // msg.dataが空でない場合に呼び出されるフォールバック関数
     fallback() external payable {}
 }
 ```
 
-This is a very simple contract, about as simple as we can make it. It is also a *flawed* contract, demonstrating a number of bad practices and security vulnerabilities. We will learn by examining many of its flaws in later sections. But for now, let's look at what this contract does and how it works, line by line. You will quickly notice that many elements of Solidity are similar to existing programming languages, such as JavaScript, Java, or C++.
+　これは非常にシンプルなコントラクトであり、これ以上シンプルにすることはほとんどできません。また、多くの悪い慣行やセキュリティの脆弱性を示す*欠陥のある*コントラクトでもあります。後のセクションで多くの欠陥を検証しながら学んでいきます。しかし今のところ、このコントラクトが何をし、どのように動作するかを一行ずつ見ていきましょう。Solidityの多くの要素が、JavaScript、Java、C++などの既存のプログラミング言語に似ていることにすぐ気づくでしょう。
 
-The first line is the `pragma` statement:
+　最初の行は`pragma`文です：
 
     pragma solidity 0.8.26;
 
-By including this line at the top of a Solidity source file, you ensure that the code is compiled with version 0.8.26 of the Solidity compiler, ensuring compatibility and avoiding potential issues that might arise from using a different compiler version.
+　Solidityソース ファイルの先頭にこの行を含めることで、コードがSolidityコンパイラーのバージョン0.8.26でコンパイルされることを保証し、互換性を確保し、異なるコンパイラー バージョンの使用から生じる潜在的な問題を回避します。
 
-Next is a comment indicating that the smart contract is licensed under the GPL-3.0 license:
+　次に、スマート コントラクトがGPL-3.0ライセンスの下でライセンスされていることを示すコメントがあります：
 
     // SPDX-License-Identifier: GPL-3.0
 
-This is important for legal and compliance reasons because it informs users and developers about their rights and obligations concerning the use and distribution of the code.
+　これは法的およびコンプライアンス上の理由から重要です。コードの使用と配布に関するユーザーと開発者の権利と義務を知らせるからです。
 
-Comments are for humans to read and are not included in the executable EVM bytecode. We usually put them on the line before the code we are trying to explain, or sometimes on the same line. Comments start with two forward slashes: `//`. Everything from the first slash until the end of that line is treated the same as a blank line and ignored.
+　コメントは人間が読むためのものであり、実行可能なEVMバイトコードには含まれません。通常、説明しようとしているコードの前の行に配置するか、同じ行に配置することもあります。コメントは2つのスラッシュ `//` で始まります。最初のスラッシュからその行の終わりまでのすべてが空行と同じように扱われ、無視されます。
 
-This is also a comment:
+　これもコメントです：
 
-    // Our first contract is a faucet!
+    // 最初のコントラクトはフォーセット！
 
-The next line is where our actual contract starts:
+　次の行は実際のコントラクトの開始です：
 
     contract Faucet {
 
-This line declares a `contract` object, similar to a `class` declaration in other object-oriented languages. The contract definition includes all the lines between the curly braces (`{}`), which define a *scope*, much like how curly braces are used in many other programming languages.
+　この行は`contract`オブジェクトを宣言します。他のオブジェクト指向言語の`class`宣言に似ています。コントラクトの定義は、他の多くのプログラミング言語で中括弧が使用されるのと同様に、*スコープ*を定義する中括弧（`{}`）の間のすべての行を含みます。
 
-Next, we declare the first function of the `Faucet` contract:
+　次に、`Faucet`コントラクトの最初の関数を宣言します：
 
     function withdraw(uint256 _withdrawAmount, address payable _to) public {
 
-The function is named `withdraw`, and it takes one unsigned integer (`uint256`) named `_withdrawAmount` and an `address payable` named `_to`. It is declared as a public function, meaning it can be called by other contracts. The function definition follows, between curly braces. The first part of the `withdraw` function sets a limit on withdrawals:
+　この関数は`withdraw`という名前で、`_withdrawAmount`という名前の符号なし整数（`uint256`）と`_to`という名前の`address payable`を引数に取ります。public関数として宣言されており、他のコントラクトから呼び出すことができます。関数の定義は中括弧の間に続きます。`withdraw`関数の最初の部分は引き出しに制限を設けています：
 
     require(_withdrawAmount <= 1000000000000);
 
-It uses the built-in Solidity function `require` to test a precondition: that the `_withdrawAmount` is less than or equal to 1,000,000,000,000 wei, which is the base unit of ether (see Table 2-1) and equivalent to 0.000001 ether. If the `withdraw` function is called with a `withdraw_amount` greater than that amount, the `require` function here will cause contract execution to stop and fail with an *exception*. Note that statements need to be terminated with a semicolon in Solidity.
+　Solidityの組み込み関数`require`を使用して前提条件をテストしています。`_withdrawAmount`がether（表2-1を参照）の基本単位であるweiの1,000,000,000,000以下、つまり0.000001 ether以下であることを確認しています。`withdraw`関数がこの金額を超える`withdraw_amount`で呼び出された場合、ここの`require`関数はコントラクトの実行を停止し、*例外*で失敗させます。なお、Solidityでは文の末尾にセミコロンが必要です。
 
-This part of the contract is the main logic of our faucet. It controls the flow of funds out of the contract by placing a limit on withdrawals. It's a very simple control but can give you a glimpse of the power of a programmable blockchain: decentralized software controlling money.
+　コントラクトのこの部分がフォーセットの主要なロジックです。引き出しに制限を設けることで、コントラクトからの資金の流れを制御しています。非常にシンプルな制御ですが、プログラマブル ブロックチェーンの力を垣間見ることができます。お金を制御する非中央集権的なソフトウェアです。
 
-Here we have the first design flaw of the contract. It is not a security flaw, but it would be better to always add an error message to the `require` statement. This way, when a user's transaction fails due to a `require` statement, the reason is clear.
+　ここにコントラクトの最初の設計上の欠陥があります。セキュリティ上の欠陥ではありませんが、`require`文には常にエラー メッセージを追加する方が良いでしょう。こうすることで、`require`文によってユーザーのトランザクションが失敗した場合に、理由が明確になります。
 
-The corrected `require` statement is:
+　修正された`require`文は以下の通りです：
 
     require(_withdrawAmount <= 1000000000000, "The requested amount is too much, try a smaller amount!");
 
-Next comes the actual withdrawal:
+　次に実際の引き出しが来ます：
 
     _to.transfer(_withdrawAmount);
 
-A couple of interesting things are happening here. The function `transfer` is a built-in function that transfers ether from the current contract to another specified address—in this case, the `_to` address. The `transfer` function takes an amount as its only argument. We pass the `_withdrawAmount` value that was the parameter to the `withdraw` function declared a few lines earlier.
+　ここでいくつかの興味深いことが起きています。`transfer`関数は、現在のコントラクトから別の指定されたアドレス（この場合は`_to`アドレス）にetherを転送する組み込み関数です。`transfer`関数は唯一の引数として金額を取ります。数行前に宣言した`withdraw`関数のパラメーターである`_withdrawAmount`の値を渡します。
 
-This is possible because the `_to` address was defined as payable. The built-in functions `transfer` and `send` can be called only on payable addresses. Here is the second flaw in the code: while `transfer` is perfectly fine if an EOA calls the `withdraw` function, it becomes problematic if another contract triggers this function. In that case, the transaction might fail because the `transfer` function can utilize only up to 2,300 gas, and multiple contract calls will likely exceed this limit. To fix this issue, you can use the built-in `call` function instead of `transfer` and `send`. However, this built-in function needs to be handled properly to avoid security flaws. For now, we will leave the built-in `transfer` function as is.
+　`_to`アドレスがpayableとして定義されているため、これが可能です。組み込み関数`transfer`と`send`は、payableアドレスに対してのみ呼び出すことができます。ここにコードの2番目の欠陥があります。`transfer`はEOAが`withdraw`関数を呼び出す場合には問題ありませんが、別のコントラクトがこの関数をトリガーする場合には問題になります。その場合、`transfer`関数は最大2,300ガスしか利用できず、複数のコントラクト呼び出しではこの制限を超える可能性が高いため、トランザクションが失敗する可能性があります。この問題を修正するには、`transfer`や`send`の代わりに組み込みの`call`関数を使用できます。ただし、この組み込み関数はセキュリティ上の欠陥を避けるために適切に扱う必要があります。今のところ、組み込みの`transfer`関数のままにしておきます。
 
-The very next line is the closing curly brace, indicating the end of the definition of our `withdraw` function.
+　次の行は閉じ中括弧で、`withdraw`関数の定義の終了を示しています。
 
-Next, we declare two more functions:
+　次に、さらに2つの関数を宣言します：
 
     receive() external payable {}
     fallback() external payable {}
 
-These functions are the `fallback` and `receive` functions, which are called if the transaction that triggered the contract didn't name any of the declared functions in the contract, or any function at all, or didn't contain data. Contracts can have these functions and are usually the ones that receive ether. When *msg.data* is empty, the `receive` function will be triggered; when *msg.data* is not empty, the `fallback` function will be triggered.
+　これらは`fallback`関数と`receive`関数であり、コントラクトをトリガーしたトランザクションがコントラクト内の宣言された関数のいずれも指定しなかった場合、または関数をまったく指定しなかった場合、またはデータを含まなかった場合に呼び出されます。コントラクトはこれらの関数を持つことができ、通常はetherを受け取る関数です。*msg.data*が空の場合、`receive`関数がトリガーされ、*msg.data*が空でない場合、`fallback`関数がトリガーされます。
 
-Right below our `fallback` function is the final closing curly brace, which closes the definition of the contract `Faucet`. That's it!
+　`fallback`関数のすぐ下にある最後の閉じ中括弧は、`Faucet`コントラクトの定義を閉じるものです。以上です。
 
-## Compiling the Faucet Contract
+## Faucetコントラクトのコンパイル
 
-Now that we have our first example contract, we need to use a Solidity compiler to convert the Solidity code into EVM bytecode so that it can be executed by the EVM on the blockchain itself.
+　最初のサンプル コントラクトができたので、Solidityコンパイラーを使用してSolidityコードをEVMバイトコードに変換する必要があります。これにより、ブロックチェーン上でEVMによって実行できるようになります。
 
-The Solidity compiler comes as a standalone executable, as part of various frameworks, and bundled in IDEs. To keep things simple, we will use one of the more popular IDEs: Remix.
+　Solidityコンパイラーは、スタンドアロンの実行ファイルとして、さまざまなフレームワークの一部として、またIDEにバンドルされて提供されています。簡単にするために、最も人気のあるIDEの一つであるRemixを使用します。
 
-Use your Chrome browser (with the MetaMask wallet you installed earlier) to navigate to the [Remix IDE](https://remix.ethereum.org).
+　Chromeブラウザ（先ほどインストールしたMetaMaskウォレットを使用）で[Remix IDE](https://remix.ethereum.org)に移動します。
 
-When you first load Remix, it will start with a sample contract called *Storage.sol*. We don't need that, so close it by clicking the `x` on the corner of the tab, as seen in Figure 2-12.
+　Remixを最初に読み込むと、*Storage.sol*というサンプル コントラクトが開きます。それは不要なので、図2-12のようにタブの隅にある`x`をクリックして閉じます。
 
-![Closing the default example tab](images/ch2/maet_0212.png)
+![デフォルトのサンプル タブを閉じる](images/ch2/maet_0212.png)
 
-Figure 2-12. Closing the default example tab
+**図2-12.** デフォルトのサンプル タブを閉じる
 
-Now, create a new file, as shown in Figure 2-13. Name the new file *Faucet.sol*.
+　次に、図2-13のように新しいファイルを作成します。新しいファイルの名前を*Faucet.sol*にします。
 
-![Creating a new contract](images/ch2/maet_0213.png)
+![新しいコントラクトを作成する](images/ch2/maet_0213.png)
 
-Figure 2-13. Creating a new contract
+**図2-13.** 新しいコントラクトを作成する
 
-Once you have the new tab open, copy and paste the code from our example *Faucet.sol*, as shown in Figure 2-14.
+　新しいタブが開いたら、図2-14のようにサンプルの*Faucet.sol*のコードをコピーして貼り付けます。
 
-![Copying the Faucet example code into the new contract](images/ch2/maet_0214.png)
+![Faucetのサンプル コードを新しいコントラクトにコピーする](images/ch2/maet_0214.png)
 
-Figure 2-14. Copying the Faucet example code into the new contract
+**図2-14.** Faucetのサンプル コードを新しいコントラクトにコピーする
 
-Once you have loaded the *Faucet.sol* contract into the Remix IDE, navigate to the compile section of Remix and click Compile *Faucet.sol*. If all goes well, you will see a green box (see Figure 2-15).
+　*Faucet.sol*コントラクトをRemix IDEに読み込んだら、Remixのコンパイル セクションに移動し、「Compile *Faucet.sol*」をクリックします。すべてが順調であれば、緑色のボックスが表示されます（図2-15を参照）。
 
-![Remix successfully compiles the Faucet.sol contract](images/ch2/maet_0215.png)
+![Remixが*Faucet.sol*コントラクトのコンパイルに成功した](images/ch2/maet_0215.png)
 
-Figure 2-15. Remix successfully compiles the *Faucet.sol* contract
+**図2-15.** Remixが*Faucet.sol*コントラクトのコンパイルに成功した
 
-If something goes wrong, the most likely problem is that the Remix IDE is using a version of the Solidity compiler that is different from 0.8.26. In that case, our `pragma` directive will prevent *Faucet.sol* from compiling. To change the compiler version, go to the Compiler tab, set the version to 0.8.26, and try again.
+　何か問題が発生した場合、最も可能性の高い原因は、Remix IDEが0.8.26とは異なるバージョンのSolidityコンパイラーを使用していることです。その場合、`pragma`ディレクティブにより*Faucet.sol*のコンパイルが妨げられます。コンパイラー タブに移動し、バージョンを0.8.26に設定して、再試行してください。
 
-The Solidity compiler has now compiled our *Faucet.sol* into EVM bytecode. If you are curious, the bytecode looks like this:
+　SolidityコンパイラーがFaucet.solをEVMバイトコードにコンパイルしました。興味がある方のために、バイトコードは以下のようになります：
 
     6080604052348015600e575f80fd5b506101af8061001c5f395ff3fe608060405260043610610020575f3560
     e01c8062f714ce1461002957610027565b3661002757005b005b348015610034575f80fd5b5061004f600480
@@ -408,132 +408,132 @@ The Solidity compiler has now compiled our *Faucet.sol* into EVM bytecode. If yo
     915050925092905056fea26469706673582212207de2f4d88c747c9332dceef5dcd739f3380ec8a8c2167a29
     2ba64ee24fa32a8a64736f6c634300081a0033
 
-Aren't you glad you are using a high-level language like Solidity instead of programming directly in EVM bytecode? Us too!
+　Solidityのような高水準言語を使えることに感謝でしょう。EVMバイトコードで直接プログラミングするのではなく。私たちもそう思います。
 
-## Creating the Contract on the Blockchain
+## ブロックチェーン上へのコントラクトの作成
 
-So, we have a contract. We've compiled it into bytecode. Now, we need to "register" the contract on the Ethereum blockchain. We will be using the Sepolia testnet to test our contract, so that's the blockchain we want to submit it to.
+　コントラクトができました。バイトコードにコンパイルしました。次に、イーサリアム ブロックチェーンにコントラクトを「登録」する必要があります。コントラクトのテストにはSepoliaテストネットを使用するので、そこに提出します。
 
-Registering a contract on the blockchain involves creating a special transaction whose `to` field is left empty (null). This empty destination signals to the Ethereum blockchain that you want to deploy a new contract rather than send a transaction to an existing address. The transaction's `data` field contains the compiled contract bytecode. Fortunately, the Remix IDE will handle all of that for you and send the transaction to MetaMask.
+　ブロックチェーンへのコントラクトの登録は、`to`フィールドが空（null）の特別なトランザクションを作成することで行います。この空の宛先は、イーサリアム ブロックチェーンに対して、既存のアドレスにトランザクションを送信するのではなく、新しいコントラクトをデプロイしたいことを知らせます。トランザクションの`data`フィールドにはコンパイル済みのコントラクト バイトコードが含まれます。幸いなことに、Remix IDEがこれらすべてを処理し、トランザクションをMetaMaskに送信してくれます。
 
-First, switch to the Run tab and select Injected Web3 in the Environment drop-down selection box. This connects the Remix IDE to the MetaMask wallet and, through MetaMask, to the Sepolia test network. Once you do that, you can see Sepolia under Environment. Also, the Account selection box shows the address of your wallet (see Figure 2-16).
+　まず、「Run」タブに切り替え、「Environment」ドロップダウン選択ボックスで「Injected Web3」を選択します。これにより、Remix IDEがMetaMaskウォレットに接続され、MetaMaskを通じてSepoliaテスト ネットワークに接続されます。接続すると、「Environment」の下にSepoliaが表示されます。また、「Account」選択ボックスにはウォレットのアドレスが表示されます（図2-16を参照）。
 
-![Remix IDE Run tab with Injected Web3 environment selected](images/ch2/maet_0216.png)
+![Injected Web3環境を選択したRemix IDEのRunタブ](images/ch2/maet_0216.png)
 
-Figure 2-16. Remix IDE Run tab with Injected Web3 environment selected
+**図2-16.** Injected Web3環境を選択したRemix IDEのRunタブ
 
-Right below the Run settings you just confirmed is the `Faucet` contract, ready to be created. Click the Deploy button shown in Figure 2-16.
+　先ほど確認したRun設定のすぐ下に、作成準備が整った`Faucet`コントラクトがあります。図2-16に表示されているDeployボタンをクリックします。
 
-Remix will construct the special "creation" transaction, and MetaMask will ask you to approve it, as shown in Figure 2-17. You'll notice that the contract-creation transaction has no ether in it, but it has some bytes of data (the compiled contract) and will consume some gwei in gas. Click Submit to approve it.
+　Remixが特別な「作成」トランザクションを構築し、MetaMaskが図2-17のように承認を求めます。コントラクト作成トランザクションにはetherが含まれていませんが、データのバイト（コンパイル済みコントラクト）が含まれており、ガスとしていくらかのgweiを消費することがわかります。「送信」をクリックして承認します。
 
-![MetaMask showing the contract creation transaction](images/ch2/maet_0217.png)
+![コントラクト作成トランザクションを表示するMetaMask](images/ch2/maet_0217.png)
 
-Figure 2-17. MetaMask showing the contract creation transaction
+**図2-17.** コントラクト作成トランザクションを表示するMetaMask
 
-Now you have to wait. It will take about 15–30 seconds for the contract to be processed on Sepolia. Remix won't appear to be doing much, but be patient.
+　ここで待つ必要があります。Sepoliaでコントラクトが処理されるまで約15〜30秒かかります。Remixはあまり動きがないように見えますが、辛抱してください。
 
-Once the contract is created, it appears at the bottom of the Run tab (see Figure 2-18).
+　コントラクトが作成されると、図2-18のようにRunタブの下部に表示されます。
 
-![The Faucet contract is alive!](images/ch2/maet_0218.png)
+![Faucetコントラクトが稼働している](images/ch2/maet_0218.png)
 
-Figure 2-18. The Faucet contract is alive!
+**図2-18.** Faucetコントラクトが稼働している
 
-Notice that the `Faucet` contract now has an address of its own: Remix shows it as "Faucet at 0x4E7…6EA46" (although your address—the random letters and numbers—will be different).
+　`Faucet`コントラクトには独自のアドレスがあることに注目してください。Remixでは「Faucet at 0x4E7…6EA46」と表示されています（あなたのアドレス、つまりランダムな文字と数字は異なります）。
 
-## Interacting with the Contract
+## コントラクトとのやり取り
 
-Let's recap what we've learned so far. Ethereum contracts are programs that control money, which run inside a virtual machine called the EVM. They are created by a special transaction that submits their bytecodes to be recorded on the blockchain. Once they are created on the blockchain, they have an Ethereum address, just like wallets. Anytime someone sends a transaction to a contract address, it causes the contract to run in the EVM, with the transaction as its input. Transactions sent to contract addresses may have ether or data or both. If they contain ether, it is "deposited" to the contract balance. If they contain data, the data can specify a named function in the contract and call it, passing arguments to the function.
+　ここまで学んだことを振り返りましょう。イーサリアムのコントラクトは、EVM内部で実行されるお金を制御するプログラムです。バイトコードをブロックチェーンに記録する特別なトランザクションによって作成されます。ブロックチェーン上に作成されると、ウォレットと同様にイーサリアム アドレスを持ちます。コントラクト アドレスにトランザクションを送信するたびに、そのトランザクションを入力としてコントラクトがEVM上で実行されます。コントラクト アドレスに送信されるトランザクションには、etherまたはデータ、あるいはその両方を含めることができます。etherが含まれている場合は、コントラクトの残高に「入金」されます。データが含まれている場合は、コントラクト内の名前付き関数を指定してその関数を呼び出し、引数を渡すことができます。
 
-### Viewing the Contract Address in a Block Explorer
+### ブロック エクスプローラーでコントラクト アドレスを確認する
 
-We now have a contract recorded on the blockchain, and we can see it has an Ethereum address. Let's check it out in the [*sepolia.etherscan.io* block explorer](http://sepolia.etherscan.io) and see what a contract looks like. In the Remix IDE, copy the address of the contract by clicking the icon next to its name (see Figure 2-19).
+　コントラクトがブロックチェーンに記録され、イーサリアム アドレスを持つことが確認できました。[*sepolia.etherscan.io*ブロック エクスプローラー](http://sepolia.etherscan.io)でコントラクトがどのように見えるか確認してみましょう。Remix IDEで、コントラクト名の横にあるアイコンをクリックしてコントラクトのアドレスをコピーします（図2-19を参照）。
 
-![Copying the contract address from Remix](images/ch2/maet_0219.png)
+![Remixからコントラクト アドレスをコピーする](images/ch2/maet_0219.png)
 
-Figure 2-19. Copying the contract address from Remix
+**図2-19.** Remixからコントラクト アドレスをコピーする
 
-Keep Remix open; we'll come back to it later. Now, navigate your browser to [*sepolia.etherscan.io*](http://sepolia.etherscan.io) and paste the address into the search box. You should see the contract's Ethereum address history, as shown in Figure 2-20.
+　Remixは開いたままにしておいてください。後で戻ってきます。次に、ブラウザで[*sepolia.etherscan.io*](http://sepolia.etherscan.io)に移動し、検索ボックスにアドレスを貼り付けます。図2-20のようにコントラクトのイーサリアム アドレスの履歴が表示されるはずです。
 
-![Viewing the Faucet contract address in the Etherscan block explorer](images/ch2/maet_0220.png)
+![Etherscanブロック エクスプローラーでFaucetコントラクト アドレスを表示する](images/ch2/maet_0220.png)
 
-Figure 2-20. Viewing the Faucet contract address in the Etherscan block explorer
+**図2-20.** Etherscanブロック エクスプローラーでFaucetコントラクト アドレスを表示する
 
-### Funding the Contract
+### コントラクトへの資金提供
 
-For now, the contract has only one transaction in its history: the contract-creation transaction. As you can see, the contract also has no ether (zero balance). That's because we didn't send any ether to the contract in the creation transaction, even though we could have.
+　現時点では、コントラクトの履歴にはコントラクト作成トランザクションの1件のみがあります。ご覧の通り、コントラクトにはether（残高ゼロ）もありません。作成トランザクションでetherを送信しなかったからです（送信することもできました）。
 
-Our faucet needs funds! Our first project will be to use MetaMask to send ether to the contract. You should still have the address of the contract in your clipboard (if not, copy it again from Remix). Open MetaMask and send 0.01 ether to it, exactly as you would to any other Ethereum address (see Figure 2-21).
+　フォーセットには資金が必要です。最初のプロジェクトとして、MetaMaskを使ってコントラクトにetherを送信します。クリップボードにまだコントラクトのアドレスがあるはずです（なければRemixから再度コピーしてください）。MetaMaskを開き、他のイーサリアム アドレスに送信するのとまったく同じように、0.01 etherをコントラクトに送信します（図2-21を参照）。
 
-![Sending 0.01 ether to the contract address](images/ch2/maet_0221.png)
+![コントラクト アドレスに0.01 etherを送信する](images/ch2/maet_0221.png)
 
-Figure 2-21. Sending 0.01 ether to the contract address
+**図2-21.** コントラクト アドレスに0.01 etherを送信する
 
-In a minute, if you reload the Etherscan block explorer, it will show another transaction to the contract address and an updated balance of 0.01 ether.
+　1分後にEtherscanブロック エクスプローラーを再読み込みすると、コントラクト アドレスへの別のトランザクションと、0.01 etherに更新された残高が表示されます。
 
-Remember the `receive` function in our *Faucet.sol* code? It looked like this:
+　*Faucet.sol*コードの`receive`関数を思い出してください。以下のようでした：
 
     receive() external payable {}
 
-When you send the transaction to the contract address, with no data specifying which function to call, it calls this `receive` function. Your transaction caused the contract to run in the EVM, updating its balance. You have funded your faucet!
+　コントラクト アドレスにトランザクションを送信し、呼び出す関数を指定するデータがない場合、この`receive`関数が呼び出されます。トランザクションによってコントラクトがEVM上で実行され、残高が更新されました。フォーセットに資金を提供したのです。
 
-### Withdrawing from Our Contract
+### コントラクトからの引き出し
 
-Next, let's withdraw some funds from the faucet. To withdraw, we have to construct a transaction that calls the `withdraw` function and passes a `_withdrawAmount` and a `_to` argument to it. To keep things simple for now, Remix will construct that transaction for us, and MetaMask will present it for our approval.
+　次に、フォーセットから資金を引き出しましょう。引き出しには、`withdraw`関数を呼び出し、`_withdrawAmount`と`_to`の引数を渡すトランザクションを構築する必要があります。今のところシンプルにするために、Remixがトランザクションを構築し、MetaMaskが承認のために提示してくれます。
 
-Return to the Remix tab and look at the contract on the Run tab. You should see a red box labeled "withdraw" with a field entry labeled "uint256 \_withdrawAmount, address \_to" (see Figure 2-22).
+　Remixのタブに戻り、「Run」タブのコントラクトを確認します。「withdraw」というラベルの付いた赤いボックスと、「uint256 \_withdrawAmount, address \_to」というラベルの付いたフィールド入力が表示されるはずです（図2-22を参照）。
 
-![The withdraw function of Faucet.sol in Remix](images/ch2/maet_0222.png)
+![Remix上のFaucet.solのwithdraw関数](images/ch2/maet_0222.png)
 
-Figure 2-22. The withdraw function of *Faucet.sol* in Remix
+**図2-22.** Remix上の*Faucet.sol*のwithdraw関数
 
-This is the Remix interface to the contract. It allows us to construct transactions that call the functions defined in the contract. We will enter a `_withdrawAmount` and a `_to` address and click the withdraw button to generate the transaction.
+　これはコントラクトへのRemixインターフェースです。コントラクトに定義された関数を呼び出すトランザクションを構築できます。`_withdrawAmount`と`_to`アドレスを入力し、withdrawボタンをクリックしてトランザクションを生成します。
 
-First, let's figure out the `_withdrawAmount`. We want to try to withdraw 0.000001 ether, which is the maximum amount allowed by our contract. Remember that all currency values in Ethereum are denominated in wei internally, and our `withdraw` function expects the `_withdrawAmount` to be denominated in wei, too. The amount we want is 0.000001 ether, which is 1,000,000,000,000 wei (a 1 followed by 12 zeros).
+　まず、`_withdrawAmount`を決めましょう。コントラクトで許可されている最大量である0.000001 etherを引き出してみます。イーサリアムのすべての通貨値は内部的にweiで表記されており、`withdraw`関数も`_withdrawAmount`をwei建てで期待していることを忘れないでください。引き出したい金額は0.000001 etherであり、これは1,000,000,000,000 wei（1の後に12個のゼロ）です。
 
-For the `_to` address we will just use our Account 1 in MetaMask.
+　`_to`アドレスにはMetaMaskのAccount 1を使用します。
 
-> **Tip**  
+> **ヒント**
 >
-> Due to a limitation in JavaScript, a number as large as 10^17^ cannot be processed by Remix. Instead, we enclose it in quotation marks to allow Remix to receive it as a string and manipulate it as a `BigNumber`. If we don't enclose it in quotes, the Remix IDE will fail to process it and display "Error encoding arguments: Error: Assertion failed."
+> JavaScriptの制限により、10^17^ほどの大きな数値はRemixで処理できない。代わりに引用符で囲んで、RemixがBigNumberとして文字列を受け取り操作できるようにする。引用符で囲まないと、Remix IDEは処理に失敗し「Error encoding arguments: Error: Assertion failed.」と表示される。
 
-Type `"1000000000000"` (with the quotes) into the `_withdrawAmount` box, copy-paste your Account 1 address from MetaMask, and click the transact button. (You might see it as the withdraw button. Figure 2-23 shows an expanded view of the function; if your view is not expanded, then the button will be called "withdraw.")
+　`_withdrawAmount`ボックスに`"1000000000000"`（引用符付き）と入力し、MetaMaskからAccount 1のアドレスをコピーして貼り付け、transactボタンをクリックします（withdrawボタンとして表示される場合もあります。図2-23は関数の展開ビューです。ビューが展開されていない場合、ボタンは「withdraw」と表示されます）。
 
-![Click transact in Remix to create a withdrawal transaction](images/ch2/maet_0223.png)
+![Remixでtransactをクリックして引き出しトランザクションを作成する](images/ch2/maet_0223.png)
 
-Figure 2-23. Click transact in Remix to create a withdrawal transaction
+**図2-23.** Remixでtransactをクリックして引き出しトランザクションを作成する
 
-MetaMask will pop up a transaction window for you to approve. Click Submit to send your withdrawal call to the contract (see Figure 2-24).
+　MetaMaskがトランザクション ウィンドウをポップアップして承認を求めます。「送信」をクリックして引き出し呼び出しをコントラクトに送信します（図2-24を参照）。
 
-![MetaMask transaction to call the withdraw function](images/ch2/maet_0224.png)
+![withdraw関数を呼び出すMetaMaskトランザクション](images/ch2/maet_0224.png)
 
-Figure 2-24. MetaMask transaction to call the withdraw function
+**図2-24.** withdraw関数を呼び出すMetaMaskトランザクション
 
-Wait a minute and then reload the Etherscan block explorer to see the transaction reflected in the `Faucet` contract address history (see Figure 2-25).
+　1分ほど待ってからEtherscanブロック エクスプローラーを再読み込みすると、`Faucet`コントラクト アドレスの履歴にトランザクションが反映されているのが確認できます（図2-25を参照）。
 
-![Etherscan shows the transaction calling the withdraw function](images/ch2/maet_0225.png)
+![withdraw関数の呼び出しを示すEtherscan](images/ch2/maet_0225.png)
 
-Figure 2-25. Etherscan shows the transaction calling the withdraw function
+**図2-25.** withdraw関数の呼び出しを示すEtherscan
 
-We now see a new transaction with the contract address as the destination and a value of 0 ether. The contract balance has changed and is now 0.009999 ether because it sent us 0.000001 ether as requested.
+　コントラクト アドレスを宛先とし、値が0 etherの新しいトランザクションが確認できます。コントラクトの残高は変更され、要求通り0.000001 etherが送られたため、0.009999 etherになりました。
 
-But we don't see an "OUT" transaction in the contract address history. Where's the outgoing withdrawal? A new tab named Internal Transactions has appeared on the contract's address history page. Because the 0.000001 ether transfer originated from the contract code, it is an internal transaction (also called a *message*). Click that tab to see it (see Figure 2-26).
+　しかし、コントラクト アドレスの履歴に「OUT」トランザクションが見当たりません。送信された引き出しはどこにあるのでしょうか。コントラクトのアドレス履歴ページに「Internal Transactions」という新しいタブが表示されています。0.000001 etherの送金はコントラクト コードから発生したため、インターナル トランザクション（*メッセージ*とも呼ばれる）となります。そのタブをクリックして確認しましょう（図2-26を参照）。
 
-This "internal transaction" was sent by the contract in this line of code (from the `withdraw` function in *Faucet.sol*):
+　この「インターナル トランザクション」は、コントラクトの以下のコード行（*Faucet.sol*の`withdraw`関数内）によって送信されました：
 
     _to.transfer(_withdrawAmount);
 
-![Etherscan shows the internal transaction transferring ether out from the contract](images/ch2/maet_0226.png)
+![コントラクトからetherを転送するインターナル トランザクションを表示するEtherscan](images/ch2/maet_0226.png)
 
-Figure 2-26. Etherscan shows the internal transaction transferring ether out from the contract
+**図2-26.** コントラクトからetherを転送するインターナル トランザクションを表示するEtherscan
 
-To recap: you sent a transaction from your MetaMask wallet that contained data instructions to call the `withdraw` function with a `_withdrawAmount` argument of 0.000001 ether and an address. That transaction caused the contract to run inside the EVM. As the EVM ran the `Faucet` contract's `withdraw` function, it first called the `require` function and validated that the requested amount was less than or equal to the maximum allowed withdrawal of 0.000001 ether. Then, it called the `transfer` function to send you the ether. Running the `transfer` function generated an internal transaction that deposited 0.000001 ether into your wallet address from the contract's balance. That's the one shown on the Internal Transactions tab in Etherscan.
+　要約すると、MetaMaskウォレットから`withdraw`関数を`_withdrawAmount`引数0.000001 etherとアドレスを指定して呼び出すデータ命令を含むトランザクションを送信しました。そのトランザクションにより、コントラクトがEVM内で実行されました。EVMが`Faucet`コントラクトの`withdraw`関数を実行すると、まず`require`関数が呼び出され、要求された金額が最大許可引き出し額の0.000001 ether以下であることを検証しました。次に、`transfer`関数が呼び出され、etherが送信されました。`transfer`関数の実行により、コントラクトの残高からウォレット アドレスに0.000001 etherを入金するインターナル トランザクションが生成されました。それがEtherscanの「Internal Transactions」タブに表示されているものです。
 
-## Conclusion
+## まとめ
 
-In this chapter, you set up a wallet using MetaMask and funded it using a faucet on the Sepolia test network. You received ether into your wallet's Ethereum address, and then you sent ether to another address.
+　この章では、MetaMaskを使用してウォレットをセットアップし、Sepoliaテスト ネットワーク上のフォーセットを使用して資金を調達しました。ウォレットのイーサリアム アドレスにetherを受け取り、別のアドレスにetherを送信しました。
 
-Next, you wrote a `Faucet` contract in Solidity. You used the Remix IDE to compile the contract into EVM bytecode, then used Remix to form a transaction and created the `Faucet` contract on the Sepolia blockchain. Once created, the `Faucet` contract had an Ethereum address, and you sent it some ether. Finally, you constructed a transaction to call the `withdraw` function and successfully asked for 0.000001 ether. The contract checked the request and sent you 0.000001 ether with an internal transaction.
+　次に、Solidityで`Faucet`コントラクトを作成しました。Remix IDEを使用してコントラクトをEVMバイトコードにコンパイルし、Remixを使用してトランザクションを作成し、Sepoliaブロックチェーン上に`Faucet`コントラクトを作成しました。作成されたFaucetコントラクトにはイーサリアム アドレスがあり、etherを送信しました。最後に、`withdraw`関数を呼び出すトランザクションを構築し、0.000001 etherの引き出しに成功しました。コントラクトはリクエストを確認し、インターナル トランザクションで0.000001 etherを送信しました。
 
-It may not seem like much, but you've just successfully interacted with software that controls money on a decentralized world computer.
+　大したことないように見えるかもしれませんが、非中央集権的なワールド コンピューター上でお金を制御するソフトウェアとのやり取りに成功したのです。
 
-We will do a lot more Solidity smart contract programming in Chapter 7 and learn about best practices and security considerations in Chapter 9.
+　第7章でさらに多くのSolidityスマート コントラクト プログラミングを行い、第9章でベスト プラクティスとセキュリティに関する考慮事項を学びます。
