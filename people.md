@@ -1,51 +1,3 @@
-# People / 人名表記
-
-| Name | カタカナ表記 | カナふり方法 | 参考URL1 | 参考URL2 |
-|---|---|---|---|---|
-| Shafi Goldwasser | シャフィ・ゴールドワッサー | | | |
-| Silvio Micali | シルビオ・ミカリ | | | |
-| Charles Rackoff | チャールズ・ラコフ | | | |
-| Amos Fiat | アモス・フィアット | | | |
-| Adi Shamir | アディ・シャミア | | | |
-| Eli Ben-Sasson | エリ・ベンサッソン | | | |
-| Iddo Bentov | イド・ベントフ | | | |
-| Yinon Horesh | イノン・ホレシュ | | | |
-| Michael Riabzev | マイケル・リアブゼフ | | | |
-| Andreas M. Antonopoulos | アンドレアス・M・アントノプロス | | | |
-| Gavin Wood | ギャビン・ウッド | | | |
-| Carlo Parisi | カルロ・パリシ | | | |
-| Alessandro Mazza | アレッサンドロ・マッザ | | | |
-| Niccolò Pozzolini | ニッコロ・ポッゾリーニ | | | |
-| Ethan Buchman | イーサン・ブックマン | | | |
-| Maksym Petkus | マクシム・ペトクス | | | |
-|------|-------------|-------------|----------|----------|
-| Andreas M. Antonopoulos | アンドレアス・M・アントノプロス | | | |
-| Gavin Wood | ギャヴィン・ウッド | | | |
-| Carlo Parisi | カルロ・パリージ | | | |
-| Alessandro Mazza | アレッサンドロ・マッツァ | | | |
-| Niccolò Pozzolini | ニッコロ・ポッツォリーニ | | | |
-| Vitalik Buterin | ヴィタリック・ブテリン | | | |
-| Dankrad Feist | ダンクラート・ファイスト | | | |
-| Protolambda (Diederik Loerakker) | プロトラムダ（ディーデリック・ローラッカー） | | | |
-| Ariel Gabizon | アリエル・ガビゾン | | | |
-| Luca Donno | ルカ・ドンノ | | | |
-# 人名表記
-
-| Name | カタカナ表記 | カナふり方法 | 参考URL1 | 参考URL2 |
-|---|---|---|---|---|
-| Andreas M. Antonopoulos | アンドレアス・M・アントノプロス | 既存翻訳 | | |
-| Gavin Wood | ギャヴィン・ウッド | 既存翻訳 | | |
-| Carlo Parisi | カルロ・パリージ | 既存翻訳 | | |
-| Alessandro Mazza | アレッサンドロ・マッツァ | 既存翻訳 | | |
-| Niccolò Pozzolini | ニッコロ・ポッツォリーニ | 既存翻訳 | | |
-| Vitalik Buterin | ヴィタリック・ブテリン | 一般的表記 | | |
-| Fabian Vogelsteller | ファビアン・フォーゲルシュテラー | 一般的表記 | | |
-| Donald Trump | ドナルド・トランプ | 一般的表記 | | |
-| Van Gogh | ファン・ゴッホ | 一般的表記 | | |
-| Picasso | ピカソ | 一般的表記 | | |
-| Alice | アリス | 一般的表記 | | |
-| Bob | ボブ | 一般的表記 | | |
-| Charlie | チャーリー | 一般的表記 | | |
 # 人名一覧
 
 > このファイルは Google Spreadsheet と双方向同期されています。
@@ -121,5 +73,3 @@
 | Brian Wu | ブライアン・ウー |  |  |  |
 | Gonçalo Magalhães | ゴンサロ・マガリャンイス |  |  |  |
 | Alan Turing | アラン・チューリング |  |  |  |
-| Hayden Adams | ヘイデン・アダムス |  |  |  |
-| Alexey Pertsev | アレクセイ・ペルツェフ |  |  |  |
