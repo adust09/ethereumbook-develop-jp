@@ -154,7 +154,7 @@ Functions with the `@raw_return` decorator return raw bytes without applying ABI
 
 The `@nonreentrant` decorator places a lock on a function, preventing reentrant calls to any function covered by the decorator. The reentrancy lock ensures that such functions cannot be entered again until they have finished executing. This decorator is used to prevent reentrancy attacks, where an external contract might call back into the protected functions, potentially causing unexpected behavior or contract exploits. Vyper also supports a pragma for nonreentrancy by default, making all external functions nonreentrant unless explicitly overridden. For example, if contract A uses this decorator for reentrancy protection and makes an external call to contract B, any attempt by contract B to call back into a protected function on contract A will cause the transaction to revert.
 
-> **Note**
+> **注記**
 >
 > This nonreentrant feature in Vyper versions 0.2.15, 0.2.16, and 0.3.0 contained a critical bug that was discovered and exploited to attack the Curve protocol in mid-2023. We will dive deeper into the reentrancy vulnerability in Chapter 9.
 
@@ -187,7 +187,7 @@ However, within function scope, Vyper still maintains strict ordering rules. Loc
 
 The easiest way to experiment with Vyper is to use the [Remix online compiler](https://remix.ethereum.org), which allows you to write and then compile your smart contracts using only your web browser (you will need to activate the vyper-remix plug-in in the plug-in manager).
 
-> **Note**
+> **注記**
 >
 > Vyper comes with [built-in common interfaces](https://oreil.ly/GazPW), such as ERC-20 and ERC-721, allowing interaction with such contracts out of the box. Contracts in Vyper must be declared as global variables. An example of declaring an ERC-20 variable is as follows:
 > `from vyper.interfaces import ERC20` `token: ERC20`

@@ -159,24 +159,48 @@ class TestParagraphFormatting(unittest.TestCase):
             )
 
     def test_paragraph_fullwidth_space(self):
-        skip_prefixes = ("#", "-", "*", ">", "|", "!", "[", "```", "\u3000")
+        skip_prefixes = ("#", ">", "|", "!", "[", "```", "\u3000")
         errors: list[str] = []
         for path in self.chapters:
             content = path.read_text(encoding="utf-8")
-            for lineno, line in extract_prose_lines(content):
-                if not line.strip():
+            lines = extract_prose_lines(content)
+            prev_was_bold_def = False
+            for lineno, line in lines:
+                stripped = line.strip()
+                if not stripped:
+                    # Blank lines preserve bold-def context
                     continue
                 if any(line.startswith(p) for p in skip_prefixes):
+                    prev_was_bold_def = False
                     continue
-                # Skip numbered list items
-                if re.match(r"^\d+\.\s", line):
-                    continue
-                # Skip bold-only definition lines like **MetaMask**
+                # Track definition term lines: **bold** or `code`
                 if re.match(r"^\*\*[^*]+\*\*\s*$", line):
+                    prev_was_bold_def = True
+                    continue
+                if re.match(r"^`[^`]+`\s*$", line):
+                    prev_was_bold_def = True
+                    continue
+                # Skip list items (unordered and numbered)
+                if re.match(r"^[-*]\s", line) or re.match(r"^\d+\.\s", line):
+                    prev_was_bold_def = False
                     continue
                 # Skip lines that are entirely non-Japanese
                 if not JAPANESE_RE.search(line):
+                    prev_was_bold_def = False
                     continue
+                # Skip figure captions (図X-Y ...)
+                if re.match(r"^図\d+", line):
+                    prev_was_bold_def = False
+                    continue
+                # Skip label lines ending with ： or :
+                if stripped.endswith("：") or stripped.endswith(":"):
+                    prev_was_bold_def = False
+                    continue
+                # Skip definition list descriptions (line after bold term)
+                if prev_was_bold_def:
+                    prev_was_bold_def = False
+                    continue
+                prev_was_bold_def = False
                 # Line starts with Japanese but no full-width space
                 if JAPANESE_RE.match(line):
                     errors.append(f"{path.name}:{lineno}: {line[:40]}...")

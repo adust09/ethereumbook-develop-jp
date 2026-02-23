@@ -96,7 +96,7 @@ Solidity follows a versioning model called [*semantic versioning*](https://semve
 
 At the time of writing, Solidity is at version 0.8.26. The rules for major version 0, which is for initial development of a project, are different: anything may change at any time. In practice, Solidity treats the “minor” number as if it were the major version and the “patch” number as if it were the minor version. Therefore, in 0.8.26, 8 is considered to be the major version and 26 the minor version. As you saw in Chapter 2, your Solidity programs can contain a pragma directive that specifies the minimum and maximum versions of Solidity that it is compatible with and can be used to compile your contract. Since Solidity is rapidly evolving, it is often better to install the latest release.
 
-> **Note**
+> **注記**
 >
 > Another consequence of the rapid evolution of Solidity is the pace at which documentation gets outdated. Right now, we’re working with Solidity version 0.8.26, and everything in this book is based on that version. While this book will always give you a solid foundation for learning Solidity, future versions might change some syntax and functionality. So, whenever you have questions or run into something new, it’s a good idea to check the [official Solidity documentation](https://oreil.ly/LzV7L) to stay current.
 
@@ -210,7 +210,7 @@ pragma solidity 0.8.26;
 
 The Solidity compiler reads the version pragma and will produce an error if the compiler version is incompatible with the version pragma. In this case, our version pragma says that this program can be compiled by a Solidity compiler with version 0.8.26. Pragma directives are not compiled into EVM bytecode; they are compile-time directives used by the compiler only to check compatibility.
 
-> **Note**
+> **注記**
 >
 > In the pragma directive, the symbol ^ states that we allow compilation with any *minor revision* equal to or above the specified one. For example, a pragma directive `pragma solidity ^0.7.1;` means that the contract can be compiled with a solc version of 0.7.1, 0.7.2, and 0.7.3 but not 0.8.0 (which is a major revision, not a minor revision).
 
@@ -257,7 +257,7 @@ Signed (`int`) and unsigned (`uint`) integers, declared in increments of 8 bits 
 
 Fixed-point numbers, declared with `(u)fixedMxN` where *M* is the size in bits (increments of 8 up to 256) and *N* is the number of decimals after the point (up to 18)—for example, `ufixed32x2`.
 
-> **Note**
+> **注記**
 >
 > Fixed-point numbers are not fully supported by Solidity yet. They can be declared but cannot be assigned to or from.
 
@@ -295,7 +295,7 @@ In addition to these data types, Solidity offers a variety of value literals tha
 
 The global variable `block.timestamp` represents the time, in seconds, when a block was published and added to the blockchain, counting from the Unix Epoch (January 1. 70). The units `seconds`, `minutes`, `hours`, and `days` can be used as suffixes, converting to multiples of the base unit `seconds`.
 
-> **Note**
+> **注記**
 >
 > Since a block can contain multiple transactions, all transactions within a block share the same `block.timestamp`, which reflects the time the block was published, not the exact moment each transaction was initiated.
 
@@ -361,7 +361,7 @@ The data payload of this call into our contract.
 
 The first four bytes of the data payload, which is the function selector.
 
-> **Note**
+> **注記**
 >
 > Whenever a contract calls another contract, the values of all the attributes of `msg` change to reflect the new caller’s information. The only exception to this is the `delegatecall` function, which runs the code of another contract or library within the original `msg` context.
 
@@ -453,7 +453,7 @@ Low-level `DELEGATECALL` function, like `address(this).call(...)` but with this 
 
 Low-level `STATICCALL` function, like `address(this).call(...)` but in read-only mode, meaning that the called function cannot modify any state or send ether. Returns `false` on error.
 
-> **Note**
+> **注記**
 >
 > Both `address.send()` and `address.transfer()` forward a fixed amount of 2,300 units of gas, which might be insufficient to execute fallback logic. With EIP-7702 going live, their usage is discouraged in favor of the more flexible `address.call()`. More on this in Chapter 9.
 
@@ -552,7 +552,7 @@ External functions are like public functions except they cannot be called from w
 
 Keep in mind that the terms *internal* and *private* are somewhat misleading. Any function or data inside a contract is always *visible* on the public blockchain, meaning that anyone can see the code or data. The keywords described here affect only how and when a function can be *called*.
 
-> **Note**
+> **注記**
 >
 > Function visibility should not be confused with state variable visibility! They share keywords and semantics, but they are two different things. While state variable visibility is optional, function visibility must be explicitly defined.
 
@@ -580,7 +580,7 @@ The `receive` function is what allows our contracts to receive ether. It is trig
 
 The `fallback` function is executed when a contract is called with data that does not match any of the other function signatures. We can declare it using either `fallback() external [payable]` or `fallback(bytes calldata input) external [payable] returns (bytes memory output)`. If the `fallback` function includes the input parameter, it will contain the entire data sent to the contract (equivalent to `msg.data`). Similar to the `receive` function, the `fallback` function can be payable and virtual, can override, and can include modifiers. Nowadays, it is primarily used to implement the *proxy pattern:* a design pattern that enables smart contract upgradability.
 
-> **Note**
+> **注記**
 >
 > If the contract lacks a `receive` function but has a payable `fallback` function, the `fallback` function will be executed during such transfers. If the contract has neither a `receive` function nor a payable `fallback` function, it cannot accept ether, and the transaction will revert with an exception.
 
@@ -603,7 +603,7 @@ contract MEContract {
 
 A contract’s life cycle starts with a creation transaction from an EOA or contract account. If there is a constructor, it is executed as part of contract creation to initialize the state of the contract as it is being created, and it is then discarded.
 
-> **Note**
+> **注記**
 >
 > Constructors can also be marked as payable. This is necessary if you want to send ETH along with the contract-creation transaction. If the constructor isn’t payable, any ETH sent during deployment will cause the transaction to revert.
 
@@ -756,7 +756,7 @@ contract Faucet is Pausable {
 
 As you can see, the `unpause()` function in `Faucet` has to be declared with the `override` keyword. In the `Pausable` contract, we marked both `pause` and `unpause` functions as virtual for consistency, while in our case we only needed to change `unpause`.
 
-> **Note**
+> **注記**
 >
 > When we override a function in Solidity, we can only make the visibility more accessible—specifically, we can change it from external to public but not the other way around. For mutability, we can tighten it up, like moving from nonpayable to view or pure (as we did with `unpause`) and from view to pure. But there’s one big exception: if a function is marked as payable, it has to stay that way—we can’t change it to anything else.
 
@@ -1010,7 +1010,7 @@ Next, we need the USDT contract’s ABI. You can grab it from [Etherscan](https:
 
 Now, let’s talk about how we’ll connect to the Ethereum network. We need a WebSocket provider because we’re listening for events, which requires a continuous connection. You can choose between paid providers (which are more reliable and faster) or free, public ones you can find on websites like [ChainList](https://chainlist.org). For our example, a public one will do just fine, even though they might be rate limited.
 
-> **Note**
+> **注記**
 >
 > To listen for events, we need a WebSocket, not an RPC endpoint. RPC endpoints are great for single requests like calling a function or fetching data, but for catching events, a WebSocket connection is what allows us to keep an open line of communication between our client and the server.
 
@@ -1296,7 +1296,7 @@ Calling other contracts, especially when the gas cost of their functions is not 
 
 Accessing storage variables, whether for reading or writing, costs a lot more gas than working with memory variables. So whenever we can, it’s better to avoid using storage directly. For example, if we need to read a storage variable several times during some calculations, it’s a good idea to first copy its value into a memory variable. This way, we can repeatedly access the cheaper memory variable instead of hitting the storage every time, saving on gas costs.
 
-> **Note**
+> **注記**
 >
 > To put this in context, Solidity uses several places to keep data: storage, which is persistent and expensive; memory, which is temporary and cheaper during execution; calldata, which is a read-only area used mainly for external function inputs; and the stack, which is used for very short-lived values and is the cheapest to access. Choosing the right one depends on how the data is used, whether it needs to persist, whether it’s mutable, and whether it’s passed from outside. We’ll dive deeper into these distinctions in Chapter 14, but it’s helpful to start thinking early about how they affect performance and cost.
 

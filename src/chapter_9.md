@@ -38,7 +38,7 @@ The following antipatterns are often combined to execute an exploit, much like i
 
 ### リエントランシー
 
-　イーサリアムのスマート コントラクトの特徴の一つは、外部コントラクトのコードを呼び出して利用できることです。また、コントラクトは通常Etherを扱うため、さまざまな外部ユーザーアドレスにEtherを送信することも多くあります。これらの操作ではコントラクトが外部呼び出しを行う必要があります。攻撃者はこの外部呼び出しを乗っ取り、コールバック（フォールバック関数やフックなど、通常は`transfer`）を通じてコントラクトにさらなるコードを実行させることができます。自身への呼び出しを含む再帰的な呼び出しも可能です。この種の攻撃は、2016年に発生した悪名高いDAOハッキングで使用されました。あれから何年も経った今でも、[この脆弱性を悪用した攻撃が多数確認されています](https://oreil.ly/87VUR)。発見は比較的容易であり、修正コストも低いにもかかわらずです。
+　イーサリアムのスマートコントラクトの特徴の一つは、外部コントラクトのコードを呼び出して利用できることです。また、コントラクトは通常Etherを扱うため、さまざまな外部ユーザーアドレスにEtherを送信することも多くあります。これらの操作ではコントラクトが外部呼び出しを行う必要があります。攻撃者はこの外部呼び出しを乗っ取り、コールバック（フォールバック関数やフックなど、通常は`transfer`）を通じてコントラクトにさらなるコードを実行させることができます。自身への呼び出しを含む再帰的な呼び出しも可能です。この種の攻撃は、2016年に発生した悪名高いDAOハッキングで使用されました。あれから何年も経った今でも、[この脆弱性を悪用した攻撃が多数確認されています](https://oreil.ly/87VUR)。発見は比較的容易であり、修正コストも低いにもかかわらずです。
 
 #### 脆弱性
 
@@ -110,7 +110,7 @@ The following antipatterns are often combined to execute an exploit, much like i
 29 }
 ```
 
-　この攻撃はどのように行われるのでしょうか。まず、攻撃者は`EtherStore`のコントラクト アドレスを唯一のコンストラクター パラメーターとして、悪意あるコントラクト（アドレスを`0x0...123`とします）を作成します。これにより、パブリック変数`etherStore`が攻撃対象のコントラクトを指すように初期化されます。
+　この攻撃はどのように行われるのでしょうか。まず、攻撃者は`EtherStore`のコントラクトアドレスを唯一のコンストラクターパラメーターとして、悪意あるコントラクト（アドレスを`0x0...123`とします）を作成します。これにより、パブリック変数`etherStore`が攻撃対象のコントラクトを指すように初期化されます。
 
 　次に、攻撃者は1以上のEtherを指定して`attackEtherStore`関数を呼び出します。ここでは1 Etherと仮定します。この例では、他の複数のユーザーがこのコントラクトにEtherを預け入れており、現在の残高が10 Etherであると仮定します。以下の手順で攻撃が進行します。
 
@@ -128,31 +128,31 @@ The following antipatterns are often combined to execute an exploit, much like i
 
 　最終的に、攻撃者は1回のトランザクションで`EtherStore`コントラクトからすべてのEtherを引き出すことに成功します。
 
-　フォールバック関数で傍受されるネイティブEther送金はリエントランシー攻撃の一般的なベクトルですが、このリスクをもたらす唯一のメカニズムではありません。ERC-721やERC-777などの複数のトークン標準には、リエントランシー攻撃を可能にするコールバック メカニズムが含まれています。例えば、ERC-721の`safeTransfer`関数は、コントラクトへのトークン転送時に受信者の`onERC721Received`関数を呼び出すことを保証します。同様に、ERC-777トークンでは転送時に`tokensReceived`関数を通じてフックを起動できます。
+　フォールバック関数で傍受されるネイティブEther送金はリエントランシー攻撃の一般的なベクトルですが、このリスクをもたらす唯一のメカニズムではありません。ERC-721やERC-777などの複数のトークン標準には、リエントランシー攻撃を可能にするコールバックメカニズムが含まれています。例えば、ERC-721の`safeTransfer`関数は、コントラクトへのトークン転送時に受信者の`onERC721Received`関数を呼び出すことを保証します。同様に、ERC-777トークンでは転送時に`tokensReceived`関数を通じてフックを起動できます。
 
-#### 古典的なリエントランシー パターンを超えて
-　リエントランシー攻撃は、単一の関数やコントラクトに限定されません。古典的なリエントランシーは、同じ関数が完了する前に再入するものですが、クロスファンクション リエントランシー、クロスコントラクト リエントランシー、そして最も発見が困難なリードオンリー リエントランシーなど、検出しにくいバリエーションが存在します。
-　リードオンリー リエントランシーは、他のコントラクトのview関数に依存するコントラクトを悪用します。view関数は状態を変更しませんが、他のコントラクトが依存するデータを返します。多くの場合、リエントランシー保護は適用されていません。リエントラント呼び出しによって攻撃者がターゲット コントラクトを一時的に不整合な状態にし、別のコントラクト（被害者）がview関数を通じてこの不安定な状態を問い合わせることで問題が発生します。
+#### 古典的なリエントランシーパターンを超えて
+　リエントランシー攻撃は、単一の関数やコントラクトに限定されません。古典的なリエントランシーは、同じ関数が完了する前に再入するものですが、クロスファンクションリエントランシー、クロスコントラクトリエントランシー、そして最も発見が困難なリードオンリーリエントランシーなど、検出しにくいバリエーションが存在します。
+　リードオンリーリエントランシーは、他のコントラクトのview関数に依存するコントラクトを悪用します。view関数は状態を変更しませんが、他のコントラクトが依存するデータを返します。多くの場合、リエントランシー保護は適用されていません。リエントラント呼び出しによって攻撃者がターゲットコントラクトを一時的に不整合な状態にし、別のコントラクト（被害者）がview関数を通じてこの不安定な状態を問い合わせることで問題が発生します。
 　具体的な流れを見てみましょう。
 1. 攻撃者のコントラクトが、再入可能な脆弱なコントラクト（コントラクトAと呼びます）と対話する。このコントラクトは、他のプロトコルが依存するデータを保持している。
-2. コントラクトAが攻撃者のコントラクトへのコールバックをトリガーし、攻撃者のコントラクト ロジックが実行される。
+2. コントラクトAが攻撃者のコントラクトへのコールバックをトリガーし、攻撃者のコントラクトロジックが実行される。
 3. フォールバック内にいる間に、攻撃者のコントラクトが別のプロトコル、コントラクトBを呼び出す。コントラクトBはコントラクトAに接続されており、コントラクトAが提供するデータに依存している。
 4. コントラクトBは問題を認識せずにコントラクトAからデータを読み取る。しかし、コントラクトAの状態はまだ更新が完了していないため古いままである。
 　このサイクルが終了する時点で、攻撃者はすでにコントラクトAの古いデータを利用してコントラクトBを悪用しています。その後、コントラクトAのコールバックと元の呼び出しは通常通り完了します。このプロセスを図9-1に示します。
-図9-1. リードオンリー リエントランシー
+図9-1. リードオンリーリエントランシー
 
 ![Read-only reentrancy](images/ch9/maet_0901.png)
 
-**図1-1.** リードオンリー リエントランシー
+**図1-1.** リードオンリーリエントランシー
 
-　ここでの要点は、コントラクトBがコントラクトAのデータを信頼しているにもかかわらず、コントラクトAの状態がまだ追いついていないということです。攻撃者はこのタイムラグを悪用します。この種の攻撃に対する防御は困難です。開発者はview関数が状態を変更しないため安全だと考え、リエントランシー ロックで保護しないことが多いためです。
-　リードオンリー リエントランシーが教えてくれるのは、リードオンリー関数であっても、外部コントラクトから依存されている場合には危険になりうるということです。
+　ここでの要点は、コントラクトBがコントラクトAのデータを信頼しているにもかかわらず、コントラクトAの状態がまだ追いついていないということです。攻撃者はこのタイムラグを悪用します。この種の攻撃に対する防御は困難です。開発者はview関数が状態を変更しないため安全だと考え、リエントランシーロックで保護しないことが多いためです。
+　リードオンリーリエントランシーが教えてくれるのは、リードオンリー関数であっても、外部コントラクトから依存されている場合には危険になりうるということです。
 
 #### 予防テクニック
 
-　リエントランシーの問題を防ぐための最初のベスト プラクティスは、スマート コントラクトの記述時にcheck-effect-interactionパターンに従うことです。このパターンは、外部コントラクトとの対話の前にすべての状態変数の変更を行うことを保証するものです。例えば、*EtherStore.sol*コントラクトでは、状態変数を変更する行は外部呼び出しの前に配置されるべきです。目標は、外部アドレスと対話するコードが関数内で最後に実行されるようにすることです。再入時に外部コントラクトが内部状態に干渉することを防止できます。必要な更新がすでに完了しているためです。
+　リエントランシーの問題を防ぐための最初のベストプラクティスは、スマートコントラクトの記述時にcheck-effect-interactionパターンに従うことです。このパターンは、外部コントラクトとの対話の前にすべての状態変数の変更を行うことを保証するものです。例えば、*EtherStore.sol*コントラクトでは、状態変数を変更する行は外部呼び出しの前に配置されるべきです。目標は、外部アドレスと対話するコードが関数内で最後に実行されるようにすることです。再入時に外部コントラクトが内部状態に干渉することを防止できます。必要な更新がすでに完了しているためです。
 
-　もう一つの有用なテクニックは、リエントランシー ロックの適用です。*リエントランシー ロック*は、関数の実行中にコントラクトを「ロック」するシンプルな状態変数であり、他の外部呼び出しによる割り込みを防ぎます。以下のようなmodifierで実装できます。
+　もう一つの有用なテクニックは、リエントランシーロックの適用です。*リエントランシーロック*は、関数の実行中にコントラクトを「ロック」するシンプルな状態変数であり、他の外部呼び出しによる割り込みを防ぎます。以下のようなmodifierで実装できます。
 
 ```solidity
 contract EtherStore {
@@ -174,19 +174,19 @@ contract EtherStore {
 }
 ```
 
-　この例では、`nonReentrant` modifierがlock変数を使用して、`withdrawFunds`関数の実行中に再入されることを防いでいます。`nonReentrant` modifierは開始時にコントラクトをロックし、関数の完了後にアンロックします。しかし、車輪の再発明をすべきではありません。独自のリエントランシー ロックを作成する代わりに、OpenZeppelinのReentrancyGuardのようなよくテストされたライブラリーを利用する方が望ましいです。これらのライブラリーは安全でガス効率の良いソリューションを提供しています。
+　この例では、`nonReentrant` modifierがlock変数を使用して、`withdrawFunds`関数の実行中に再入されることを防いでいます。`nonReentrant` modifierは開始時にコントラクトをロックし、関数の完了後にアンロックします。しかし、車輪の再発明をすべきではありません。独自のリエントランシーロックを作成する代わりに、OpenZeppelinのReentrancyGuardのようなよくテストされたライブラリーを利用する方が望ましいです。これらのライブラリーは安全でガス効率の良いソリューションを提供しています。
 
-> **Note**
+> **注記**
 >
-> Solidity 0.8.24でイーサリアムにトランジエント ストレージが導入されたことに伴い、OpenZeppelinはReentrancyGuardTransientを導入しました。これはReentrancyGuardの新しいバリアントであり、トランジエント ストレージを活用して大幅に低いガス コストを実現しています。[EIP-1153](https://oreil.ly/fRvKl)によって有効化されたトランジエント ストレージは、単一のトランザクション期間中にのみ必要なデータをより安価に保存する方法を提供し、リエントランシー ガードや類似の一時的なロジックに最適です。ただし、ReentrancyGuardTransientはEIP-1153が利用可能なチェーンでのみ使用できるため、実装前にターゲット チェーンがこの機能をサポートしていることを確認してください。
+> Solidity 0.8.24でイーサリアムにトランジエントストレージが導入されたことに伴い、OpenZeppelinはReentrancyGuardTransientを導入しました。これはReentrancyGuardの新しいバリアントであり、トランジエントストレージを活用して大幅に低いガスコストを実現しています。[EIP-1153](https://oreil.ly/fRvKl)によって有効化されたトランジエントストレージは、単一のトランザクション期間中にのみ必要なデータをより安価に保存する方法を提供し、リエントランシーガードや類似の一時的なロジックに最適です。ただし、ReentrancyGuardTransientはEIP-1153が利用可能なチェーンでのみ使用できるため、実装前にターゲットチェーンがこの機能をサポートしていることを確認してください。
 
-　もう一つのアプローチは、Solidityの組み込み関数である`transfer`および`send`を使用してEtherを送信することです。これらの関数は限られた量のガス（2,300ユニット）のみを転送するため、通常、受信コントラクトがリエントラント呼び出しを実行するには不十分です。そのため、リエントランシーに対するシンプルな防御策となります。しかし、注目すべき欠点があります。受信者がフォールバック関数やreceive関数に悪意のないロジックを持つスマート コントラクトの場合、送金が失敗し、資金がロックされる可能性があります。EIP-7702の導入により、このリスクはさらに高まっています。EIP-7702はEOAにフォールバック ロジックを含むコードを付与することを可能にします。より多くのEOAがこの機能を採用するにつれ、`transfer`や`send`を使用するトランザクションは、ガス不足によりトランザクションの通常の実行中にリバートする可能性が高くなります。セキュリティの観点からも、このアプローチは将来にわたって安全とは言えません。将来のハードフォークで特定の操作のガス コストが削減された場合、2,300ユニットでも再入に十分となり、それまで安全だった前提が崩れる可能性があります。したがって、`transfer`や`send`は限定的なケースでは依然として有用ですが、慎重に使用し、主要な防御策として依存すべきではありません。
+　もう一つのアプローチは、Solidityの組み込み関数である`transfer`および`send`を使用してEtherを送信することです。これらの関数は限られた量のガス（2,300ユニット）のみを転送するため、通常、受信コントラクトがリエントラント呼び出しを実行するには不十分です。そのため、リエントランシーに対するシンプルな防御策となります。しかし、注目すべき欠点があります。受信者がフォールバック関数やreceive関数に悪意のないロジックを持つスマートコントラクトの場合、送金が失敗し、資金がロックされる可能性があります。EIP-7702の導入により、このリスクはさらに高まっています。EIP-7702はEOAにフォールバックロジックを含むコードを付与することを可能にします。より多くのEOAがこの機能を採用するにつれ、`transfer`や`send`を使用するトランザクションは、ガス不足によりトランザクションの通常の実行中にリバートする可能性が高くなります。セキュリティの観点からも、このアプローチは将来にわたって安全とは言えません。将来のハードフォークで特定の操作のガスコストが削減された場合、2,300ユニットでも再入に十分となり、それまで安全だった前提が崩れる可能性があります。したがって、`transfer`や`send`は限定的なケースでは依然として有用ですが、慎重に使用し、主要な防御策として依存すべきではありません。
 
-　リードオンリーおよびクロスコントラクト リエントランシーには特別な注意が必要です。これらの攻撃は2つの異なるプロトコルが関与する可能性があるため、協調的な予防が課題となります。プロジェクトがデータのために外部プロトコルに依存している場合、統合されたロジックがどのように機能するかを深く調査する必要があります。各プロジェクトが単独では安全であっても、統合時に脆弱性が現れる可能性があります。
+　リードオンリーおよびクロスコントラクトリエントランシーには特別な注意が必要です。これらの攻撃は2つの異なるプロトコルが関与する可能性があるため、協調的な予防が課題となります。プロジェクトがデータのために外部プロトコルに依存している場合、統合されたロジックがどのように機能するかを深く調査する必要があります。各プロジェクトが単独では安全であっても、統合時に脆弱性が現れる可能性があります。
 
 #### 実例: DAO攻撃
 
-　リエントランシーは、2016年に発生したDAO攻撃において主要な役割を果たしました。この攻撃はイーサリアムの初期開発段階における最大のハッキングの一つでした。当時、コントラクトには1億5,000万ドル以上が保有されており、これはEtherの流通供給量の15%に相当しました。ハッキングの影響を元に戻すために、イーサリアム コミュニティは最終的にイーサリアム ブロックチェーンを分割するハードフォークを選択しました。その結果、Ethereum Classic（ETC）がオリジナルのチェーンとして存続し、ハッキングの影響を元に戻すためのルール更新が適用されたフォーク版が、現在知られているイーサリアムとなりました。
+　リエントランシーは、2016年に発生したDAO攻撃において主要な役割を果たしました。この攻撃はイーサリアムの初期開発段階における最大のハッキングの一つでした。当時、コントラクトには1億5,000万ドル以上が保有されており、これはEtherの流通供給量の15%に相当しました。ハッキングの影響を元に戻すために、イーサリアムコミュニティは最終的にイーサリアムブロックチェーンを分割するハードフォークを選択しました。その結果、Ethereum Classic（ETC）がオリジナルのチェーンとして存続し、ハッキングの影響を元に戻すためのルール更新が適用されたフォーク版が、現在知られているイーサリアムとなりました。
 
 #### 実例: Libertify
 
@@ -419,7 +419,7 @@ The intended operation of these contracts was to have a simple, low-cost, deploy
 
 It is possible to send calls to the `WalletLibrary` contract itself. Specifically, the `WalletLibrary` contract could be initialized and become owned. In fact, a user did this, calling the `initWallet` function on the `WalletLibrary` contract and becoming an owner of the library contract. The same user subsequently called the `kill` function. Because the user was an owner of the library contract, the modifier passed, and the library contract self-destructed. As all `Wallet` contracts in existence refer to this library contract and contain no method to change this reference, all of their functionality, including the ability to withdraw ether, was lost along with the `WalletLibrary` contract. As a result, all ether in all Parity multisig wallets of this type instantly became lost or permanently unrecoverable.
 
-> **Note**
+> **注記**
 >
 > The exploiter later [appeared on GitHub](https://oreil.ly/VVgnm), leaving the memorable comment, “I accidentally killed it.” He claimed to be a newcomer to Ethereum who had been experimenting with smart contracts.
 
@@ -561,7 +561,7 @@ To mitigate this, we use libraries like OpenZeppelin’s SafeERC20. This library
 
 To really grasp this vulnerability, let’s briefly revisit how transactions work in Ethereum. When we send a transaction, it’s broadcast to the network of nodes and placed in the mempool, a kind of waiting room for pending transactions. Validators then pick up these transactions from the mempool to build a block. Transactions within a block are executed sequentially in a specific order, and because each transaction changes the blockchain’s global state, the outcome of a transaction can vary depending on its position in the block. This transaction ordering is important because it can significantly affect the results of transaction execution.
 
-> **Note**
+> **注記**
 >
 > In practice, controlling a transaction’s position in the block mostly comes down to payment. Originally, you could influence ordering simply by offering a higher gas price. Today, thanks to the Flashbots infrastructure implementing builder-proposer separation (which isn’t yet part of Ethereum natively), users can submit bundles of transactions in a specific order and bid for their inclusion via off-chain relay systems. These processes—both the legacy mempool-based system and the new builder-based one—are covered in more detail in Chapter 6.
 
@@ -640,7 +640,7 @@ This pattern typically appears when an owner wishes to distribute tokens to inve
 
 Notice that the loop in this contract runs over an array that can be artificially inflated. An attacker can create many user accounts, making the `investors` array very large. The risk isn’t just the loop itself but also the cumulative gas cost of the operations inside it, like `transferToken` or any other logic. Each additional iteration adds to the total gas used, and if the array gets large enough, the gas required to complete the loop can exceed the block gas limit. At that point, the `distribute` function effectively becomes unusable.
 
-> **Note**
+> **注記**
 >
 > This kind of DoS isn’t limited to state-changing functions. Even read-only view functions can become inaccessible if they loop over large arrays. While calling them doesn’t consume gas on chain, RPC endpoints enforce their own arbitrary gas caps on `eth_call` executions. So if a view function runs enough logic to exceed those limits, the RPC call would fail.
 
@@ -784,7 +784,7 @@ Because of the rounding-down mechanism, this results in zero shares. The victim 
 
 Meanwhile the attacker, still holding their one share, can now burn that share and withdraw the total vault balance, which is 2,000 USDT. The attacker walks away with all the funds while the victim is left empty-handed.
 
-> **Note**
+> **注記**
 >
 > OpenZeppelin has since updated its ERC-4626 implementation to prevent this attack by introducing both a virtual offset and a decimal offset. The decimal offset increases the number of decimal places used for vault shares, which helps minimize rounding errors and makes precision-loss attacks less profitable. The virtual offset adds virtual assets and shares to the exchange-rate calculation, limiting the attacker’s ability to manipulate the initial conversion rate and protecting the vault from dead-share creation.
 
@@ -810,7 +810,7 @@ Often, the vulnerable oracle module is part of the protocol itself, as we will s
 
 Fortunately, this specific attack vector is well known. Although it’s not exploited as frequently as it once was, it still shows up in high-profile incidents. In May 2025, for example, Mobius Token was exploited for $2.1 million. Although the immediate trigger was a faulty multiplication by 1018 in the `mint` function, the contract also contained a separate but equally critical vulnerability: it relied on on-chain metrics to compute the BNB/USDT price, exposing it to manipulation. Even if the math bug had been absent, the contract would still have been exploited in a short time. You might be wondering how code like this made it to production, ending up securing so much total value locked (TVL). The team had chosen not to publish the contract’s source code, assuming that keeping it hidden would provide safety—another reminder that security through obscurity doesn’t work, especially when the stakes are so high.
 
-> **Note**
+> **注記**
 >
 > Using prices inferred from on-chain data is risky only when these prices are applied to state-changing operations. If the prices are solely for informational purposes, such as in a view function that frontends use to fetch data, then the attack isn’t feasible. However, if an external contract retrieves the price from such a view function and then uses it for state-changing operations, it is vulnerable to manipulation.
 
@@ -984,7 +984,7 @@ Let’s take a look at the simplest possible misconfiguration case: a misconfigu
 
 In August 2024, the Ronin Bridge was hacked just an hour after a contract upgrade. The root cause was a misstep during the upgrade process: an important variable, `_totalOperatorWeight`, wasn’t initialized. This variable was supposed to be set in the `initializeV3` function, but during the upgrade, only `initializeV4` was called, skipping over the necessary setup from the previous version. This oversight left the contract exposed. In this case, a white-hat MEV bot was able to front-run the attack and return the stolen 4,000 ETH, but this underscores the importance of thorough review and testing of upgrade procedures.
 
-> **Note**
+> **注記**
 >
 > If you think a hack happening shortly after a contract upgrade is just a coincidence, you’re mistaken. Both black and white hats closely monitor contract upgrades: black hats look for weaknesses to exploit while white hats try to prevent attacks. Teams often underestimate the security risks of even small code changes and skip the audit process. Unfortunately, it doesn’t take much to break a contract, and as this case shows, the vulnerability isn’t always in the smart contract itself—sometimes it’s in how the upgrade is executed.
 
