@@ -4,3 +4,4 @@ book
 # Service account keys (reverse sync)
 service-account-*.json
 ethereum-book-*.json
+translate_*.py
