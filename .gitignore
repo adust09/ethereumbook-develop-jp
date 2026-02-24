@@ -5,3 +5,4 @@ book
 service-account-*.json
 ethereum-book-*.json
 translate_*.py
+__pycache__/

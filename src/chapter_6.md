@@ -74,7 +74,7 @@ While this is the actual transaction structure that is transmitted, most interna
 
 [EIP-2930](https://oreil.ly/1dSza) transactions are the first ones to use the EIP-2718 typed transaction envelope, with `0x01` as transaction type. They are basically equal to the previous transaction type, but a new field called *access list* is added. It's an array of (addresses, storage slots) that lets a user prepay for addresses and storage slots that are going to be touched by the transaction. This way, during the execution in the EVM, the user is charged less gas.
 
-> **Note**  
+> **注記**
 >
 > To be more precise, addresses and their storage slots contained in the access list are included, respectively, in `accessed_addresses` and `accessed_storage_keys`, which are used by the EVM to differentiate between a warm and a cold access. Cold accesses charge way more gas than warm ones. For example, the `SLOAD` opcode charges 100 gas if the storage slot accessed is warm, 2,100 otherwise.
 
@@ -96,7 +96,7 @@ Block gas limit has (almost) always been increased at specific blocks at fixed, 
 
 Base fees do not go to validators (or miners) who create blocks; instead, they are immediately burned, reducing the total supply of ETH. A new fee is introduced—the *priority fee*—which you can think of as the tip you pay to validators (or miners) to incentivize them to include your transactions in the next block.
 
-> **Tip**  
+> **ヒント**
 >
 > In theory, you could create transactions that only pay the base fee—which is mandatory—and zero priority fee. The protocol doesn't oblige you to pay a tip to validators. But in reality, you should always include it to see your transactions confirmed in a reasonable amount of time. Note that wallets normally handle base and priority fees automatically for you and set them to the correct values.
 
@@ -160,7 +160,7 @@ The price of blob gas (in wei) that the originator is willing to pay for blobs
 
 A list of 32-byte values representing the versioned hash of every KZG commitment related to the blob
 
-> **Note**  
+> **注記**
 >
 > With the Cancun hard fork and the introduction of EIP-4844 transactions, the block header is expanded with two new elements:
 >
@@ -227,7 +227,7 @@ Address:     0x7e41354AfE84800680ceB104c5Fc99eCB98A25f0
 Private key: 0xd6d2672c6b4489e6bcd4e93b9af620fa0204b639b7d7f93765479c0846be0b58
 ```
 
-> **Warning**  
+> **警告**
 >
 > If you send funds to the address mentioned here, you are wasting your money as the private key is known and anyone could use it to send all the funds to themselves.
 
@@ -257,7 +257,7 @@ $ cast balance 0x7e41354AfE84800680ceB104c5Fc99eCB98A25f0 --rpc-url https://ethe
 0
 ```
 
-> **Note**  
+> **注記**
 >
 > Note the `--rpc-url` flag in the last `cast` command. It should point to an RPC endpoint of the blockchain you're interested in. Reliable RPC endpoints often require a payment, but if you just want to experiment with it (as we'll do in this chapter), there are a lot of free options, such as:
 >
@@ -288,7 +288,7 @@ $ cast nonce 0x7e41354AfE84800680ceB104c5Fc99eCB98A25f0 --rpc-url https://ethere
 0
 ```
 
-> **Tip**  
+> **ヒント**
 >
 > The nonce is a zero-based counter, meaning the first transaction has nonce 0. In fact, in this example we haven't sent any transactions yet. Also note that the RPC response always points to the next available nonce—for example, if an address has already sent 10 transactions, meaning that it has used nonces from 0 to 9, the RPC response to a nonce query would be 10.
 
@@ -334,7 +334,7 @@ $ cast nonce 0x7e41354AfE84800680ceB104c5Fc99eCB98A25f0 --rpc-url https://ethere
 
 As you can see, the transaction we sent didn't immediately increase the nonce count; it stayed equal to 10 even after sending the transaction. If we wait a few seconds to allow for network communications to settle down and the transaction to be included in a block, the nonce call will return the expected number, 11.
 
-> **Note**  
+> **注記**
 >
 > Note the `--async` flag used in the `cast send` command: if you don't use it, `cast` will block the terminal until the transaction is confirmed inside a block. With that flag, it sends the transaction to the network and immediately returns the transaction hash, without waiting for it to be included in a block.
 
@@ -358,7 +358,7 @@ Before sending the transaction, our nonce count is 11; then we send the transact
 
 The difference between `cast nonce` and `eth_getTransactionCount pending` is simply that the first considers only confirmed transactions—that is, included in a block—while the latter tries to also include transactions that are still pending in the mempool.
 
-> **Warning**  
+> **警告**
 >
 > Be careful when using `eth_getTransactionCount pending` for counting pending transactions. In fact, even though it tries to return the real nonce value for an address, there is no way to be completely sure that there are no other pending transactions waiting in the mempool to be confirmed.
 >
@@ -402,14 +402,14 @@ Gas is separate from ether to protect the system from the volatility that might 
 
 The `gasPrice` field in a transaction allows the transaction originator to set the price they are willing to pay in exchange for gas. The price is measured in wei per gas unit.
 
-> **Tip**  
+> **ヒント**
 >
 > The popular site [Etherscan](https://oreil.ly/ZIqcq) provides information on the current prices of gas and other relevant gas metrics for the Ethereum main network.
 
 
 Wallets can adjust the `gasPrice` in transactions they originate to achieve faster confirmation of transactions. The higher the `gasPrice`, the faster the transaction is likely to be confirmed. Conversely, lower-priority transactions can carry a reduced price, resulting in slower confirmation. The minimum value that `gasPrice` can be set to is equal to the base fee (we've introduced it with EIP-1559 transactions) of the block in which they are included.
 
-> **Note**  
+> **注記**
 >
 > Before the London hard fork and EIP-1559, the minimum acceptable `gasPrice` was zero. That means that wallets could generate completely free transactions. Depending on capacity, these might never be confirmed, but there was nothing in the protocol that prohibited free transactions. You can find several examples of such transactions successfully included on the Ethereum blockchain during the first months of Ethereum.
 
@@ -442,7 +442,7 @@ The recipient of a transaction is specified in the `to` field. This contains a 2
 
 Ethereum does no further validation of this field. Any 20-byte value is considered valid. If the 20-byte value corresponds to an address without a corresponding private key or without a corresponding contract, the transaction is still valid. Ethereum has no way of knowing whether an address was correctly derived from a public key (and therefore from a private key) in existence.
 
-> **Warning**  
+> **警告**
 >
 > The Ethereum protocol does not validate recipient addresses in transactions. You can send to an address that has no corresponding private key or contract, thereby "burning" the ether, rendering it forever unspendable. Validation should be done at the user interface level.
 
@@ -547,7 +547,7 @@ So the prototype of `withdraw` would be:
 withdraw(uint256,address)
 ```
 
-> **Note**  
+> **注記**
 >
 > The `payable` keyword is used in Solidity to indicate that the address can receive ether, but it's not part of the function selector calculation. Only the base type `address` is included in the prototype.
 
@@ -579,7 +579,7 @@ Note that the *zero address* (`0x0000000000000000000000000000000000000000`) is a
 0x000000000000000000000000000000000000dEaD
 ```
 
-> **Warning**  
+> **警告**
 >
 > Any ether sent to the designated burn address will become unspendable and will be lost forever.
 
@@ -751,7 +751,7 @@ where:
 
 If the x coordinate of the calculated point `Q` is equal to `r`, then the verifier can conclude that the signature is valid. Note that in verifying the signature, the private key is neither known nor revealed.
 
-> **Tip**  
+> **ヒント**
 >
 > ECDSA is necessarily a fairly complicated piece of math; a full explanation is beyond the scope of this book. A number of guides online take you through it step-by-step: search for "ECDSA explained" or try [this one](https://oreil.ly/KUv9P).
 
@@ -769,7 +769,7 @@ To sign a transaction in Ethereum, the originator must:
 
 The special signature variable `v` indicates two things: the chain ID and the recovery identifier to help the ECDSArecover function check the signature. In nonlegacy transactions, the `v` variable no longer encodes the chain ID because that is directly included as one of the items that forms the transaction itself. For more information on the chain ID, see "Raw Transaction Creation with EIP-155". The recovery identifier is used to indicate the parity of the y component of the public key (see "The Signature Prefix Value (v) and Public Key Recovery" for more details).
 
-> **Note**  
+> **注記**
 >
 > At block 2,675,000, Ethereum implemented the Spurious Dragon hard fork, which, among other changes, introduced a new signing scheme that includes transaction replay protection (preventing transactions meant for one network from being replayed on others). This new signing scheme is specified in EIP-155. This change affects the form of the transaction and its signature, so attention must be paid to the first of the three signature variables (i.e., `v`), which takes one of two forms and indicates the data fields included in the transaction message being hashed.
 
@@ -1079,7 +1079,7 @@ Once a transaction is signed, it is ready to transmit to the Ethereum network. T
 
 Why would you want to separate the signing and transmission of transactions? The most common reason is security. The computer that signs a transaction must have unlocked private keys loaded in memory. The computer that does the transmitting must be connected to the internet (and be running an Ethereum client). If these two functions are on one computer, then you have private keys on an online system, which is quite dangerous.
 
-> **Warning**  
+> **警告**
 >
 > If you keep your private keys online, you're exposed to several forms of attacks, such as malware and remote hacking, and you're much more susceptible to phishing attacks, too.
 
@@ -1113,13 +1113,13 @@ Once we have the transaction, we need to sign it with the correct private key (o
 
 The transaction needs to be included in a block to be considered confirmed by the Ethereum protocol; otherwise, it's just a signed transaction that only we know about.
 
-> **Tip**  
+> **ヒント**
 >
 > It's very important to understand that the Ethereum protocol considers valid only transactions that are included into blocks that are part of the valid chain. To update its state, you need to send your signed transaction to the network and wait for it to include your transaction into a block. Your signed transaction alone doesn't do anything if it's not included into a block.
 
 So we need to send our signed transaction to the network. To do that, we just need to send our transaction to an Ethereum node: this can be our own node or a third-party one, such as Alchemy, Infura, or Public Node (which is the one we used in our previous example).
 
-> **Note**  
+> **注記**
 >
 > By default, all wallets use a third-party node so that a user doesn't need to install anything to start using the Ethereum network. Nevertheless, if you want to maximize your privacy and really don't want to depend on anyone, you should use your own client. You can refer to Chapter 3 for a detailed guide on how to install your first Ethereum node.
 
@@ -1128,7 +1128,7 @@ When our signed transaction reaches the first node, the node performs some valid
 
 This process is part of the Ethereum P2P gossip protocol, and the result is that within just a few seconds, an Ethereum transaction propagates to all the Ethereum nodes around the globe. From the perspective of each node, it is not possible to discern the origin of the transaction. The neighbor that sent it to the node may be the originator of the transaction or may have received it from one of its neighbors. To be able to track the origins of transactions or interfere with propagation, an attacker would have to control a significant percentage of all nodes. This is part of the security and privacy design of P2P networks, especially as applied to blockchain networks.
 
-> **Note**  
+> **注記**
 >
 > You may wonder why nodes don't flood transactions to all their neighbors and instead send them to just a subsection of neighbors. The answer is efficiency and bandwidth preservation. In fact, it would be highly inefficient to send all transactions to all nodes: there would be lots of duplicate messages, network traffic would be huge, and scalability would be poor as network traffic would grow exponentially with the number of transactions.
 
@@ -1144,7 +1144,7 @@ Our transaction is now included into a block and has already modified the Ethere
 
 To be completely sure that our transaction cannot be reverted, we need to wait for the block that includes it to be finalized by the Ethereum consensus protocol (we'll explore that in much more detail in Chapter 15). This usually takes around 12 minutes.
 
-> **Note**  
+> **注記**
 >
 > Even though it's true that you should wait for the finalization to be completely sure that your transaction is confirmed on the blockchain, you can usually wait for only a couple of blocks. Wallets usually show your transaction as confirmed immediately after it has been included into a block.
 
@@ -1219,7 +1219,7 @@ The ability to implement multisignature transactions as a smart contract demonst
 
 **Figure 6-13.** Gnosis Safe securing billions in value
 
-> **Note**  
+> **注記**
 >
 > With Gnosis Safe, the usual workflow to execute a transaction is as follows:
 >

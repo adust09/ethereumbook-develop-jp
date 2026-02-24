@@ -10,12 +10,23 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-CHAPTER_GLOB = "chapter_*.md"
+CHAPTER_GLOBS = ["chapter_*.md", "intro.md", "preface.md"]
 
 # {canonical: [variant spellings to flag]}
 VARIANT_MAP: dict[str, list[str]] = {
     "マークルツリー": ["マークル木", "マークル ツリー"],
     "コンテクスト": ["コンテキスト"],
+    "暗号通貨": ["仮想通貨"],
+    "スマートコントラクト": ["スマート コントラクト"],
+    "ライブラリ": ["ライブラリー"],
+    "ブラウザ": ["ブラウザー"],
+    "コンピュータ": ["コンピューター"],
+    "バリデータ": ["バリデーター"],
+    "ギャヴィン・ウッド": ["ギャビン・ウッド"],
+    "ピーター・ヴェスネス": ["ピーター・ヴェッセネス"],
+    "フィリップ・ダイアン": ["フィル・ダイアン"],
+    "ナスターシア・サックス": ["ナスターシャ・サックス"],
+    "ジェイコブ・エヴァンス": ["ジェイコブ・エバンス"],
 }
 
 # Accepted blockquote note labels -> what they should be
@@ -63,10 +74,11 @@ def get_translated_chapters() -> list[Path]:
     """Return paths of translated chapter files."""
     src = REPO_ROOT / "src"
     chapters: list[Path] = []
-    for p in sorted(src.glob(CHAPTER_GLOB)):
-        content = p.read_text(encoding="utf-8")
-        if is_translated(content):
-            chapters.append(p)
+    for pattern in CHAPTER_GLOBS:
+        for p in sorted(src.glob(pattern)):
+            content = p.read_text(encoding="utf-8")
+            if is_translated(content):
+                chapters.append(p)
     return chapters
 
 

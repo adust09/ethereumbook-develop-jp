@@ -237,7 +237,7 @@ Separating the work of creating a block by filling it with transactions from the
 
 A replacement of the data structure that Ethereum currently uses to store the state: the Merkle-Patricia trie. This reduces by a lot the size of the cryptographical proof needed to verify the correctness of the state and makes verifying it faster than the legacy Merkle-Patricia trie.
 
-> **Note**  
+> **注記**
 >
 > Other hash-based binary trees are being tested to possibly replace Verkle trees. The core idea is just to have a data structure for the state that makes it possible to create small proofs that are quick and easy to verify.
 
@@ -275,7 +275,7 @@ Let's use our previous example to see this in practice. Let's say we want to pro
 
 Figure 14-3. The Merkle proof to verify that data_1 is contained in the tree
 
-> **Tip**  
+> **ヒント**
 >
 > To reconstruct the Merkle tree, you can follow these steps:
 >
@@ -362,7 +362,7 @@ Even though it's possible to read and write single bytes to and from the memory,
 
 Figure 14-7. EVM memory is a volatile, byte-addressable data structure
 
-> **Note**  
+> **注記**
 >
 > Technically, you cannot read a single byte from the EVM. You can only read an entire 32-byte word. To achieve the same result as reading a single byte, the EVM needs to load the entire word that contains that byte and then "cut" it in order to return only the selected byte.
 
@@ -406,7 +406,7 @@ Let's represent the EVM bytecode in a human-readable format:
 [0c]            STOP
 ```
 
-> **Note**  
+> **注記**
 >
 > Each EVM opcode is identified by a unique 1-byte value (ranging from 0x00 to 0xFF). For example, 0x60 is the PUSH1 opcode, 0x5F the PUSH0, and so on. For a comprehensive list of all opcodes and their hexadecimal representations, refer to [EVM codes](https://www.evm.codes).
 
@@ -482,7 +482,7 @@ Finally, we have the STOP opcode that halts the execution, and the EVM returns s
 
 Figure 14-20. EVM after STOP
 
-> **Tip**  
+> **ヒント**
 >
 > In the previous example, we used the opcode PUSH0. It's important to say that not all EVM-compatible blockchains have integrated this opcode, so be aware of that when deploying a cross-chain contract. [EVM Diff](https://www.evmdiff.com) is a very cool website that shows all these subtle differences for EVM-compatible chains.
 
@@ -738,7 +738,7 @@ $ heimdall --version
 heimdall 0.8.4
 ```
 
-> **Note**  
+> **注記**
 >
 > For the latest information on how to install Heimdall, please refer to the official documentation you can find on the [GitHub repository](https://oreil.ly/klTJ3).
 
@@ -836,7 +836,7 @@ At `0x20`, after two `JUMPDEST` instructions, only a `STOP` instruction follows 
 
 Figure 14-24. JUMPI instruction leading to fallback function
 
-> **Note**  
+> **注記**
 >
 > Heimdall represents the bytecode starting with offset equal to 0x01, even though the EVM actually interprets it as starting with offset 0x00. In the previous example, the JUMPI instruction tells the EVM to go to offset 0x20 if the condition is true, but in the graph, offset 0x20 is here represented as 0x21. As a rule of thumb, you just need to add one to every offset of the EVM to find it on the graph.
 
@@ -1020,7 +1020,7 @@ It is important to be clear about the distinction between the gas cost and the g
 - *Gas cost* is the number of units of gas required to perform a particular operation.
 - *Gas price* is the amount of ether you are willing to pay per unit of gas when you send your transaction to the Ethereum network.
 
-> **Tip**  
+> **ヒント**
 >
 > Although gas has a price, it cannot be "owned" or "spent." Gas exists only inside the EVM, as a count of how much computational work is being performed. The sender is charged a transaction fee in ether, which is converted to gas for EVM accounting and then back to ether as a transaction fee paid to the validators.
 
@@ -1030,7 +1030,7 @@ Ethereum encourages the deletion of used storage variables by refunding some of 
 
 In the past, there was another operation with a negative gas cost: `SELFDESTRUCT`. Deleting a contract (through `SELFDESTRUCT`) was worth a refund of 24,000 gas. Right now, the `SELFDESTRUCT` opcode is deprecated, and not using it anymore is recommended.
 
-> **Tip**  
+> **ヒント**
 >
 > Gas refunds are applied at the end of the transaction. So if a transaction doesn't have sufficient gas to reach the end of the execution, it fails, and no refunds are given.
 
@@ -1109,7 +1109,7 @@ The EVM is still great. All activities happening today on Ethereum (and all othe
 
 EOF is an extensible and versioned container format for the EVM with a once-off validation at deploy time. In this section, we'll explore all the major limitations of the EVM and how EOF intends to overcome them.
 
-> **Note**  
+> **注記**
 >
 > As of the final revision of this book (June 2025), the EOF upgrade has been postponed indefinitely due to insufficient consensus within the Ethereum community. There is currently no clear timeline for its implementation, and it may ultimately never be adopted. Nevertheless, we believe this section remains valuable for understanding how EOF could affect the EVM and the broader Ethereum ecosystem.
 
@@ -1136,7 +1136,7 @@ Opcode `0C` doesn't exist, and when the EVM gets to that point, it will panic an
 
 One key part of this runtime check is the *jumpdest analysis*. Every client needs to do it at runtime every time a contract is executed. Let's spend some time understanding this jumpdest analysis and why it is needed in legacy EVM.
 
-> **Tip**  
+> **ヒント**
 >
 > To not have to perform jumpdest analysis at runtime every time a contract is called, some Ethereum node implementations save a jumpdest map for every contract. This map is created at contract deployment and saved inside the node's database.
 
@@ -1258,7 +1258,7 @@ Other important aspects of legacy EVM that make upgrades harder are *code intros
 
 The problem lies in the fact that if the EVM is able to access the remaining gas at a certain point of the execution, the logic of a smart contract can be made dependent on that. And if in the future, there is a change regarding gas metering of some opcodes (which is something not so rare to observe), there could be problems for all smart contracts that were relying on the old gas metering. The same applies for code introspection.
 
-> **Note**  
+> **注記**
 >
 > Without code introspection, it's possible for future versions of EOF to completely change the underlying virtual machine to something like Cairo VM or Wasm or any other by automatically transforming all contracts' code into the new VM's code with the same functionality.
 
@@ -1348,7 +1348,7 @@ Just hold on for a moment—we'll explain everything in the following sections.
 
 Jumpdest analysis and all gas and code introspection opcodes are completely removed and are now considered undefined. All opcodes in the code section must be valid, immediate values (such as push data) must be present in the code, and there must not be unreachable instructions. Stack validation is performed at creation time, too. This makes stack underflow and overflow impossible during execution, removing the necessity of doing all those checks at runtime because the EVM can assume contracts already respect all the rules since they have been validated at deployment.
 
-> **Tip**  
+> **ヒント**
 >
 > These validation guarantees improve the feasibility of AOT or JIT compilation of EVM bytecode into machine-native code.
 
