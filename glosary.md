@@ -66,7 +66,7 @@
 | Ice Age | アイスエイジ |
 | IDE | 統合開発環境 |
 | Immutable deployed code problem | デプロイ済コードイミュータブル問題 |
-| Infura |  |
+| Infura | Infura |
 | Internal transaction (also "message") | 内部トランザクション（「メッセージ」とも） |
 | IPFS | IPFS |
 | Interface | インターフェース |
@@ -139,7 +139,6 @@
 | Name registry provider | ネームレジストリプロバイダ |
 | Nakamoto Consensus | ナカモトコンセンサス |
 | proof-of-authority | proof-of-authority |
-| permissioned testnet |  |
 | MetaMask | MetaMask |
 | Emerald Wallet | Emerald Wallet |
 | MyEtherWallet | MyEtherWallet |
@@ -148,20 +147,11 @@
 | remote client | リモートクライアント |
 | Light Client | 軽量クライアント |
 | Simplified Payment Verification | Simplified Payment Verification |
-| remote wallet |  |
-| Merkle proofs |  |
 | full client | フルクライアント |
-| ethereum clients |  |
 | Ethereum Foundation | イーサリアムファンデーション |
 | censorship resistance | 検閲耐性 |
 | resilience | レジリエンス |
 | Public Testnet | パブリックテストネット |
-| faucet |  |
-| N-of-M Multisig |  |
-| Salt |  |
-| sequential memory |  |
-| block explorers |  |
-| contract explorer |  |
 | Mobile Wallets | モバイルウォレット |
 | Browser Wallets | ブラウザウォレット |
 | Ethereum Virtual Machine | イーサリアム仮想マシン |
@@ -176,18 +166,16 @@
 | Ethereum Standards | イーサリアムスタンダード |
 | operating system | OS |
 | air-gapped device | 隔離されたデバイス |
-| Aura consensus protocol |  |
 | federated signing | 連合署名 |
 | Bitcoin core | ビットコインコア |
 | Burn | バーン |
 | Value | バリュー |
 | a global singleton | グローバルシングルトン |
 | global singleton state machine | グローバルシングルトン状態マシン |
-| curly brace |  |
-| the special child derivation function |  |
-| Mnemonic Code Word |  |
+| the special child derivation function | 特殊子鍵導出関数 |
+| Mnemonic Code Word | ニーモニックコードワード |
 | Hardened child key | 強化子公開鍵 |
-| duress wallet |  |
+| duress wallet | 脅迫用ウォレット |
 | Ethereum Name Service | Ethereumネームサービス |
 | Ethereum Name Services | Ethereumネームサービス |
 | mempool | メモリプール |
