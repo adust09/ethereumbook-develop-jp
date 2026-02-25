@@ -179,10 +179,6 @@
 | Aura consensus protocol |  |
 | federated signing | 連合署名 |
 | Bitcoin core | ビットコインコア |
-| Wisper | Wisper |
-| Swarm | Swarm |
-| "" |  |
-| :（コロン） |  |
 | Burn | バーン |
 | Value | バリュー |
 | a global singleton | グローバルシングルトン |
