@@ -225,140 +225,71 @@ GASLIMIT       // ブロックのガスリミットを取得する
 
 ## イーサリアムのステート（状態）
 
-The job of the EVM is to update the Ethereum state by computing valid state transitions as a result of smart contract code execution, as defined by the Ethereum protocol. This aspect leads to the description of Ethereum as a *transaction-based state machine*, which reflects the fact that external actors (i.e., account holders and validators) initiate state transitions by creating, accepting, and ordering transactions. It is useful at this point to consider what constitutes the Ethereum state.
+EVMの役割は、イーサリアムのステート（状態）を更新することです。ステートの更新は、スマートコントラクトのコードの実行の結果として、プロトコルによる定義どおりに有効な状態遷移を計算することで行われます。これは、イーサリアムはトランザクションベースのステートマシン（transaction-based state machine）であるという説明にもつながります。つまり、外部アクター（アカウント所有者とバリデーター）がトランザクションを作成し、受け付け、順序づけることで状態遷移を開始しているということです。以下では、イーサリアムの状態を構成するものについて見てきます。
 
-EVMの仕事は、イーサリアムプロトコルで定義されているように、スマートコントラクトコードの実行の結果として有効な状態遷移を計算することにより、イーサリアムの状態を更新することです。この側面により、イーサリアムは*トランザクションベースの状態機械*として説明されます。これは、外部アクター（アカウント保有者とバリデータ）がトランザクションを作成、承認、順序付けることで状態遷移を開始するという事実を反映しています。この時点で、イーサリアムの状態を構成するものを検討することが有用です。
+最上位レベルでは、イーサリアムの*ワールドステート*があります。ワールドステートは、イーサリアムアドレス（160ビット値）からアカウントへのマッピングです。下位レベルでは、各イーサリアムアドレスは、イーサ残高（アカウントが所有するwei数として保存）、ノンス（EOAの場合はこのアカウントから正常に送信されたトランザクションの数、コントラクトアカウントの場合はコントラクトアカウントによって作成されたコントラクトの数を表す）、アカウントのストレージ（スマートコントラクトのみが使用する永続的なデータストア）、およびアカウントのプログラムコード（これもスマートコントラクトアカウントの場合のみ）で構成されるアカウントを表します。従来、EOAは常にコードを持たず、空のストレージを持っていました。しかし、[EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)（2025年5月のPectraアップグレードで有効化）は、EOAがスマートコントラクトにコード実行を委任できるようにすることで、この前提を変更します。EOAが委任にオプトインすると、そのコードフィールドは`0xef0100 || address`の形式の23バイトの*委任指定*に設定されます。ここで`address`はターゲットコントラクトの20バイトアドレスです。`0xef`は[EIP-3541](https://eips.ethereum.org/EIPS/eip-3541)により禁止されたオペコードであり、この指定がデプロイ可能なコントラクトコードと混同されないことを保証します。EVMが委任されたEOAへの呼び出しに遭遇すると、ターゲットアドレスからコードをロードしてEOAのコンテクストで実行します。このことは委任されたEOAに対する`EXTCODESIZE`は23（委任指定のサイズ）を返し、委任されたコード内で実行される`CODESIZE`はターゲットコントラクトのコードのサイズを返すことを意味します。EOAは委任されたコードを実行する際にストレージも使用できますが、委任コントラクト間を移行する際の衝突を防ぐために、プロトコルは[ERC-7201](https://eips.ethereum.org/EIPS/eip-7201)の名前空間付きストレージレイアウトの使用を推奨しています。重要なのは、委任されたEOAは引き続きトランザクションを送信できることです。トランザクションに署名して送信できるEOAの機能はそのままですが、さらにスマートコントラクト機能を持つようになります。委任はゼロアドレス（`0x0000000000000000000000000000000000000000`）を委任先に指定することでクリアできます。
 
-At the top level, we have the Ethereum *world state*. The world state is a mapping of Ethereum addresses (160-bit values) to accounts. At the lower level, each Ethereum address represents an account comprising an ether balance (stored as the number of wei owned by the account), a nonce (representing the number of transactions successfully sent from this account if it is an EOA or the number of contracts created by it if it is a contract account), the account's storage (which is a permanent data store used only by smart contracts), and the account's program code (again, only if the account is a smart contract account). Traditionally, an EOA would always have no code and an empty storage. However, [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) (activated in the Pectra upgrade in May 2025) changes this assumption by allowing EOAs to delegate code execution to smart contracts. When an EOA opts into delegation, its code field is set to a 23-byte *delegation designation* with the format `0xef0100 || address`, where `address` is the 20-byte address of the target contract. The `0xef` byte is a banned opcode per [EIP-3541](https://eips.ethereum.org/EIPS/eip-3541), ensuring this designation cannot be confused with deployable contract code. When the EVM encounters a call to a delegated EOA, it loads and executes the code from the target address in the context of the EOA. This means `EXTCODESIZE` on a delegated EOA returns 23 (the size of the delegation designation), while `CODESIZE` executed within the delegated code returns the size of the target contract's code. The EOA can also use storage when executing delegated code, though the protocol recommends using [ERC-7201](https://eips.ethereum.org/EIPS/eip-7201) namespaced storage layouts to prevent collisions when migrating between delegate contracts. Importantly, delegated EOAs can still originate transactions—they remain EOAs that can sign and send transactions, but now with smart contract capabilities. The delegation can be cleared by delegating to the zero address (`0x0000000000000000000000000000000000000000`).
+トランザクションによってスマートコントラクトのコードが実行されると、現在作成されているブロックおよび処理中の特定のトランザクションに関して必要なすべての情報を含むEVMがインスタンス化されます。特に、EVMのプログラムコードROMには、コントラクトアカウントのコードが呼び出されて読み出され、プログラムカウンタはゼロに設定され、ストレージ情報がコントラクトアカウントのストレージから読み出され、メモリはすべてゼロに設定され、すべてのブロックおよび環境変数が設定されます。ここで重要な変数は、この実行のために設定されたガス供給量です。ガス供給量は、トランザクションの開始時にトランザクション送信者が支払ったガスの量に設定されています（詳細は「実行中のガス会計」を参照）。コード実行が進むにつれて、ガス供給量は実行された操作のガスコストに応じて減少します。いずれかの時点でガス供給量がゼロ未満になると、*ガス切れ*（Out of Gas: OOG）例外が発生します。コントラクトコードの実行は直ちに停止し、トランザクションは放棄されます。イーサリアムの状態への変更は適用されません。ただし、送信者のノンスがインクリメントされ、停止点までのコード実行に使用されたリソースに対しする対価としてブロックの受益者に支払うためにイーサ残高が減少します。この時点で、EVMはイーサリアムワールドステートのサンドボックス化されたコピー上で実行されていると考えることができ、何らかの理由で実行が完了できない場合、このサンドボックスは完全に破棄されます。ただし、実行が正常に完了した場合、呼び出されたコントラクトのストレージデータへの変更、作成された新しいコントラクト、開始されたイーサ残高の転送を含め、実世界の状態はサンドボックス版に一致するように更新されます。
 
-最上位レベルでは、イーサリアムの*ワールドステート*があります。ワールドステートは、イーサリアムアドレス（160ビット値）からアカウントへのマッピングです。下位レベルでは、各イーサリアムアドレスは、イーサ残高（アカウントが所有するweiの数として保存）、ノンス（EOAの場合はこのアカウントから正常に送信されたトランザクションの数、コントラクトアカウントの場合はそれによって作成されたコントラクトの数を表す）、アカウントのストレージ（スマートコントラクトのみが使用する永続的なデータストア）、およびアカウントのプログラムコード（これもアカウントがスマートコントラクトアカウントの場合のみ）で構成されるアカウントを表します。従来、EOAは常にコードを持たず、空のストレージを持っていました。しかし、[EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)（2025年5月のPectraアップグレードで有効化）は、EOAがスマートコントラクトにコード実行を委任できるようにすることで、この前提を変更します。EOAが委任にオプトインすると、そのコードフィールドは`0xef0100 || address`の形式の23バイトの*委任指定*に設定されます。ここで`address`はターゲットコントラクトの20バイトアドレスです。`0xef`バイトは[EIP-3541](https://eips.ethereum.org/EIPS/eip-3541)により禁止されたオペコードであり、この指定がデプロイ可能なコントラクトコードと混同されないことを保証します。EVMが委任されたEOAへの呼び出しに遭遇すると、EOAのコンテキストでターゲットアドレスからコードをロードして実行します。これは、委任されたEOAに対する`EXTCODESIZE`は23（委任指定のサイズ）を返し、委任されたコード内で実行される`CODESIZE`はターゲットコントラクトのコードのサイズを返すことを意味します。EOAは委任されたコードを実行する際にストレージも使用できますが、委任コントラクト間を移行する際の衝突を防ぐために、プロトコルは[ERC-7201](https://eips.ethereum.org/EIPS/eip-7201)の名前空間付きストレージレイアウトの使用を推奨しています。重要なのは、委任されたEOAは引き続きトランザクションを発信できることです。トランザクションに署名して送信できるEOAのままですが、スマートコントラクト機能を持つようになります。委任はゼロアドレス（`0x0000000000000000000000000000000000000000`）に委任することでクリアできます。
-
-When a transaction results in smart contract code execution, an EVM is instantiated with all the information required in relation to the current block being created and the specific transaction being processed. In particular, the EVM's program code ROM is loaded with the code of the contract account being called, the program counter is set to zero, the storage is loaded from the contract account's storage, the memory is set to all zeros, and all the block and environment variables are set. A key variable is the gas supply for this execution, which is set to the amount of gas paid for by the sender at the start of the transaction (see "Gas Accounting During Execution" for more details). As code execution progresses, the gas supply is reduced according to the gas cost of the executed operations. If at any point the gas supply is less than zero, we get an *out-of-gas* (OOG) exception: execution immediately halts, and the transaction is abandoned. No changes to the Ethereum state are applied, except for the sender's nonce being incremented and their ether balance going down to pay the block's beneficiary for the resources used to execute the code to the halting point. At this point, you can think of the EVM as running on a sandboxed copy of the Ethereum world state, with this sandboxed version being discarded completely if execution cannot complete for whatever reason. However, if execution does complete successfully, then the real-world state is updated to match the sandboxed version, including any changes to the called contract's storage data, any new contracts created, and any ether balance transfers that were initiated.
-
-トランザクションがスマートコントラクトコードの実行をもたらす場合、作成中の現在のブロックと処理中の特定のトランザクションに関連するすべての必要な情報を持つEVMがインスタンス化されます。特に、EVMのプログラムコードROMには呼び出されるコントラクトアカウントのコードがロードされ、プログラムカウンタはゼロに設定され、ストレージはコントラクトアカウントのストレージからロードされ、メモリはすべてゼロに設定され、すべてのブロックと環境変数が設定されます。重要な変数は、この実行のためのガス供給であり、トランザクション開始時に送信者が支払ったガス量に設定されます（詳細は「実行中のガス会計」を参照）。コード実行が進むにつれて、ガス供給は実行された操作のガスコストに応じて減少します。いずれかの時点でガス供給がゼロ未満になると、*ガス不足*（OOG）例外が発生します。実行は直ちに停止し、トランザクションは放棄されます。送信者のノンスがインクリメントされ、停止点までのコード実行に使用されたリソースに対してブロックの受益者に支払うためにイーサ残高が減少することを除いて、イーサリアムの状態への変更は適用されません。この時点で、EVMはイーサリアムワールドステートのサンドボックス化されたコピー上で実行されていると考えることができ、何らかの理由で実行が完了できない場合、このサンドボックス版は完全に破棄されます。ただし、実行が正常に完了した場合、呼び出されたコントラクトのストレージデータへの変更、作成された新しいコントラクト、開始されたイーサ残高の転送を含め、実世界の状態はサンドボックス版に一致するように更新されます。
-
-Code execution is a recursive process. A contract can call other contracts, with each call resulting in another EVM being instantiated around the new target of the call. Each instantiation has its sandbox world state initialized from the sandbox of the EVM at the level above. Each instantiation (context) is also given a specified amount of gas for its gas supply (not exceeding the amount of gas remaining in the level above, of course) and so may itself halt with an exception due to being given too little gas to complete its execution. Again, in such cases, the sandbox state is discarded, and execution returns to the EVM at the level above.
-
-コード実行は再帰的なプロセスです。コントラクトは他のコントラクトを呼び出すことができ、各呼び出しは呼び出しの新しいターゲットの周りに別のEVMがインスタンス化される結果となります。各インスタンス化は、上のレベルのEVMのサンドボックスからサンドボックスワールドステートが初期化されます。各インスタンス化（コンテキスト）には、そのガス供給のための指定された量のガスも与えられ（もちろん、上のレベルで残っているガス量を超えない）、そのため、実行を完了するのに十分なガスが与えられなかったために例外で停止する可能性があります。この場合も、サンドボックス状態は破棄され、実行は上のレベルのEVMに戻ります。
-
-## Ethereum Stateless
+コード実行は再帰的なプロセスです。コントラクトは他のコントラクトを呼び出すことができ、各呼び出しは新しい呼び出し対象の周りにもう一つのEVMがインスタンス化されます。各インスタンスは、上のレベルのEVMのサンドボックスからサンドボックスワールドステートが初期化されます。インスタンス化（コンテクスト）の際には、指定されたガス供給量のガスが指定与えられます（もちろん、上のレベルで残っているガス量を超えない）。このため、実行を完了するのに十分なガスが与えられなかった場合は例外で停止する可能性があります。この場合も、サンドボックス状態は破棄され、実行は上のレベルのEVMに戻ります。
 
 ## イーサリアムステートレス
 
-Even though at the time of writing (June 2025), all Ethereum nodes have to compute and maintain the last state—that is, what we previously called the world state—in order to be able to check the correctness of every new block by reexecuting all the transactions it contains, there are plans to get rid of that, at least partially.
+執筆時点（2025年6月）では、すべてのイーサリアムノードは、含まれるすべてのトランザクションを再実行してすべての新しいブロックの正確性を確認できるようにするために、最新の状態（前述のワールドステート）を計算して維持する必要がありますが、部分的にそれを取り除く計画があります。
 
-執筆時点（2025年6月）では、すべてのイーサリアムノードは、含まれるすべてのトランザクションを再実行してすべての新しいブロックの正確性を確認できるようにするために、最新の状態（前述のワールドステート）を計算して維持する必要がありますが、少なくとも部分的にはそれを取り除く計画があります。
+そのアイデアは、サーチャーやビルダーなどの限定されたアクターのセットが、新しいブロックを作成して公開するために引き続き状態にアクセスする必要がある一方で、他のすべてのノードは状態なしでそれらのブロックを暗号的に検証できるようにすることです。これは*ステートレスネス*と呼ばれます。
 
-The idea is to have a restricted set of actors, such as searchers and builders, that still need to get access to the state to create and publish new blocks, while all other nodes can cryptographically verify those blocks without it. This is called *statelessness*.
+ステートレスネスは、コアプロトコルにいくつかの変更が必要なため、イーサリアムロードマップ上ではまだまだはるか先の話です。
 
-アイデアは、サーチャーやビルダーなどの限定されたアクターのセットが、新しいブロックを作成して公開するために引き続き状態にアクセスする必要がある一方で、他のすべてのノードは状態なしでそれらのブロックを暗号的に検証できるようにすることです。これは*ステートレスネス*と呼ばれます。
+**ブロック提案者とビルダーの分離（ePBS）**
 
-Statelessness is still far in the future of the Ethereum roadmap because it needs some modifications to the core protocol:
-
-ステートレスネスは、コアプロトコルにいくつかの変更が必要なため、イーサリアムロードマップの将来にまだ遠くにあります：
-
-**Enshrined proposer-builder separation (ePBS)**
-
-**プロトコル内蔵の提案者-ビルダー分離（ePBS）**
-
-Separating the work of creating a block by filling it with transactions from the work of proposing it to the P2P network. The first is done by heavily specialized entities called searchers and builders that are able to create super-optimized blocks, while the second is done by Ethereum validator nodes. This is already a reality on mainnet, even though it's still not enshrined in the protocol. In fact, the majority of Ethereum blocks are already being built by a very small set of big builders.
-
-トランザクションでブロックを埋めてブロックを作成する作業と、P2Pネットワークに提案する作業を分離することです。前者は、サーチャーやビルダーと呼ばれる高度に専門化されたエンティティによって行われ、超最適化されたブロックを作成できます。後者はイーサリアムバリデータノードによって行われます。これはプロトコルにまだ組み込まれていませんが、メインネットではすでに現実のものとなっています。実際、イーサリアムブロックの大半は、非常に小さな大手ビルダーのセットによってすでに構築されています。
-
-**Verkle trees**
+トランザクションを収集してブロックを作成する作業と、P2Pネットワークに提案する作業を分離します。前者は、サーチャーやビルダーと呼ばれる高度に専門化されたエンティティによって行われ、超最適化されたブロックを作成できます。後者はイーサリアムバリデーターノードによって行われます。ePBSはプロトコルにまだ組み込まれていませんが、メインネットではすでに実現されています。実際、イーサリアムブロックの大半は、非常に小さな大手ビルダーのセットによって構築されています。
 
 **Verkleツリー**
 
-A replacement of the data structure that Ethereum currently uses to store the state: the Merkle-Patricia trie. This reduces by a lot the size of the cryptographical proof needed to verify the correctness of the state and makes verifying it faster than the legacy Merkle-Patricia trie.
-
-イーサリアムが現在状態を保存するために使用しているデータ構造であるMerkle-Patriciaトライの置き換えです。これにより、状態の正確性を検証するために必要な暗号証明のサイズが大幅に削減され、レガシーのMerkle-Patriciaトライよりも検証が高速になります。
-
-> **Note**
->
-> Other hash-based binary trees are being tested to possibly replace Verkle trees. The core idea is just to have a data structure for the state that makes it possible to create small proofs that are quick and easy to verify.
+イーサリアムが状態を保存するために現在使用しているデータ構造であるマークルパトリシアツリーの置き換えです。これにより、状態の正当性を検証するために必要な暗号証明のサイズが大幅に削減され、変更前のマークルパトリシアツリーよりも検証が高速になります。
 
 > **注記**
 >
-> Verkleツリーを置き換える可能性のある他のハッシュベースのバイナリツリーがテストされています。核心的なアイデアは、迅速かつ容易に検証できる小さな証明を作成できる状態用のデータ構造を持つことです。
+> 他のハッシュベースのバイナリツリーが、バークルツリーの代替としてテストされています。核心的なアイデアは、迅速かつ容易に検証できる小さな証明を作成できる状態用のデータ構造を持つことです。
 
-The combination of these two upgrades can lead to a scenario where only the big entities with more powerful hardware that want to create blocks need to store and access the full state. Together with new blocks, they will create a *cryptographic witness*: the minimal set of data that proves the new state has been computed correctly based on the transactions they included into the blocks.
+これら2つのアップグレードを組み合わせることで、ブロックを作成する強力なハードウェアを備えた大規模組織のみが完全な状態を保存・アクセスする必要があるというシナリオが実現します。新しいブロックと共に、*暗号証人*が作成されます。これは、ブロックに含まれるトランザクションに基づいて新しい状態が正しく計算されたことを証明する最小限のデータセットです。
 
-これら2つのアップグレードの組み合わせにより、ブロックを作成したいより強力なハードウェアを持つ大きなエンティティのみが完全な状態を保存してアクセスする必要があるシナリオにつながる可能性があります。新しいブロックとともに、彼らは*暗号証人*を作成します。これは、ブロックに含めたトランザクションに基づいて新しい状態が正しく計算されたことを証明するデータの最小セットです。
+他のすべてのノード（バリデーターノードを含む）は、全体の状態のハッシュである*ステートルート*のみを保存します。新しいブロックを受信すると、そのブロックに関連付けられた証人を使用してその正確性を検証します。
 
-All other nodes (including validator nodes) store only the *state root*, which is the hash of the entire state. When they receive a new block, they use the related witness to verify its correctness.
-
-他のすべてのノード（バリデータノードを含む）は、全体の状態のハッシュである*ステートルート*のみを保存します。新しいブロックを受信すると、関連する証人を使用してその正確性を検証します。
-
-This makes running an Ethereum node very lightweight since you don't have to store the full state and you don't even need to reexecute all the transactions (inside the EVM), but you are still able to verify that everything is correct so that you don't need to trust third parties. You could even run a node on your smartphone…
-
-これにより、完全な状態を保存する必要がなく、すべてのトランザクション（EVM内で）を再実行する必要もないため、イーサリアムノードの実行が非常に軽量になりますが、すべてが正しいことを検証できるため、第三者を信頼する必要がありません。スマートフォンでもノードを実行できるようになるでしょう…
-
-Even though research advances quickly, we are probably still a few years away from having statelessness on mainnet.
+これにより、完全な状態を保存する必要も、すべてのトランザクション（EVM内で）を再実行する必要もなくなり、イーサリアムノードの実行が非常に軽量になります。さらに、引き続き第三者を信頼する必要がなくすべてが正しいことを検証できます。スマートフォンでもノードを実行できるようになるでしょう…
 
 研究は急速に進んでいますが、メインネットでステートレスネスを実現するまでにはおそらくまだ数年かかるでしょう。
 
-## Merkle-Patricia Trie
-
-## Merkle-Patriciaトライ
+## マークルパトリシアツリー
 
 Right now, the Ethereum state is stored using a very peculiar data structure called a *modified Merkle-Patricia trie*. We briefly mentioned the Merkle-Patricia tree (we'll call it MPT) in the previous section, but it's very important to understand how it works and why as well as how it's used by Ethereum as the way to store the state (and not only that…) because the same reasoning applies to Verkle tries. Before diving into MPTs, you need to know about Merkle trees because they represent the foundation on which MPTs are built.
 
-現在、イーサリアムの状態は*修正Merkle-Patriciaトライ*と呼ばれる非常に特殊なデータ構造を使用して保存されています。前のセクションでMerkle-Patriciaツリー（MPTと呼びます）について簡単に触れましたが、同じ推論がVerkleトライにも適用されるため、それがどのように機能し、なぜそうなのか、およびイーサリアムが状態を保存する方法として（それだけでなく…）どのように使用されているかを理解することは非常に重要です。MPTに飛び込む前に、MPTが構築される基盤であるMerkleツリーについて知る必要があります。
+現在、Ethereumの状態は*修正マークルパトリシアツリー*と呼ばれる非常に特殊なデータ構造を使用して保存されています。前のセクションでマークルパトリシアツリー（以下、MPT）について簡単に触れましたが、その仕組みと理由、そしてEthereumが状態を保存する方法としてどのように使用されているか（そしてそれだけではありません）を理解することは非常に重要です。なぜなら、同じ考え方がバークルツリーにも当てはまるからです。MPTについて詳しく説明する前に、マークルツリーについて知っておく必要があります。なぜなら、マークルツリーはMPTの基盤となるからです
 
-### Merkle trees
+### マークルツリー
 
-### Merkleツリー
+マークルツリーは、1988年にラルフ・マークルがよりより良いデジタル署名を構築しようとして発明した非常に古いデータ構造です。データベース全体を送信せずに、データがデータベースに存在し、改ざんされていないことを検証する必要がある場合に非常に効率的です。
 
-Merkle trees are a very old data structure, invented by Ralph Merkle in 1988 in an attempt to construct better digital signatures. They are very efficient when you need to be able to verify that some data exists in a database and it has not been tampered with without needing to send the entire database to prove it.
+データのコレクションからMerkleツリーを作成するのは簡単です。データをいくつかのチャンクに分割し、それらのチャンクを一緒にハッシュし、最終的に1つのチャンクだけになるまでこの最後のステップを再帰的に繰り返します。そのチャンクは*Merkleルート*です。これは、ツリーを作成するために使用されたすべてのデータの一種のデジタル指紋です。
 
-Merkleツリーは、1988年にRalph Merkleがより良いデジタル署名を構築しようとして発明した非常に古いデータ構造です。データベース全体を送信せずに、データがデータベースに存在し、改ざんされていないことを検証する必要がある場合に非常に効率的です。
-
-It's quite easy to create a Merkle tree starting from a collection of data. You need to separate the data into several chunks; then, you hash those chunks together and repeat this last step in a recursive way until you get only one final chunk. That chunk represents the *Merkle root*: a sort of digital fingerprint of all the data used to create the tree.
-
-データのコレクションからMerkleツリーを作成するのはかなり簡単です。データをいくつかのチャンクに分割し、それらのチャンクを一緒にハッシュし、最終的に1つのチャンクだけになるまでこの最後のステップを再帰的に繰り返す必要があります。そのチャンクは*Merkleルート*を表します。これは、ツリーを作成するために使用されたすべてのデータの一種のデジタル指紋です。
-
-Let's create a binary Merkle tree—the simplest form of a Merkle tree—from scratch so that you can familiarize yourself with it a bit more. We start with eight chunks of data—you could think of them as different words in the English language. We hash each chunk using a specific hash function—Ethereum uses the Keccak-256 hash function, as already mentioned in Chapter 4—obtaining the leaves of the Merkle tree, represented in Figure 14-2 as hash_1, hash_2, and so on. Then, we concatenate each couple of leaves and hash them again, creating hash_12, hash_34, and so on. We repeat this process of concatenating and hashing another two times until we get to a single, final result, which represents our Merkle root: hash_12345678.
-
-バイナリMerkleツリー（Merkleツリーの最も単純な形式）をゼロから作成して、もう少し慣れ親しみましょう。8つのデータチャンクから始めます。これらは英語の異なる単語と考えることができます。特定のハッシュ関数を使用して各チャンクをハッシュします。第4章ですでに述べたように、イーサリアムはKeccak-256ハッシュ関数を使用します。図14-2でhash_1、hash_2などとして表されるMerkleツリーの葉を取得します。次に、各リーフのペアを連結して再びハッシュし、hash_12、hash_34などを作成します。連結とハッシュのこのプロセスをさらに2回繰り返し、単一の最終結果であるMerkleルート：hash_12345678を取得します。
-
-![A binary merkle tree](images/ch14/maet_1402.png)
+バイナリMerkleツリー（Merkleツリーの最も単純な形式）をゼロから作成して、もう少し慣れ親しみましょう。8つのデータチャンクから始めます。これらは英語の異なる単語と考えてみましょう。特定のハッシュ関数を使用して各チャンクをハッシュします。第4章ですでに述べたように、イーサリアムはKeccak-256ハッシュ関数を使用します。図14-2でhash_1、hash_2などとして表されるMerkleツリーの葉を取得します。次に、各リーフのペアを連結して再びハッシュし、hash_12、hash_34などを作成します。連結とハッシュのこのプロセスをさらに2回繰り返し、単一の最終結果であるMerkleルート：hash_12345678を取得します。
 
 ![バイナリMerkleツリー](images/ch14/maet_1402.png)
 
-Figure 14-2. A binary merkle tree
-
 図14-2. バイナリMerkleツリー
 
-Now, you may be asking why we need a Merkle tree to store the data. Isn't it more complicated than just storing each chunk in a classical database?
+データを保存するためになぜMerkleツリーが必要なのか疑問に思うかもしれません。各チャンクを従来のデータベースに保存するよりも複雑ではないでしょうか？
 
-データを保存するためになぜMerkleツリーが必要なのか疑問に思うかもしれません。各チャンクを従来のデータベースに保存するよりも複雑ではないですか？
+答えはイエスです。キーバリューやSQLデータベースにすべてのチャンクを保存するよりもはるかに複雑です。この種のデータ構造を使用する唯一の理由は、チャンクのいずれかがデータのコレクションに存在し、操作されていないこと暗号証明を安価に提供するのに非常に効率的だからです。実際、特定のチャンクを持っていることの証明を提供するように求められた時に、通常のデータベースを使用してデータを保存している場合、私たちが嘘をついていないことを確認できるようにデータセット全体を公開する必要があります。
 
-The answer is yes, it's much more complex than storing every chunk in a key-value or SQL database. The only reason we use these kinds of data structures is because they are really efficient at providing a cheap cryptographic proof that any one of the chunks is present in the entire collection of data and has not been manipulated. In fact, if we were using a normal database to store data, and we were asked to provide a proof that we have a specific chunk, we would need to publish our entire dataset so that the reader could be sure we're not lying.
-
-答えはイエスです。キーバリューやSQLデータベースにすべてのチャンクを保存するよりもはるかに複雑です。この種のデータ構造を使用する唯一の理由は、チャンクのいずれかがデータの全体コレクションに存在し、操作されていないことの安価な暗号証明を提供するのに非常に効率的だからです。実際、通常のデータベースを使用してデータを保存し、特定のチャンクを持っていることの証明を提供するように求められた場合、読み手が私たちが嘘をついていないことを確認できるように、データセット全体を公開する必要があります。
-
-Let's use our previous example to see this in practice. Let's say we want to prove that data_1 is included in the dataset. The naive approach is to provide the entire dataset, starting from data_1 up to data_8: eight items in total. With a Merkle tree, we need to provide only hash_2, hash_34, and hash_5678. Then, anyone can compute on their own the Merkle root and compare it with the one we calculated initially (which is shared publicly). If they match, you can be completely sure that data_1 is part of the initial dataset, as you can see in Figure 14-3.
-
-前の例を使用して、これを実際に見てみましょう。data_1がデータセットに含まれていることを証明したいとします。単純なアプローチは、data_1からdata_8までの全データセット（合計8項目）を提供することです。Merkleツリーを使用すると、hash_2、hash_34、hash_5678のみを提供する必要があります。その後、誰でも自分でMerkleルートを計算し、最初に計算したもの（公開されている）と比較できます。一致すれば、図14-3に示すように、data_1が初期データセットの一部であることを完全に確信できます。
-
-![The Merkle proof to verify that data_1 is contained in the tree](images/ch14/maet_1403.png)
+前の例を使用して、具体的に見てみましょう。data_1がデータセットに含まれていることを証明したいとします。単純なアプローチは、data_1からdata_8までの全データセット（合計8項目）を提供することです。Merkleツリーを使用すると、hash_2、hash_34、hash_5678のみを提供すればよいです。その後、誰でも自分でMerkleルートを計算し、最初に計算した（公開されている）Merkleルートと比較できます。一致すれば、図14-3に示すように、data_1が初期データセットの一部であることを完全に確信できます。
 
 ![data_1がツリーに含まれていることを検証するMerkle証明](images/ch14/maet_1403.png)
 
-Figure 14-3. The Merkle proof to verify that data_1 is contained in the tree
-
 図14-3. data_1がツリーに含まれていることを検証するMerkle証明
 
-> **Tip**
->
-> To reconstruct the Merkle tree, you can follow these steps:
->
-> 1. Hash data_1 and get hash_1.
-> 2. Concatenate hash_1 with the provided hash_2, hash it, and get hash_12.
-> 3. Concatenate hash_12 with the provided hash_34, hash it, and get hash_1234.
-> 4. Concatenate hash_1234 with the provided hash_5678, hash it, and get the final Merkle root.
-
-> **ヒント**
+> **Tips**
 >
 > Merkleツリーを再構築するには、次の手順に従います：
 >
@@ -367,9 +298,7 @@ Figure 14-3. The Merkle proof to verify that data_1 is contained in the tree
 > 3. hash_12を提供されたhash_34と連結してハッシュし、hash_1234を取得します。
 > 4. hash_1234を提供されたhash_5678と連結してハッシュし、最終的なMerkleルートを取得します。
 
-Note that we're using only three items, versus the eight items we would need to use with the naive approach without the Merkle tree. And this is just a toy example—when you have lots of data, the savings are much bigger.
-
-Merkleツリーなしの単純なアプローチで必要な8項目に対して、3項目のみを使用していることに注意してください。これは単なるおもちゃの例です。大量のデータがある場合、節約ははるかに大きくなります。
+Merkleツリーなしの単純なアプローチでは8つのデータ必要なのに対して、3つのデータのみを使用していることに注意してください。これは単なる単純な例です。大量のデータの場合は節約効果はより大きくなります。
 
 Speaking in mathematical terms, Merkle trees offer O(log(n)) complexity versus linear O(n) of the naive approach, as shown in Figure 14-4.
 
@@ -1741,7 +1670,7 @@ Each operation performed by a transaction or contract costs a fixed amount of ga
 
 Gas is a crucial component of Ethereum and serves a dual role: as a buffer between the (volatile) price of ether and the reward to validators for the work they do and as a defense against DoS attacks. To prevent accidental or malicious infinite loops or other computational wastage in the network, the initiator of each transaction is required to set a limit to the amount of computation they are willing to pay for. The gas system thereby disincentivizes attackers from sending "spam" transactions since they must pay proportionately for the computational, bandwidth, and storage resources that they consume.
 
-ガスはイーサリアムの重要なコンポーネントであり、二重の役割を果たします。イーサの（変動する）価格とバリデータが行う作業への報酬との間のバッファとして、そしてDoS攻撃に対する防御としてです。ネットワーク内の偶発的または悪意のある無限ループやその他の計算の無駄を防ぐために、各トランザクションの開始者は、支払う意思のある計算量の制限を設定する必要があります。ガスシステムにより、攻撃者は消費する計算、帯域幅、ストレージリソースに比例して支払う必要があるため、「スパム」トランザクションを送信することを抑制します。
+ガスはイーサリアムの重要なコンポーネントであり、二重の役割を果たします。イーサの（変動する）価格とバリデーターが行う作業への報酬との間のバッファとして、そしてDoS攻撃に対する防御としてです。ネットワーク内の偶発的または悪意のある無限ループやその他の計算の無駄を防ぐために、各トランザクションの開始者は、支払う意思のある計算量の制限を設定する必要があります。ガスシステムにより、攻撃者は消費する計算、帯域幅、ストレージリソースに比例して支払う必要があるため、「スパム」トランザクションを送信することを抑制します。
 
 ### Gas Accounting During Execution
 
@@ -1753,14 +1682,14 @@ EVMがトランザクションを完了するために必要な場合、最初�
 
 If the EVM reaches the end of execution successfully without running out of gas, the gas cost used is paid to the validator as a transaction fee, converted to ether based on the gas price specified in the transaction:
 
-EVMがガスを使い果たすことなく実行の終わりに正常に到達した場合、使用されたガスコストはトランザクション手数料としてバリデータに支払われ、トランザクションで指定されたガス価格に基づいてイーサに変換されます：
+EVMがガスを使い果たすことなく実行の終わりに正常に到達した場合、使用されたガスコストはトランザクション手数料としてバリデーターに支払われ、トランザクションで指定されたガス価格に基づいてイーサに変換されます：
 
 ```
 validator fee = gas cost × gas price
 ```
 
 ```
-バリデータ報酬 = ガスコスト × ガス価格
+バリデーター報酬 = ガスコスト × ガス価格
 ```
 
 The gas remaining in the gas supply is refunded to the sender, again converted to ether based on the gas price specified in the transaction:
