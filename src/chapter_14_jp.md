@@ -298,141 +298,76 @@ Right now, the Ethereum state is stored using a very peculiar data structure cal
 > 3. hash_12を提供されたhash_34と連結してハッシュし、hash_1234を取得します。
 > 4. hash_1234を提供されたhash_5678と連結してハッシュし、最終的なMerkleルートを取得します。
 
-Merkleツリーなしの単純なアプローチでは8つのデータ必要なのに対して、3つのデータのみを使用していることに注意してください。これは単なる単純な例です。大量のデータの場合は節約効果はより大きくなります。
+Merkleツリーなしの単純なアプローチでは8つのデータが必要なのに対し、3つのデータのみを使用していることに注意してください。これは単なる単純な例です。大量のデータの場合は節約効果はより大きくなります。
 
-Speaking in mathematical terms, Merkle trees offer O(log(n)) complexity versus linear O(n) of the naive approach, as shown in Figure 14-4.
-
-数学的に言えば、Merkleツリーは、図14-4に示すように、単純なアプローチの線形O(n)に対してO(log(n))の複雑さを提供します。
-
-![Merkle tree complexity comparison](images/ch14/maet_1404.png)
+数学的に言えば、Merkleツリーは図14-4に示すように単純なアプローチが線形なO(n)に対して、O(log(n))の計算量を提供します。
 
 ![Merkleツリーの複雑さの比較](images/ch14/maet_1404.png)
 
-Figure 14-4. O(n) linear complexity (on the top) versus O(log(n)) complexity (on the bottom)
+図14-4. O(n)（上）対O(log(n))（下）
 
-図14-4. O(n)線形複雑さ（上）対O(log(n))複雑さ（下）
-
-In the Ethereum world, this means that it's cheaper and easier to provide proofs regarding the balance of an address, the result of a transaction, or the bytecode of a specific smart contract.
-
-イーサリアムの世界では、これはアドレスの残高、トランザクションの結果、または特定のスマートコントラクトのバイトコードに関する証明を提供することがより安価で簡単であることを意味します。
-
-### Merkle trees in Bitcoin
+イーサリアムの世界では、これはアドレスの残高、トランザクションの結果、または特定のスマートコントラクトのバイトコードに関する証明を、より安価で簡単に提供できることを意味します。
 
 ### BitcoinにおけるMerkleツリー
 
-Bitcoin pioneered the use of Merkle trees in blockchain technology. In fact, every Bitcoin block contains the Merkle root of all transactions included in the same block so that none of them can be modified without modifying the entire block header (compromising the PoW, too).
 
-Bitcoinはブロックチェーン技術におけるMerkleツリーの使用を先駆けました。実際、すべてのBitcoinブロックには同じブロックに含まれるすべてのトランザクションのMerkleルートが含まれているため、ブロックヘッダー全体を変更せずに（PoWも損なわずに）それらのいずれも変更できません。
-
-### Merkle-Patricia trie in Ethereum
+Bitcoinはブロックチェーン技術におけるMerkleツリー活用の先駆者です。実際、すべてのBitcoinブロックにはそのブロックに含まれるすべてのトランザクションのMerkleルートが含まれているため、ブロックヘッダーを変更せずに（PoWも損なわずに）トランザクションを変更することは不可能です。
 
 ### イーサリアムにおけるMerkle-Patriciaトライ
 
-Ethereum took the same concept and applied it to itself, with some modifications for its specific needs. Merkle trees are perfectly suited for permanent data that never changes, such as Bitcoin transactions. The Ethereum state changes constantly, though, so we need to tweak Merkle trees to still maintain their useful properties while letting us change the data underneath frequently.
+イーサリアムは同じ概念を取り入れ、独自のニーズに合わせていくつかの変更を加えました。Merkleツリーは、Bitcoinトランザクションのような不変の永続的なデータには適しています。しかし、イーサリアムの状態は常に変化するためデータを頻繁に変更できるようにしながら、有用な特性を維持するためにMerkleツリーを調整する必要があります。
 
-イーサリアムは同じ概念を取り入れ、独自のニーズに合わせていくつかの変更を加えて適用しました。Merkleツリーは、Bitcoinトランザクションのような決して変わらない永続的なデータに完全に適しています。しかし、イーサリアムの状態は常に変化するため、データを頻繁に変更できるようにしながら、有用な特性を維持するためにMerkleツリーを調整する必要があります。
+ここでMerkle-Patriciaトライが登場します。名前は、Merkleツリー、Patricia（Practical Algorithm to Retrieve Information Coded in Alphanumeric）、および*retrieval*（検索）に由来する*trie*という単語の組み合わせから来ており、最適化の目的を思い出せる名前になっています。
 
-This is where the Merkle-Patricia trie enters the scene. The name comes from the union between Merkle trees, Patricia (Practical Algorithm to Retrieve Information Coded in Alphanumeric), and the word *trie* that originates from *retrieval*, reminding us what they are optimized for.
-
-ここでMerkle-Patriciaトライが登場します。名前は、Merkleツリー、Patricia（Practical Algorithm to Retrieve Information Coded in Alphanumeric）、および*retrieval*（検索）に由来する*trie*という単語の組み合わせから来ており、何のために最適化されているかを思い出させてくれます。
-
-Essentially, Merkle-Patricia tries are modified Merkle trees with 16 children for each node. They are well suited for data like the Ethereum state where you have lots of key-value items (where keys are the addresses and values the account information for each address, such as the balance, the nonce, and the code, if any) because the key itself is encoded in the path you have to follow to reach the correct position in the tree.
-
-基本的に、Merkle-Patriciaトライは各ノードに16の子を持つ修正されたMerkleツリーです。キー自体がツリー内の正しい位置に到達するためにたどるパスにエンコードされているため、多くのキーバリュー項目（キーはアドレスであり、値は残高、ノンス、コード（存在する場合）などの各アドレスのアカウント情報）を持つイーサリアムの状態のようなデータに適しています。
+基本的に、Merkle-Patriciaトライは各ノードに16の子を持つ修正されたMerkleツリーです。キー自体がツリー内の正しい位置に到達するパスにエンコードされているため、多くのキー・バリュー項目（キーはアドレスであり、バリューは残高、ノンス、コード（存在する場合）などの各アドレスのアカウント情報）を持つイーサリアムの状態データに適しています。
 
 Let's say we have the following key-value item we want to store:
 
-保存したい次のキーバリュー項目があるとしましょう：
+次のキーバリュー項目を保存したいとします。
 
 ```
 car → Schumacher
 ```
 
-```
-car → Schumacher
-```
-
-Car is hex encoded as (0x) 6 3 6 1 7 2, so you would need to take the sixth child starting from the Merkle root, then again down to the third child, repeating this process until you get to the final value where you can read the value associated with that key—Schumacher in this example—as shown in Figure 14-5.
-
-Carは（0x）6 3 6 1 7 2として16進エンコードされるため、Merkleルートから6番目の子を取り、次に3番目の子に下り、そのキーに関連付けられた値（この例ではSchumacher）を読み取ることができる最終値に到達するまでこのプロセスを繰り返す必要があります。図14-5に示されています。
-
-![Merkle-Patricia trie example](images/ch14/maet_1405.png)
+Carは（0x）6 3 6 1 7 2として16進エンコードされます。そのため、まず初めにMerkleルートから6番目の子を選択します。次に、３番目の子供を選択します。このプロセスをそのキーに関連付けられた値（この例ではSchumacher）を読み取ることができる最終値に到達するまで繰り返します。この例を図14-5に示します。
 
 ![Merkle-Patriciaトライの例](images/ch14/maet_1405.png)
 
-Figure 14-5. Encoding of the key-value item car --> Schumacher into a Merkle-Patricia trie
-
 図14-5. キーバリュー項目car --> SchumacherのMerkle-Patriciaトライへのエンコード
-
-In particular, Ethereum uses four Merkle-Patricia tries:
 
 特に、イーサリアムは4つのMerkle-Patriciaトライを使用します：
 
-**State trie**
-
 **ステートトライ**
-
-To store the entire state
 
 全体の状態を保存する
 
-**Transaction trie**
-
 **トランザクショントライ**
-
-To store all transactions included into a block
 
 ブロックに含まれるすべてのトランザクションを保存する
 
-**Receipt trie**
-
 **レシートトライ**
-
-To store the results of all the transactions included into a block
 
 ブロックに含まれるすべてのトランザクションの結果を保存する
 
-**Storage trie**
-
 **ストレージトライ**
 
-To store smart contract data
-
-スマートコントラクトデータを保存する
-
-Every Ethereum block header contains the state, transaction, and receipt trie Merkle root, while every account (contained in the state trie) stores its own storage trie Merkle root.
+スマートコントラクトのデータを保存する
 
 すべてのイーサリアムブロックヘッダーには、ステート、トランザクション、レシートトライのMerkleルートが含まれ、すべてのアカウント（ステートトライに含まれる）は独自のストレージトライMerkleルートを保存します。
 
-## A Deep Dive into the Components of the EVM
-
 ## EVMコンポーネントの詳細
 
-In this section, we'll take a closer look at how each component of the EVM works. Finally, we'll examine a real-world example to see everything in action.
-
-このセクションでは、EVMの各コンポーネントがどのように機能するかを詳しく見ていきます。最後に、すべてを実際に見るために実世界の例を検証します。
-
-### Stack
+このセクションでは、EVMの各コンポーネントがどのように機能するかを詳しく見ていきます。最後に実際の例を使って動作を確認します。
 
 ### スタック
 
-The stack is a very simple data structure that follows a *last in, first out* (LIFO) order to perform operations, where every item is a 32-byte object. It can host up to 1,024 items at the same time.
+スタックは、操作を実行するために*後入れ先出し*（LIFO）の順序に従う非常に単純なデータ構造であり、すべてのアイテムは32バイトのオブジェクトです。同時に最大1,024個のアイテムを扱えます。
 
-スタックは、操作を実行するために*後入れ先出し*（LIFO）の順序に従う非常に単純なデータ構造であり、すべての項目は32バイトのオブジェクトです。同時に最大1,024項目をホストできます。
-
-The EVM can push and pop items into and from the stack through different kinds of opcodes, and it can manipulate the order of its elements, as you can see in Figure 14-6.
-
-EVMは、さまざまな種類のオペコードを通じてスタックに項目をプッシュおよびポップでき、図14-6に示すように要素の順序を操作できます。
-
-![EVM stack operations](images/ch14/maet_1406.png)
+EVMは、さまざまな種類のオペコードを通じてスタックにアイテムをプッシュおよびポップでき、図14-6に示すようにアイテムの順序を操作できます。
 
 ![EVMスタック操作](images/ch14/maet_1406.png)
 
-Figure 14-6. The EVM stack follows a LIFO order of operations
-
 図14-6. EVMスタックはLIFO操作順序に従う
-
-### Memory
 
 ### メモリ
 
