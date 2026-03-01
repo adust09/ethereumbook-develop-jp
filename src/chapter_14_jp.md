@@ -371,29 +371,17 @@ EVMは、さまざまな種類のオペコードを通じてスタックにア�
 
 ### メモリ
 
-The EVM memory is a byte-addressable data structure: essentially a very long array of bytes. In fact, every byte in the memory is accessible using a 32-byte (256-bit) key, which means it can contain up to 2256 bytes. It's volatile—that is, it's deleted after the execution ends—and it's always initialized to 0.
-
-EVMメモリはバイトアドレス可能なデータ構造です。基本的に非常に長いバイト配列です。実際、メモリ内のすべてのバイトは32バイト（256ビット）のキーを使用してアクセスでき、最大2^256バイトを含むことができます。揮発性です。つまり、実行終了後に削除され、常に0に初期化されます。
-
-Even though it's possible to read and write single bytes to and from the memory, most operations require reading or writing bigger chunks of data, usually 32-byte chunks, as shown in Figure 14-7.
+EVMメモリはバイト単位でアドレス指定可能なデータ構造で、基本的に非常に長いバイト配列です。実際、メモリ内のすべてのバイトは32バイト（256ビット）のキーを使用してアクセスでき、最大2^256バイトを含むことができます。揮発性であり、実行終了後に削除され、常に0に初期化されます。
 
 メモリから単一バイトを読み書きすることは可能ですが、ほとんどの操作では、図14-7に示すように、より大きなデータチャンク（通常は32バイトチャンク）の読み書きが必要です。
 
-![EVM memory operations](images/ch14/maet_1407.png)
-
 ![EVMメモリ操作](images/ch14/maet_1407.png)
 
-Figure 14-7. EVM memory is a volatile, byte-addressable data structure
-
-図14-7. EVMメモリは揮発性のバイトアドレス可能なデータ構造
-
-> **Note**
->
-> Technically, you cannot read a single byte from the EVM. You can only read an entire 32-byte word. To achieve the same result as reading a single byte, the EVM needs to load the entire word that contains that byte and then "cut" it in order to return only the selected byte.
+図14-7. EVMメモリは揮発性の、バイト単位でアドレス指定可能なデータ構造
 
 > **注記**
 >
-> 技術的には、EVMから単一のバイトを読み取ることはできません。32バイトのワード全体のみを読み取ることができます。単一バイトを読み取るのと同じ結果を達成するには、EVMはそのバイトを含むワード全体をロードし、選択されたバイトのみを返すために「カット」する必要があります。
+> 技術的には、EVMから単一のバイトを読み取ることはできません。読み取れるのは32バイトのワード全体のみです。単一バイトの読み取りと同じ結果を得るには、EVMはそのバイトを含むワード全体をロードし、選択したバイトのみを返すために「カット」する必要があります。
 
 ### Storage
 
