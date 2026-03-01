@@ -383,33 +383,19 @@ EVMメモリはバイト単位でアドレス指定可能なデータ構造で�
 >
 > 技術的には、EVMから単一のバイトを読み取ることはできません。読み取れるのは32バイトのワード全体のみです。単一バイトの読み取りと同じ結果を得るには、EVMはそのバイトを含むワード全体をロードし、選択したバイトのみを返すために「カット」する必要があります。
 
-### Storage
-
 ### ストレージ
 
-The EVM storage is a key-value data structure where keys (most often called *slots*) and values are each 32 bytes long. This is the persistent memory of every smart contract: all values saved on it are kept indefinitely across different transactions and blocks. Each smart contract can only access and modify its own storage, and if you try to access a slot that doesn't contain any values, it will always return the value 0 without throwing any errors. Figure 14-8 shows a very basic representation of two contracts' storage.
-
-EVMストレージは、キー（多くの場合*スロット*と呼ばれる）と値がそれぞれ32バイトの長さのキーバリューデータ構造です。これはすべてのスマートコントラクトの永続メモリです。保存されたすべての値は、異なるトランザクションやブロックにわたって無期限に保持されます。各スマートコントラクトは自身のストレージにのみアクセスして変更でき、値を含まないスロットにアクセスしようとすると、エラーをスローせずに常に値0を返します。図14-8は、2つのコントラクトのストレージの非常に基本的な表現を示しています。
-
-![EVM storage](images/ch14/maet_1408.png)
+EVMストレージは、キー（多くの場合*スロット*と呼ばれる）と値がそれぞれ32バイトの長さのキーバリューデータ構造です。これはすべてのスマートコントラクトの永続的な記憶領域であり、保存されたすべての値は異なるトランザクション間やブロックにわたって無期限に保持されます。各スマートコントラクトは自身のストレージにのみアクセスと変更が可能で、値を含まないスロットにアクセスしようとすると、エラーをスローせずに常に値0を返します。図14-8は、2つのコントラクトのストレージの基本的な表現を示しています。
 
 ![EVMストレージ](images/ch14/maet_1408.png)
 
-Figure 14-8. The EVM storage is a permanent memory with a key-value data structure
-
-図14-8. EVMストレージはキーバリューデータ構造を持つ永続メモリ
-
-There is also the *transient storage*, added with [EIP-1153](https://oreil.ly/fRvKl), which behaves in the same way as the normal storage, with the only difference being that it's completely discarded after the execution of the transaction. For this reason, it's much cheaper to use than normal storage.
+図14-8. EVMストレージはキーバリューデータ構造を持つ永続的な記憶領域
 
 [EIP-1153](https://oreil.ly/fRvKl)で追加された*一時ストレージ*もあり、通常のストレージと同じように動作しますが、唯一の違いはトランザクションの実行後に完全に破棄されることです。このため、通常のストレージよりもはるかに安価に使用できます。
 
-### Calldata
-
 ### コールデータ
 
-Calldata is an immutable data structure that always contains the bytes sent as input to the next *call frame* (i.e., a sandbox EVM environment). For example, in a contract-creation transaction, the calldata contains the bytecode of the contract that is going to be deployed. It can also be empty, such as in simple ETH transfers.
-
-コールデータは、次の*コールフレーム*（サンドボックスEVM環境）への入力として送信されるバイトを常に含む不変のデータ構造です。たとえば、コントラクト作成トランザクションでは、コールデータにはデプロイされるコントラクトのバイトコードが含まれます。単純なETH転送などでは空にすることもできます。
+コールデータは不変のデータ構造であり、次の*コールフレーム*（サンドボックスEVM環境）への入力として送信されるバイト列を格納します。たとえば、コントラクト作成トランザクションでは、コールデータにはデプロイされるコントラクトのバイトコードが含まれます。単純なETH転送の場合などでは空になります。
 
 ## Let's Put Everything Together with a Concrete Example
 
