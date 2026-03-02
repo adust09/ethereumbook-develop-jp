@@ -731,65 +731,33 @@ address = keccak256(0xff ++ sender_address ++ salt ++ keccak256(init_code))[12:]
 
 図14-21. Faucetランタイムバイトコードの逆アセンブル
 
-### Installing Heimdall
-
 ### Heimdallのインストール
 
-First, you need to ensure that Rust is installed on your computer. If it's not, run the following command:
-
-まず、コンピュータにRustがインストールされていることを確認する必要があります。インストールされていない場合は、次のコマンドを実行してください：
+まず、コンピュータにRustがインストールされていることを確認してください。インストールされていない場合は、次のコマンドを実行します：
 
 ```bash
 $ curl https://sh.rustup.rs -sSf | sh
 ```
 
-```bash
-$ curl https://sh.rustup.rs -sSf | sh
-```
-
-Then, run these two commands, one after the other:
-
-次に、次の2つのコマンドを順番に実行します：
+次に、以下の2つのコマンドを順番に実行します：
 
 ```bash
 $ curl -L http://get.heimdall.rs | bash
 $ bifrost
 ```
 
-```bash
-$ curl -L http://get.heimdall.rs | bash
-$ bifrost
-```
-
-Now, you should have Heimdall correctly installed. You can verify that by running:
-
-これで、Heimdallが正しくインストールされているはずです。次を実行して確認できます：
+これでHeimdallが正しくインストールされているはずです。次のコマンドで確認できます：
 
 ```bash
 $ heimdall --version
 ```
 
-```bash
-$ heimdall --version
-```
-
-You should see something like this:
-
-次のような表示が出るはずです：
+次のような表示が出れば成功です：
 
 ```bash
 $ heimdall --version
 heimdall 0.8.4
 ```
-
-```bash
-$ heimdall --version
-heimdall 0.8.4
-```
-
-> **Note**
->
-> For the latest information on how to install Heimdall, please refer to the official documentation you can find on the [GitHub repository](https://oreil.ly/klTJ3).
 
 > **注記**
 >
