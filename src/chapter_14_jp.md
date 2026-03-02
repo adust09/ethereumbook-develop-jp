@@ -521,33 +521,19 @@ $ solc --help
 $ solc -o BytecodeDir --opcodes Example.sol
 ```
 
-You can also use `--asm` to produce a more human-readable output:
-
 `--asm`を使用して、より人間が読みやすい出力を生成することもできます：
 
 ```bash
 $ solc -o BytecodeDir --asm Example.sol
 ```
 
-```bash
-$ solc -o BytecodeDir --asm Example.sol
-```
-
-The following command will produce the bytecode binary for our example program:
-
-次のコマンドは、サンプルプログラムのバイトコードバイナリを生成します：
+次のコマンドは、サンプルプログラムのバイトコードバイナリを生成します。
 
 ```bash
 $ solc -o BytecodeDir --bin Example.sol
 ```
 
-```bash
-$ solc -o BytecodeDir --bin Example.sol
-```
-
-The output opcode files generated will depend on the specific contracts contained within the Solidity source file. Our simple Solidity file `Example.sol` has only one contract, named Example:
-
-生成される出力オペコードファイルは、Solidityソースファイルに含まれる特定のコントラクトに依存します。単純なSolidityファイル`Example.sol`には、Exampleという名前のコントラクトが1つだけあります：
+Solidityソースファイルに含まれる具体的なコントラクトごとに、出力されるオペコードは異なります。私たちの簡単なSolidityファイル`Example.sol`には、Exampleという名前のコントラクトが1つだけあります。
 
 ```solidity
 // SPDX-License-Identifier: GPL-3.0
@@ -562,30 +548,9 @@ contract Example {
 }
 ```
 
-```solidity
-// SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.27;
+ご覧のとおり、このコントラクトは、コントラクトを実行した最後のアカウントのアドレスを永続的な状態変数として保持することだけを行います。
 
-contract Example {
-  address contractOwner;
-
-  function test() public {
-    contractOwner = msg.sender;
-  }
-}
-```
-
-As you can see, all this contract does is hold one persistent state variable, which is set as the address of the last account to run this contract.
-
-ご覧のとおり、このコントラクトは1つの永続的な状態変数を保持するだけであり、このコントラクトを最後に実行したアカウントのアドレスとして設定されます。
-
-If you look in the `BytecodeDir` directory, you will see the opcode file `Example.opcode`, which contains the EVM opcode instructions of the example contract. Opening the `Example.opcode` file in a text editor will show the following:
-
-`BytecodeDir`ディレクトリを見ると、サンプルコントラクトのEVMオペコード命令を含むオペコードファイル`Example.opcode`が表示されます。テキストエディタで`Example.opcode`ファイルを開くと、次の内容が表示されます：
-
-```
-PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xE JUMPI PUSH0 PUSH0 REVERT JUMPDEST POP PUSH1 0xA9 DUP1 PUSH1 0x1A PUSH0 CODECOPY PUSH0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xE JUMPI PUSH0 PUSH0 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH1 0x26 JUMPI PUSH0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0xF8A8FD6D EQ PUSH1 0x2A JUMPI JUMPDEST PUSH0 PUSH0 REVERT JUMPDEST PUSH1 0x30 PUSH1 0x32 JUMP JUMPDEST STOP JUMPDEST CALLER PUSH0 PUSH0 PUSH2 0x100 EXP DUP2 SLOAD DUP2 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF MUL NOT AND SWAP1 DUP4 PUSH200xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND MUL OR SWAP1 SSTORE POP JUMP INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 JUMPI 0xBB RETURNDATACOPY SWAP14 CALLVALUE 0xB3 0xB1 SMOD BLOBHASH STATICCALL MCOPY PUSH10 0x856E7132D8FEED4D83B6 0xB2 0xBE PUSH30 0x8B43532C818BFD64736F6C634300081B0033000000000000000000000000
-```
+`BytecodeDir`ディレクトリを見るとオペコードのファイル`Example.opcode`があります。このファイルはExampleコントラクトのEVMオペコードの命令セットを含んでいます。テキストエディタで`Example.opcode`ファイルを開くと、次のように表示されます：
 
 ```
 PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xE JUMPI PUSH0 PUSH0 REVERT JUMPDEST POP PUSH1 0xA9 DUP1 PUSH1 0x1A PUSH0 CODECOPY PUSH0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xE JUMPI PUSH0 PUSH0 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH1 0x26 JUMPI PUSH0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0xF8A8FD6D EQ PUSH1 0x2A JUMPI JUMPDEST PUSH0 PUSH0 REVERT JUMPDEST PUSH1 0x30 PUSH1 0x32 JUMP JUMPDEST STOP JUMPDEST CALLER PUSH0 PUSH0 PUSH2 0x100 EXP DUP2 SLOAD DUP2 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF MUL NOT AND SWAP1 DUP4 PUSH200xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND MUL OR SWAP1 SSTORE POP JUMP INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 JUMPI 0xBB RETURNDATACOPY SWAP14 CALLVALUE 0xB3 0xB1 SMOD BLOBHASH STATICCALL MCOPY PUSH10 0x856E7132D8FEED4D83B6 0xB2 0xBE PUSH30 0x8B43532C818BFD64736F6C634300081B0033000000000000000000000000
