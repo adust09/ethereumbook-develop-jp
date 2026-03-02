@@ -499,45 +499,23 @@ MLOADはスタックから1つの要素を取り出し、オフセットとし�
 
 図14-20. STOP後のEVM
 
-> **Tip**
->
-> In the previous example, we used the opcode PUSH0. It's important to say that not all EVM-compatible blockchains have integrated this opcode, so be aware of that when deploying a cross-chain contract. [EVM Diff](https://www.evmdiff.com) is a very cool website that shows all these subtle differences for EVM-compatible chains.
-
 > **ヒント**
 >
-> 前の例では、オペコードPUSH0を使用しました。すべてのEVM互換ブロックチェーンがこのオペコードを統合しているわけではないことを言っておくことが重要です。クロスチェーンコントラクトをデプロイする際にはこれに注意してください。[EVM Diff](https://www.evmdiff.com)は、EVM互換チェーンのこれらのすべての微妙な違いを示す非常にクールなウェブサイトです。
+> 前の例ではオペコードPUSH0を使用しました。すべてのEVM互換ブロックチェーンがこのオペコードをサポートしているわけではないため、クロスチェーンコントラクトをデプロイする際には注意してください。[EVM Diff](https://www.evmdiff.com)は、EVM互換チェーン間のこうした微妙な違いを確認できる便利なウェブサイトです。
 
-## Compiling Solidity to EVM Bytecode
+## SolidityのEVMバイトコードへのコンパイル
 
-## SolidityからEVMバイトコードへのコンパイル
+第7章ではSolidityについてすでに解説しました。ここでは、SolidityがEVMで実行可能なEVMバイトコードにどのようにコンパイルされるかを見ていきます。
 
-We've already explored Solidity in Chapter 7. Now, we're going to see how it's compiled down into EVM bytecode that can be interpreted by the EVM.
+SolidityソースファイルをEVMバイトコードにコンパイルするには、いくつかの方法があります。第2章ではオンラインのRemixコンパイラを使用しました。本章では、コマンドラインで`solc`実行ファイルを使用します。コンピュータにSolidityをインストールするには、[こちらの手順](https://oreil.ly/JW--z)に従ってください。
 
-第7章でSolidityについてすでに調査しました。ここでは、EVMが解釈できるEVMバイトコードにどのようにコンパイルされるかを見ていきます。
-
-Compiling a Solidity source file to EVM bytecode can be accomplished via several methods. In Chapter 2, we used the online Remix compiler. In this chapter, we will use the `solc` executable at the command line. To install Solidity on your computer, [follow the steps](https://oreil.ly/JW--z).
-
-SolidityソースファイルをEVMバイトコードにコンパイルするには、いくつかの方法があります。第2章では、オンラインのRemixコンパイラを使用しました。本章では、コマンドラインで`solc`実行可能ファイルを使用します。コンピュータにSolidityをインストールするには、[手順に従ってください](https://oreil.ly/JW--z)。
-
-For a list of options, run the following command:
-
-オプションのリストについては、次のコマンドを実行してください：
+オプションの一覧を表示するには、次のコマンドを実行します：
 
 ```bash
 $ solc --help
 ```
 
-```bash
-$ solc --help
-```
-
-Generating the raw opcode stream of a Solidity source file is easily achieved with the `--opcodes` command-line option. This opcode stream leaves out some information (the `--asm` option produces the full information), but it is sufficient for this discussion. For example, compiling an example Solidity file, `Example.sol`, and sending the opcode output into a directory named `BytecodeDir` is accomplished with the following command:
-
-Solidityソースファイルの生のオペコードストリームの生成は、`--opcodes`コマンドラインオプションで簡単に達成できます。このオペコードストリームは一部の情報を省略します（`--asm`オプションは完全な情報を生成します）が、この議論には十分です。たとえば、Solidityファイル`Example.sol`をコンパイルし、オペコード出力を`BytecodeDir`という名前のディレクトリに送信するには、次のコマンドを使用します：
-
-```bash
-$ solc -o BytecodeDir --opcodes Example.sol
-```
+`--opcodes`コマンドラインオプションを使用すると、簡単にSolidityソースファイルから生のオペコードストリームを生成することができます。このオペコードストリームではいくつかの情報が取り除かれます（`--asm`オプションは完全な情報を生成します）が、ここでの説明に関しては十分です。たとえば、Solidityファイル`Example.sol`をコンパイルし、出力されるオペコードを`BytecodeDir`という名前のディレクトリに送信するには、次のコマンドを実行します：
 
 ```bash
 $ solc -o BytecodeDir --opcodes Example.sol
