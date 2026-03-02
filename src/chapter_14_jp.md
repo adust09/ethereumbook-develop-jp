@@ -763,43 +763,21 @@ heimdall 0.8.4
 >
 > Heimdallのインストール方法に関する最新情報については、[GitHubリポジトリ](https://oreil.ly/klTJ3)にある公式ドキュメントを参照してください。
 
-### Disassembling the bytecode with Heimdall
-
 ### Heimdallによるバイトコードの逆アセンブル
 
-Now that we have correctly installed Heimdall, we are ready to generate the same graph you saw in Figure 14-21. Starting with the runtime bytecode of our `Faucet.sol` contract, you can run the following command:
-
-Heimdallを正しくインストールしたので、図14-21で見たのと同じグラフを生成する準備ができました。`Faucet.sol`コントラクトのランタイムバイトコードから始めて、次のコマンドを実行できます：
-
-```bash
-$ heimdall cfg <insert the runtime bytecode here>
-```
+Heimdallを正しくインストールしたので、図14-21で見たのと同じグラフを生成してみましょう。`Faucet.sol`コントラクトのランタイムバイトコードを使って、次のコマンドを実行します：
 
 ```bash
 $ heimdall cfg <ここにランタイムバイトコードを挿入>
 ```
 
-Here is an example of what this command should look like:
-
-このコマンドがどのように見えるかの例を次に示します：
+実際のコマンドは次のようになります：
 
 ```bash
 $ heimdall cfg 608060405260043610610…
 ```
 
-```bash
-$ heimdall cfg 608060405260043610610…
-```
-
-Now, you should see a new folder called `output`. Enter it and again enter the generated folder called `local`. Here, you should find the file `cfg.dot`:
-
-`output`という名前の新しいフォルダが表示されるはずです。それに入り、`local`という名前の生成されたフォルダに再度入ります。ここに`cfg.dot`ファイルがあるはずです：
-
-```bash
-$ cd output
-$ cd local
-$ ls # now you should see the file
-```
+実行すると`output`という新しいフォルダが作成されます。その中に移動し、さらに`local`フォルダに移動すると、`cfg.dot`ファイルがあるはずです：
 
 ```bash
 $ cd output
@@ -807,43 +785,23 @@ $ cd local
 $ ls # ファイルが表示されるはずです
 ```
 
-Since it's a `.dot` file, we need a special program to open it correctly. In this example, we're going to use a website that lets us paste the contents of the `.dot` file and then generates the graph for us.
+`.dot`ファイルなので、正しく表示するには専用のプログラムが必要です。ここでは、`.dot`ファイルの内容を貼り付けるとグラフを生成してくれるウェブサイトを使用します。
 
-`.dot`ファイルなので、正しく開くには特別なプログラムが必要です。この例では、`.dot`ファイルの内容を貼り付けてグラフを生成してくれるウェブサイトを使用します。
-
-First, you need to copy the contents of the `.dot` file:
-
-まず、`.dot`ファイルの内容をコピーする必要があります：
+まず、`.dot`ファイルの内容をコピーします：
 
 ```bash
 $ cat cfg.dot
 ```
 
-```bash
-$ cat cfg.dot
-```
-
-This command prints to screen the entire contents of the file; copy it, open a [*control flow graph* (CFG) online generator](https://oreil.ly/swOsK), and paste it on the left side of the web page, as shown in Figure 14-22.
-
-このコマンドはファイルの全内容を画面に出力します。コピーして、[*制御フローグラフ*（CFG）オンラインジェネレータ](https://oreil.ly/swOsK)を開き、図14-22に示すようにウェブページの左側に貼り付けます。
-
-![The control flow graph (CFG) of the Faucet.sol contract](images/ch14/maet_1422.png)
+このコマンドでファイルの全内容が画面に出力されます。それをコピーして、[*制御フローグラフ*（CFG）オンラインジェネレータ](https://oreil.ly/swOsK)を開き、図14-22に示すようにウェブページの左側に貼り付けます。
 
 ![Faucet.solコントラクトの制御フローグラフ（CFG）](images/ch14/maet_1422.png)
 
-Figure 14-22. The control flow graph (CFG) of the Faucet.sol contract
-
 図14-22. Faucet.solコントラクトの制御フローグラフ（CFG）
-
-Figure 14-23 shows the initial bytecode of the `Faucet.sol` contract. As you can see, it starts with the same pattern as the previous `Example.sol` contract: `PUSH1 0x80 PUSH1 0x40 MSTORE`.
 
 図14-23は`Faucet.sol`コントラクトの初期バイトコードを示しています。ご覧のとおり、前の`Example.sol`コントラクトと同じパターン`PUSH1 0x80 PUSH1 0x40 MSTORE`で始まります。
 
-![A zoom-in into the first part of the CFG graph](images/ch14/maet_1423.png)
-
 ![CFGグラフの最初の部分の拡大](images/ch14/maet_1423.png)
-
-Figure 14-23. A zoom-in into the first part of the CFG graph
 
 図14-23. CFGグラフの最初の部分の拡大
 
