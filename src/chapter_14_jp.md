@@ -220,7 +220,7 @@ TIMESTAMP      // ブロックのタイムスタンプを取得する
 NUMBER         // ブロックの番号を取得する
 PREVRANDAO     // 前のブロックのRANDAOミックスを取得。このオペコードは
                // The Mergeハードフォーク以降、DIFFICULTYに代わるもの
-GASLIMIT       // ブロックのガスリミットを取得する
+GASLIMIT       // ブロックのガス上限を取得する
 ```
 
 ## イーサリアムのステート（状態）
@@ -229,7 +229,7 @@ EVMの役割は、イーサリアムのステート（状態）を更新する�
 
 最上位レベルでは、イーサリアムの*ワールドステート*があります。ワールドステートは、イーサリアムアドレス（160ビット値）からアカウントへのマッピングです。下位レベルでは、各イーサリアムアドレスは、イーサ残高（アカウントが所有するwei数として保存）、ノンス（EOAの場合はこのアカウントから正常に送信されたトランザクションの数、コントラクトアカウントの場合はコントラクトアカウントによって作成されたコントラクトの数を表す）、アカウントのストレージ（スマートコントラクトのみが使用する永続的なデータストア）、およびアカウントのプログラムコード（これもスマートコントラクトアカウントの場合のみ）で構成されるアカウントを表します。従来、EOAは常にコードを持たず、空のストレージを持っていました。しかし、[EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)（2025年5月のPectraアップグレードで有効化）は、EOAがスマートコントラクトにコード実行を委任できるようにすることで、この前提を変更します。EOAが委任にオプトインすると、そのコードフィールドは`0xef0100 || address`の形式の23バイトの*委任指定*に設定されます。ここで`address`はターゲットコントラクトの20バイトアドレスです。`0xef`は[EIP-3541](https://eips.ethereum.org/EIPS/eip-3541)により禁止されたオペコードであり、この指定がデプロイ可能なコントラクトコードと混同されないことを保証します。EVMが委任されたEOAへの呼び出しに遭遇すると、ターゲットアドレスからコードをロードしてEOAのコンテクストで実行します。このことは委任されたEOAに対する`EXTCODESIZE`は23（委任指定のサイズ）を返し、委任されたコード内で実行される`CODESIZE`はターゲットコントラクトのコードのサイズを返すことを意味します。EOAは委任されたコードを実行する際にストレージも使用できますが、委任コントラクト間を移行する際の衝突を防ぐために、プロトコルは[ERC-7201](https://eips.ethereum.org/EIPS/eip-7201)の名前空間付きストレージレイアウトの使用を推奨しています。重要なのは、委任されたEOAは引き続きトランザクションを送信できることです。トランザクションに署名して送信できるEOAの機能はそのままですが、さらにスマートコントラクト機能を持つようになります。委任はゼロアドレス（`0x0000000000000000000000000000000000000000`）を委任先に指定することでクリアできます。
 
-トランザクションによってスマートコントラクトのコードが実行されると、現在作成されているブロックおよび処理中の特定のトランザクションに関して必要なすべての情報を含むEVMがインスタンス化されます。特に、EVMのプログラムコードROMには、コントラクトアカウントのコードが呼び出されて読み出され、プログラムカウンタはゼロに設定され、ストレージ情報がコントラクトアカウントのストレージから読み出され、メモリはすべてゼロに設定され、すべてのブロックおよび環境変数が設定されます。ここで重要な変数は、この実行のために設定されたガス供給量です。ガス供給量は、トランザクションの開始時にトランザクション送信者が支払ったガスの量に設定されています（詳細は「実行中のガス会計」を参照）。コード実行が進むにつれて、ガス供給量は実行された操作のガスコストに応じて減少します。いずれかの時点でガス供給量がゼロ未満になると、*ガス切れ*（Out of Gas: OOG）例外が発生します。コントラクトコードの実行は直ちに停止し、トランザクションは放棄されます。イーサリアムの状態への変更は適用されません。ただし、送信者のノンスがインクリメントされ、停止点までのコード実行に使用されたリソースに対しする対価としてブロックの受益者に支払うためにイーサ残高が減少します。この時点で、EVMはイーサリアムワールドステートのサンドボックス化されたコピー上で実行されていると考えることができ、何らかの理由で実行が完了できない場合、このサンドボックスは完全に破棄されます。ただし、実行が正常に完了した場合、呼び出されたコントラクトのストレージデータへの変更、作成された新しいコントラクト、開始されたイーサ残高の転送を含め、実世界の状態はサンドボックス版に一致するように更新されます。
+トランザクションによってスマートコントラクトのコードが実行されると、現在作成されているブロックおよび処理中の特定のトランザクションに関して必要なすべての情報を含むEVMがインスタンス化されます。特に、EVMのプログラムコードROMには、コントラクトアカウントのコードが呼び出されて読み出され、プログラムカウンタはゼロに設定され、ストレージ情報がコントラクトアカウントのストレージから読み出され、メモリはすべてゼロに設定され、すべてのブロックおよび環境変数が設定されます。ここで重要な変数は、この実行のために設定されたガス供給量です。ガス供給量は、トランザクションの開始時にトランザクション送信者が支払ったガスの量に設定されています（詳細は「実行中のガス会計」を参照）。コード実行が進むにつれて、ガス供給量は実行された操作のガス費用に応じて減少します。いずれかの時点でガス供給量がゼロ未満になると、*ガス切れ*（Out of Gas: OOG）例外が発生します。コントラクトコードの実行は直ちに停止し、トランザクションは放棄されます。イーサリアムの状態への変更は適用されません。ただし、送信者のノンスがインクリメントされ、停止点までのコード実行に使用されたリソースに対しする対価としてブロックの受益者に支払うためにイーサ残高が減少します。この時点で、EVMはイーサリアムワールドステートのサンドボックス化されたコピー上で実行されていると考えることができ、何らかの理由で実行が完了できない場合、このサンドボックスは完全に破棄されます。ただし、実行が正常に完了した場合、呼び出されたコントラクトのストレージデータへの変更、作成された新しいコントラクト、開始されたイーサ残高の転送を含め、実世界の状態はサンドボックス版に一致するように更新されます。
 
 コード実行は再帰的なプロセスです。コントラクトは他のコントラクトを呼び出すことができ、各呼び出しは新しい呼び出し対象の周りにもう一つのEVMがインスタンス化されます。各インスタンスは、上のレベルのEVMのサンドボックスからサンドボックスワールドステートが初期化されます。インスタンス化（コンテクスト）の際には、指定されたガス供給量のガスが指定与えられます（もちろん、上のレベルで残っているガス量を超えない）。このため、実行を完了するのに十分なガスが与えられなかった場合は例外で停止する可能性があります。この場合も、サンドボックス状態は破棄され、実行は上のレベルのEVMに戻ります。
 
@@ -977,217 +977,143 @@ SHR
 
 停止性問題のため、イーサリアムワールドコンピュータは、決して停止しないプログラムを実行するよう要求される可能性があります。偶然そうなるかもしれませんし、悪意によるものかもしれません。イーサリアムがスケジューラなしのシングルスレッドマシンのように動作することはすでに説明しました。したがって、無限ループに陥った場合、イーサリアムは利用できなくなってしまいます。
 
-しかし、ガスを用いることで解決策があります。あらかじめ指定された最大量の計算が実行されたあとも実行が終了していなければ、プログラムの実行はEVMによって停止されます。これにより、EVMは準チューリング完全マシンになります。つまり、入力されたプログラムを実行できますが、プログラムが特定の計算量内で終了する場合のみです。この制限はイーサリアムでは固定されていません。ガスを支払うことで最大値（*ブロックガスリミット*と呼ばれる）まで増やすことができ、時間の経過とともにその最大値を増やすことに全員が同意できます。それでも、常に制限が設けられており、実行中に大量にガスを消費するトランザクションは停止されます。
+しかし、ガスを用いることで解決策があります。あらかじめ指定された最大量の計算が実行されたあとも実行が終了していなければ、プログラムの実行はEVMによって停止されます。これにより、EVMは準チューリング完全マシンになります。つまり、入力されたプログラムを実行できますが、プログラムが特定の計算量内で終了する場合のみです。この制限はイーサリアムでは固定されていません。ガスを支払うことで最大値（*ブロックガス上限*と呼ばれる）まで増やすことができ、時間の経過とともにその最大値を増やすことに全員が同意できます。それでも、常に制限が設けられており、実行中に大量にガスを消費するトランザクションは停止されます。
 
 以下のセクションでは、ガスに焦点を当て、その仕組みを詳しく見ていきます。
 
-### What Is Gas?
-
 ### ガスとは何か？
 
-Gas is Ethereum's unit for measuring the computational and storage resources required to perform actions on the Ethereum blockchain. In contrast to Bitcoin, whose transaction fees take into account only the size of a transaction in kilobytes, Ethereum must account for every computational step performed by transactions and smart contract code execution.
+ガスはイーサリアムにおける基本単位で、イーサリアムのブロックチェーンでアクションを実行するために必要な計算リソースとストレージリソースを測定するためのものです。ビットコインではトランザクション手数料はキロバイト単位のトランザクションサイズのみを考慮しますが、イーサリアムではトランザクションとスマートコントラクトコードの実行によって処理されるすべての計算ステップを考慮する必要があります。
 
-ガスは、イーサリアムブロックチェーン上でアクションを実行するために必要な計算およびストレージリソースを測定するためのイーサリアムの単位です。トランザクション手数料がキロバイト単位のトランザクションサイズのみを考慮するBitcoinとは対照的に、イーサリアムはトランザクションとスマートコントラクトコード実行によって実行されるすべての計算ステップを考慮する必要があります。
+トランザクションまたはコントラクトによって実行される各操作は、一定量のガスを必要とします。イーサリアムのイエローペーパーからいくつかの例を挙げておきます。
 
-Each operation performed by a transaction or contract costs a fixed amount of gas. Some examples from the Ethereum "Yellow Paper" include:
+- 2つの数値を加算すると3ガスがかかる
+- Keccak-256ハッシュの計算には、30ガス+ハッシュされる256ビットのデータごとに6ガスが必要
+- トランザクションの送信には21,000ガスがかかる
 
-トランザクションまたはコントラクトによって実行される各操作には、固定量のガスがかかります。イーサリアム「イエローペーパー」からのいくつかの例：
-
-- Adding two numbers costs 3 gas
-- Calculating a Keccak-256 hash costs 30 gas + 6 gas for each 256 bits of data being hashed
-- Sending a transaction costs 21,000 gas
-
-- 2つの数値の加算には3ガスかかる
-- Keccak-256ハッシュの計算には30ガス + ハッシュされるデータの256ビットごとに6ガスかかる
-- トランザクションの送信には21,000ガスかかる
-
-Gas is a crucial component of Ethereum and serves a dual role: as a buffer between the (volatile) price of ether and the reward to validators for the work they do and as a defense against DoS attacks. To prevent accidental or malicious infinite loops or other computational wastage in the network, the initiator of each transaction is required to set a limit to the amount of computation they are willing to pay for. The gas system thereby disincentivizes attackers from sending "spam" transactions since they must pay proportionately for the computational, bandwidth, and storage resources that they consume.
-
-ガスはイーサリアムの重要なコンポーネントであり、二重の役割を果たします。イーサの（変動する）価格とバリデーターが行う作業への報酬との間のバッファとして、そしてDoS攻撃に対する防御としてです。ネットワーク内の偶発的または悪意のある無限ループやその他の計算の無駄を防ぐために、各トランザクションの開始者は、支払う意思のある計算量の制限を設定する必要があります。ガスシステムにより、攻撃者は消費する計算、帯域幅、ストレージリソースに比例して支払う必要があるため、「スパム」トランザクションを送信することを抑制します。
-
-### Gas Accounting During Execution
+ガスはイーサリアムの極めて重要な構成要素であり、イーサの（変動する）価格とバリデーターが行う作業への報酬との間の緩衝として、そしてDoS攻撃に対する防御策として二重の役割を担っています。偶発的または悪意のある無限ループやネットワーク内のその他の計算上の浪費を防ぐために、各トランザクションの開始者は、支払う予定の計算量に上限を設定する必要があります。こうすることでガスシステムは攻撃者が「スパム」トランザクションを送信することを阻止しています。これが有効なのは、攻撃者は消費する計算資源、帯域幅、およびストレージ資源に比例してガスを支払う必要があるためです。
 
 ### 実行中のガス会計
 
-When an EVM is needed to complete a transaction, in the first instance it is given a gas supply equal to the amount specified by the gas limit in the transaction. Every opcode that is executed has a cost in gas, and so the EVM's gas supply is reduced as the EVM steps through the program. Before each operation, the EVM checks that there is enough gas to pay for the operation's execution. If there isn't enough gas, execution is halted and the transaction is reverted.
+トランザクションの完了にEVMが必要な場合、最初にトランザクションのガス上限で指定された量のガス供給が行われます。実行されるすべてのオペコードにはガスの費用が定義されているため、EVMのガス供給はEVMがプログラムを実行していくにつれて減少していきます。各操作の前に、EVMは操作の実行に十分なガスがあることを確認します。十分なガスがない場合、実行は停止され、トランザクションは元に戻されます。
 
-EVMがトランザクションを完了するために必要な場合、最初にトランザクションのガスリミットで指定された量に等しいガス供給が与えられます。実行されるすべてのオペコードにはガスのコストがあり、EVMがプログラムをステップスルーするにつれてEVMのガス供給は減少します。各操作の前に、EVMは操作の実行に支払うのに十分なガスがあることを確認します。十分なガスがない場合、実行は停止し、トランザクションは元に戻されます。
-
-If the EVM reaches the end of execution successfully without running out of gas, the gas cost used is paid to the validator as a transaction fee, converted to ether based on the gas price specified in the transaction:
-
-EVMがガスを使い果たすことなく実行の終わりに正常に到達した場合、使用されたガスコストはトランザクション手数料としてバリデーターに支払われ、トランザクションで指定されたガス価格に基づいてイーサに変換されます：
+ガスを使い切ることなくEVMが実行の終了に正常に到達した場合、使用されたガス費用はトランザクション手数料としてバリデーターに支払われ、トランザクションで指定されたガス価格に基づいてイーサに変換されます：
 
 ```
-validator fee = gas cost × gas price
+バリデーター報酬 = ガス費用 × ガス価格
 ```
 
-```
-バリデーター報酬 = ガスコスト × ガス価格
-```
-
-The gas remaining in the gas supply is refunded to the sender, again converted to ether based on the gas price specified in the transaction:
-
-ガス供給に残っているガスは送信者に返金され、再びトランザクションで指定されたガス価格に基づいてイーサに変換されます：
+ガス供給に残っているガスは送信者に払い戻され、トランザクションで指定されたガス価格に基づいて再びイーサに変換されます：
 
 ```
-remaining gas = gas limit – gas cost
-refunded ether = remaining gas × gas price
-```
-
-```
-残りガス = ガスリミット – ガスコスト
+残りガス = ガス上限 – ガス費用
 返金イーサ = 残りガス × ガス価格
 ```
 
-If the transaction "runs out of gas" during execution, the operation is immediately terminated, raising an OOG exception. The transaction is reverted, and all changes to the state are rolled back. Although the transaction was unsuccessful, the sender will be charged a transaction fee because validators have already performed the computational work up to that point and must be compensated for doing so.
-
-実行中にトランザクションが「ガス切れ」になった場合、操作は直ちに終了し、OOG例外が発生します。トランザクションは元に戻され、状態へのすべての変更がロールバックされます。トランザクションは失敗しましたが、バリデータはその時点までの計算作業をすでに実行しており、それに対する補償を受ける必要があるため、送信者にはトランザクション手数料が請求されます。
-
-#### Gas accounting considerations
+実行中にトランザクションが「ガス切れ」になった場合、操作は直ちに終了し、OOG例外が発生します。トランザクションは元に戻され、状態へのすべての変更がロールバックされます。トランザクションは失敗しましたが、バリデーターはその時点までの計算作業をすでに実行しており、それに対する補償を受ける必要があるため、送信者にはトランザクション手数料が請求されます。
 
 #### ガス会計の考慮事項
 
-The relative gas costs of the various operations that can be performed by the EVM have been carefully chosen to best protect the Ethereum blockchain from attack. More computationally intensive operations cost more gas. For example, executing the `SHA3` function is 10 times more expensive (30 gas) than the `ADD` operation (3 gas). More important, some operations, such as `EXP`, require an additional payment based on the size of the operand. There is also a gas cost to using EVM memory and for storing data in a contract's on-chain storage.
+イーサリアムブロックチェーンを攻撃から守るために、EVMで実行できるさまざまな操作の相対的なガス費用は慎重に選ばれています。より計算量のかかる操作の実行にはより多くのガス費用がかかります。たとえば、`SHA3`関数の実行（30ガス）は、`ADD`命令の実行（3ガス）の10倍の費用がかかります。さらに重要なことに、`EXP`などの一部の操作では、オペランドのサイズに基づいて追加の支払いが必要です。また、EVMメモリを使用したり、コントラクトのオンチェーンストレージにデータを格納したりするためのガス費用もあります。
 
-EVMで実行できるさまざまな操作の相対的なガスコストは、イーサリアムブロックチェーンを攻撃から最もよく保護するように慎重に選択されています。より計算集約的な操作はより多くのガスを消費します。たとえば、`SHA3`関数の実行は`ADD`操作（3ガス）の10倍高価（30ガス）です。さらに重要なことに、`EXP`などの一部の操作では、オペランドのサイズに基づいて追加の支払いが必要です。EVMメモリの使用やコントラクトのオンチェーンストレージへのデータ保存にもガスコストがかかります。
-
-The importance of matching gas cost to the real-world cost of resources was demonstrated in 2016 when an attacker found and exploited a mismatch in costs. The attack generated transactions that were very computationally expensive and made the Ethereum mainnet almost grind to a halt. This mismatch was resolved by a hard fork (codenamed "Tangerine Whistle") that tweaked the relative gas costs.
-
-ガスコストをリソースの実世界コストに一致させることの重要性は、2016年に攻撃者がコストの不一致を発見して悪用したときに示されました。攻撃は非常に計算コストの高いトランザクションを生成し、イーサリアムメインネットをほぼ停止させました。この不一致は、相対的なガスコストを調整したハードフォーク（コードネーム「Tangerine Whistle」）によって解決されました。
-
-#### Gas accounting in the future of Ethereum
+現実世界のコストとガス費用を一致させることの重要性は、攻撃者がコストの不一致を発見して悪用した2016年に実証されました。その攻撃では、非常に計算コストの高いトランザクションが生成され、イーサリアムメインネットをほぼ停止させました。この不一致は、相対的なガス費用を調整したハードフォーク（コードネーム「Tangerine Whistle」）によって解決されました。
 
 #### イーサリアムの将来におけるガス会計
 
-Gas metering was and remains an extremely important part of how Ethereum handles the entire load of transactions in the network. It's very important to understand that gas costs are a key incentive for certain kinds of behaviors. In the future, there may be some changes in how much gas different opcodes consume.
+ガスの計量は、イーサリアムがネットワーク内のトランザクション負荷全体を処理するうえで極めて重要であり、今後もそうあり続けます。ガス費用が特定の種類の動作に対する重要なインセンティブであることを理解することが非常に重要です。将来、各オペコードが消費するガス量が変更される可能性があります。
 
-ガスメータリングは、イーサリアムがネットワーク内のトランザクションの全体的な負荷を処理する方法の非常に重要な部分であり、今後もそうあり続けます。ガスコストが特定の種類の動作に対する重要なインセンティブであることを理解することが非常に重要です。将来、異なるオペコードが消費するガス量に変更がある可能性があります。
+たとえば、EIP-4844 blobトランザクションを導入したCancunアップグレードの前は、すべてのL2がトランザクションのコールデータの一部としてイーサリアム上にデータを記録していました。そのデータはイーサリアムのすべてのノードに永久に保存されます。L2がblobトランザクションを通じてイーサリアム上にデータを記録するより良い方法を持つようになった今、将来的にはロールアップがblobトランザクションを使用することを奨励し、すべてのデータを永久に保存するノードの負担を軽減するために、コールデータが現在よりもさらに高価になる可能性があります。
 
-For example, before the Cancun upgrade that introduced EIP-4844 blob transactions, all L2s were posting their data on Ethereum as part of the calldata of a transaction. That data is forever stored on all of Ethereum's nodes. Now that L2s have a better way to post their data on Ethereum through blob transactions, it's possible that in the future, calldata will become even more expensive than it is now to encourage rollups to use blob transactions and to lessen the burden for nodes of storing all that data forever.
+#### ガス費用対ガス価格
 
-たとえば、EIP-4844 blobトランザクションを導入したCancunアップグレードの前は、すべてのL2がトランザクションのコールデータの一部としてイーサリアム上にデータを投稿していました。そのデータはイーサリアムのすべてのノードに永久に保存されます。L2がblobトランザクションを通じてイーサリアム上にデータを投稿するより良い方法を持つようになった今、将来的にはロールアップがblobトランザクションを使用することを奨励し、すべてのデータを永久に保存するノードの負担を軽減するために、コールデータが現在よりもさらに高価になる可能性があります。
-
-#### Gas cost versus gas price
-
-#### ガスコスト対ガス価格
-
-While the *gas cost* is a measure of computation and storage used by a transaction in the EVM, the gas itself also has a *price* measured in ether. When performing a transaction, the sender specifies the gas price they are willing to pay (in ether) for each unit of gas, allowing the market to decide the relationship between the price of ether and the cost of computing operations (as measured in gas):
-
-*ガスコスト*はEVM内のトランザクションで使用される計算とストレージの測定値ですが、ガス自体にもイーサで測定される*価格*があります。トランザクションを実行する際、送信者はガスの各単位に対して支払う意思のあるガス価格（イーサで）を指定し、市場がイーサの価格と計算操作のコスト（ガスで測定）の関係を決定できるようにします：
-
-```
-transaction fee = total gas used × gas price paid (in ether)
-```
+*ガス費用*はEVM上の計算と利用されたストレージの計測単位であり、ガス自体はイーサを尺度とする*価格*を持っています。トランザクションを実行する際、送信者はガスの各単位について支払うガス価格を（イーサで）指定し、市場がイーサの価格と計算操作のコスト（ガスで測定）の関係を決定できるようにします：
 
 ```
 トランザクション手数料 = 使用された総ガス × 支払われたガス価格（イーサで）
 ```
 
-When constructing a new block, validators on the Ethereum network can choose among pending transactions by selecting those that offer to pay a higher gas price. Offering a higher gas price will therefore incentivize validators to include your transaction and get it confirmed faster.
+新しいブロックを構築するとき、イーサリアムネットワーク上のバリデーターは他より高いガス価格を提示しているものを選択することで、未処理トランザクションの中から処理すべきものを選ぶことができます。したがって、より高いガス価格を提供することは、バリデーターにトランザクションを含めるよう促すことになり、より早く承認を得ることができます。
 
-新しいブロックを構築する際、イーサリアムネットワーク上のバリデータは、より高いガス価格を支払うことを提案するものを選択して、保留中のトランザクションの中から選択できます。したがって、より高いガス価格を提供することで、バリデータがトランザクションを含め、より速く確認するインセンティブになります。
+実際には、トランザクションの送信者は、使用予定のガス量以上のガス上限を設定します。もしガス上限が消費されたガスよりも高く設定されている場合は、送信者は消費総量を超えた分を返金として受け取ることができます。これは、バリデーターには実際に実行した分のみが補償されるからです。
 
-In practice, the sender of a transaction will set a gas limit that is higher than or equal to the amount of gas expected to be used. If the gas limit is set higher than the amount of gas consumed, the sender will receive a refund of the excess amount since validators are compensated only for the work they actually perform.
+ガス費用とガス価格を明確に区別することは重要です。要点をまとめておきます。
 
-実際には、トランザクションの送信者は、使用される予想ガス量以上のガスリミットを設定します。ガスリミットが消費されたガス量よりも高く設定されている場合、バリデータは実際に実行した作業に対してのみ補償されるため、送信者は超過分の返金を受け取ります。
-
-It is important to be clear about the distinction between the gas cost and the gas price. To recap:
-
-ガスコストとガス価格の区別について明確にすることが重要です。要約すると：
-
-- *Gas cost* is the number of units of gas required to perform a particular operation.
-- *Gas price* is the amount of ether you are willing to pay per unit of gas when you send your transaction to the Ethereum network.
-
-- *ガスコスト*は、特定の操作を実行するために必要なガスの単位数です。
-- *ガス価格*は、トランザクションをイーサリアムネットワークに送信するときに、ガスの単位ごとに支払う意思のあるイーサの量です。
-
-> **Tip**
->
-> Although gas has a price, it cannot be "owned" or "spent." Gas exists only inside the EVM, as a count of how much computational work is being performed. The sender is charged a transaction fee in ether, which is converted to gas for EVM accounting and then back to ether as a transaction fee paid to the validators.
+- *ガス費用*は、特定の操作を実行するために必要なガスの単位数です。
+- *ガス価格*は、トランザクションをイーサリアムネットワークに送信する際に、ガスの単位ごとに支払う意思のあるイーサの量です。
 
 > **ヒント**
 >
-> ガスには価格がありますが、「所有」または「消費」することはできません。ガスはEVM内にのみ存在し、実行されている計算作業の量のカウントとして存在します。送信者にはイーサでトランザクション手数料が請求され、これはEVM会計のためにガスに変換され、その後バリデータに支払われるトランザクション手数料としてイーサに戻されます。
+> ガスには価格がありますが、「所有」することも「消費」することもできません。ガスは、どれだけの計算作業が行われているかの総数として、EVM内にのみ存在します。送信者にはイーサでトランザクション手数料が請求され、EVM会計のためにガスに変換され、その後バリデーターに支払われるトランザクション手数料としてイーサに戻されます。
 
-#### Negative gas costs
+#### 負のガス費用
 
-#### 負のガスコスト
+イーサリアムは、コントラクト実行中に使用されたガスの一部を払い戻すことで、使用済みストレージ変数の削除を奨励しています。EVMで負のガス費用を持つ操作は1つだけです：ストレージアドレスを非ゼロ値からゼロに変更すること（`SSTORE[x] = 0`）は返金に値します。返金されるガスの量は固定されておらず、この操作の前後のストレージスロットの値に依存します。返金メカニズムの悪用を避けるため、トランザクションの最大返金額は総ガス費用の5分の1（切り捨て）に設定されています。
 
-Ethereum encourages the deletion of used storage variables by refunding some of the gas used during contract execution. There is only operation in the EVM with negative gas costs: changing a storage address from a nonzero value to zero (`SSTORE[x] = 0`) is worth a refund. The amount of refunded gas isn't fixed and depends on the values of the storage slot before and after this operation. To avoid exploitation of the refund mechanism, the maximum refund for a transaction is set to one fifth of the total amount of gas cost (rounded down).
-
-イーサリアムは、コントラクト実行中に使用されたガスの一部を返金することで、使用済みストレージ変数の削除を奨励しています。EVMで負のガスコストを持つ操作は1つだけです：ストレージアドレスを非ゼロ値からゼロに変更すること（`SSTORE[x] = 0`）は返金に値します。返金されるガスの量は固定されておらず、この操作の前後のストレージスロットの値に依存します。返金メカニズムの悪用を避けるため、トランザクションの最大返金額は総ガスコストの5分の1（切り捨て）に設定されています。
-
-In the past, there was another operation with a negative gas cost: `SELFDESTRUCT`. Deleting a contract (through `SELFDESTRUCT`) was worth a refund of 24,000 gas. Right now, the `SELFDESTRUCT` opcode is deprecated, and not using it anymore is recommended.
-
-過去には、負のガスコストを持つ別の操作がありました：`SELFDESTRUCT`。コントラクトの削除（`SELFDESTRUCT`を通じて）は24,000ガスの返金に値しました。現在、`SELFDESTRUCT`オペコードは非推奨であり、もう使用しないことが推奨されています。
-
-> **Tip**
->
-> Gas refunds are applied at the end of the transaction. So if a transaction doesn't have sufficient gas to reach the end of the execution, it fails, and no refunds are given.
+過去には、負のガス費用を持つ別の操作がありました：`SELFDESTRUCT`。コントラクトの削除（`SELFDESTRUCT`を通じて）は24,000ガスを返金しました。現在、`SELFDESTRUCT`オペコードは非推奨であり、もう使用しないことが推奨されています。
 
 > **ヒント**
 >
-> ガス返金はトランザクションの最後に適用されます。したがって、トランザクションに実行の最後まで到達するのに十分なガスがない場合、失敗し、返金は行われません。
+> ガス返金はトランザクションの最後に適用されます。したがって、トランザクションを最後まで実行するのに十分なガスがない場合、失敗し、返金は行われません。
 
 ### Block Gas Limit
 
-### ブロックガスリミット
+### ブロックガス上限
 
 The block gas limit is the maximum amount of gas that may be consumed by all the transactions in a block. It constrains how many transactions can fit into a block.
 
-ブロックガスリミットは、ブロック内のすべてのトランザクションで消費される可能性のあるガスの最大量です。ブロックに収まるトランザクションの数を制限します。
+ブロックガス上限は、ブロック内のすべてのトランザクションで消費される可能性のあるガスの最大量です。ブロックに収まるトランザクションの数を制限します。
 
 For example, let's say we have five transactions whose gas limits have been set to 30,000, 30,000, 40,000, 50,000, and 50,000. If the block gas limit is 180,000, then any four of those transactions can fit in a block, while the fifth will have to wait for a future block. As previously discussed, validators decide which transactions to include into a block. Different validators are likely to select different combinations, mainly because they receive transactions from the network in a different order.
 
-たとえば、ガスリミットが30,000、30,000、40,000、50,000、50,000に設定された5つのトランザクションがあるとしましょう。ブロックガスリミットが180,000の場合、これらのトランザクションのうち4つがブロックに収まり、5番目は将来のブロックを待つ必要があります。前に説明したように、バリデータはどのトランザクションをブロックに含めるかを決定します。異なるバリデータは異なる組み合わせを選択する可能性が高く、主にネットワークから異なる順序でトランザクションを受信するためです。
+たとえば、ガス上限が30,000、30,000、40,000、50,000、50,000に設定された5つのトランザクションがあるとしましょう。ブロックガス上限が180,000の場合、これらのトランザクションのうち4つがブロックに収まり、5番目は将来のブロックを待つ必要があります。前に説明したように、バリデータはどのトランザクションをブロックに含めるかを決定します。異なるバリデータは異なる組み合わせを選択する可能性が高く、主にネットワークから異なる順序でトランザクションを受信するためです。
 
 If a validator tries to include a transaction that requires more gas than the current block gas limit, the block will be rejected by the network. Most Ethereum clients will stop you from issuing such a transaction by giving a warning along the lines of "transaction exceeds block gas limit." According to [Etherscan](https://etherscan.io), the block gas limit on the Ethereum mainnet is 36 million gas at the time of writing (June 2025), meaning that around 1,428 basic—that is, ETH transfer—transactions (each consuming 21,000 gas) could fit into a block.
 
-バリデータが現在のブロックガスリミットより多くのガスを必要とするトランザクションを含めようとすると、ブロックはネットワークによって拒否されます。ほとんどのイーサリアムクライアントは、「トランザクションがブロックガスリミットを超えています」という警告を出して、そのようなトランザクションの発行を止めます。[Etherscan](https://etherscan.io)によると、執筆時点（2025年6月）のイーサリアムメインネットのブロックガスリミットは3,600万ガスであり、約1,428の基本的な（つまり、ETH転送）トランザクション（それぞれ21,000ガスを消費）がブロックに収まることを意味します。
+バリデータが現在のブロックガス上限より多くのガスを必要とするトランザクションを含めようとすると、ブロックはネットワークによって拒否されます。ほとんどのイーサリアムクライアントは、「トランザクションがブロックガス上限を超えています」という警告を出して、そのようなトランザクションの発行を止めます。[Etherscan](https://etherscan.io)によると、執筆時点（2025年6月）のイーサリアムメインネットのブロックガス上限は3,600万ガスであり、約1,428の基本的な（つまり、ETH転送）トランザクション（それぞれ21,000ガスを消費）がブロックに収まることを意味します。
 
 #### Who chooses the block gas limit?
 
-#### 誰がブロックガスリミットを選択するか？
+#### 誰がブロックガス上限を選択するか？
 
 Before the introduction of EIP-1559 on August 5, 2021, miners (Ethereum was using a PoW-based consensus algorithm at that time) had a built-in mechanism where they could vote on the block gas limit, so capacity could be increased or decreased in subsequent blocks. The miner of a block could vote to adjust the block gas limit by a factor of 1/1024 (0.0976%) in either direction. The result of this was an adjustable block size based on the needs of the network, following miners' hashpower.
 
-2021年8月5日のEIP-1559の導入前は、マイナー（当時イーサリアムはPoWベースのコンセンサスアルゴリズムを使用していました）には、ブロックガスリミットに投票できる組み込みメカニズムがあり、後続のブロックで容量を増減できました。ブロックのマイナーは、どちらの方向にも1/1024（0.0976%）の係数でブロックガスリミットを調整するために投票できました。この結果、マイナーのハッシュパワーに従って、ネットワークのニーズに基づいて調整可能なブロックサイズになりました。
+2021年8月5日のEIP-1559の導入前は、マイナー（当時イーサリアムはPoWベースのコンセンサスアルゴリズムを使用していました）には、ブロックガス上限に投票できる組み込みメカニズムがあり、後続のブロックで容量を増減できました。ブロックのマイナーは、どちらの方向にも1/1024（0.0976%）の係数でブロックガス上限を調整するために投票できました。この結果、マイナーのハッシュパワーに従って、ネットワークのニーズに基づいて調整可能なブロックサイズになりました。
 
 Now, validators vote on the *gas target*—that is, how much gas a block should consume on average—and the gas limit is defined to be twice the target. The 1/1024 adjusting factor that each validator must comply with is maintained the same as before.
 
-現在、バリデータは*ガスターゲット*（つまり、ブロックが平均的に消費すべきガス量）に投票し、ガスリミットはターゲットの2倍として定義されます。各バリデータが従う必要がある1/1024の調整係数は以前と同じに維持されます。
+現在、バリデータは*ガスターゲット*（つまり、ブロックが平均的に消費すべきガス量）に投票し、ガス上限はターゲットの2倍として定義されます。各バリデータが従う必要がある1/1024の調整係数は以前と同じに維持されます。
 
 #### Why doesn't the block gas limit rise?
 
-#### なぜブロックガスリミットは上昇しないのか？
+#### なぜブロックガス上限は上昇しないのか？
 
 You may be wondering, if validators can vote on the gas target, which directly translates to the gas limit, why doesn't the block gas limit rise to one billion instead of being almost fixed at 30 million? A bigger block gas limit would mean that more transactions could fit into a block, so transactions would become cheaper for end users.
 
-バリデータがガスターゲットに投票でき、それが直接ガスリミットに変換されるなら、なぜブロックガスリミットは3,000万にほぼ固定されている代わりに10億に上昇しないのかと疑問に思うかもしれません。より大きなブロックガスリミットは、より多くのトランザクションがブロックに収まることを意味するため、エンドユーザーにとってトランザクションはより安くなります。
+バリデータがガスターゲットに投票でき、それが直接ガス上限に変換されるなら、なぜブロックガス上限は3,000万にほぼ固定されている代わりに10億に上昇しないのかと疑問に思うかもしれません。より大きなブロックガス上限は、より多くのトランザクションがブロックに収まることを意味するため、エンドユーザーにとってトランザクションはより安くなります。
 
 The answer is that raising the gas limit has some cons related to the decentralization of the network. In fact, while bigger blocks can include more transactions, that also means that blocks become harder to verify on time, and that could lead to the death of Ethereum nodes made with common hardware, leaving only powerful servers to validate full blocks. Not only that, but bigger blocks also mean a bigger state growth. The final outcome is the same as before: big servers would be the only ones able to fully run a node.
 
-答えは、ガスリミットを上げることにはネットワークの分散化に関連するいくつかの欠点があるということです。実際、より大きなブロックはより多くのトランザクションを含むことができますが、それはブロックを時間内に検証することがより困難になることも意味し、一般的なハードウェアで作られたイーサリアムノードの死につながり、完全なブロックを検証できるのは強力なサーバーだけになる可能性があります。それだけでなく、より大きなブロックはより大きな状態成長も意味します。最終的な結果は以前と同じです：大きなサーバーだけがノードを完全に実行できるようになります。
+答えは、ガス上限を上げることにはネットワークの分散化に関連するいくつかの欠点があるということです。実際、より大きなブロックはより多くのトランザクションを含むことができますが、それはブロックを時間内に検証することがより困難になることも意味し、一般的なハードウェアで作られたイーサリアムノードの死につながり、完全なブロックを検証できるのは強力なサーバーだけになる可能性があります。それだけでなく、より大きなブロックはより大きな状態成長も意味します。最終的な結果は以前と同じです：大きなサーバーだけがノードを完全に実行できるようになります。
 
 Historically, the block gas limit has been raised all at once during upgrades of the protocol, as you can see in Figure 14-25. And its value is generally set to a level suggested by core developers where we are sure all clients are able to handle the load of transactions and process blocks on time.
 
-歴史的に、図14-25に示すように、ブロックガスリミットはプロトコルのアップグレード中に一度に引き上げられてきました。その値は通常、すべてのクライアントがトランザクションの負荷を処理し、ブロックを時間内に処理できることが確実なコア開発者が提案するレベルに設定されています。
+歴史的に、図14-25に示すように、ブロックガス上限はプロトコルのアップグレード中に一度に引き上げられてきました。その値は通常、すべてのクライアントがトランザクションの負荷を処理し、ブロックを時間内に処理できることが確実なコア開発者が提案するレベルに設定されています。
 
 ![Block gas limit history](images/ch14/maet_1425.png)
 
-![ブロックガスリミットの履歴](images/ch14/maet_1425.png)
+![ブロックガス上限の履歴](images/ch14/maet_1425.png)
 
 Figure 14-25. Ethereum average gas limit chart
 
-図14-25. イーサリアム平均ガスリミットチャート
+図14-25. イーサリアム平均ガス上限チャート
 
 #### Why Not Raise the Block Gas Limit?
 
-#### なぜブロックガスリミットを引き上げないのか？
+#### なぜブロックガス上限を引き上げないのか？
 
 Even though the block gas limit looks like it has been "fixed" at 30 million for more than three years, with PBS (see "Ethereum Stateless"), where actors with sophisticated hardware build the blocks—builders—and send them to proposers—validators—to publish them on the P2P network, there is an incentive to raise the block gas limit indefinitely while maintaining the actual gas used almost as a constant.
 
-ブロックガスリミットは3年以上にわたって3,000万に「固定」されているように見えますが、PBS（「イーサリアムステートレス」を参照）では、洗練されたハードウェアを持つアクターがブロックを構築し（ビルダー）、それをプロポーザー（バリデータ）に送信してP2Pネットワークで公開するため、実際に使用されるガスをほぼ一定に保ちながらブロックガスリミットを無制限に引き上げるインセンティブがあります。
+ブロックガス上限は3年以上にわたって3,000万に「固定」されているように見えますが、PBS（「イーサリアムステートレス」を参照）では、洗練されたハードウェアを持つアクターがブロックを構築し（ビルダー）、それをプロポーザー（バリデータ）に送信してP2Pネットワークで公開するため、実際に使用されるガスをほぼ一定に保ちながらブロックガス上限を無制限に引き上げるインセンティブがあります。
 
 In fact, following EIP-1559, if the block gas target is much higher than the actual gas used, the base fee keeps decreasing, to the point where almost all of the gas fee goes to the validators instead of being burned (the base fee is burned, removing those ETH from the supply).
 
