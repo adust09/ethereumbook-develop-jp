@@ -662,42 +662,17 @@ PUSH32 0x436f6e67726174756c6174696f6e732120536f6f6e20746f206d617374657221
 
 コードが影響を与える低いレベルの状態変化を完全に理解できるまで、このようにコードを一歩一歩解析し続けることもできますが、おそらく、現段階ではあまり理解の助けにはならないでしょう。この章の後半で、もう一度こういったコードの観察に戻ることにします。
 
-## Contract Deployment Code
+## コントラクトのデプロイを行うコード
 
-## コントラクトデプロイメントコード
+イーサリアムプラットフォームでは、コントラクトを作成しデプロイする際に使用されるコードとコントラクト自体のコードの間には重要で小さな違いが存在します。新しいコントラクトを作成するには、特別なトランザクションが必要です。このトランザクションは`to`フィールドを空（null）に設定し、その`data`フィールドをコントラクトの生成コード（initiation code）に設定します。そのようなコントラクト作成トランザクションが処理されるときは、新しいコントラクトアカウントのコードとしてトランザクションの`data`フィールドのコードがそのまま登録されるわけではありません。その代わりに、プログラムコードROMにロードされたトランザクションの`data`フィールドのコードを使用してEVMがインスタンス化され、そのデプロイコードの実行結果が新しいコントラクトアカウントのコードとして登録されます。これは、デプロイ時にイーサリアムのワールドステートを利用して新しいコントラクトをプログラム的に初期化したり、コントラクトのストレージに値を設定したり、イーサを送信したり、新しいコントラクトをさらに作成したりできるようにするためです。
 
-There is an important but subtle difference between the code used when creating and deploying a new contract on the Ethereum platform and the code of the contract itself. To create a new contract, a special transaction is needed that has an empty `to` field (null) and its `data` field set to the contract's *initiation code*. When such a contract-creation transaction is processed, the code for the new contract account is not the code in the `data` field of the transaction. Instead, an EVM is instantiated with the code in the `data` field of the transaction loaded into its program code ROM, and then the output of the execution of that deployment code is taken as the code for the new contract account. This is so that new contracts can be programmatically initialized using the Ethereum world state at the time of deployment, setting values in the contract's storage and even sending ether or creating further new contracts.
+コマンドラインで`solc`を使用するなど、コントラクトをオフラインでコンパイルする場合には、*デプロイメントバイトコード*（deployment bytecode）または*ランタイムバイトコード*（runtime bytecode）を取得できます。
 
-イーサリアムプラットフォームで新しいコントラクトを作成およびデプロイする際に使用されるコードと、コントラクト自体のコードの間には、重要だが微妙な違いがあります。新しいコントラクトを作成するには、`to`フィールドが空（null）で、`data`フィールドがコントラクトの*初期化コード*に設定された特別なトランザクションが必要です。このようなコントラクト作成トランザクションが処理されると、新しいコントラクトアカウントのコードはトランザクションの`data`フィールドのコードではありません。代わりに、トランザクションの`data`フィールドのコードがプログラムコードROMにロードされたEVMがインスタンス化され、そのデプロイメントコードの実行出力が新しいコントラクトアカウントのコードとして取得されます。これにより、新しいコントラクトがデプロイ時のイーサリアムワールドステートを使用してプログラムで初期化され、コントラクトのストレージに値を設定したり、イーサを送信したり、さらに新しいコントラクトを作成したりできます。
+デプロイメントバイトコードは、新しいコントラクトの初期化のあらゆる場面で利用されます。デプロイメントバイトコードは、トランザクションが新しいコントラクトを呼び出す時に最終的に実行される実際のバイトコード（つまり、ランタイムバイトコード）を含む上、コントラクトのコンストラクタに基づいてすべてを初期化するコードも含みます。
 
-When compiling a contract offline—for example, using `solc` on the command line—you can get either the *deployment bytecode* or the *runtime bytecode*. The deployment bytecode is used for every aspect of the initialization of a new contract account, including the bytecode that will actually end up being executed when transactions call this new contract (i.e., the runtime bytecode) and the code to initialize everything based on the contract's constructor. The runtime bytecode, on the other hand, is exactly the bytecode that ends up being executed when the new contract is called and nothing more; it does not include the bytecode needed to initialize the contract during deployment.
+その一方で、ランタイムバイトコードは、新しいコントラクトが呼び出される時に最終的に実行されるバイトコードそのものです。それ以上のものではありません。ランタイムバイトコードは、デプロイ中にコントラクトを初期化するのに必要なバイトコードを含まないのです。
 
-コントラクトをオフラインでコンパイルする場合（たとえば、コマンドラインで`solc`を使用する場合）、*デプロイメントバイトコード*または*ランタイムバイトコード*のいずれかを取得できます。デプロイメントバイトコードは、トランザクションがこの新しいコントラクトを呼び出すときに実際に実行されるバイトコード（ランタイムバイトコード）と、コントラクトのコンストラクタに基づいてすべてを初期化するコードを含む、新しいコントラクトアカウントの初期化のあらゆる側面に使用されます。一方、ランタイムバイトコードは、新しいコントラクトが呼び出されたときに実行されるバイトコードそのものであり、それ以上のものではありません。デプロイ中にコントラクトを初期化するために必要なバイトコードは含まれません。
-
-Let's take the simple `Faucet.sol` contract we created in previous chapters as an example:
-
-前の章で作成した単純な`Faucet.sol`コントラクトを例に取りましょう：
-
-```solidity
-// SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.27;
-
-contract Faucet {
-  // Give out ether to anyone who asks
-  function withdraw(uint256 _withdrawAmount, address payable _to) public {
-    // Limit withdrawal amount
-    require(_withdrawAmount <= 1000000000000);
-    // Send the amount to the address that requested it
-    _to.transfer(_withdrawAmount);
-  }
-
-  // Function to receive Ether. msg.data must be empty
-  receive() external payable {}
-
-  // Fallback function is called when msg.data is not empty
-  fallback() external payable {}
-}
-```
+例として、前の章で作成した簡単な`Faucet.sol`コントラクトを見ていきましょう。
 
 ```solidity
 // SPDX-License-Identifier: GPL-3.0
@@ -720,9 +695,7 @@ contract Faucet {
 }
 ```
 
-To get the deployment bytecode, we would run `solc --bin Faucet.sol`. If we instead wanted just the runtime bytecode, we would run `solc --bin-runtime Faucet.sol`. If you compare the output of these commands, you will see that the runtime bytecode is a subset of the deployment bytecode. In other words, the runtime bytecode is entirely contained within the deployment bytecode.
-
-デプロイメントバイトコードを取得するには、`solc --bin Faucet.sol`を実行します。代わりにランタイムバイトコードのみが必要な場合は、`solc --bin-runtime Faucet.sol`を実行します。これらのコマンドの出力を比較すると、ランタイムバイトコードがデプロイメントバイトコードのサブセットであることがわかります。つまり、ランタイムバイトコードはデプロイメントバイトコード内に完全に含まれています。
+デプロイメントバイトコードを取得するには、`solc --bin Faucet.sol`を実行します。ランタイムバイトコードのみが必要な場合は、`solc --bin-runtime Faucet.sol`を実行します。これらのコマンドの出力を比較すると、ランタイムバイトコードがデプロイメントバイトコードのサブセットであることがわかります。つまり、ランタイムバイトコードはデプロイメントバイトコード内に完全に含まれています。
 
 ### CREATE Versus CREATE2 to Deploy Contracts on Chain
 
