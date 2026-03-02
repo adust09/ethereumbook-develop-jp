@@ -971,25 +971,15 @@ SHR
 
 次に`JUMPI`命令が実行され、スタック上の上位2つの要素が引数として再び受け入れられます。この場合、`JUMPI(0x23, 1)`によりEVMに`withdraw(uint256,address)`関数の位置へジャンプするように命令し、関数のコードの実行へと進めることができます。
 
-## Turing Completeness and Gas
-
 ## チューリング完全性とガス
 
-As we have already touched on, in simple terms a system or programming language is *Turing complete* if it can run any program. This capability, however, comes with a very important caveat: some programs take forever to run. An important aspect of this is that we can't tell just by looking at a program whether it will take forever or not to execute. We have to actually go through with the execution of the program and wait for it to finish to find out. Of course, if it is going to take forever to execute, we will have to wait forever to find out. This is called the *halting problem* and would be a huge problem for Ethereum if it were not addressed.
+すでに触れたように、簡単に言えば、任意のプログラムを実行できるならば、システムやプログラミング言語は*チューリング完全*です。しかし、この能力には非常に重要な注意が伴います。つまり、プログラムの中には実行に永遠の時間がかかるものがあるということです。重要なことは、プログラムを見るだけでは永遠に実行されるかどうかはわからないということです。実際にプログラムを実行して、終了を待って確認しなければなりません。当然、永遠に実行されるならば、確認するために永遠に待たなければいけません。これは*停止性問題*と呼ばれ、対処されなければイーサリアムにとって大きな問題になります。
 
-すでに触れたように、簡単に言えば、システムまたはプログラミング言語が任意のプログラムを実行できる場合、それは*チューリング完全*です。ただし、この機能には非常に重要な注意点があります。一部のプログラムは永遠に実行されます。これの重要な側面は、プログラムを見ただけでは実行に永遠にかかるかどうかを判断できないことです。実際にプログラムの実行を行い、終了するのを待って確認する必要があります。もちろん、実行に永遠にかかる場合、確認するために永遠に待つ必要があります。これは*停止問題*と呼ばれ、対処されなければイーサリアムにとって大きな問題となります。
+停止性問題のため、イーサリアムワールドコンピュータは、決して停止しないプログラムを実行するよう要求される可能性があります。偶然そうなるかもしれませんし、悪意によるものかもしれません。イーサリアムがスケジューラなしのシングルスレッドマシンのように動作することはすでに説明しました。したがって、無限ループに陥った場合、イーサリアムは利用できなくなってしまいます。
 
-Because of the halting problem, the Ethereum world computer is at risk of being asked to execute a program that never stops. This could be by accident or malice. We have described how Ethereum acts like a single-threaded machine, without any scheduler, and so if it became stuck in an infinite loop, that would mean that Ethereum would become unusable.
+しかし、ガスを用いることで解決策があります。あらかじめ指定された最大量の計算が実行されたあとも実行が終了していなければ、プログラムの実行はEVMによって停止されます。これにより、EVMは準チューリング完全マシンになります。つまり、入力されたプログラムを実行できますが、プログラムが特定の計算量内で終了する場合のみです。この制限はイーサリアムでは固定されていません。ガスを支払うことで最大値（*ブロックガスリミット*と呼ばれる）まで増やすことができ、時間の経過とともにその最大値を増やすことに全員が同意できます。それでも、常に制限が設けられており、実行中に大量にガスを消費するトランザクションは停止されます。
 
-停止問題のため、イーサリアムワールドコンピュータは、決して停止しないプログラムを実行するように要求されるリスクがあります。これは偶然または悪意によるものかもしれません。イーサリアムがスケジューラなしのシングルスレッドマシンのように動作することを説明しました。したがって、無限ループに陥った場合、イーサリアムは使用できなくなります。
-
-With gas, there is a solution, though: if after a prespecified maximum amount of computation has been performed, the execution hasn't ended, the execution of the program is halted by the EVM. This makes the EVM a quasi-Turing-complete machine: it can run any program you feed into it but only if the program terminates within a particular amount of computation. That limit isn't fixed in Ethereum—you can pay to increase it up to a maximum (called the *block gas limit*), and everyone can agree to increase that maximum over time. Nevertheless, at any one time, there is a limit in place, and transactions that consume too much gas while executing are halted.
-
-ただし、ガスを使用すると解決策があります。事前に指定された最大計算量が実行された後も実行が終了しない場合、プログラムの実行はEVMによって停止されます。これにより、EVMは準チューリング完全マシンになります。つまり、入力されたプログラムを実行できますが、プログラムが特定の計算量内で終了する場合のみです。その制限はイーサリアムで固定されていません。最大値（*ブロックガスリミット*と呼ばれる）まで増やすために支払うことができ、時間の経過とともにその最大値を増やすことに全員が同意できます。それでも、常に制限が設けられており、実行中に多くのガスを消費するトランザクションは停止されます。
-
-In the following sections, we will look at gas and examine how it works in detail.
-
-以下のセクションでは、ガスについて詳しく見ていき、その仕組みを詳しく調べます。
+以下のセクションでは、ガスに焦点を当て、その仕組みを詳しく見ていきます。
 
 ### What Is Gas?
 
@@ -1311,7 +1301,7 @@ EOF以外のEVMの将来は不確実であり、開発者やさまざまなプ�
 
 In this chapter, we explored the EVM, tracing the execution of various smart contracts and looking at how the EVM executes bytecode. We also looked at gas, the EVM's accounting mechanism, and saw how it solves the halting problem and protects Ethereum from DoS attacks. Furthermore, we analyzed EOF, looking at how it tries to fix different flows of legacy EVM.
 
-本章では、EVMを探索し、さまざまなスマートコントラクトの実行をトレースし、EVMがバイトコードをどのように実行するかを見ました。また、EVMの会計メカニズムであるガスについても見て、それが停止問題をどのように解決し、イーサリアムをDoS攻撃からどのように保護するかを見ました。さらに、EOFを分析し、レガシーEVMのさまざまなフローをどのように修正しようとしているかを見ました。
+本章では、EVMを探索し、さまざまなスマートコントラクトの実行をトレースし、EVMがバイトコードをどのように実行するかを見ました。また、EVMの会計メカニズムであるガスについても見て、それが停止性問題をどのように解決し、イーサリアムをDoS攻撃からどのように保護するかを見ました。さらに、EOFを分析し、レガシーEVMのさまざまなフローをどのように修正しようとしているかを見ました。
 
 Next, in Chapter 15, we will explore the mechanism used by Ethereum to achieve decentralized consensus.
 
