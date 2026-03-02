@@ -435,47 +435,25 @@ EVMがこれらのオペコードをどのように実行し、スタック、�
 
 最初のオペコードは0x42をスタックにプッシュします（図14-10）。なお、プッシュオペコードは自身の次のバイトをプッシュするデータとして取得します。
 
-![EVM after PUSH1 0x42](images/ch14/maet_1410.png)
-
 ![PUSH1 0x42後のEVM](images/ch14/maet_1410.png)
-
-Figure 14-10. EVM after PUSH1 0x42
 
 図14-10. PUSH1 0x42後のEVM
 
-Next, PUSH0 pushes 0x00 onto the stack (Figure 14-11).
-
 次に、PUSH0は0x00をスタックにプッシュします（図14-11）。
-
-![EVM after PUSH0](images/ch14/maet_1411.png)
 
 ![PUSH0後のEVM](images/ch14/maet_1411.png)
 
-Figure 14-11. EVM after PUSH0
-
 図14-11. PUSH0後のEVM
 
-MSTORE pops two items from the stack, interpreting the first one as the offset (in bytes) and the second one as the value to write in the memory, starting at that offset. Note that there are lots of leading zeros in the memory (31 bytes, equal to zero) before the byte 0x42. This is correct because every value in the stack is a 32-byte value. Most of the time, we can ignore leading zeros while writing (in Figure 14-12, you can see the item 0x42), but you should always remember that they are 32-byte values.
-
-MSTOREはスタックから2つの項目をポップし、最初のものをオフセット（バイト単位）として、2番目のものをそのオフセットから始まるメモリに書き込む値として解釈します。バイト0x42の前にメモリに多くの先行ゼロ（31バイト、ゼロに等しい）があることに注意してください。これは正しいです。なぜなら、スタック内のすべての値は32バイトの値だからです。ほとんどの場合、書き込み時に先行ゼロを無視できます（図14-12では項目0x42を見ることができます）が、それらが32バイトの値であることを常に覚えておく必要があります。
-
-![EVM after MSTORE](images/ch14/maet_1412.png)
+MSTOREはスタックから2つのアイテムをポップし、1つ目をオフセット（バイト単位）、2つ目をそのオフセットからメモリに書き込む値として解釈します。バイト0x42の前にメモリ上に多くの先行ゼロ（31バイト分）があることに注意してください。これはスタック内のすべての値が32バイトであるためです。ほとんどの場合、書き込み時に先行ゼロは無視できますが（図14-12ではアイテム0x42が確認できます）、実際には32バイトの値であることを忘れないでください。
 
 ![MSTORE後のEVM](images/ch14/maet_1412.png)
 
-Figure 14-12. EVM after MSTORE
-
 図14-12. MSTORE後のEVM
 
-Then, we again have a PUSH0 that pushes 0x00 onto the stack (Figure 14-13).
-
-次に、再びPUSH0があり、0x00をスタックにプッシュします（図14-13）。
-
-![EVM after PUSH0](images/ch14/maet_1413.png)
+次に、再びPUSH0が0x00をスタックにプッシュします（図14-13）。
 
 ![PUSH0後のEVM](images/ch14/maet_1413.png)
-
-Figure 14-13. EVM after PUSH0
 
 図14-13. PUSH0後のEVM
 
