@@ -397,27 +397,15 @@ EVMストレージは、キー（多くの場合*スロット*と呼ばれる）
 
 コールデータは不変のデータ構造であり、次の*コールフレーム*（サンドボックスEVM環境）への入力として送信されるバイト列を格納します。たとえば、コントラクト作成トランザクションでは、コールデータにはデプロイされるコントラクトのバイトコードが含まれます。単純なETH転送の場合などでは空になります。
 
-## Let's Put Everything Together with a Concrete Example
-
 ## 具体的な例ですべてをまとめる
 
-You are executing a transaction that works on contract A, and you have the following EVM bytecode: `60425F525F3560AB145F515500`.
+コントラクトAに対するトランザクションを実行しているとします。EVMバイトコードは次のとおりです：`60425F525F3560AB145F515500`
 
-コントラクトAで動作するトランザクションを実行しており、次のEVMバイトコードがあります：`60425F525F3560AB145F515500`。
-
-You also have an initial calldata:
-
-初期コールデータもあります：
+初期コールデータは次のとおりです：
 
 ```
 00000000000000000000000000000000000000000000000000000000000000ab
 ```
-
-```
-00000000000000000000000000000000000000000000000000000000000000ab
-```
-
-Let's represent the EVM bytecode in a human-readable format:
 
 EVMバイトコードを人間が読める形式で表現しましょう：
 
@@ -435,43 +423,17 @@ EVMバイトコードを人間が読める形式で表現しましょう：
 [0c]            STOP
 ```
 
-```
-[00]            PUSH1            42
-[02]            PUSH0
-[03]            MSTORE
-[04]            PUSH0
-[05]            CALLDATALOAD
-[06]            PUSH1            AB
-[08]            EQ
-[09]            PUSH0
-[0a]            MLOAD
-[0b]            SSTORE
-[0c]            STOP
-```
-
-> **Note**
->
-> Each EVM opcode is identified by a unique 1-byte value (ranging from 0x00 to 0xFF). For example, 0x60 is the PUSH1 opcode, 0x5F the PUSH0, and so on. For a comprehensive list of all opcodes and their hexadecimal representations, refer to [EVM codes](https://www.evm.codes).
-
 > **注記**
 >
-> 各EVMオペコードは一意の1バイト値（0x00から0xFFの範囲）で識別されます。たとえば、0x60はPUSH1オペコード、0x5FはPUSH0などです。すべてのオペコードとその16進表現の包括的なリストについては、[EVM codes](https://www.evm.codes)を参照してください。
-
-Let's see how the EVM executes these opcodes and how the stack, the memory, and the storage are manipulated. Figure 14-9 shows the initial state of the EVM.
+> 各EVMオペコードは一意の1バイト値（0x00から0xFFの範囲）で識別されます。たとえば、0x60はPUSH1オペコード、0x5FはPUSH0などです。すべてのオペコードとその16進表現の一覧については、[EVM codes](https://www.evm.codes)を参照してください。
 
 EVMがこれらのオペコードをどのように実行し、スタック、メモリ、ストレージがどのように操作されるかを見てみましょう。図14-9はEVMの初期状態を示しています。
 
-![EVM initial state](images/ch14/maet_1409.png)
-
 ![EVMの初期状態](images/ch14/maet_1409.png)
-
-Figure 14-9. Initial EVM state
 
 図14-9. EVMの初期状態
 
-The first opcode pushes 0x42 onto the stack (Figure 14-10). Note that all push opcodes take their data (to be pushed) from the next available bytes in the bytecode itself.
-
-最初のオペコードは0x42をスタックにプッシュします（図14-10）。すべてのプッシュオペコードは、バイトコード自体の次の利用可能なバイトからデータ（プッシュされる）を取得することに注意してください。
+最初のオペコードは0x42をスタックにプッシュします（図14-10）。なお、プッシュオペコードは自身の次のバイトをプッシュするデータとして取得します。
 
 ![EVM after PUSH1 0x42](images/ch14/maet_1410.png)
 
