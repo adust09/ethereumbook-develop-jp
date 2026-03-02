@@ -556,9 +556,7 @@ contract Example {
 PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xE JUMPI PUSH0 PUSH0 REVERT JUMPDEST POP PUSH1 0xA9 DUP1 PUSH1 0x1A PUSH0 CODECOPY PUSH0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xE JUMPI PUSH0 PUSH0 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH1 0x26 JUMPI PUSH0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0xF8A8FD6D EQ PUSH1 0x2A JUMPI JUMPDEST PUSH0 PUSH0 REVERT JUMPDEST PUSH1 0x30 PUSH1 0x32 JUMP JUMPDEST STOP JUMPDEST CALLER PUSH0 PUSH0 PUSH2 0x100 EXP DUP2 SLOAD DUP2 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF MUL NOT AND SWAP1 DUP4 PUSH200xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND MUL OR SWAP1 SSTORE POP JUMP INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 JUMPI 0xBB RETURNDATACOPY SWAP14 CALLVALUE 0xB3 0xB1 SMOD BLOBHASH STATICCALL MCOPY PUSH10 0x856E7132D8FEED4D83B6 0xB2 0xBE PUSH30 0x8B43532C818BFD64736F6C634300081B0033000000000000000000000000
 ```
 
-Compiling the example with the `--asm` option produces a file named `Example.evm` in our `BytecodeDir` directory. This contains a slightly higher-level description of the EVM bytecode instructions, together with some helpful annotations:
-
-`--asm`オプションでサンプルをコンパイルすると、`BytecodeDir`ディレクトリに`Example.evm`という名前のファイルが生成されます。これには、EVMバイトコード命令のやや高レベルの説明と、いくつかの有用な注釈が含まれています：
+`--asm`オプションを使用してこのファイルをコンパイルすると、`BytecodeDir`ディレクトリに`Example.evm`という名前のファイルが生成されます。このファイルには、EVMバイトコード命令のやや高レベルな記述と、わかりやすい注釈が含まれています：
 
 ```
 /* "Example.sol":61:171  contract Example {... */
@@ -637,86 +635,6 @@ sub_0: assembly {
     auxdata: 0xa264697066735822122057bb3e9e34b3b10749fa5e69856e7132d8feed4d83b6b2be7d8b43532c818bfd64736f6c634300081b0033
 }
 ```
-
-```
-/* "Example.sol":61:171  contract Example {... */
-  mstore(0x40, 0x80)
-  callvalue
-  dup1
-  iszero
-  tag_1
-  jumpi
-  revert(0x00, 0x00)
-tag_1:
-  pop
-  dataSize(sub_0)
-  dup1
-  dataOffset(sub_0)
-  0x00
-  codecopy
-  0x00
-  return
-stop
-
-sub_0: assembly {
-        /* "Example.sol":61:171  contract Example {... */
-      mstore(0x40, 0x80)
-      callvalue
-      dup1
-      iszero
-      tag_1
-      jumpi
-      revert(0x00, 0x00)
-    tag_1:
-      pop
-      jumpi(tag_2, lt(calldatasize, 0x04))
-      shr(0xe0, calldataload(0x00))
-      dup1
-      0xf8a8fd6d
-      eq
-      tag_3
-      jumpi
-    tag_2:
-      revert(0x00, 0x00)
-        /* "Example.sol":109:169  function test() public {... */
-    tag_3:
-      tag_4
-      tag_5
-      jump    // in
-    tag_4:
-      stop
-    tag_5:
-        /* "Example.sol":154:164  msg.sender */
-      caller
-        /* "Example.sol":138:151  contractOwner */
-      0x00
-      0x00
-        /* "Example.sol":138:164  contractOwner = msg.sender */
-      0x0100
-      exp
-      dup2
-      sload
-      dup2
-      0xffffffffffffffffffffffffffffffffffffffff
-      mul
-      not
-      and
-      swap1
-      dup4
-      0xffffffffffffffffffffffffffffffffffffffff
-      and
-      mul
-      or
-      swap1
-      sstore
-      pop
-        /* "Example.sol":109:169  function test() public {... */
-      jump    // out
-    auxdata: 0xa264697066735822122057bb3e9e34b3b10749fa5e69856e7132d8feed4d83b6b2be7d8b43532c818bfd64736f6c634300081b0033
-}
-```
-
-The `--bin` option produces the machine-readable hexadecimal bytecode:
 
 `--bin`オプションは、機械可読な16進バイトコードを生成します：
 
@@ -724,49 +642,25 @@ The `--bin` option produces the machine-readable hexadecimal bytecode:
 6080604052348015600e575f5ffd5b5060a980601a5f395ff3fe6080604052348015600e575f5ffd5b50600436106026575f3560e01c8063f8a8fd6d14602a575b5f5ffd5b60306032565b005b335f5f6101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555056fea264697066735822122057bb3e9e34b3b10749fa5e69856e7132d8feed4d83b6b2be7d8b43532c818bfd64736f6c634300081b0033
 ```
 
-```
-6080604052348015600e575f5ffd5b5060a980601a5f395ff3fe6080604052348015600e575f5ffd5b50600436106026575f3560e01c8063f8a8fd6d14602a575b5f5ffd5b60306032565b005b335f5f6101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555056fea264697066735822122057bb3e9e34b3b10749fa5e69856e7132d8feed4d83b6b2be7d8b43532c818bfd64736f6c634300081b0033
-```
-
-You can investigate what's going on here in detail using the opcode list given in "The EVM Instruction Set (Bytecode Operations)". However, that's quite a task, so let's start by just examining the first four instructions:
-
-「EVM命令セット（バイトコード操作）」で与えられたオペコードリストを使用して、ここで何が起こっているかを詳細に調査できます。ただし、それはかなりの作業なので、最初の4つの命令を調べることから始めましょう：
+「EVM命令セット（バイトコード演算）」に記載されているオペコードの一覧を使用して詳細を調べることができます。しかし、作業量がかなり多くなってしまうので、最初の4つの命令を調べるところから始めてみましょう：
 
 ```
 PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE
 ```
 
-```
-PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE
-```
-
-Here, we have `PUSH1` followed by a raw byte of value `0x80`. This EVM instruction takes the single byte following the opcode in the program code (as a literal value) and pushes it onto the stack. It is possible to push values of size up to 32 bytes onto the stack, as in:
-
-ここでは、`PUSH1`の後に値`0x80`の生バイトが続きます。このEVM命令は、プログラムコード内のオペコードに続く単一バイト（リテラル値として）を取り、スタックにプッシュします。次のように、最大32バイトのサイズの値をスタックにプッシュすることが可能です：
+ここでは`PUSH1`の後に生のバイトの`0x80`が続いています。このEVM命令は、プログラムコード内のオペコードに続く1バイトを（リテラル値として）取り出し、スタックにプッシュします。次のように、32バイトまでのサイズの値をスタックにプッシュすることができます：
 
 ```
 PUSH32 0x436f6e67726174756c6174696f6e732120536f6f6e20746f206d617374657221
 ```
 
-```
-PUSH32 0x436f6e67726174756c6174696f6e732120536f6f6e20746f206d617374657221
-```
+`Example.opcode`の2つ目の`PUSH1`は、`0x40`をスタックの先頭にプッシュします（すでに存在する`0x80`を1つ下のスロットに押し込みます）。
 
-The second `PUSH1` opcode from `example.opcode` stores `0x40` onto the top of the stack (pushing the `0x80` already present there down one slot).
+次は`MSTORE`で、これはEVMのメモリに値を保存するメモリへの記録演算です。`MSTORE`は2つの引数を取ります。ほとんどのEVM上の演算と同様に、引数をスタックから取得します。各引数について、スタックは「ポップ」されます。すなわち、スタックの一番上の値が取り出され、スタック内の他のすべての値の位置が1つ上にシフトされます。`MSTORE`の最初の引数は、保存する値を格納するメモリのアドレスです。このプログラムではスタックの先頭に`0x40`があるため、`0x40`はスタックから削除されてメモリアドレスとして使用されます。2番目の引数は保存される値で、ここでは`0x80`です。`MSTORE`演算が実行された後、スタックは再び空になりますが、メモリ上の`0x40`に`0x80`（10進数で128）の値があります。
 
-`example.opcode`からの2番目の`PUSH1`オペコードは、`0x40`をスタックのトップに保存します（すでに存在する`0x80`を1スロット下に押し下げます）。
+次のオペコードは`CALLVALUE`です。`CALLVALUE`は、実行を開始したメッセージコールと一緒に送信されたイーサの量（weiで表される）をスタックの一番上にプッシュする環境オペコードです。
 
-Next is `MSTORE`, which is a memory store operation that saves a value to the EVM's memory. It takes two arguments and, like most EVM operations, obtains them from the stack. For each argument, the stack is "popped"—that is, the top value on the stack is taken off, and all the other values on the stack are shifted up one position. The first argument for `MSTORE` is the address of the word in memory where the value to be saved will be put. For this program, we have `0x40` at the top of the stack, so that is removed from the stack and used as the memory address. The second argument is the value to be saved, which is `0x80` here. After the `MSTORE` operation is executed, our stack is empty again, but we have the value `0x80` (128 in decimal) at the memory location `0x40`.
-
-次は`MSTORE`で、EVMのメモリに値を保存するメモリストア操作です。2つの引数を取り、ほとんどのEVM操作と同様に、スタックから取得します。各引数について、スタックは「ポップ」されます。つまり、スタックのトップ値が取り除かれ、スタック上の他のすべての値が1つ上の位置にシフトされます。`MSTORE`の最初の引数は、保存される値が配置されるメモリ内のワードのアドレスです。このプログラムでは、スタックのトップに`0x40`があるため、スタックから削除されてメモリアドレスとして使用されます。2番目の引数は保存される値で、ここでは`0x80`です。`MSTORE`操作が実行された後、スタックは再び空になりますが、メモリ位置`0x40`に値`0x80`（10進数で128）があります。
-
-The next opcode is `CALLVALUE`, which is an environmental opcode that pushes onto the top of the stack the amount of ether (measured in wei) sent with the message call that initiated this execution.
-
-次のオペコードは`CALLVALUE`で、この実行を開始したメッセージ呼び出しで送信されたイーサの量（weiで測定）をスタックのトップにプッシュする環境オペコードです。
-
-We could continue to step through this program in this way until we had a full understanding of the low-level state changes that this code effects, but it wouldn't help us at this stage. We'll come back to it later in the chapter.
-
-このコードが影響を与える低レベルの状態変化を完全に理解するまで、このようにこのプログラムをステップスルーし続けることができますが、この段階では役に立ちません。本章の後半で戻ってきます。
+コードが影響を与える低いレベルの状態変化を完全に理解できるまで、このようにコードを一歩一歩解析し続けることもできますが、おそらく、現段階ではあまり理解の助けにはならないでしょう。この章の後半で、もう一度こういったコードの観察に戻ることにします。
 
 ## Contract Deployment Code
 
