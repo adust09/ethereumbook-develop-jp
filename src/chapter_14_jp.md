@@ -861,9 +861,7 @@ jumpi(label, cond) // "cond"が真ならば"label"の位置にジャンプする
 >
 > Heimdallはバイトコードをオフセット0x01から始まるものとして表現しますが、EVMは実際にはオフセット0x00から解釈します。前の例では、JUMPI命令は条件が真の場合にオフセット0x20にジャンプするようEVMに指示していますが、グラフ上ではオフセット0x20が0x21として表示されています。目安として、EVMの各オフセットに1を加えればグラフ上の位置を見つけることができます。
 
-Let's examine the central block of the dispatcher. Assuming we received calldata that was greater than 4 bytes in length, the `JUMPI` instruction would not jump to the fallback function. Instead, code execution would proceed to the following instructions:
-
-ディスパッチャの中央ブロックを調べましょう。4バイトより長いコールデータを受け取ったと仮定すると、`JUMPI`命令はフォールバック関数にジャンプしません。代わりに、コード実行は次の命令に進みます：
+ディスパッチャの中央ブロックを調べてみましょう。4バイトより長いコールデータを受け取った場合、`JUMPI`命令はフォールバック関数へのジャンプを実行しません。その代わりに、コードの実行は次の命令に進みます：
 
 ```
 PUSH0 0x0
@@ -877,39 +875,13 @@ PUSH2 0X23
 JUMPI
 ```
 
-```
-PUSH0 0x0
-CALLDATALOAD
-PUSH1 0xe0
-SHR
-DUP1
-PUSH3 0xf714ce
-EQ
-PUSH2 0X23
-JUMPI
-```
-
-`PUSH0` pushes 0 onto the stack, which is now otherwise empty again. `CALLDATALOAD` accepts as an argument an index within the calldata sent to the smart contract and reads 32 bytes from that index, like so:
-
-`PUSH0`は0をスタックにプッシュします。スタックは再び空になっています。`CALLDATALOAD`は、スマートコントラクトに送信されたコールデータ内のインデックスを引数として受け入れ、そのインデックスから32バイトを読み取ります：
+`PUSH0`は0をスタックにプッシュし、スタックは再び空の状態になります。`CALLDATALOAD`は、スマートコントラクトに送信されたコールデータ内のインデックスを引数として受け取り、そのインデックスから32バイトを読み込みます：
 
 ```
-calldataload(p) //load 32 bytes of calldata starting from byte position p
+calldataload(p) // バイト位置pから始まる32バイトのコールデータを読み出す
 ```
-
-```
-calldataload(p) //バイト位置pから始まるコールデータの32バイトをロード
-```
-
-Since 0 was the index passed to it from the `PUSH0` command, `CALLDATALOAD` reads 32 bytes of calldata starting at byte 0 and then pushes it to the top of the stack (after popping the original `0x0`). After the `PUSH1 0xe0` instruction, the stack is then:
 
 `PUSH0`コマンドから渡されたインデックスが0だったため、`CALLDATALOAD`はバイト0から始まるコールデータの32バイトを読み取り、（元の`0x0`をポップした後）スタックのトップにプッシュします。`PUSH1 0xe0`命令の後、スタックは次のようになります：
-
-```
-Stack
-0xe0
-<32 bytes of calldata starting at byte 0>
-```
 
 ```
 スタック
@@ -917,99 +889,49 @@ Stack
 <バイト0から始まるコールデータの32バイト>
 ```
 
-`SHR` performs a logical right shift of `0xe0` bits (224 bits, 28 bytes) to the 32-byte value element on the stack. By shifting the calldata to the right by 28 bytes, it isolates the first 4 bytes of the calldata. In fact, when shifting to the right, all the bits move before the first one are discarded, while the new bits are set to 0. Remember that the first 4 bytes of the calldata represent the function identifier of the function we want to trigger.
-
-`SHR`はスタック上の32バイト値要素に対して`0xe0`ビット（224ビット、28バイト）の論理右シフトを実行します。コールデータを28バイト右にシフトすることで、コールデータの最初の4バイトを分離します。実際、右にシフトすると、最初のビットより前に移動するすべてのビットは破棄され、新しいビットは0に設定されます。コールデータの最初の4バイトは、トリガーしたい関数の関数識別子を表すことを覚えておいてください。
-
-### Logical Bit Shift Example
+`SHR`はスタック上の32バイト値の要素に対して`0xe0`ビット（224ビット、28バイト）の論理右シフトを実行します。コールデータを28バイト右にシフトすることで、コールデータの最初の4バイトを分離します。実際、右にシフトすると、右端からはみ出したビットは破棄され、左端には0が補填されます。コールデータの最初の4バイトは、トリガーしたい関数の関数識別子を表すことを忘れないでください。
 
 ### 論理ビットシフトの例
 
-You can better understand this with an example. Let's say the stack is:
-
 例を使ってよりよく理解できます。スタックが次のようになっているとしましょう：
-
-```
-Stack
-0x1234567890 // a 5 bytes element
-```
 
 ```
 スタック
 0x1234567890 // 5バイトの要素
 ```
 
-We want to get only the first two bytes (i.e., `0x1234`). To achieve this using only EVM opcodes, we can do:
-
 最初の2バイト（つまり`0x1234`）のみを取得したいとします。EVMオペコードのみを使用してこれを達成するには、次のようにできます：
-
-```
-PUSH1 0x18 // this represents the number 24 in hex, 24 bits = 3 bytes
-SHR
-```
 
 ```
 PUSH1 0x18 // これは16進数で24を表し、24ビット = 3バイト
 SHR
 ```
 
-In fact, by shifting the stack of items 3 bytes to the right (remember that each byte is represented here as 2 hex digits), we obtain the following item:
-
-実際、スタックの項目を3バイト右にシフトすると（各バイトは2桁の16進数として表されることを覚えておいてください）、次の項目が得られます：
+実際、スタックのアイテムを3バイト右にシフトすると（各バイトは2桁の16進数で表されることを忘れないでください）、次のアイテムが得られます：
 
 ```
 0x0000001234 | 4567890
 ```
-
-```
-0x0000001234 | 4567890
-```
-
-The `4567890` part is discarded, and all that remains is:
 
 `4567890`の部分は破棄され、残るのは次のとおりです：
-
-```
-Stack
-0x1234
-```
 
 ```
 スタック
 0x1234
 ```
-
-All the leading zeros can be ignored as they are not significant.
 
 先頭のゼロ埋めは重要でないため省略します。
 
 ---
 
----
-
-The new stack is:
-
 新しいスタックは次のとおりです：
 
 ```
-Stack
-<function identifier sent in data>
-```
-
-```
 スタック
 <データで送信された関数識別子>
 ```
 
-The next instruction is `DUP1`, which duplicates the first item in the stack. The stack is now:
-
-次の命令は`DUP1`で、スタックの最初の項目を複製します。スタックは次のようになります：
-
-```
-Stack
-<function identifier sent in data>
-<function identifier sent in data>
-```
+次の命令は`DUP1`で、スタックの最初のアイテムである関数識別子を複製します。スタックは次のようになります：
 
 ```
 スタック
@@ -1017,16 +939,7 @@ Stack
 <データで送信された関数識別子>
 ```
 
-Now there is a `PUSH3` instruction, followed by the push data `0xf714ce`. This opcode simply pushes the (push) data onto the stack. After this opcode, the stack looks like this:
-
-次に`PUSH3`命令があり、プッシュデータ`0xf714ce`が続きます。このオペコードは単に（プッシュ）データをスタックにプッシュします。このオペコードの後、スタックは次のようになります：
-
-```
-Stack
-0xf714ce
-<function identifier sent in data>
-<function identifier sent in data>
-```
+次に`PUSH3`命令があり、データ`0xf714ce`が続きます。このオペコードは単にデータをスタックにプッシュします。このオペコードの後、スタックは次のようになります：
 
 ```
 スタック
@@ -1034,24 +947,12 @@ Stack
 <データで送信された関数識別子>
 <データで送信された関数識別子>
 ```
-
-Now, does the `0xf714ce` look familiar to you? Do you remember what the function identifier of our `withdraw(uint256,address)` function is? It's `0x00f714ce`… Note that they are the same number as leading zeros can be ignored.
 
 さて、`0xf714ce`は見覚えがありますか？`withdraw(uint256,address)`関数の関数識別子が何であったか覚えていますか？`0x00f714ce`です…先頭のゼロ埋めを省略すれば同じ数値であることがわかります。
 
-The next instruction, `EQ`, pops off the top two items of the stack and compares them. This is where the dispatcher does its main job: it compares whether the function identifier sent in the `msg.data` field of the transaction matches that of `withdraw(uint256,address)`. If they're equal, `EQ` pushes 1 onto the stack, which will ultimately be used to jump to the withdraw function. Otherwise, `EQ` pushes 0 onto the stack.
+次の命令`EQ`はスタックの上位2つのアイテムを取り出し、それらを比較します。これがディスパッチャの主な働きです。トランザクションの`msg.data`フィールドで送信された関数識別子が`withdraw(uint256,address)`のものと一致するかどうかを比較します。両者が等しい場合、`EQ`は1をスタックにプッシュし、最終的にwithdraw関数にジャンプするために使用されます。そうでなければ、`EQ`は0をスタックにプッシュします。
 
-次の命令`EQ`は、スタックの上位2項目をポップして比較します。ここでディスパッチャがその主な仕事を行います：トランザクションの`msg.data`フィールドで送信された関数識別子が`withdraw(uint256,address)`のものと一致するかどうかを比較します。等しい場合、`EQ`はスタックに1をプッシュし、最終的にwithdraw関数にジャンプするために使用されます。そうでなければ、`EQ`はスタックに0をプッシュします。
-
-Assuming the transaction sent to our contract indeed began with the function identifier for `withdraw(uint256,address)`, our stack has become:
-
-コントラクトに送信されたトランザクションが実際に`withdraw(uint256,address)`の関数識別子で始まったと仮定すると、スタックは次のようになります：
-
-```
-Stack
-1
-<function identifier sent in data> (now known to be 0x00f714ce)
-```
+コントラクトに実際に送られたトランザクションが`withdraw(uint256,address)`の関数識別子で始まっている場合、スタックは次のようになります：
 
 ```
 スタック
@@ -1059,16 +960,7 @@ Stack
 <データで送信された関数識別子>（0x00f714ceであることが判明）
 ```
 
-Next, we have `PUSH2 0x23`, which is the address at which the `withdraw(uint256,address)` function lives in the contract. After this instruction, the stack looks like this:
-
-次に、`PUSH2 0x23`があります。これはコントラクト内で`withdraw(uint256,address)`関数が存在するアドレスです。この命令の後、スタックは次のようになります：
-
-```
-Stack
-0x23
-1
-<function identifier sent in msg.data>
-```
+次に、`PUSH2 0x23`があります。これは、コントラクト内で`withdraw(uint256,address)`関数が存在しているアドレスです。この命令の実行後、スタックは次のようになります：
 
 ```
 スタック
@@ -1077,9 +969,7 @@ Stack
 <msg.dataで送信された関数識別子>
 ```
 
-The `JUMPI` instruction is next, and it once again accepts the top two elements on the stack as arguments. In this case, we have `JUMPI(0x23, 1)`, which tells the EVM to execute the jump to the location of the `withdraw(uint256,address)` function, and the execution of that function's code can proceed.
-
-次に`JUMPI`命令があり、再びスタックの上位2つの要素を引数として受け入れます。この場合、`JUMPI(0x23, 1)`があり、EVMに`withdraw(uint256,address)`関数の場所へのジャンプを実行するように指示し、その関数のコードの実行が進むことができます。
+次に`JUMPI`命令が実行され、スタック上の上位2つの要素が引数として再び受け入れられます。この場合、`JUMPI(0x23, 1)`によりEVMに`withdraw(uint256,address)`関数の位置へジャンプするように命令し、関数のコードの実行へと進めることができます。
 
 ## Turing Completeness and Gas
 
