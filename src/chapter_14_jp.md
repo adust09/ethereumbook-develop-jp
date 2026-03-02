@@ -805,9 +805,7 @@ $ cat cfg.dot
 
 図14-23. CFGグラフの最初の部分の拡大
 
-When you send a transaction to an ABI-compatible smart contract (which you can assume all contracts are), the transaction first interacts with that smart contract's *dispatcher*. The dispatcher reads in the `data` field of the transaction and sends the relevant part to the appropriate function. We can see an example of a dispatcher at the beginning of our disassembled `Faucet.sol` runtime bytecode. After the familiar `MSTORE` instruction, we see the following instructions:
-
-ABI互換のスマートコントラクト（すべてのコントラクトがそうであると想定できます）にトランザクションを送信すると、トランザクションは最初にそのスマートコントラクトの*ディスパッチャ*とやり取りします。ディスパッチャはトランザクションの`data`フィールドを読み取り、関連する部分を適切な関数に送信します。逆アセンブルされた`Faucet.sol`ランタイムバイトコードの先頭にディスパッチャの例を見ることができます。お馴染みの`MSTORE`命令の後、次の命令が見えます：
+ABI準拠のスマートコントラクト（すべてのコントラクトが準拠していると想定してよいです）にトランザクションを送信すると、トランザクションは最初にそのスマートコントラクトの*ディスパッチャ*（dispatcher）と対話します。ディスパッチャは、トランザクションの`data`フィールドを読み込み、関係する部分を適切な関数に送信します。逆アセンブルした`Faucet.sol`ランタイムバイトコードの冒頭部分に、ディスパッチャの例があります。おなじみの`MSTORE`命令のあとに、次の命令セットが表示されます：
 
 ```
 PUSH1 0x04
@@ -817,23 +815,7 @@ PUSH2 0x0020
 JUMPI
 ```
 
-```
-PUSH1 0x04
-CALLDATASIZE
-LT
-PUSH2 0x0020
-JUMPI
-```
-
-As we have seen, `PUSH1 0x04` places `0x04` onto the top of the stack, which is otherwise empty. `CALLDATASIZE` gets the size in bytes of the data sent with the transaction (known as the calldata) and pushes that number onto the stack. After these operations have been executed, the stack looks like this:
-
-見てきたように、`PUSH1 0x04`はスタックのトップに`0x04`を配置します（それ以外は空です）。`CALLDATASIZE`はトランザクションで送信されたデータ（コールデータとして知られる）のバイトサイズを取得し、その数値をスタックにプッシュします。これらの操作が実行された後、スタックは次のようになります：
-
-```
-Stack
-<length of calldata from tx>
-0x4
-```
+これまで見てきたように、`PUSH1 0x04`は`0x04`をスタックの先頭に置きます。スタックの先頭以外は空です。`CALLDATASIZE`は、トランザクションとともに送信されたデータのバイト数を取得し（送信されたデータをコールデータ〔calldata〕と呼びます）、その数値をスタックにプッシュします。これらの操作が実行されると、スタックは次のようになります：
 
 ```
 スタック
@@ -841,39 +823,19 @@ Stack
 0x4
 ```
 
-This next instruction is `LT`, short for "less than." The `LT` instruction checks whether the top item on the stack is less than the next item on the stack. In our case, it checks to see if the result of `CALLDATASIZE` is less than 4 bytes.
+次の命令は`LT`で「Less Than」の省略形です。`LT`命令は、スタックの一番上のアイテムがスタックの次のアイテムよりも小さいかどうかを調べます。このケースでは、`CALLDATASIZE`の結果が4バイトより小さいかどうかを調べています。
 
-次の命令は`LT`で、「less than」（小なり）の略です。`LT`命令は、スタックのトップの項目がスタックの次の項目より小さいかどうかをチェックします。この場合、`CALLDATASIZE`の結果が4バイト未満かどうかをチェックします。
-
-Why does the EVM check to see that the calldata of the transaction is at least 4 bytes? Because of how *function identifiers* work. Each Solidity function is identified by the first 4 bytes of its Keccak-256 hash. By placing the function's name and all the arguments it takes into a `keccak256` hash function, we can deduce its function identifier. In our case, we have:
-
-なぜEVMはトランザクションのコールデータが少なくとも4バイトであることをチェックするのでしょうか？*関数識別子*の仕組みのためです。各Solidity関数は、そのKeccak-256ハッシュの最初の4バイトで識別されます。関数名とそれが取るすべての引数を`keccak256`ハッシュ関数に入れることで、その関数識別子を導き出すことができます。この場合：
+トランザクションのコールデータが少なくとも4バイトであることをEVMが確認するのは、*関数識別子*の動作が関係しています。各関数は、そのKeccak-256ハッシュの最初の4バイトで識別されます。関数の名前と、関数が引数として取るものをKeccak-256ハッシュにかけることで関数の識別子を推測できます。今回の場合：
 
 ```
 keccak256("withdraw(uint256,address)") = 0x00f714ce...
 ```
 
-```
-keccak256("withdraw(uint256,address)") = 0x00f714ce...
-```
+したがって、関数`withdraw(uint256,address)`の関数識別子は、ハッシュ関数を通した結果の最初の4バイトの`0x00f714ce`です。関数識別子の長さは常に4バイトで、コントラクトに送信されるトランザクションのデータフィールド全体が4バイト未満の場合、フォールバック関数（fallback function）が定義されていない限り、トランザクションがやり取り可能な関数は存在しないことになります。今回は`Faucet.sol`にフォールバック関数を実装したので、コールデータの長さが4バイト未満の場合、EVMはこの関数にジャンプします。
 
-Thus, the function identifier for the `withdraw(uint256,address)` function is `0x00f714ce`, since these are the first 4 bytes of the resulting hash. A function identifier is always 4 bytes long, so if the entire data field of the transaction sent to the contract is less than 4 bytes, then there's no function with which the transaction could possibly be communicating, unless a fallback function is defined. Because we implemented such a fallback function in `Faucet.sol`, the EVM jumps to this function when the calldata's length is less than 4 bytes.
+`LT`はスタックの上から2つの値を取り出し、トランザクションの`data`フィールドが4バイト未満の場合は1をプッシュします。それ以外の場合は0をプッシュします。この例では、コントラクトに送信されたトランザクションの`data`フィールドが4バイト未満であると仮定します。
 
-したがって、`withdraw(uint256,address)`関数の関数識別子は`0x00f714ce`です。これらは結果のハッシュの最初の4バイトだからです。関数識別子は常に4バイトの長さなので、コントラクトに送信されたトランザクションのデータフィールド全体が4バイト未満の場合、フォールバック関数が定義されていない限り、トランザクションが通信できる関数はありません。`Faucet.sol`にそのようなフォールバック関数を実装したため、コールデータの長さが4バイト未満の場合、EVMはこの関数にジャンプします。
-
-`LT` pops the top two values off the stack and, if the transaction's data field is less than 4 bytes, pushes 1 onto it. Otherwise, it pushes 0. In our example, let's assume the data field of the transaction sent to our contract was less than 4 bytes.
-
-`LT`はスタックから上位2つの値をポップし、トランザクションのデータフィールドが4バイト未満の場合、1をプッシュします。そうでなければ0をプッシュします。この例では、コントラクトに送信されたトランザクションのデータフィールドが4バイト未満であると仮定しましょう。
-
-The `PUSH2 0x0020` instruction pushes the bytes `0x0020` onto the stack. After this instruction, the stack looks like this:
-
-`PUSH2 0x0020`命令はバイト`0x0020`をスタックにプッシュします。この命令の後、スタックは次のようになります：
-
-```
-Stack
-0x0020
-0x1
-```
+`PUSH2 0x0020`命令は、スタックにバイト値`0x0020`をプッシュします。この命令の後、スタックは次のようになります：
 
 ```
 スタック
@@ -881,41 +843,23 @@ Stack
 0x1
 ```
 
-The next instruction is `JUMPI`, which stands for "jump if." It works like so:
-
-次の命令は`JUMPI`で、「jump if」（条件付きジャンプ）を意味します。次のように動作します：
+次の命令は`JUMPI`で、これは「jump if」を略したものです。次のように動作します：
 
 ```
-jumpi(label, cond) // Jump to "label" if "cond" is true
+jumpi(label, cond) // "cond"が真ならば"label"の位置にジャンプする
 ```
 
-```
-jumpi(label, cond) // "cond"が真の場合、"label"にジャンプ
-```
+このケースでは`label`は`0x0020`で、スマートコントラクトのフォールバック関数が存在する場所です。`cond`の引数は1で、これは先ほどの`LT`命令の結果です。この一連の流れを説明すると、トランザクションデータが4バイト未満の場合、コントラクトはフォールバック関数にジャンプするということです。
 
-In our case, `label` is `0x0020`, which is where our fallback function lives in our smart contract. The `cond` argument is 1, which was the result of the `LT` instruction earlier. To put this entire sequence into words, the contract jumps to the fallback function if the transaction data is less than 4 bytes.
-
-この場合、`label`は`0x0020`で、スマートコントラクト内のフォールバック関数がある場所です。`cond`引数は1で、これは先の`LT`命令の結果です。このシーケンス全体を言葉で表すと、トランザクションデータが4バイト未満の場合、コントラクトはフォールバック関数にジャンプします。
-
-At `0x20`, after two `JUMPDEST` instructions, only a `STOP` instruction follows because, although we declared a fallback function, we kept it empty. As you can see in Figure 14-24, had we not implemented a fallback function, the contract would throw an exception instead.
-
-`0x20`では、2つの`JUMPDEST`命令の後、`STOP`命令のみが続きます。フォールバック関数を宣言しましたが、空のままにしたためです。図14-24に示すように、フォールバック関数を実装していなかった場合、コントラクトは代わりに例外をスローしていたでしょう。
-
-![JUMPI instruction leading to fallback function](images/ch14/maet_1424.png)
+`0x20`では、2つの`JUMPDEST`命令の後、`STOP`命令だけが続きます。フォールバック関数を宣言しましたが、中身は空のままだからです。図14-24に示すように、フォールバック関数を実装していなかった場合、コントラクトは代わりに例外を投げます。
 
 ![フォールバック関数につながるJUMPI命令](images/ch14/maet_1424.png)
 
-Figure 14-24. JUMPI instruction leading to fallback function
-
 図14-24. フォールバック関数につながるJUMPI命令
-
-> **Note**
->
-> Heimdall represents the bytecode starting with offset equal to 0x01, even though the EVM actually interprets it as starting with offset 0x00. In the previous example, the JUMPI instruction tells the EVM to go to offset 0x20 if the condition is true, but in the graph, offset 0x20 is here represented as 0x21. As a rule of thumb, you just need to add one to every offset of the EVM to find it on the graph.
 
 > **注記**
 >
-> Heimdallは、EVMが実際にはオフセット0x00から始まると解釈するにもかかわらず、オフセット0x01から始まるバイトコードを表します。前の例では、JUMPI命令は条件が真の場合にEVMにオフセット0x20に行くように指示しますが、グラフではオフセット0x20は0x21として表されています。経験則として、グラフ上で見つけるにはEVMのすべてのオフセットに1を加えるだけです。
+> Heimdallはバイトコードをオフセット0x01から始まるものとして表現しますが、EVMは実際にはオフセット0x00から解釈します。前の例では、JUMPI命令は条件が真の場合にオフセット0x20にジャンプするようEVMに指示していますが、グラフ上ではオフセット0x20が0x21として表示されています。目安として、EVMの各オフセットに1を加えればグラフ上の位置を見つけることができます。
 
 Let's examine the central block of the dispatcher. Assuming we received calldata that was greater than 4 bytes in length, the `JUMPI` instruction would not jump to the fallback function. Instead, code execution would proceed to the following instructions:
 
