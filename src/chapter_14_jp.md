@@ -697,71 +697,37 @@ contract Faucet {
 
 デプロイメントバイトコードを取得するには、`solc --bin Faucet.sol`を実行します。ランタイムバイトコードのみが必要な場合は、`solc --bin-runtime Faucet.sol`を実行します。これらのコマンドの出力を比較すると、ランタイムバイトコードがデプロイメントバイトコードのサブセットであることがわかります。つまり、ランタイムバイトコードはデプロイメントバイトコード内に完全に含まれています。
 
-### CREATE Versus CREATE2 to Deploy Contracts on Chain
-
 ### オンチェーンでコントラクトをデプロイするCREATE対CREATE2
 
-`CREATE` and `CREATE2` are the only two opcodes that let you deploy a new contract on chain. The main difference between them is related to the resulting address of the newly created contract. With `CREATE` the destination address is calculated as follows:
-
-`CREATE`と`CREATE2`は、オンチェーンで新しいコントラクトをデプロイできる唯一の2つのオペコードです。それらの主な違いは、新しく作成されたコントラクトの結果アドレスに関連しています。`CREATE`では、宛先アドレスは次のように計算されます：
+オンチェーンで新しいコントラクトをデプロイできるオペコードは`CREATE`と`CREATE2`の2つだけです。両者の主な違いは、新しく作成されるコントラクトのアドレスの決定方法にあります。`CREATE`では、アドレスは次のように計算されます：
 
 ```
 address = keccak256[rlp(sender_address ++ sender_nonce)][12:]
 ```
 
-```
-address = keccak256[rlp(sender_address ++ sender_nonce)][12:]
-```
+送信者アドレスとそのノンスをRLPエンコードしたものをKeccak-256でハッシュ化し、その右端20バイトとなります。
 
-It's the rightmost 20 bytes of the Keccak-256 hash of the RLP encoding of the sender address followed by its nonce.
-
-送信者アドレスとそのノンスのRLPエンコーディングのKeccak-256ハッシュの右端20バイトです。
-
-`CREATE2` was added during the Constantinople hard fork in 2019 to let developers create new contracts where the resulting address isn't dependent on the state (i.e., the nonce) of the sender. In fact, it behaves in the exact same way as the `CREATE` opcode, but the destination address is calculated like this:
-
-`CREATE2`は、結果のアドレスが送信者の状態（つまり、ノンス）に依存しない新しいコントラクトを開発者が作成できるように、2019年のConstantinopleハードフォーク中に追加されました。実際、`CREATE`オペコードとまったく同じように動作しますが、宛先アドレスは次のように計算されます：
+`CREATE2`は、生成されるアドレスが送信者の状態（つまりノンス）に依存しないコントラクトを開発者が作成できるように、2019年のConstantinopleハードフォークで追加されました。`CREATE`オペコードとまったく同じように動作しますが、アドレスは次のように計算されます：
 
 ```
 address = keccak256(0xff ++ sender_address ++ salt ++ keccak256(init_code))[12:]
 ```
-
-```
-address = keccak256(0xff ++ sender_address ++ salt ++ keccak256(init_code))[12:]
-```
-
-where:
 
 ここで：
-
-- `init_code` is the deployment bytecode of the new contract.
-- `salt` is a 32-byte value (taken from the stack)
 
 - `init_code`は新しいコントラクトのデプロイメントバイトコードです。
 - `salt`は32バイトの値（スタックから取得）です。
 
-## Disassembling the Bytecode
-
 ## バイトコードの逆アセンブル
 
-Disassembling EVM bytecode is a great way to understand how high-level Solidity acts in the EVM. There are a few disassemblers you can use to do this:
+高級言語としてのSolidityがEVM上でどのように動作するかを理解する上で、EVMのバイトコードを逆アセンブルすることは良い方法です。使用できる逆アセンブラはいくつかあります。
 
-EVMバイトコードの逆アセンブルは、高水準SolidityがEVMでどのように動作するかを理解するための優れた方法です。これを行うために使用できる逆アセンブラがいくつかあります：
-
-- [**Ethersplay**](https://oreil.ly/xW6fH) is an EVM plug-in for Binary Ninja, a disassembler. By the way, to use plug-ins, you need to buy the complete app of Binary Ninja.
-- [**Heimdall**](https://oreil.ly/klTJ3) is an advanced EVM smart contract toolkit specializing in bytecode analysis and extracting information from unverified contracts.
-
-- [**Ethersplay**](https://oreil.ly/xW6fH)は、逆アセンブラであるBinary Ninja用のEVMプラグインです。ちなみに、プラグインを使用するには、Binary Ninjaの完全なアプリを購入する必要があります。
+- [**Ethersplay**](https://oreil.ly/xW6fH)は、逆アセンブラであるBinary Ninja用のEVMプラグインです。なお、プラグインを使用するにはBinary Ninjaの完全版を購入する必要があります。
 - [**Heimdall**](https://oreil.ly/klTJ3)は、バイトコード分析と未検証コントラクトからの情報抽出を専門とする高度なEVMスマートコントラクトツールキットです。
 
-In this section, we will be using Heimdall to produce Figure 14-21. After getting the runtime bytecode of `Faucet.sol`, we can feed it to Heimdall to see what the EVM instructions look like.
-
-このセクションでは、図14-21を作成するためにHeimdallを使用します。`Faucet.sol`のランタイムバイトコードを取得した後、Heimdallに渡してEVM命令がどのように見えるかを確認できます。
-
-![Disassembling the Faucet runtime bytecode](images/ch14/maet_1421.png)
+このセクションでは、Heimdallを使用して図14-21を作成します。`Faucet.sol`のランタイムバイトコードを取得した後、Heimdallに入力してEVM命令の中身を確認します。
 
 ![Faucetランタイムバイトコードの逆アセンブル](images/ch14/maet_1421.png)
-
-Figure 14-21. Disassembling the Faucet runtime bytecode
 
 図14-21. Faucetランタイムバイトコードの逆アセンブル
 
