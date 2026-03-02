@@ -445,7 +445,7 @@ EVMがこれらのオペコードをどのように実行し、スタック、�
 
 図14-11. PUSH0後のEVM
 
-MSTOREはスタックから2つのアイテムをポップし、1つ目をオフセット（バイト単位）、2つ目をそのオフセットからメモリに書き込む値として解釈します。バイト0x42の前にメモリ上に多くの先行ゼロ（31バイト分）があることに注意してください。これはスタック内のすべての値が32バイトであるためです。ほとんどの場合、書き込み時に先行ゼロは無視できますが（図14-12ではアイテム0x42が確認できます）、実際には32バイトの値であることを忘れないでください。
+MSTOREはスタックから2つのアイテムをポップし、1つ目をオフセット（バイト単位）、2つ目をそのオフセットからメモリに書き込む値として解釈します。バイト0x42の前にメモリ上に多くの先頭のゼロ埋め（31バイト分）があることに注意してください。これはスタック内のすべての値が32バイトであるためです。ほとんどの場合、書き込み時に先頭のゼロ埋めは無視できますが（図14-12ではアイテム0x42が確認できます）、実際には32バイトの値であることを忘れないでください。
 
 ![MSTORE後のEVM](images/ch14/maet_1412.png)
 
@@ -457,87 +457,45 @@ MSTOREはスタックから2つのアイテムをポップし、1つ目をオフ
 
 図14-13. PUSH0後のEVM
 
-CALLDATALOAD takes one element from the stack, interpreted as an offset, and returns the 32-byte value in the calldata starting at that offset, then pushes it onto the stack. Here, it's returning 0xab (note that we can ignore all the leading zeros as they are not significant), as shown in Figure 14-14.
-
-CALLDATALOADはスタックから1つの要素を取り、オフセットとして解釈し、そのオフセットから始まるコールデータの32バイト値を返し、スタックにプッシュします。ここでは、図14-14に示すように、0xabを返しています（先行ゼロは重要でないため無視できます）。
-
-![EVM after CALLDATALOAD](images/ch14/maet_1414.png)
+CALLDATALOADはスタックから1つの要素を取り出し、オフセットとして解釈し、そのオフセットから始まるコールデータの32バイト値を返してスタックにプッシュします。ここでは、図14-14に示すように0xabを返しています（先頭のゼロ埋めは重要でないため省略します）。
 
 ![CALLDATALOAD後のEVM](images/ch14/maet_1414.png)
 
-Figure 14-14. EVM after CALLDATALOAD
-
 図14-14. CALLDATALOAD後のEVM
-
-PUSH1 pushes 0xab onto the stack (Figure 14-15).
 
 PUSH1は0xabをスタックにプッシュします（図14-15）。
 
-![EVM after PUSH1 0xab](images/ch14/maet_1415.png)
-
 ![PUSH1 0xab後のEVM](images/ch14/maet_1415.png)
-
-Figure 14-15. EVM after PUSH1 0xab
 
 図14-15. PUSH1 0xab後のEVM
 
-EQ pops two items from the stack, compares them, and returns 1 if they are equal, 0 otherwise. In this example, it returns 0x01 since the two values are equal, as shown in Figure 14-16.
-
-EQはスタックから2つの項目をポップし、それらを比較し、等しい場合は1を、そうでない場合は0を返します。この例では、図14-16に示すように、2つの値が等しいため0x01を返します。
-
-![EVM after EQ](images/ch14/maet_1416.png)
+EQはスタックから2つのアイテムをポップして比較し、等しい場合は1を、そうでない場合は0を返します。この例では、図14-16に示すように、2つの値が等しいため0x01を返します。
 
 ![EQ後のEVM](images/ch14/maet_1416.png)
 
-Figure 14-16. EVM after EQ
-
 図14-16. EQ後のEVM
 
-Again, a PUSH0 pushes 0x00 onto the stack (Figure 14-17).
-
-再び、PUSH0は0x00をスタックにプッシュします（図14-17）。
-
-![EVM after PUSH0](images/ch14/maet_1417.png)
+再び、PUSH0が0x00をスタックにプッシュします（図14-17）。
 
 ![PUSH0後のEVM](images/ch14/maet_1417.png)
 
-Figure 14-17. EVM after PUSH0
-
 図14-17. PUSH0後のEVM
 
-MLOAD takes one element from the stack, interpreting it as the offset, and reads 32 bytes in the memory, starting at that offset, then pushes the result onto the stack (Figure 14-18).
-
-MLOADはスタックから1つの要素を取り、オフセットとして解釈し、そのオフセットから始まるメモリの32バイトを読み取り、結果をスタックにプッシュします（図14-18）。
-
-![EVM after MLOAD](images/ch14/maet_1418.png)
+MLOADはスタックから1つの要素を取り出し、オフセットとして解釈し、そのオフセットから始まるメモリの32バイトを読み取って結果をスタックにプッシュします（図14-18）。
 
 ![MLOAD後のEVM](images/ch14/maet_1418.png)
 
-Figure 14-18. EVM after MLOAD
-
 図14-18. MLOAD後のEVM
 
-Now, the SSTORE pops two items from the stack, interpreting the first one as the slot and the second one as the value to be saved in the contract's storage at that slot number, as shown in Figure 14-19.
-
-次に、SSTOREはスタックから2つの項目をポップし、最初のものをスロットとして、2番目のものをそのスロット番号のコントラクトのストレージに保存する値として解釈します。図14-19に示されています。
-
-![EVM after SSTORE](images/ch14/maet_1419.png)
+次に、SSTOREがスタックから2つのアイテムを取り出し、1つ目をスロット番号、2つ目をコントラクトストレージの該当スロットに保存する値として解釈します（図14-19）。
 
 ![SSTORE後のEVM](images/ch14/maet_1419.png)
 
-Figure 14-19. EVM after SSTORE
-
 図14-19. SSTORE後のEVM
 
-Finally, we have the STOP opcode that halts the execution, and the EVM returns successfully, as you can see in Figure 14-20.
-
-最後に、実行を停止するSTOPオペコードがあり、図14-20に示すように、EVMは正常に戻ります。
-
-![EVM after STOP](images/ch14/maet_1420.png)
+最後に、STOPオペコードが実行を停止し、図14-20に示すようにEVMは正常に終了します。
 
 ![STOP後のEVM](images/ch14/maet_1420.png)
-
-Figure 14-20. EVM after STOP
 
 図14-20. STOP後のEVM
 
@@ -1377,7 +1335,7 @@ Stack
 
 All the leading zeros can be ignored as they are not significant.
 
-先行ゼロは重要でないため無視できます。
+先頭のゼロ埋めは重要でないため省略します。
 
 ---
 
@@ -1433,7 +1391,7 @@ Stack
 
 Now, does the `0xf714ce` look familiar to you? Do you remember what the function identifier of our `withdraw(uint256,address)` function is? It's `0x00f714ce`… Note that they are the same number as leading zeros can be ignored.
 
-さて、`0xf714ce`は見覚えがありますか？`withdraw(uint256,address)`関数の関数識別子が何であったか覚えていますか？`0x00f714ce`です…先行ゼロは無視できるため、同じ数値であることに注意してください。
+さて、`0xf714ce`は見覚えがありますか？`withdraw(uint256,address)`関数の関数識別子が何であったか覚えていますか？`0x00f714ce`です…先頭のゼロ埋めを省略すれば同じ数値であることがわかります。
 
 The next instruction, `EQ`, pops off the top two items of the stack and compares them. This is where the dispatcher does its main job: it compares whether the function identifier sent in the `msg.data` field of the transaction matches that of `withdraw(uint256,address)`. If they're equal, `EQ` pushes 1 onto the stack, which will ultimately be used to jump to the withdraw function. Otherwise, `EQ` pushes 0 onto the stack.
 
