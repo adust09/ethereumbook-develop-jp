@@ -30,16 +30,11 @@
 
 次項以降では、それぞれのウォレット技術について概説します。
 
-### Nondeterministic (Random) Wallets
 ### 非決定性（ランダム）ウォレット
 
-In the first Ethereum wallet (produced for the Ethereum presale), each wallet file stored a single randomly generated private key. Such wallets are being replaced with deterministic wallets because these "old-style" wallets are in many ways inferior. For example, it is considered good practice to avoid reusing Ethereum addresses as part of maximizing your privacy while using Ethereum—that is, to use a new address (which needs a new private key) every time you receive funds. You can go further and use a new address for each transaction, although this can get expensive if you deal a lot with tokens. To follow this practice, a nondeterministic wallet will need to regularly increase its list of keys, which means you will need to make regular backups. If you ever lose your data (disk failure, drink accident, phone stolen) before you've managed to back up your wallet, you will lose access to your funds and smart contracts. The "type 0" nondeterministic wallets are the hardest to deal with because they create a new wallet file for every new address in a "just in time" manner.
+最初のイーサリアムウォレットはイーサリアムの先行販売のために作られ、それぞれのウォレットファイルにはランダムに生成された単一の秘密鍵が格納されていました。このような「古いスタイル」の非決定性ウォレットは多くの点で不備や欠点があり、決定性ウォレットで置き換えられつつあります。たとえば、イーサリアムを使用する際は、プライバシーを最大限に保護するためにも、イーサリアムアドレスの再利用は避けたほうがよいでしょう。資金を受け取る場合は、都度新しいアドレス（新しい秘密鍵が必要）を使うようにしてください。あるいは、各トランザクションに対して新しいアドレスを使用することもできますが、トークンを大量に取り扱う場合にはコストが高くなります。この方法を採用する場合、非決定性ウォレットは定期的に鍵のリストを増やす必要があります。つまり、定期的にバックアップを取る必要があります。ウォレットのバックアップを取る前にデータを失った場合（ディスクの故障、飲み物をこぼす、携帯電話の盗難）、資金とスマートコントラクトにアクセスできなくなります。「Type-0」の非決定性ウォレットは、「使い捨て」のような方法で新しいアドレスごとに新しいウォレットファイルを作成するため、取り扱いがかなり面倒になります。
 
-最初のイーサリアムウォレット（イーサリアムのプレセールのために作られたもの）では、各ウォレットファイルにはランダムに生成された単一の秘密鍵が格納されていました。このような「古いスタイル」のウォレットは多くの点で劣っているため、決定性ウォレットで置き換えられつつあります。たとえば、イーサリアムを使用する際にプライバシーを最大限に保護するためには、イーサリアムアドレスの再利用を避けることが良い習慣とされています。つまり、資金を受け取るたびに新しいアドレス（新しい秘密鍵が必要）を使うことです。さらに踏み込んで、各トランザクションごとに新しいアドレスを使用することもできますが、トークンを大量に取り扱う場合にはコストが高くなります。この方法を採用すると、非決定性ウォレットは定期的に鍵のリストを増やす必要があり、定期的なバックアップが必要になります。ウォレットのバックアップを取る前にデータを失った場合（ディスクの故障、飲み物をこぼす、携帯電話の盗難）、資金やスマートコントラクトへのアクセスを失うことになります。「Type-0」の非決定性ウォレットは、新しいアドレスごとに「その場で」新しいウォレットファイルを作成するため、最も扱いにくい種類です。
-
-Nevertheless, many Ethereum clients (including Geth) use a *keystore file*, which is a JSON-encoded file that contains a single (randomly generated) private key, encrypted by a passphrase for extra security. The JSON file's contents look like this:
-
-それにもかかわらず、多くのイーサリアムクライアント（Gethを含む）は*キーストアファイル*を使用しています。これはJSONエンコードされたファイルで、ランダムに生成された秘密鍵が1つ含まれ、セキュリティを強化するためにパスフレーズで暗号化されています。JSONファイルの内容は次のようになります：
+それにもかかわらず、多くのイーサリアムクライアント（Gethを含む）は*キーストアファイル*を使用しています。キーストアファイルはJSONエンコードされたファイルであり、ランダムに生成された秘密鍵が1つ含まれ、セキュリティを強化するためにパスフレーズで暗号化されています。JSONファイルの内容は次のようになります：
 
 ```json
 {
@@ -67,13 +62,7 @@ Nevertheless, many Ethereum clients (including Geth) use a *keystore file*, whic
 }
 ```
 
-The keystore format uses a *key derivation function* (KDF), also known as a *password-stretching algorithm*, which protects against brute-force, dictionary, and rainbow table attacks. In simple terms, the private key is not encrypted by the passphrase directly. Instead, the passphrase is "stretched" by repeatedly hashing it. The hashing function is repeated for 262,144 rounds, which can be seen in the keystore JSON as the parameter `crypto.kdfparams.n`. An attacker trying to brute-force the passphrase would have to apply 262,144 rounds of hashing for every attempted passphrase, which slows the attack sufficiently to make it infeasible for passphrases of appropriate complexity and length.
-
-キーストア形式では*鍵導出関数*（KDF）を使用しています。これは*パスワードストレッチングアルゴリズム*とも呼ばれ、ブルートフォース（総当たり）攻撃、辞書攻撃、レインボーテーブル攻撃から保護します。簡単に言えば、秘密鍵はパスフレーズによって直接暗号化されるわけではありません。代わりに、パスフレーズに対して繰り返しハッシュ化を行う「ストレッチング」が行われます。ハッシュ関数は262,144ラウンド繰り返されます。この回数はキーストアJSONの`crypto.kdfparams.n`パラメータで確認できます。パスフレーズをブルートフォース攻撃しようとする攻撃者は、試行するパスフレーズごとに262,144ラウンドのハッシュ化を適用しなければならず、十分な複雑さと長さを持つパスフレーズに対する攻撃を実質的に不可能にします。
-
-> **Tip**
->
-> Using nondeterministic wallets is discouraged for anything other than simple tests. They are too cumbersome to back up and use for anything but the most basic of situations. Instead, use an industry standard–based hierarchical deterministic wallet with a mnemonic seed for backup.
+キーストア形式では、*パスワードストレッチングアルゴリズム*とも呼ばれる*鍵導出関数*（KDF）を使用しており、ブルートフォース（総当たり）攻撃、辞書攻撃、レインボーテーブル攻撃から保護します。簡単に言えば、秘密鍵はパスフレーズで直接暗号化はされません。その代わり、パスフレーズに対して繰り返しハッシュ関数を実行するストレッチングが行われます。ハッシュ関数は262,144ラウンド繰り返されており、キーストアJSONでは`crypto.kdfparams.n`として確認できます。パスフレーズをブルートフォース攻撃しようとする攻撃者は、試行するパスフレーズごとに262,144回のハッシュを適用しなければなりません。この仕組みは攻撃を十分に遅くし、十分な複雑さと長さを持つパスフレーズに対する攻撃を実質的に不可能にします。
 
 > **Tip**
 >
