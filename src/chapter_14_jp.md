@@ -1094,102 +1094,52 @@ SHR
 
 これについて興味がある場合は、[James Prestwichの記事](https://oreil.ly/EImcE)で詳しく読んでください。
 
-## Concrete Implementations
-
 ## 具体的な実装
 
-Every Ethereum node has a concrete implementation of the EVM described in this chapter. Here is a list of the most famous and used ones:
-
-すべてのイーサリアムノードには、本章で説明したEVMの具体的な実装があります。最も有名で使用されているもののリストを以下に示します：
+すべてのイーサリアムノードには、本章で説明したEVMの具体的な実装があります。最も有名で広く使用されているものを以下に示します：
 
 **Go-ethereum EVM**
 
-**Go-ethereum EVM**
-
-Geth is the most adopted and oldest execution client. It contains a full implementation of the EVM written in Go.
-
-Gethは最も採用されている最も古い実行クライアントです。Goで書かれたEVMの完全な実装を含んでいます。
+Gethは最も広く採用されている最古の実行クライアントです。Goで書かれたEVMの完全な実装を含んでいます。
 
 **Execution-spec EVM**
-
-**Execution-spec EVM**
-
-The Ethereum Foundation maintains a Python repository on GitHub containing the specification related to the Ethereum execution client. It has a full EVM implementation written in Python.
 
 Ethereum FoundationはGitHub上でイーサリアム実行クライアントに関連する仕様を含むPythonリポジトリを管理しています。Pythonで書かれた完全なEVM実装を持っています。
 
 **Revm**
 
-**Revm**
-
-Revm is one of the most used EVM implementations outside of normal Ethereum clients, thanks to its great customizability and adaptability.
-
-Revmは、その優れたカスタマイズ性と適応性のおかげで、通常のイーサリアムクライアント以外で最も使用されているEVM実装の1つです。
+Revmは、その優れたカスタマイズ性と適応性により、通常のイーサリアムクライアント以外で最も使用されているEVM実装の1つです。
 
 **Evmone**
-
-**Evmone**
-
-Evmone is probably the fastest EVM implementation. It is written in C++ and maintained by the Ipsilon team at the Ethereum Foundation.
 
 Evmoneはおそらく最速のEVM実装です。C++で書かれ、Ethereum FoundationのIpsilonチームによって管理されています。
 
 **Besu EVM**
 
-**Besu EVM**
-
-Besu is an execution client maintained by Consensys. It has a full implementation of the EVM written in Java.
-
 BesuはConsensysによって管理されている実行クライアントです。Javaで書かれたEVMの完全な実装を持っています。
 
 **Nethermind EVM**
 
-**Nethermind EVM**
-
-Nethermind EVM is an execution client written in C# that maintains a full implementation of the EVM.
-
 Nethermind EVMはC#で書かれた実行クライアントで、EVMの完全な実装を維持しています。
-
-## The Biggest EVM Upgrade: EVM Object Format
 
 ## 最大のEVMアップグレード：EVMオブジェクトフォーマット
 
-*EVM Object Format* (EOF) is the biggest upgrade to the EVM since its birth in 2015. In fact, even though there have been modifications to the EVM in the past, which were mainly focused on the gas-metering aspect or on the introduction of new opcodes, the EVM is almost identical to how it was first created by Gavin Wood.
+*EVMオブジェクトフォーマット*（EOF）は、2015年の誕生以来、EVMへの最大のアップグレードです。過去にもEVMへの変更はありましたが、それらは主にガスの計量や新しいオペコードの導入に焦点を当てたものであり、EVMはGavin Woodが最初に設計したものとほぼ同一のままです。
 
-*EVMオブジェクトフォーマット*（EOF）は、2015年の誕生以来、EVMへの最大のアップグレードです。実際、過去にEVMへの変更がありましたが、それらは主にガスメータリングの側面や新しいオペコードの導入に焦点を当てており、EVMはGavin Woodによって最初に作成されたものとほぼ同一です。
+EVMは依然として優れています。今日イーサリアム（およびその他すべてのEVM互換ブロックチェーン）で行われているすべての活動は、EVMのおかげで実現しています。だからと言って完璧というわけではありません。近年、スマートコントラクト開発者はEVMのさまざまな側面に対処し、その制約を克服するためのテクニックを学ぶ必要がありました。
 
-The EVM is still great. All activities happening today on Ethereum (and all other EVM-compatible blockchains) are only possible thanks to it. It's not perfect either, and during recent years, smart contract developers have had to deal with different aspects of it and learn some tricks to overcome its constraints.
-
-EVMは依然として素晴らしいです。今日イーサリアム（およびその他すべてのEVM互換ブロックチェーン）で起こっているすべての活動は、それのおかげでのみ可能です。完璧でもなく、近年、スマートコントラクト開発者はその異なる側面に対処し、その制約を克服するためのいくつかのトリックを学ぶ必要がありました。
-
-EOF is an extensible and versioned container format for the EVM with a once-off validation at deploy time. In this section, we'll explore all the major limitations of the EVM and how EOF intends to overcome them.
-
-EOFは、デプロイ時の一度限りの検証を伴うEVM用の拡張可能でバージョン管理されたコンテナフォーマットです。このセクションでは、EVMのすべての主要な制限と、EOFがそれらをどのように克服しようとしているかを探ります。
-
-> **Note**
->
-> As of the final revision of this book (June 2025), the EOF upgrade has been postponed indefinitely due to insufficient consensus within the Ethereum community. There is currently no clear timeline for its implementation, and it may ultimately never be adopted. Nevertheless, we believe this section remains valuable for understanding how EOF could affect the EVM and the broader Ethereum ecosystem.
+EOFは、デプロイ時に一度だけ検証を行う、EVM用の拡張可能でバージョン管理されたコンテナフォーマットです。このセクションでは、EVMの主要な制限と、EOFがそれらをどのように克服しようとしているかを見ていきます。
 
 > **注記**
 >
-> 本書の最終改訂時点（2025年6月）では、EOFアップグレードはイーサリアムコミュニティ内での合意が不十分なため、無期限に延期されています。その実装に関する明確なタイムラインは現在なく、最終的に採用されない可能性もあります。それにもかかわらず、EOFがEVMとより広いイーサリアムエコシステムにどのような影響を与える可能性があるかを理解するために、このセクションは価値があると考えています。
-
-## The Future of the EVM
+> 本書の最終改訂時点（2025年6月）では、EOFアップグレードはイーサリアムコミュニティ内での合意が不十分なため、無期限に延期されています。実装に関する明確なタイムラインは現在なく、最終的に採用されない可能性もあります。それでもなお、EOFがEVMとイーサリアムエコシステム全体にどのような影響を与えうるかを理解するうえで、このセクションには価値があると考えています。
 
 ## EVMの将来
 
-The future of the EVM, besides EOF, is uncertain and will depend on how the EVM will be used by developers and different projects. There are some interesting areas where the EVM could expand, though, such as the *zk-EVM* that would provide zero-knowledge proofs attached to each block to prove its correct execution. Also, [*EVMMAX*](https://oreil.ly/ioqSx) and [*SIMD*](https://oreil.ly/7q0Dq) would bring more power to the EVM, making it much faster to do lots of cryptographic processing, which would be particularly beneficial for cryptographic-dependent applications such as privacy protocols or L2s.
-
-EOF以外のEVMの将来は不確実であり、開発者やさまざまなプロジェクトによってEVMがどのように使用されるかに依存します。ただし、EVMが拡張できる興味深い領域がいくつかあります。例えば、各ブロックに添付されたゼロ知識証明を提供してその正しい実行を証明する*zk-EVM*などです。また、[*EVMMAX*](https://oreil.ly/ioqSx)と[*SIMD*](https://oreil.ly/7q0Dq)はEVMにより多くのパワーをもたらし、多くの暗号処理をはるかに高速に行えるようにします。これは、プライバシープロトコルやL2などの暗号に依存するアプリケーションに特に有益です。
-
-## Conclusion
+EOFはさておき、EVMの将来は不確実であり、開発者やさまざまなプロジェクトによってEVMがどのように使用されるかに依存します。ただし、EVMが拡張できる興味深い領域がいくつかあります。たとえば、各ブロックの正しい実行を証明するゼロ知識証明を提供する*zk-EVM*などです。また、[*EVMMAX*](https://oreil.ly/ioqSx)と[*SIMD*](https://oreil.ly/7q0Dq)はEVMにより多くの演算能力をもたらし、暗号処理をはるかに高速に行えるようにします。これは、プライバシープロトコルやL2などの暗号技術に依存するアプリケーションに特に有益です。
 
 ## 結論
 
-In this chapter, we explored the EVM, tracing the execution of various smart contracts and looking at how the EVM executes bytecode. We also looked at gas, the EVM's accounting mechanism, and saw how it solves the halting problem and protects Ethereum from DoS attacks. Furthermore, we analyzed EOF, looking at how it tries to fix different flows of legacy EVM.
-
-本章では、EVMを探索し、さまざまなスマートコントラクトの実行をトレースし、EVMがバイトコードをどのように実行するかを見ました。また、EVMの会計メカニズムであるガスについても見て、それが停止性問題をどのように解決し、イーサリアムをDoS攻撃からどのように保護するかを見ました。さらに、EOFを分析し、レガシーEVMのさまざまなフローをどのように修正しようとしているかを見ました。
-
-Next, in Chapter 15, we will explore the mechanism used by Ethereum to achieve decentralized consensus.
+本章では、EVMを探索し、さまざまなスマートコントラクトの実行をトレースし、EVMがバイトコードをどのように実行するかを見ました。また、EVMの会計メカニズムであるガスが、停止性問題をどのように解決し、イーサリアムをDoS攻撃からどのように保護するかについても確認しました。さらに、EOFを分析し、レガシーEVMのさまざまな課題をどのように修正しようとしているかを見ました。
 
 次の第15章では、イーサリアムが分散コンセンサスを達成するために使用するメカニズムを探ります。
