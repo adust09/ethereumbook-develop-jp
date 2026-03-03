@@ -1055,81 +1055,42 @@ SHR
 >
 > ガス返金はトランザクションの最後に適用されます。したがって、トランザクションを最後まで実行するのに十分なガスがない場合、失敗し、返金は行われません。
 
-### Block Gas Limit
-
 ### ブロックガス上限
 
-The block gas limit is the maximum amount of gas that may be consumed by all the transactions in a block. It constrains how many transactions can fit into a block.
+ブロックガス上限は、ブロック内のすべてのトランザクションによって消費されるガスの最大量であり、ブロックに収まるトランザクションの数を制限します。
 
-ブロックガス上限は、ブロック内のすべてのトランザクションで消費される可能性のあるガスの最大量です。ブロックに収まるトランザクションの数を制限します。
+たとえば、ガス上限が30,000、30,000、40,000、50,000、50,000に設定された5つのトランザクションがあるとします。ブロックガス上限が180,000の場合、それらのトランザクションのうちの4つはブロックに収まることができ、5番目のトランザクションは将来のブロックを待たなければなりません。前述のように、バリデーターはどのトランザクションをブロックに含めるかを決定します。異なるバリデーターは、異なる組み合わせを選択する可能性が高くなります。というのも、バリデーターはトランザクションをネットワークから異なる順番で受け取るのが一般的だからです。
 
-For example, let's say we have five transactions whose gas limits have been set to 30,000, 30,000, 40,000, 50,000, and 50,000. If the block gas limit is 180,000, then any four of those transactions can fit in a block, while the fifth will have to wait for a future block. As previously discussed, validators decide which transactions to include into a block. Different validators are likely to select different combinations, mainly because they receive transactions from the network in a different order.
-
-たとえば、ガス上限が30,000、30,000、40,000、50,000、50,000に設定された5つのトランザクションがあるとしましょう。ブロックガス上限が180,000の場合、これらのトランザクションのうち4つがブロックに収まり、5番目は将来のブロックを待つ必要があります。前に説明したように、バリデータはどのトランザクションをブロックに含めるかを決定します。異なるバリデータは異なる組み合わせを選択する可能性が高く、主にネットワークから異なる順序でトランザクションを受信するためです。
-
-If a validator tries to include a transaction that requires more gas than the current block gas limit, the block will be rejected by the network. Most Ethereum clients will stop you from issuing such a transaction by giving a warning along the lines of "transaction exceeds block gas limit." According to [Etherscan](https://etherscan.io), the block gas limit on the Ethereum mainnet is 36 million gas at the time of writing (June 2025), meaning that around 1,428 basic—that is, ETH transfer—transactions (each consuming 21,000 gas) could fit into a block.
-
-バリデータが現在のブロックガス上限より多くのガスを必要とするトランザクションを含めようとすると、ブロックはネットワークによって拒否されます。ほとんどのイーサリアムクライアントは、「トランザクションがブロックガス上限を超えています」という警告を出して、そのようなトランザクションの発行を止めます。[Etherscan](https://etherscan.io)によると、執筆時点（2025年6月）のイーサリアムメインネットのブロックガス上限は3,600万ガスであり、約1,428の基本的な（つまり、ETH転送）トランザクション（それぞれ21,000ガスを消費）がブロックに収まることを意味します。
-
-#### Who chooses the block gas limit?
+バリデーターが、現在のブロックガス上限よりも多くのガスを必要とするトランザクションを含めようとすると、ブロックはネットワークによって拒否されます。ほとんどのイーサリアムクライアントは、「トランザクションがブロックガス上限を超えています」という警告を出すことで、そのようなトランザクションの発行を停止します。[Etherscan](https://etherscan.io)によると、執筆時点（2025年6月）のイーサリアムメインネットのブロックガス上限は3,600万ガスであり、約1,428の基本的な（つまり、ETH転送）トランザクション（それぞれ21,000ガスを消費）がブロックに収まることを意味します。
 
 #### 誰がブロックガス上限を選択するか？
 
-Before the introduction of EIP-1559 on August 5, 2021, miners (Ethereum was using a PoW-based consensus algorithm at that time) had a built-in mechanism where they could vote on the block gas limit, so capacity could be increased or decreased in subsequent blocks. The miner of a block could vote to adjust the block gas limit by a factor of 1/1024 (0.0976%) in either direction. The result of this was an adjustable block size based on the needs of the network, following miners' hashpower.
-
 2021年8月5日のEIP-1559の導入前は、マイナー（当時イーサリアムはPoWベースのコンセンサスアルゴリズムを使用していました）には、ブロックガス上限に投票できる組み込みメカニズムがあり、後続のブロックで容量を増減できました。ブロックのマイナーは、どちらの方向にも1/1024（0.0976%）の係数でブロックガス上限を調整するために投票できました。この結果、マイナーのハッシュパワーに従って、ネットワークのニーズに基づいて調整可能なブロックサイズになりました。
 
-Now, validators vote on the *gas target*—that is, how much gas a block should consume on average—and the gas limit is defined to be twice the target. The 1/1024 adjusting factor that each validator must comply with is maintained the same as before.
-
-現在、バリデータは*ガスターゲット*（つまり、ブロックが平均的に消費すべきガス量）に投票し、ガス上限はターゲットの2倍として定義されます。各バリデータが従う必要がある1/1024の調整係数は以前と同じに維持されます。
-
-#### Why doesn't the block gas limit rise?
+現在、バリデーターは*ガスターゲット*（つまり、ブロックが平均的に消費すべきガス量）に投票し、ガス上限はターゲットの2倍として定義されます。各バリデーターが従う必要がある1/1024の調整係数は以前と同じに維持されます。
 
 #### なぜブロックガス上限は上昇しないのか？
 
-You may be wondering, if validators can vote on the gas target, which directly translates to the gas limit, why doesn't the block gas limit rise to one billion instead of being almost fixed at 30 million? A bigger block gas limit would mean that more transactions could fit into a block, so transactions would become cheaper for end users.
+バリデーターがガスターゲットに投票でき、それが直接ガス上限に変換されるなら、なぜブロックガス上限は3,000万にほぼ固定されたままで10億には上昇しないのかと疑問に思うかもしれません。より大きなブロックガス上限は、より多くのトランザクションがブロックに収まることを意味するため、エンドユーザーにとってトランザクションはより安くなります。
 
-バリデータがガスターゲットに投票でき、それが直接ガス上限に変換されるなら、なぜブロックガス上限は3,000万にほぼ固定されている代わりに10億に上昇しないのかと疑問に思うかもしれません。より大きなブロックガス上限は、より多くのトランザクションがブロックに収まることを意味するため、エンドユーザーにとってトランザクションはより安くなります。
-
-The answer is that raising the gas limit has some cons related to the decentralization of the network. In fact, while bigger blocks can include more transactions, that also means that blocks become harder to verify on time, and that could lead to the death of Ethereum nodes made with common hardware, leaving only powerful servers to validate full blocks. Not only that, but bigger blocks also mean a bigger state growth. The final outcome is the same as before: big servers would be the only ones able to fully run a node.
-
-答えは、ガス上限を上げることにはネットワークの分散化に関連するいくつかの欠点があるということです。実際、より大きなブロックはより多くのトランザクションを含むことができますが、それはブロックを時間内に検証することがより困難になることも意味し、一般的なハードウェアで作られたイーサリアムノードの死につながり、完全なブロックを検証できるのは強力なサーバーだけになる可能性があります。それだけでなく、より大きなブロックはより大きな状態成長も意味します。最終的な結果は以前と同じです：大きなサーバーだけがノードを完全に実行できるようになります。
-
-Historically, the block gas limit has been raised all at once during upgrades of the protocol, as you can see in Figure 14-25. And its value is generally set to a level suggested by core developers where we are sure all clients are able to handle the load of transactions and process blocks on time.
+答えは、ガス上限を上げることにはネットワークの分散化に関連するいくつかの欠点があるということです。実際、より大きなブロックはより多くのトランザクションを含むことができますが、それはブロックを時間内に検証することがより困難になることも意味し、一般的なハードウェアで構成されたイーサリアムノードの淘汰につながり、完全なブロックを検証できるのは強力なサーバーだけになる可能性があります。それだけでなく、より大きなブロックは状態をより大きく成長させることも意味します。最終的な結果は以前と同じです：大きなサーバーだけがノードを完全に実行できるようになります。
 
 歴史的に、図14-25に示すように、ブロックガス上限はプロトコルのアップグレード中に一度に引き上げられてきました。その値は通常、すべてのクライアントがトランザクションの負荷を処理し、ブロックを時間内に処理できることが確実なコア開発者が提案するレベルに設定されています。
 
-![Block gas limit history](images/ch14/maet_1425.png)
-
 ![ブロックガス上限の履歴](images/ch14/maet_1425.png)
-
-Figure 14-25. Ethereum average gas limit chart
 
 図14-25. イーサリアム平均ガス上限チャート
 
-#### Why Not Raise the Block Gas Limit?
-
 #### なぜブロックガス上限を引き上げないのか？
 
-Even though the block gas limit looks like it has been "fixed" at 30 million for more than three years, with PBS (see "Ethereum Stateless"), where actors with sophisticated hardware build the blocks—builders—and send them to proposers—validators—to publish them on the P2P network, there is an incentive to raise the block gas limit indefinitely while maintaining the actual gas used almost as a constant.
+ブロックガス上限は3年以上にわたって3,000万に「固定」されているように見えますが、PBS（「イーサリアムステートレス」を参照）では、洗練されたハードウェアを持つアクターがブロックを構築し（ビルダー）、それをプロポーザー（バリデーター）に送信してP2Pネットワークで公開するため、実際に使用されるガスをほぼ一定に保ちながらブロックガス上限を無制限に引き上げるインセンティブがあります。
 
-ブロックガス上限は3年以上にわたって3,000万に「固定」されているように見えますが、PBS（「イーサリアムステートレス」を参照）では、洗練されたハードウェアを持つアクターがブロックを構築し（ビルダー）、それをプロポーザー（バリデータ）に送信してP2Pネットワークで公開するため、実際に使用されるガスをほぼ一定に保ちながらブロックガス上限を無制限に引き上げるインセンティブがあります。
+事実として、EIP-1559に従って、ブロックガスターゲットが実際に使用されるガスよりもはるかに高い場合、ベースフィーは減少し続け、ガス手数料のほぼすべてがバーンされずにバリデーターに渡るようになります（ベースフィーはバーンされ、それらのETHが供給から削除されます）。
 
-In fact, following EIP-1559, if the block gas target is much higher than the actual gas used, the base fee keeps decreasing, to the point where almost all of the gas fee goes to the validators instead of being burned (the base fee is burned, removing those ETH from the supply).
-
-実際、EIP-1559に従って、ブロックガスターゲットが実際に使用されるガスよりもはるかに高い場合、ベースフィーは減少し続け、ガス手数料のほぼすべてがバーンされる代わりにバリデータに行く点まで達します（ベースフィーはバーンされ、それらのETHが供給から削除されます）。
-
-So the advantages for validators are twofold:
-
-したがって、バリデータにとっての利点は2つあります：
-
-- They can keep the gas fees for themselves, instead of burning them and reducing the ETH supply.
-- When necessary, they can create larger blocks that capture a lot of MEV activity, resulting in even more fees for them.
+したがって、バリデーターにとっての利点は2つあります：
 
 - ETH供給を減らしてバーンする代わりに、ガス手数料を自分たちのために保持できる。
-- 必要に応じて、多くのMEV活動をキャプチャする大きなブロックを作成でき、さらに多くの手数料を得られる。
-
-If you are curious about this, read more in [James Prestwich's article](https://oreil.ly/EImcE).
+- 必要に応じて、多くのMEV活動を取り込む大きなブロックを作成でき、さらに多くの手数料を得られる。
 
 これについて興味がある場合は、[James Prestwichの記事](https://oreil.ly/EImcE)で詳しく読んでください。
 
