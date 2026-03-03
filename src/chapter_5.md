@@ -1,62 +1,32 @@
-# Chapter 5: Wallets
 # 第5章：ウォレット
-
-The word *wallet* is used to describe a few different things in Ethereum. At a high level, a wallet is a software application that serves as the primary user interface to Ethereum. The wallet controls access to a user's money, manages keys and addresses, tracks the balance, and creates and signs transactions. In addition, some Ethereum wallets can interact with contracts, such as ERC-20 tokens.
 
 「ウォレット」という用語は、イーサリアムにおいていくつかの異なるものを表すために使われます。広義には、ウォレットとはイーサリアムへの主要なユーザーインターフェイスとして機能するソフトウェアアプリケーションのことです。ウォレットはユーザーの資金へのアクセスを制御し、鍵とアドレスの管理、残高の追跡、トランザクションの作成と署名を行います。さらに、一部のイーサリアムウォレットはERC-20トークンなどのコントラクトとやり取りすることもできます。
 
-More narrowly, from a programmer's perspective, the word *wallet* refers to the system used to store and manage a user's keys. Every wallet has a key-management component. For some wallets, that's all there is. Other wallets are part of a much broader category, that of *browsers*, which are interfaces to Ethereum-based DApps, which we will examine in more detail in Chapter 12. There are no clear lines of distinction between the various categories that are conflated under the term *wallet*.
-
-プログラマーの観点からより狭い意味で言えば、「ウォレット」という用語はユーザーの鍵を保管・管理するためのシステムを指します。すべてのウォレットには鍵管理コンポーネントがあります。一部のウォレットにとってはそれがすべてです。他のウォレットは*ブラウザ*というはるかに広いカテゴリーに属しています。ブラウザとはイーサリアムベースのDAppへのインターフェイスのことで、第12章で詳しく解説します。「ウォレット」という用語でまとめられているさまざまなカテゴリーの間には、明確な線引きはありません。
-
-In this chapter, we will look at wallets as containers for private keys and as systems for managing these keys.
+プログラマーの観点からより狭い意味で言えば、「ウォレット」という用語はユーザーの鍵を保管・管理するためのシステムを指します。すべてのウォレットは鍵を管理する機能を備えていますが、中には鍵の管理機能しか持たないウォレットもあります。他のウォレットは*ブラウザ*というはるかに広いカテゴリーに属しています。ブラウザとはイーサリアムベースのDAppへのインターフェイスのことで、第12章で詳しく解説します。「ウォレット」という用語でまとめられているさまざまなカテゴリーの間には、明確な線引きはありません。
 
 この章では、秘密鍵を保存するコンテナとして、また鍵を管理するシステムとして、ウォレットを解説します。
 
-## Overview of Wallet Technologies
 ## ウォレット技術の概要
-
-In this section, we summarize the various technologies used to construct user-friendly, secure, and flexible Ethereum wallets.
 
 この節では、利便性、安全性、柔軟性を兼ね備えたイーサリアムウォレットを実現するために使われているさまざまな技術の概要を説明します。
 
-One key consideration in designing wallets is balancing convenience and privacy. The most convenient Ethereum wallet is one with a single private key and address that you reuse for everything. Unfortunately, such a solution is a privacy nightmare since anyone can easily track and correlate all your transactions. Using a new key for every transaction is best for privacy but becomes very difficult to manage. The correct balance is difficult to achieve, which is why good wallet design is paramount.
+ウォレット設計における重要な検討事項の1つは、利便性とプライバシーのバランスをとることです。最も使いやすいイーサリアムウォレットとは、常に1つの秘密鍵とアドレスを再利用するものでしょう。残念ながら、そのような設計はプライバシーの面では悪夢のようなものです。なぜなら、誰もがあなたのトランザクションを簡単に追跡し、関連付けることができるからです。すべてのトランザクションに対して新しい鍵を使うことがプライバシーの観点からは最も望ましいのですが、管理は非常に難しくなります。適切なバランスをとることは困難な課題であり、だからこそ優れたウォレット設計が重要になります。
 
-ウォレット設計における重要な検討事項の1つは、利便性とプライバシーのバランスをとることです。最も使いやすいイーサリアムウォレットとは、すべてに対して1つの秘密鍵とアドレスを再利用するものでしょう。残念ながら、そのような設計ではプライバシーの観点から問題があります。なぜなら、誰もがあなたのトランザクションを簡単に追跡し、関連付けることができるからです。すべてのトランザクションに対して新しい鍵を使うことがプライバシーの観点からは最も望ましいのですが、管理は非常に難しくなります。適切なバランスをとることは困難な課題であり、だからこそ優れたウォレット設計が重要になります。
+イーサリアムに関するよくある誤解は、「イーサリアムのウォレットはイーサやトークンを保管している」というものです。非常に厳密に言えば、ウォレットは鍵しか保管していません。イーサや他のトークンはイーサリアムブロックチェーンに記録されています。ユーザーは自身のウォレットにある鍵でトランザクションに署名することで、ネットワーク上のトークンを制御します。ある意味、イーサリアムのウォレットは*キーチェーン*なのです。とはいえ、ウォレットに保管されている鍵はほかの人にイーサやトークンを転送するために必要な唯一のものであるため、実際にはこの区別はほとんど意味がありません。
 
-A common misconception about Ethereum is that Ethereum wallets contain ether or tokens. In fact, very strictly speaking, the wallet holds only keys. The ether or other tokens are recorded on the Ethereum blockchain. Users control the tokens on the network by signing transactions with the keys in their wallets. In a sense, an Ethereum wallet is a *keychain*. Having said that, given that the keys held by the wallet are the only things needed to transfer ether or tokens to others, in practice this distinction is fairly irrelevant.
-
-イーサリアムに関するよくある誤解は、「イーサリアムのウォレットはイーサやトークンを保管している」というものです。実際には、非常に厳密に言えば、ウォレットは鍵しか保管していません。イーサや他のトークンはイーサリアムブロックチェーンに記録されています。ユーザーは自身のウォレットにある鍵でトランザクションに署名することで、ネットワーク上のトークンを制御します。ある意味、イーサリアムのウォレットは*キーチェーン*なのです。とはいえ、ウォレットに保管されている鍵は他人にイーサやトークンを転送するために必要な唯一のものであるため、実際にはこの区別はほとんど意味がありません。
-
-Where the difference does matter is in changing one's mindset from dealing with the centralized system of conventional banking (where only you and the bank can see the money in your account, and you only need to convince the bank that you want to move funds to make a transaction) to the decentralized system of blockchain platforms (where everyone can see the ether balance of an account, although they probably don't know the account's owner, and everyone needs to be convinced that the owner wants to move funds for a transaction to be enacted). In practice, this means that there is an independent way to check an account's balance without needing its wallet. Moreover, you can move your account handling from your current wallet to a different wallet, if you grow to dislike the wallet app you started out using.
-
-この違いが重要になるのは、従来の銀行の中央集権システム（あなたと銀行だけが口座の資金を確認でき、取引のために資金を移動するには銀行を説得するだけでよい）から、ブロックチェーンプラットフォームの分散型システム（誰もがアカウントのイーサ残高を見ることができるが、アカウントの所有者まではおそらくわからず、トランザクションを実行するには所有者が資金の移動を望んでいることを全員に納得させる必要がある）へと考え方を転換する場合です。実際にはこれは、ウォレットを必要とせずにアカウントの残高を確認する独立した方法があることを意味します。さらに、最初に使い始めたウォレットアプリが気に入らない場合は、現在のウォレットから別のウォレットにアカウント管理を移行することもできます。
-
-> **Note**
->
-> Ethereum wallets contain keys, not ether or tokens. Wallets are like keychains containing pairs of private and public keys. Users sign transactions with the private keys, thereby proving they own the ether. The ether is stored on the blockchain.
+この違いが重要になるのは、従来の銀行の中央集権システム（あなたと銀行だけが口座の資金を確認でき、取引のために資金を移動するには銀行を説得するだけでよい）から、ブロックチェーンプラットフォームの分散型システム（誰もがアカウントのイーサ残高を見ることができるが、アカウントの所有者まではおそらくわからず、トランザクションを実行するには所有者が資金の移動を望んでいることを全員が納得する必要がある）へと考え方を転換する場合です。実際にはこれは、ウォレットを必要とせずにアカウントの残高を確認する独立した方法があることを意味します。さらに、最初に使い始めたウォレットアプリが気に入らない場合は、現在のウォレットから別のウォレットにアカウント管理を移行することもできます。
 
 > **Note**
 >
 > イーサリアムのウォレットには、イーサやトークンではなく、鍵が保管されています。ウォレットは秘密鍵と公開鍵のペアを含むキーチェーンのようなものです。ユーザーは秘密鍵を使ってトランザクションに署名し、それによってイーサを所有していることを証明します。イーサはブロックチェーン上に保管されています。
 
-There are two primary types of wallets, distinguished by whether the keys they contain are related to one another or not.
-
-ウォレットには、主に2つの種類があります。両者の区別は、ウォレットが保持している鍵が互いに関連しているかどうかによります。
-
-The first type is a *nondeterministic wallet*, where each key is independently generated from a different random number. The keys are not related to one another. This type of wallet is also known as a *JBOK wallet*, from the phrase "just a bunch of keys."
+ウォレットには、主に2つの種類があります。両者の区別は、ウォレットが保持している複数の鍵が互いに関連しているかどうかによります。
 
 1つ目のタイプは*非決定性ウォレット*であり、それぞれの鍵は異なる乱数から独立に生成されます。鍵は互いに関連していません。このタイプのウォレットは「just a bunch of keys（鍵の束）」というフレーズから*JBOKウォレット*とも呼ばれています。
 
-The second type of wallet is a *deterministic wallet*, where all the keys are derived from a single master key, known as the *seed*. All the keys in this type of wallet are related to one another and can be generated again if you have the original seed. Several different key-derivation methods are used in deterministic wallets. The most common derivation method uses a treelike structure, as described in "Hierarchical Deterministic Wallets (BIP-32/BIP-44)".
-
 2つ目のタイプは*決定性ウォレット*です。すべての鍵は*シード*と呼ばれる1つのマスター鍵から導出されます。決定性ウォレット内のすべての鍵は互いに関連しており、元のシードがあれば再び生成することができます。決定性ウォレットではいくつかの異なる鍵導出方法が使用されています。最も一般的な導出方法は、「階層的決定性ウォレット（BIP-32/BIP-44）」で説明しているように、ツリー状の構造を用いたものです。
 
-To make deterministic wallets slightly more secure against data-loss accidents, such as having your phone stolen or dropping it in the toilet, the seeds are often encoded as a list of words (in English or another language) for you to write down and use in case of an accident. These are known as the wallet's *mnemonic code words*. Of course, if someone gets hold of your mnemonic code words, then they can also re-create your wallet and thus gain access to your ether and smart contracts. As such, be very, very careful with your recovery word list! Never store it electronically, in a file on your computer or phone. Write it down on paper and store it in a safe, secure place.
-
-携帯電話が盗まれたりトイレに落としたりするといったデータ消失事故に対して、決定性ウォレットの安全性を少しでも高める目的で、シードを単語のリスト（英語もしくは他の言語）にエンコードし、書き留めて、もしもの際に使えるようにすることがよくあります。これはウォレットの*ニーモニックコードワード*として知られています。もちろん、誰かがあなたのニーモニックコードワードを入手した場合、あなたのウォレットを再生成してイーサやスマートコントラクトにアクセスすることもできます。したがって、リカバリ用の単語リストの取り扱いには細心の注意を払ってください！電子的に保存してはいけません。コンピュータや携帯電話のファイルに保管してはいけません。紙に書き留め、安全で確実な場所に保管してください。
-
-The next few sections introduce each of the wallet technologies at a high level.
+携帯電話が盗まれたりトイレに落としたりするといったデータ消失事故に対して、決定性ウォレットの安全性を少しでも高める目的で、シードを単語のリスト（英語もしくは他の言語）にエンコードし、書き留めて、もしもの際に使えるようにすることがよくあります。この単語のリストはウォレットの*ニーモニックコードワード*として知られています。もちろん、誰かがあなたのニーモニックコードワードを入手した場合、あなたのウォレットを再生成してイーサやスマートコントラクトにアクセスすることもできます。したがって、リカバリ用の単語リストの取り扱いには細心の注意を払ってください！電子的に保存してはいけません。コンピュータや携帯電話のファイルに保管してはいけません。紙に書き留め、安全で確実な場所に保管してください。
 
 次項以降では、それぞれのウォレット技術について概説します。
 
