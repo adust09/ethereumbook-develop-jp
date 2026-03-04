@@ -135,56 +135,33 @@ wall cliff insect more detail hub ← BIP-39表記のシード
 
 BIP-39は、ニーモニックコードとシードの生成手順を定義しています。ここでは9ステップで説明します。理解しやすくするために、生成手順を2つの部分に分けています。ステップ1〜6は「ニーモニックワードの生成」に、ステップ7〜9は「ニーモニックからシードへ」に記載しています。
 
-#### Generating mnemonic words
 #### ニーモニックワードの生成
-
-The wallet generates mnemonic words automatically using the standardized process defined in BIP-39. The wallet starts from a source of entropy, adds a checksum, and then maps the entropy to a word list following these steps:
 
 ウォレットはBIP-39で定義された標準化されたプロセスを使用して、ニーモニックワードを自動的に生成します。ウォレットはエントロピー源から開始し、チェックサムを追加した後、以下のステップに従ってエントロピーを単語リストにマッピングします：
 
-1. Create a cryptographically random sequence *S* of 128–256 bits.
+1. 128〜256ビットの暗号論的にランダムなシーケンス*S*を生成する
 
-1. 128〜256ビットの暗号論的にランダムなシーケンス*S*を生成する。
+2. *S*のSHA-256ハッシュの先頭（*S*のビット長÷32）ビットを取り、*S*のチェックサムを生成する
 
-2. Create a checksum of *S* by taking the first length-of-*S* ÷ 32 bits of the SHA-256 hash of *S*.
+3. チェックサムをランダムなシーケンス*S*の末尾に追加する
 
-2. *S*のSHA-256ハッシュの先頭（*S*のビット長÷32）ビットを取り、*S*のチェックサムを生成する。
+4. シーケンスとチェックサムの連結を11ビットずつのセクションに分割する
 
-3. Add the checksum to the end of the random sequence *S*.
+5. 各11ビットの値を、あらかじめ定義された2,048語を持つ辞書の中の単語にマッピングする
 
-3. チェックサムをランダムなシーケンス*S*の末尾に追加する。
-
-4. Divide the sequence-and-checksum concatenation into sections of 11 bits.
-
-4. シーケンスとチェックサムの連結を11ビットずつのセクションに分割する。
-
-5. Map each 11-bit value to a word from the predefined dictionary of 2,048 words.
-
-5. 各11ビットの値を、あらかじめ定義された2,048語の辞書の中の単語にマッピングする。
-
-6. Create the mnemonic code from the sequence of words, maintaining the order.
-
-6. 順序を維持しながら、一連の単語からニーモニックコードを生成する。
-
-Figure 5-2 shows how entropy is used to generate mnemonic words.
+6. 順序を維持しながら、一連の単語からニーモニックコードを生成する
 
 図5-2は、エントロピーを使用してニーモニックワードを生成する方法を示しています。
 
 ![Generating mnemonic words](images/ch5/maet_0502.png)
 
-Figure 5-2. Generating mnemonic words
-
 図5-2. ニーモニックワードの生成
 
-Table 5-1 shows the relationship between the size of the entropy data and the length of mnemonic codes in words.
+表5-1は、エントロピーデータのサイズとニーモニックコードの長さ（単語数）の関係を示しています。
 
-表5-1は、エントロピーデータのサイズとニーモニックコードの単語数の関係を示しています。
+**表5-1 ニーモニックコード：エントロピーと単語長**
 
-**Table 5-1. Mnemonic codes: Entropy and word length**
-
-**表5-1. ニーモニックコード：エントロピーと単語数**
-
-| Entropy (bits) | Checksum (bits) | Entropy + checksum (bits) | Mnemonic length (words) |
+| エントロピー（ビット） | チェックサム（ビット） | エントロピー＋チェックサム（ビット） | ニーモニックの長さ（単語数） |
 |---|---|---|---|
 | 128 | 4 | 132 | 12 |
 | 160 | 5 | 165 | 15 |
