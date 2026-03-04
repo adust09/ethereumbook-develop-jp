@@ -16,7 +16,7 @@
 
 この違いが重要になるのは、従来の銀行の中央集権システム（あなたと銀行だけが口座の資金を確認でき、取引のために資金を移動するには銀行を説得するだけでよい）から、ブロックチェーンプラットフォームの分散型システム（誰もがアカウントのイーサ残高を見ることができるが、アカウントの所有者まではおそらくわからず、トランザクションを実行するには所有者が資金の移動を望んでいることを全員が納得する必要がある）へと考え方を転換する場合です。実際にはこれは、ウォレットを必要とせずにアカウントの残高を確認する独立した方法があることを意味します。さらに、最初に使い始めたウォレットアプリが気に入らない場合は、現在のウォレットから別のウォレットにアカウント管理を移行することもできます。
 
-> **Note**
+> **注記**
 >
 > イーサリアムのウォレットには、イーサやトークンではなく、鍵が保管されています。ウォレットは秘密鍵と公開鍵のペアを含むキーチェーンのようなものです。ユーザーは秘密鍵を使ってトランザクションに署名し、それによってイーサを所有していることを証明します。イーサはブロックチェーン上に保管されています。
 
@@ -64,7 +64,7 @@
 
 キーストア形式では、*パスワードストレッチングアルゴリズム*とも呼ばれる*鍵導出関数*（KDF）を使用しており、ブルートフォース（総当たり）攻撃、辞書攻撃、レインボーテーブル攻撃から保護します。簡単に言えば、秘密鍵はパスフレーズで直接暗号化はされません。その代わり、パスフレーズに対して繰り返しハッシュ関数を実行するストレッチングが行われます。ハッシュ関数は262,144ラウンド繰り返されており、キーストアJSONでは`crypto.kdfparams.n`として確認できます。パスフレーズをブルートフォース攻撃しようとする攻撃者は、試行するパスフレーズごとに262,144回のハッシュを適用しなければなりません。この仕組みは攻撃を十分に遅くし、十分な複雑さと長さを持つパスフレーズに対する攻撃を実質的に不可能にします。
 
-> **Tip**
+> **Tips**
 >
 > 非決定性ウォレットの使用は、単純なテスト以外の用途では推奨されません。ごく基本的な状況以外では、バックアップして使うには扱いにくすぎます。代わりに、バックアップのためにニーモニックシードを用いる業界標準ベースの階層的決定性ウォレットを使用してください。
 
@@ -102,69 +102,38 @@ wall cliff insect more detail hub ← BIP-39表記のシード
 
 要約すると、HDウォレットのシードをエンコードしたリカバリワードリストを使用することが、秘密鍵のセットを安全にエクスポートし、転記し、紙に記録し、エラーなく読み取り、別のウォレットにインポートするための最も簡単な方法です。
 
-## Wallet Best Practices
 ## ウォレットのベストプラクティス
 
-As cryptocurrency wallet technology has matured, certain industry standards have emerged that make wallets broadly interoperable, easy to use, secure, and flexible. These standards also allow wallets to derive keys for multiple different cryptocurrencies, all from a single mnemonic. These standards are:
+暗号通貨ウォレットの技術が成熟するにつれて、幅広い相互運用ができ、使いやすく安全で、柔軟性のあるウォレットの設計を可能にする、共通の業界標準が現れました。これらの標準により、ウォレットは、1つのニーモニックから複数の異なる暗号通貨の鍵を生成することもできます。共通標準として次のものがあります。
 
-暗号通貨ウォレットの技術が成熟するにつれて、幅広い相互運用ができ、使いやすく安全で、柔軟性のあるウォレットを実現する業界標準が登場しました。これらの標準により、ウォレットは1つのニーモニックから複数の異なる暗号通貨の鍵を導出することもできます。それらの標準は以下の通りです：
+- ニーモニックコードワード（BIP-39準拠）
+- HDウォレット（BIP-32準拠）
+- 多目的HDウォレット構造（BIP-43準拠）
+- 多通貨、複数アカウントウォレット（BIP-44準拠）
 
-- Mnemonic code words, based on BIP-39
-- HD wallets, based on BIP-32
-- A multipurpose HD wallet structure, based on BIP-43
-- Multicurrency and multiaccount wallets, based on BIP-44
-
-- BIP-39に基づくニーモニックコードワード
-- BIP-32に基づくHDウォレット
-- BIP-43に基づく多目的HDウォレット構造
-- BIP-44に基づく多通貨・複数アカウントウォレット
-
-These standards may change or be made obsolete by future developments, but for now, they form a set of interlocking technologies that have become the de facto wallet standard for most blockchain platforms and their cryptocurrencies.
-
-これらの標準は将来の開発によって変わる可能性や時代遅れになる可能性もありますが、現時点ではそれぞれに連動した技術を形成しており、ほとんどのブロックチェーンプラットフォームとそれらの暗号通貨のデファクトスタンダードとなっています。
-
-A broad range of software and hardware wallets have adopted the standards, making all these wallets interoperable. A user can export a mnemonic generated in one of these wallets and import it to another wallet, recovering all keys and addresses.
+これらの標準は将来の開発によって変わるかもしれませんし、また時代遅れになるかもしれません。しかし、今のところこれらの標準は、それぞれに連動した技術を形成しており、ほとんどのブロックチェーンプラットフォームとそれらの暗号通貨のデファクトスタンダードになっています。
 
 幅広いソフトウェアウォレットおよびハードウェアウォレットがこれらの標準を採用しており、すべて相互運用が可能です。ユーザーは、これらのウォレットの1つで生成されたニーモニックをエクスポートし、別のウォレットにインポートすることで、すべての鍵とアドレスをリカバリできます。
 
-Some examples of software wallets supporting these standards include Rabby Wallet, MetaMask, and Phantom. Examples of hardware wallets supporting these standards are various models of Ledger and Trezor.
-
 これらの標準をサポートするソフトウェアウォレットの例としては、Rabby Wallet、MetaMask、Phantomがあります。ハードウェアウォレットの例としては、LedgerおよびTrezorの各種モデルがあります。
 
-The following sections examine each of these technologies in detail.
+以下では、これらの技術のそれぞれの詳細について説明します。
 
-以下のセクションでは、これらの技術のそれぞれについて詳しく説明します。
-
-> **Tip**
+> **Tips**
 >
-> If you are implementing an Ethereum wallet, it should be built as an HD wallet, with a seed encoded as a mnemonic code for backup, following the BIP-32, BIP-39, BIP-43, and BIP-44 standards, as described in the following sections.
+> もしイーサリアムウォレットを実装する場合は、以下で説明するBIP-32、BIP-39、BIP-43、BIP-44の標準に従い、バックアップのニーモニックコードとしてエンコードされたシードを持つHDウォレットとして構築する必要があります。
 
-> **Tip**
->
-> イーサリアムウォレットを実装する場合は、以下のセクションで説明するBIP-32、BIP-39、BIP-43、BIP-44の標準に従い、バックアップ用のニーモニックコードとしてエンコードされたシードを持つHDウォレットとして構築する必要があります。
-
-### Mnemonic Code Words (BIP-39)
 ### ニーモニックコードワード（BIP-39）
 
-Mnemonic code words are word sequences that encode a random number used as a seed to derive a deterministic wallet. The sequence of words is sufficient to re-create the seed and, from there, to re-create the wallet and all the derived keys. A wallet application that implements deterministic wallets with mnemonic words will show the user a sequence of 12–24 words when first creating a wallet. That sequence of words is the wallet backup and can be used to recover and re-create all the keys in the same or any compatible wallet application. As we explained earlier, mnemonic word lists make it easier for users to back up wallets because they are easy to read and correctly transcribe.
+ニーモニックコードワードとは、決定性ウォレットを生成する際にシードとして使用される乱数をエンコードした単語のリストです。この単語のリストがあればシードを再生成できます。そして、再生成したシードを用いて、ウォレットとすべての鍵を再生成できます。ニーモニックワードを用いた決定性ウォレットを実装するウォレットアプリケーションは、初期設定時にユーザーに12個から24個の単語のリストを表示します。この単語のリストはウォレットのバックアップであり、同一もしくは互換性のあるウォレットにおいて、すべての鍵を復元・再生成するために使うことができます。前節で説明したように、ニーモニックワードのリストは、可読性が高く、正確に転記できます。そのためユーザーは簡単にウォレットをバックアップすることができます。
 
-ニーモニックコードワードとは、決定性ウォレットを導出するためのシードとして使用される乱数をエンコードした単語のシーケンスです。この単語のシーケンスがあればシードを再生成でき、そこからウォレットとすべての導出鍵を再生成できます。ニーモニックワードを用いた決定性ウォレットを実装するウォレットアプリケーションは、ウォレットの初回作成時にユーザーに12〜24個の単語のシーケンスを表示します。この単語のシーケンスがウォレットのバックアップであり、同じまたは互換性のあるウォレットアプリケーションですべての鍵を復元・再生成するために使用できます。先に説明したように、ニーモニックワードのリストは可読性が高く正確に転記できるため、ユーザーはウォレットを簡単にバックアップできます。
-
-> **Note**
->
-> Mnemonic words are often confused with *brainwallets*. They are not the same. The primary difference is that a brainwallet consists of words chosen by the user, whereas mnemonic words are created randomly by the wallet and presented to the user. This important difference makes mnemonic words much more secure because humans are very poor sources of randomness. Perhaps more important, using the term *brainwallet* suggests that the words have to be memorized, which is a terrible idea and a recipe for not having your backup when you need it.
-
-> **Note**
+> **注記**
 >
 > ニーモニックワードはよく*ブレインウォレット*と混同されますが、両者は同じものではありません。主な違いは、ブレインウォレットはユーザーが選択した単語で構成されるのに対し、ニーモニックワードはウォレットによってランダムに生成されてユーザーに提示されることです。この重要な違いにより、ニーモニックワードははるかに安全なものになっています。なぜなら、人間はランダム性の生成源としてとても乏しいからです。おそらくもっと重要なのは、*ブレインウォレット*という用語が単語を暗記しなければならないことを示唆している点です。これはひどいアイデアであり、必要なときにバックアップが手元にないという事態を招きます。
 
-Mnemonic codes are defined in BIP-39. Note that BIP-39 is one implementation of a mnemonic code standard. There is a different standard, with a different set of words, used by the Electrum Bitcoin wallet and predating BIP-39. BIP-39 was proposed by the company behind the Trezor hardware wallet and is incompatible with Electrum's implementation. However, BIP-39 has now achieved broad industry support across dozens of interoperable implementations and should be considered the de facto industry standard. Furthermore, BIP-39 can be used to produce multicurrency wallets supporting Ethereum, whereas Electrum seeds cannot.
+ニーモニックコードはBIP-39で定義されています。ただし、BIP-39はニーモニック標準の実装方式の1つでしかないことに注意してください。ビットコインウォレットのElectrumは、BIP-39に先行して、別の単語群を持った標準を採用しています。BIP-39は、Trezorハードウェアウォレットを製造している会社によって提案されたもので、Electrumとの実装には互換性はありません。しかしながらBIP-39は、現在、数多くの相互運用可能な実装によって幅広い業界のサポートを得ており、デファクトスタンダードとみなせます。さらにBIP-39は、イーサリアムをサポートする多通貨対応ウォレットの実装に使うことができますが、Electrumのシードは使うことができません。
 
-ニーモニックコードはBIP-39で定義されています。ただし、BIP-39はニーモニックコード標準の1つの実装にすぎないことに注意してください。ビットコインウォレットのElectrumは、BIP-39に先行して、異なる単語セットを持つ別の標準を使用しています。BIP-39はTrezorハードウェアウォレットを製造する企業によって提案されたもので、Electrumの実装とは互換性がありません。しかし、BIP-39は現在、数十の相互運用可能な実装にわたって幅広い業界サポートを得ており、デファクトスタンダードと見なされています。さらに、BIP-39はイーサリアムをサポートする多通貨ウォレットの作成に使用できますが、Electrumのシードはそれができません。
-
-BIP-39 defines the creation of a mnemonic code and seed, which we describe here in nine steps. For clarity, the process is split into two parts: steps 1 through 6 are listed in "Generating mnemonic words", and steps 7 through 9 are listed in "From mnemonic to seed".
-
-BIP-39はニーモニックコードとシードの生成手順を定義しています。ここでは9つのステップで説明します。理解しやすくするために、プロセスを2つの部分に分けています。ステップ1〜6は「ニーモニックワードの生成」に、ステップ7〜9は「ニーモニックからシードへ」に記載しています。
+BIP-39は、ニーモニックコードとシードの生成手順を定義しています。ここでは9ステップで説明します。理解しやすくするために、生成手順を2つの部分に分けています。ステップ1〜6は「ニーモニックワードの生成」に、ステップ7〜9は「ニーモニックからシードへ」に記載しています。
 
 #### Generating mnemonic words
 #### ニーモニックワードの生成
