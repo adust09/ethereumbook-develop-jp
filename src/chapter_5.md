@@ -68,60 +68,37 @@
 >
 > 非決定性ウォレットの使用は、単純なテスト以外の用途では推奨されません。ごく基本的な状況以外では、バックアップして使うには扱いにくすぎます。代わりに、バックアップのためにニーモニックシードを用いる業界標準ベースの階層的決定性ウォレットを使用してください。
 
-### Deterministic (Seeded) Wallets
 ### 決定性（シード）ウォレット
 
-Deterministic or "seeded" wallets contain private keys that are all derived from a single master key, or seed. The seed is a randomly generated number that is combined with other data, such as an index number or "chain code" (see "Extended Public and Private Keys"), to derive any number of private keys. In a deterministic wallet, the seed is sufficient to recover all the derived keys, and therefore a single backup, at creation time, is sufficient to secure all the funds and smart contracts in the wallet. The seed is also sufficient for a wallet export or import, allowing for easy migration of all the keys between different wallet implementations.
-
-決定性ウォレット、すなわち「シードウォレット」は、1つのマスター鍵もしくはシードから導出された秘密鍵を含むウォレットです。シードとはランダムに生成された数値で、インデックス番号や「チェーンコード」（「拡張公開鍵と拡張秘密鍵」を参照）などの他のデータと組み合わせて、任意の数の秘密鍵を導出します。決定性ウォレットでは、シードがあれば導出したすべての鍵を復元できるため、生成時にバックアップを1回取るだけで、ウォレット内のすべての資金とスマートコントラクトを保護できます。シードはウォレットのエクスポートやインポートにも十分であり、異なるウォレット実装間での鍵の移行を容易にします。
-
-This design makes the security of the seed of utmost importance, as only the seed is needed to gain access to the entire wallet. On the other hand, being able to focus security efforts on a single piece of data can be seen as an advantage.
+決定性ウォレット、または「シード（seeded）」ウォレットは、すべて1つのマスター鍵もしくはシードから導出された秘密鍵が入ったウォレットです。シードとは、ランダムに生成された数値で、インデックス番号または「チェーンコード」（「拡張公開鍵と拡張秘密鍵」を参照）といった他のデータと組み合わせて複数の秘密鍵を生成します。決定性ウォレットでは、シードがあれば生成したすべての鍵を復元できます。そのため、シードの生成時にバックアップを1回取るだけで、ウォレット内のすべての資金とスマートコントラクトを保護できます。このシードはウォレットのエクスポートとインポートに適しており、異なる実装のウォレット間において鍵の移行を容易にしてくれます。
 
 この設計では、シードのセキュリティが最も重要になります。シードだけあればウォレット全体へのアクセスを得ることができるからです。一方で、セキュリティ対策を1つのデータに集中できるという点は利点とも言えます。
 
-### Hierarchical Deterministic Wallets (BIP-32/BIP-44)
 ### 階層的決定性ウォレット（BIP-32/BIP-44）
 
-Deterministic wallets were developed to make it easy to derive many keys from a single seed. Currently, one of the most advanced forms of deterministic wallet is the *hierarchical deterministic (HD) wallet* defined by Bitcoin's BIP-32 standard. HD wallets contain keys derived in a tree structure, such that a parent key can derive a sequence of child keys, each of which can derive a sequence of grandchild keys, and so on. This tree structure is illustrated in Figure 5-1.
-
-決定性ウォレットは、1つのシードから多くの鍵を容易に導出するために開発されました。現在、決定性ウォレットの最も進んだ形式の1つが、ビットコインのBIP-32標準で定義されている*階層的決定性（HD）ウォレット*です。HDウォレットには、ツリー構造で導出された鍵が含まれています。親鍵が一連の子鍵を導出し、それぞれの子鍵が一連の孫鍵を導出するというように続きます。このツリー構造を図5-1に示します。
+決定性ウォレットは、1つのシードから多くの鍵を生成しやすくするために開発されました。現在、決定性ウォレットの最も進んだ形式は、ビットコインのBIP-32標準で定義されている階層的決定性（HD）ウォレットです。HDウォレットには、ツリー構造から導出された鍵が含まれています。この構造においては、親鍵が子鍵群を生成し、それぞれの子鍵は孫鍵群を生成するようになっています。このような形で鍵の生成の連鎖が続きます。このツリー構造を図5-1に示します。
 
 ![HD wallet: a tree of keys generated from a single seed](images/ch5/maet_0501.png)
 
-Figure 5-1. HD wallet: a tree of keys generated from a single seed
-
 図5-1. HDウォレット：1つのシードから生成された鍵ツリー
 
-HD wallets offer a few key advantages over simpler deterministic wallets. First, the tree structure can be used to express additional organizational meaning, such as when a specific branch of subkeys is used to receive incoming payments and a different branch is used to receive change from outgoing payments. Branches of keys can also be used in corporate settings, where different branches can be allocated to departments, subsidiaries, specific functions, or accounting categories.
+HDウォレットには、単純な決定性ウォレットに比べて、いくつかの大きな利点があります。まず最初の利点は、ツリー構造を用いることで用途を使い分けられることです。たとえば、ある特定の鍵の「ブランチ」を支払いの受け取りとして利用したり、他の「ブランチ」を支払いのお釣りの受け取りとして使ったりできます。他にも、会社内での使い分けとして、部や課などの部署ごと、特定の機能ごと、口座の種別ごとにブランチを割り当てることもできます。
 
-HDウォレットには、より単純な決定性ウォレットと比べていくつかの重要な利点があります。まず、ツリー構造を用いることで追加の用途を表現できます。たとえば、特定のサブキーのブランチを支払いの受け取りに使い、別のブランチを支払いのお釣りの受け取りに使うことができます。また、企業での利用として、異なるブランチを部門、子会社、特定の機能、会計カテゴリーに割り当てることもできます。
+HDウォレットのもう1つの利点は、ユーザーが対応する秘密鍵にアクセスすることなく、公開鍵群を生成することができることです。これにより、安全でないサーバー、閲覧用もしくは受信用サーバーでHDウォレットを使うことができます。それらのサーバーにおいて、ウォレットは資金を使うときに用いる秘密鍵を持ちません。
 
-The second advantage of HD wallets is that users can create a sequence of public keys without having access to the corresponding private keys. This allows HD wallets to be used on an insecure server or in a watch-only or receive-only capacity, where the wallet doesn't have the private keys that can spend the funds.
-
-HDウォレットのもう1つの利点は、対応する秘密鍵にアクセスすることなく公開鍵のシーケンスを生成できることです。これにより、安全でないサーバーや、閲覧専用もしくは受信専用の用途でHDウォレットを使うことができます。このようなウォレットは、資金を使うための秘密鍵を持ちません。
-
-### Seeds and Mnemonic Codes (BIP-39)
 ### シードとニーモニックコード（BIP-39）
 
-There are many ways to encode a private key for secure backup and retrieval. The currently preferred method is to use a sequence of words that, when taken together in the correct order, can uniquely re-create the private key. This is sometimes known as a *mnemonic*, and the approach has been standardized by BIP-39. Today, many Ethereum wallets (as well as wallets for other cryptocurrencies) use this standard and can import and export seeds for backup and recovery using interoperable mnemonics.
-
 安全なバックアップと復元のために秘密鍵をエンコードする方法はたくさんあります。現在推奨されている方法は、正しい順序でまとめると秘密鍵を一意に再生成できる一連の単語を使用することです。これは*ニーモニック*と呼ばれることがあり、BIP-39で標準化されています。今日では、多くのイーサリアムウォレット（および他の暗号通貨ウォレット）がこの標準を使用しており、相互運用可能なニーモニックを用いてバックアップおよびリカバリ用のシードをインポート・エクスポートすることができます。
-
-To see why this approach has become popular, let's have a look at an example:
 
 このアプローチが普及した理由を理解するために、以下の例を見てみましょう：
 
 ```
-FCCF1AB3329FD5DA3DA9577511F8F137 ← seed in hexadecimal
+FCCF1AB3329FD5DA3DA9577511F8F137 ← 16進数表記のシード
 wolf juice proud gown wool unfair
-wall cliff insect more detail hub ← seed using BIP-39 representation
+wall cliff insect more detail hub ← BIP-39表記のシード
 ```
 
-In practical terms, the chance of an error when writing down the hex sequence is unacceptably high. In contrast, the list of known words is quite easy to deal with, mainly because there is a high level of redundancy in the writing of words (especially English words). If *inzect* had been recorded by accident, it could quickly be determined, upon the need for wallet recovery, that *inzect* is not a valid English word and that *insect* should be used instead. We are talking about writing down a representation of the seed because that is good practice when managing HD wallets: the seed is needed to recover the wallet in the case of data loss (whether through accident or theft), so keeping a backup is very prudent. However, the seed must be kept extremely private, so digital backups should be carefully avoided—hence, the advice to back up with pen and paper.
-
 実際の問題として、16進数の文字列を書き留める際に転記ミスが発生する確率は容認できないほど高くなります。その一方で、既知の単語のリストは扱いがとても簡単です。主な理由は、単語（特に英語の単語）の書き取りには高い冗長性があるためです。もし誤って*inzect*が記録された場合、ウォレットのリカバリの際に*inzect*は正しい英単語ではなく、代わりに*insect*が使用されるべきだとすぐに判断できます。HDウォレットを管理する際にシードの表記を書き留めておくことを推奨しているのは、データの消失（事故や盗難）に備えてウォレットのリカバリにシードが必要になるためです。バックアップを取っておくことは非常に賢明です。ただし、シードは極めて秘密に保たなければならないため、デジタルバックアップは慎重に避けるべきです。ペンと紙でバックアップすることをおすすめします。
-
-In summary, using a recovery word list to encode the seed for an HD wallet is the easiest way to safely export a private key set, transcribe it, record it on paper, read it without error, and import it into another wallet.
 
 要約すると、HDウォレットのシードをエンコードしたリカバリワードリストを使用することが、秘密鍵のセットを安全にエクスポートし、転記し、紙に記録し、エラーなく読み取り、別のウォレットにインポートするための最も簡単な方法です。
 
