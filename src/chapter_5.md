@@ -169,87 +169,58 @@ BIP-39は、ニーモニックコードとシードの生成手順を定義し�
 | 224 | 7 | 231 | 21 |
 | 256 | 8 | 264 | 24 |
 
-#### From mnemonic to seed
 #### ニーモニックからシードへ
 
-The mnemonic words represent entropy with a length of 128–256 bits. The entropy is then used to derive a longer (512-bit) seed through the use of the key-stretching function PBKDF2. The seed produced is used to build a deterministic wallet and derive its keys.
+ニーモニックワードは、128〜256ビットの長さを持つエントロピーを表しています。このエントロピーは、鍵ストレッチ関数PBKDF2を用いてより長い（512ビット）シードを導出するために使われます。生成されたシードは、決定性ウォレットを構築し、そのウォレットの鍵を生成するために使われます。
 
-ニーモニックワードは128〜256ビットの長さを持つエントロピーを表しています。このエントロピーは、鍵ストレッチ関数PBKDF2を用いてより長い（512ビット）シードを導出するために使われます。生成されたシードは、決定性ウォレットを構築し、その鍵を導出するために使われます。
-
-The key-stretching function takes two parameters: the mnemonic and a salt. The purpose of a salt in a key-stretching function is to make it difficult to build a lookup table enabling a brute-force attack. In the BIP-39 standard, the salt has another purpose: it allows for the introduction of a passphrase that serves as an additional security factor protecting the seed, which we will describe in more detail in the next section.
-
-鍵ストレッチ関数には2つのパラメータがあります：ニーモニックとソルトです。鍵ストレッチ関数におけるソルトの目的は、ブルートフォース攻撃を可能にするルックアップテーブルの構築を困難にすることです。BIP-39標準では、ソルトにはもう1つの目的があります。それは、シードを保護する追加のセキュリティ要素として機能するパスフレーズの導入を可能にすることで、次のセクションで詳しく説明します。
-
-The process continues from the previous section with the following steps:
+鍵ストレッチ関数には2つの引数があります。ニーモニックとソルトです。鍵ストレッチ関数におけるソルトの目的は、ブルートフォース攻撃を可能にするルックアップテーブルの構築を困難にすることです。BIP-39標準では、ソルトにはもう1つの目的があります。それは、シードを保護する追加のセキュリティ要素として機能するパスフレーズの導入を可能にすることで、次のセクションで詳しく説明します。
 
 プロセスは前のセクションから続き、以下のステップで進みます：
 
-7. The first parameter to the PBKDF2 key-stretching function is the mnemonic produced in step 6.
+7. 鍵ストレッチ関数PBKDF2の最初の引数は、ステップ6で生成したニーモニックである
 
-7. PBKDF2鍵ストレッチ関数の最初のパラメータは、ステップ6で生成されたニーモニックである。
+8. 鍵ストレッチ関数PBKDF2の2つ目の引数は*ソルト*である。このソルトは、文字列定数`"mnemonic"`とユーザーが提供するオプションのパスフレーズの連結で構成される
 
-8. The second parameter to the PBKDF2 key-stretching function is a *salt*. The salt is composed of the string constant `"mnemonic"` concatenated with an optional user-supplied passphrase.
+9. PBKDF2は、HMAC-SHA512アルゴリズムで2,048ラウンドのハッシュ化を行い、ニーモニックとソルトのパラメータを拡張し、最終出力として512ビットの値を生成する。その512ビットの値がシードとなる
 
-8. PBKDF2鍵ストレッチ関数の2番目のパラメータは*ソルト*である。ソルトは、文字列定数`"mnemonic"`にユーザーが任意で提供するパスフレーズ文字列を連結して構成される。
-
-9. PBKDF2 stretches the mnemonic and salt parameters using 2,048 rounds of hashing with the HMAC-SHA512 algorithm, producing a 512-bit value as its final output. That 512-bit value is the seed.
-
-9. PBKDF2は、HMAC-SHA512アルゴリズムによる2,048ラウンドのハッシュ化を使用してニーモニックとソルトのパラメータをストレッチし、最終出力として512ビットの値を生成する。この512ビットの値がシードである。
-
-Figure 5-3 shows how a mnemonic is used to generate a seed.
-
-図5-3は、ニーモニックを使用してシードを生成する方法を示しています。
+図5-3にニーモニックを使ってシードを生成する方法を示します。
 
 ![From mnemonic to seed](images/ch5/maet_0503.png)
 
-Figure 5-3. From mnemonic to seed
-
 図5-3. ニーモニックからシードへ
 
-> **Note**
+> **注記**
 >
-> The key-stretching function, with its 2,048 rounds of hashing, is a somewhat effective protection against brute-force attacks against the mnemonic or the passphrase. It makes it costly (in computation) to try more than a few thousand passphrase and mnemonic combinations, while the number of possible derived seeds is vast (2^512^, or about 10^154^)—far bigger than the number of atoms in the visible universe (about 10^80^).
+> 2,048ラウンドのハッシュ化を行う鍵ストレッチ関数は、ニーモニックやパスフレーズへのブルートフォース攻撃に対していくらか効果的な保護手段です。数千ものパスフレーズやニーモニックの組み合わせを試すのにはかなりの計算量となりコストがかかります。一方で、取り得るシードの数は膨大です（2^512^、すなわち約10^154^）。これは可視宇宙に存在する原子の数（約10^80^）よりもはるかに多いのです。
 
-> **Note**
->
-> 2,048ラウンドのハッシュ化を行う鍵ストレッチ関数は、ニーモニックやパスフレーズに対するブルートフォース攻撃に対していくらか効果的な保護手段です。数千ものパスフレーズとニーモニックの組み合わせを試すにはかなりの計算コストがかかります。一方で、取り得るシードの数は膨大です（2^512^、すなわち約10^154^）。これは可視宇宙に存在する原子の数（約10^80^）よりもはるかに多いのです。
+表5-2から表5-4にニーモニックコードとそれらが生成するシードの例を示します。
 
-Tables 5-2, 5-3, and 5-4 show some examples of mnemonic codes and the seeds they produce.
-
-表5-2、5-3、5-4にニーモニックコードとそれらが生成するシードの例を示します。
-
-**Table 5-2. A 128-bit entropy mnemonic code with no passphrase and the resulting seed**
-
-**表5-2. 128ビットエントロピーのニーモニックコード（パスフレーズなし）と生成されるシード**
+**表5-2 128ビットエントロピーのニーモニックコード（パスフレーズなし）と生成されるシード**
 
 | | |
 |---|---|
-| **Entropy** | 0c1e24e5917779d297e14d45f14e1a1a |
-| **Mnemonic** | army van defense carry jealous true garbage claim echo media make crunch |
-| **Passphrase** | (none) |
-| **Seed** | 5b56c417303faa3fcba7e57400e120a0ca83ec5a4fc9ffba757fbe63fbd77a89a1a3be4c67196f57c39... |
+| **エントロピー** | 0c1e24e5917779d297e14d45f14e1a1a |
+| **ニーモニック** | army van defense carry jealous true garbage claim echo media make crunch |
+| **パスフレーズ** | （なし） |
+| **シード** | 5b56c417303faa3fcba7e57400e120a0ca83ec5a4fc9ffba757fbe63fbd77a89a1a3be4c67196f57c39... |
 
-**Table 5-3. A 128-bit entropy mnemonic code with a passphrase and the resulting seed**
-
-**表5-3. 128ビットエントロピーのニーモニックコード（パスフレーズあり）と生成されるシード**
+**表5-3 128ビットエントロピーのニーモニックコード（パスフレーズあり）と生成されるシード**
 
 | | |
 |---|---|
-| **Entropy** | 0c1e24e5917779d297e14d45f14e1a1a |
-| **Mnemonic** | army van defense carry jealous true garbage claim echo media make crunch |
-| **Passphrase** | SuperDuperSecret |
-| **Seed** | 3b5df16df2157104cfdd22830162a5e170c0161653e3afe6c88defeefb0818c793dbb28ab3ab091897d0... |
+| **エントロピー** | 0c1e24e5917779d297e14d45f14e1a1a |
+| **ニーモニック** | army van defense carry jealous true garbage claim echo media make crunch |
+| **パスフレーズ** | SuperDuperSecret |
+| **シード** | 3b5df16df2157104cfdd22830162a5e170c0161653e3afe6c88defeefb0818c793dbb28ab3ab091897d0... |
 
-**Table 5-4. A 256-bit entropy mnemonic code with no passphrase and the resulting seed**
-
-**表5-4. 256ビットエントロピーのニーモニックコード（パスフレーズなし）と生成されるシード**
+**表5-4 256ビットエントロピーのニーモニックコード（パスフレーズなし）と生成されるシード**
 
 | | |
 |---|---|
-| **Entropy** | 2041546864449caff939d32d574753fe684d3c947c3346713dd8423e74abcf8c |
-| **Mnemonic** | cake apple borrow silk endorse fitness top denial coil riot stay wolf luggage oxygen faint major edit measure invite love trap field dilemma oblige |
-| **Passphrase** | (none) |
-| **Seed** | 3269bce2674acbd188d4f120072b13b088a0ecf87c6e4cae41657a0bb78f5315b33b3a04356e53d062e5... |
+| **エントロピー** | 2041546864449caff939d32d574753fe684d3c947c3346713dd8423e74abcf8c |
+| **ニーモニック** | cake apple borrow silk endorse fitness top denial coil riot stay wolf luggage oxygen faint major edit measure invite love trap field dilemma oblige |
+| **パスフレーズ** | （なし） |
+| **シード** | 3269bce2674acbd188d4f120072b13b088a0ecf87c6e4cae41657a0bb78f5315b33b3a04356e53d062e5... |
 
 #### Optional Passphrase in BIP-39
 #### BIP-39のオプションのパスフレーズ
