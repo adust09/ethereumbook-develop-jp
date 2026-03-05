@@ -222,89 +222,49 @@ BIP-39は、ニーモニックコードとシードの生成手順を定義し�
 | **パスフレーズ** | （なし） |
 | **シード** | 3269bce2674acbd188d4f120072b13b088a0ecf87c6e4cae41657a0bb78f5315b33b3a04356e53d062e5... |
 
-#### Optional Passphrase in BIP-39
 #### BIP-39のオプションのパスフレーズ
 
-The BIP-39 standard allows for the use of an optional passphrase in the derivation of the seed. If no passphrase is used, the mnemonic is stretched with a salt consisting of the constant string `"mnemonic"`, producing a specific 512-bit seed from any given mnemonic. If a passphrase is used, the stretching function produces a *different* seed from that same mnemonic. In fact, given a single mnemonic, every possible passphrase leads to a different seed. Essentially, there is no "wrong" passphrase. All passphrases are valid, and they all lead to different seeds, forming a vast set of possible uninitialized wallets. The set of possible wallets is so large (2^512^) that there is no practical possibility of brute-forcing or accidentally guessing one that is in use, as long as the passphrase has sufficient complexity and length.
+BIP-39標準では、シードの導出にオプションのパスフレーズを使用できます。パスフレーズが使用されない場合、ニーモニックワードは定数文字列「mnemonic」からなるソルトでストレッチ（引き伸ばし）され、任意のニーモニックワードから特定の512ビットのシードが生成されます。パスフレーズが使用されている場合、ストレッチ関数は同じニーモニックから別のシードを生成します。実際には、1つのニーモニックがあれば、ありとあらゆるパスフレーズから異なるシードが生成されます。基本的に「間違った」パスフレーズというものは存在しません。すべてのパスフレーズは有効であり、それらはすべて異なるシードを生成します。そして、膨大な数の未初期化ウォレットを作り出すことができます。生成可能なウォレットの数は非常に大きく（2^512^）、パスフレーズの複雑さと長さが十分である限り、事実上、使用しているものをブルートフォース攻撃で破られたり、誤って推測されたりすることはありません。
 
-BIP-39標準では、シードの導出にオプションのパスフレーズを使用できます。パスフレーズが使用されない場合、ニーモニックは定数文字列`"mnemonic"`からなるソルトでストレッチされ、任意のニーモニックから特定の512ビットのシードが生成されます。パスフレーズが使用される場合、ストレッチ関数は同じニーモニックから*異なる*シードを生成します。実際には、1つのニーモニックに対して、あらゆるパスフレーズが異なるシードを生成します。基本的に「間違った」パスフレーズは存在しません。すべてのパスフレーズは有効であり、すべてが異なるシードを生成し、膨大な数の初期化されていないウォレットを形成します。生成可能なウォレットの数は非常に大きく（2^512^）、パスフレーズの複雑さと長さが十分である限り、使用中のものをブルートフォース攻撃で発見したり偶然推測したりする実用的な可能性はありません。
-
-> **Tip**
+> **Tips**
 >
-> There are no "wrong" passphrases in BIP-39. Every passphrase leads to some wallet, which unless previously used will be empty.
+> BIP-39には「間違った」パスフレーズはありません。あらゆるパスフレーズはウォレットを生成することができます。つまり以前に使用されていない限り、新しいウォレットを生成できます。
 
-> **Tip**
->
-> BIP-39には「間違った」パスフレーズは存在しません。あらゆるパスフレーズは何らかのウォレットを生成します。そのウォレットは、以前に使用されていない限り空です。
+オプションのパスフレーズは、2つの重要な機能があります。
 
-The optional passphrase creates two important features:
+- 第2の要素（暗記したもの）、つまりオプションのパスフレーズによって、ニーモニックを単独では使えないようにできる。これで、泥棒による情報漏洩からニーモニックのバックアップを保護できるようになる
+- 一見もっともらしい形態を取ったウォレット、または「脅迫ウォレット（duress wallet）」を作ることができる。オプションのパスフレーズを使用することで、少額の資産しか入っていないウォレットも作れる。これは大半の資産が入っている「本物」のウォレットを攻撃からそらすために使える
 
-オプションのパスフレーズは2つの重要な機能を提供します：
+しかしながら、パスフレーズを使うことには紛失の危険性があることに注意しなければなりません。
 
-- A second factor (something memorized) that makes a mnemonic useless on its own, protecting mnemonic backups from compromise by a thief
+- もしウォレットの所有者が、活動することができないか死亡しており、誰もパスフレーズを知らない場合、そのシードは役に立たない。ウォレットに保存されているすべての資産は永遠に失われる
+- 逆に、所有者がシードと同じ場所にパスフレーズをバックアップすると、シード生成のための第2の要素としての役割を果たさない
 
-- 第2の要素（暗記したもの）により、ニーモニック単独では使えないようにし、泥棒による漏洩からニーモニックのバックアップを保護する
+パスフレーズは非常に便利ですが、一方で、相続人が暗号通貨資産をリカバリできるようにしておくなど、バックアップとリカバリのために慎重に計画したプロセスと組み合わせてパスフレーズを使用する必要があります。
 
-- A form of plausible deniability or "duress wallet," where a chosen passphrase leads to a wallet with a small amount of funds, used to distract an attacker from the "real" wallet that contains the majority of funds
-
-- もっともらしい否認可能性、すなわち「脅迫ウォレット」の形態。選択されたパスフレーズにより少額の資金が入ったウォレットが生成され、大半の資金が入っている「本物」のウォレットから攻撃者の注意をそらすために使用される
-
-However, it is important to note that the use of a passphrase also introduces the risk of loss:
-
-ただし、パスフレーズの使用は紛失のリスクも伴うことに注意が必要です：
-
-- If the wallet owner is incapacitated or dead and no one else knows the passphrase, the seed is useless, and all the funds stored in the wallet are lost forever.
-
-- ウォレットの所有者が行動不能になったり死亡し、誰もパスフレーズを知らない場合、シードは役に立たず、ウォレットに保管されているすべての資金は永久に失われる。
-
-- Conversely, if the owner backs up the passphrase in the same place as the seed, that defeats the purpose of a second factor.
-
-- 逆に、所有者がシードと同じ場所にパスフレーズをバックアップすると、第2の要素としての目的を果たさなくなる。
-
-While passphrases are very useful, they should be used only in combination with a carefully planned process for backup and recovery, considering the possibility of heirs surviving the owner being able to recover the cryptocurrency.
-
-パスフレーズは非常に便利ですが、相続人が所有者の死後に暗号通貨をリカバリできるようにすることも考慮した、バックアップとリカバリのための慎重に計画されたプロセスと組み合わせてのみ使用すべきです。
-
-#### Working with Mnemonic Codes
 #### ニーモニックコードとの連携
 
-BIP-39 is implemented as a library in many different programming languages, such as:
-
-BIP-39は多くのプログラミング言語でライブラリとして実装されています。
+BIP-39は数多くのプログラミング言語でライブラリとして実装されています。以下に例を示します。
 
 **python-mnemonic**
-
-The reference implementation of the standard by the SatoshiLabs team that proposed BIP-39, in Python
 
 BIP-39を提案したSatoshiLabsチームによるリファレンス実装（Python）
 
 **ConsenSys/eth-lightwallet**
 
-A lightweight JavaScript Ethereum wallet for nodes and browser (with BIP-39)
-
 ノードとブラウザ向けの軽量JavaScriptイーサリアムウォレット（BIP-39対応）
 
 **npm/bip39**
 
-A JavaScript implementation of Bitcoin BIP-39
-
 ビットコインBIP-39のJavaScript実装
 
-There is also a BIP-39 generator implemented in a standalone web page (Figure 5-4), which is extremely useful for testing and experimentation. The [Mnemonic Code Converter](https://iancoleman.io/bip39/) generates mnemonics, seeds, and extended private keys. It can be used offline in a browser, or it can be accessed online.
-
 スタンドアロンのウェブページとして実装されたBIP-39ジェネレーターもあり（図5-4）、テストや実験に非常に便利です。[Mnemonic Code Converter](https://iancoleman.io/bip39/)はニーモニック、シード、拡張秘密鍵を生成します。ブラウザでオフラインで使用することも、オンラインでアクセスすることもできます。
-
-> **Note**
->
-> This will be emphasized repeatedly throughout the chapter because it is the most crucial rule for seed security: never, under any circumstances, save your seed phrase in digital form.
 
 > **注記**
 >
 > この章を通じて繰り返し強調されますが、シードのセキュリティにおいて最も重要なルールです：いかなる状況においても、シードフレーズをデジタル形式で保存してはいけません。
 
 ![The BIP-39 generator web page](images/ch5/maet_0504.png)
-
-Figure 5-4. The BIP-39 generator web page
 
 図5-4. BIP-39ジェネレーターのウェブページ
 
