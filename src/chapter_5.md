@@ -268,74 +268,43 @@ BIP-39を提案したSatoshiLabsチームによるリファレンス実装（Pyt
 
 図5-4. BIP-39ジェネレーターのウェブページ
 
-### Creating an HD Wallet from the Seed
-### シードからのHDウォレットの作成
+### シードからのHDウォレットの生成
 
-HD wallets are created from a single *root seed*, which is a 128-, 256-, or 512-bit random number. This seed is most commonly generated from a mnemonic, as detailed in the previous section.
+HDウォレットは、128ビットあるいは256ビット、512ビットの乱数である単一のルートシードから生成されます。通常、このシードは、前節で説明したニーモニックから生成されます。
 
-HDウォレットは、128ビット、256ビット、または512ビットの乱数である単一の*ルートシード*から生成されます。このシードは、前節で説明したように、最も一般的にはニーモニックから生成されます。
+HDウォレットにあるすべての鍵は、ルートシードから決定論的に導出されます。決定論的に鍵が導出される仕組みによって、互換性のあるHDウォレットでシードを使えばHDウォレット全体を再生成できます。ルートシードを生成したニーモニックを転送するだけで、数千から数百万の鍵を含むHDウォレットのバックアップ、復元、エクスポート、およびインポートが容易にできるということです。
 
-Every key in the HD wallet is deterministically derived from this root seed, which makes it possible to re-create the entire HD wallet from that seed in any compatible HD wallet. This makes it easy to export, back up, restore, and import HD wallets containing thousands or even millions of keys by transferring just the mnemonic from which the root seed is derived.
-
-HDウォレット内のすべての鍵はこのルートシードから決定論的に導出されるため、互換性のあるHDウォレットであれば、そのシードからHDウォレット全体を再作成することが可能です。これにより、ルートシードの導出元であるニーモニックを転送するだけで、数千、場合によっては数百万の鍵を含むHDウォレットのエクスポート、バックアップ、復元、インポートが容易になります。
-
-### HD Wallets (BIP-32)
 ### HDウォレット（BIP-32）
-
-Most HD wallets follow the BIP-32 standard, which has become a de facto industry standard for deterministic key generation. We won't be discussing all the details of BIP-32 here, only the components necessary to understand how it is used in wallets. The most important aspect is the treelike hierarchical relationships that it is possible for the derived keys to have, as you can see in Figure 5-1. It's also important to understand the ideas of extended keys and hardened keys, which are explained in the following sections.
 
 ほとんどのHDウォレットはBIP-32標準に準拠しており、決定論的な鍵生成のデファクトスタンダードとなっています。ここではBIP-32のすべての詳細を議論するのではなく、ウォレットでの使われ方を理解するために必要なコンポーネントのみを説明します。最も重要な点は、図5-1で見られるように、導出された鍵がツリー状の階層的な関係を持てることです。拡張鍵と強化鍵の概念を理解することも重要であり、これらは以降の節で説明します。
 
-There are dozens of interoperable implementations of BIP-32 offered in many software libraries. These are mostly designed for Bitcoin wallets, which implement addresses in a different way, but they share the same key-derivation implementation as Ethereum's BIP-32-compatible wallets. Use one designed for Ethereum or adapt one from Bitcoin by adding an Ethereum address encoding library.
-
 多くのソフトウェアライブラリで、相互運用可能なBIP-32の実装が数多く提供されています。これらの多くはビットコインウォレット向けに設計されており、アドレスの実装方法は異なりますが、イーサリアムのBIP-32互換ウォレットと同じ鍵導出の実装を共有しています。イーサリアム向けに設計されたものを使用するか、ビットコイン向けのものにイーサリアムアドレスのエンコーディングライブラリを追加して適用してください。
 
-There is also a BIP-32 generator implemented as a standalone web page that is very useful for testing and experimentation with BIP-32.
-
-スタンドアロンのウェブページとして実装されたBIP-32ジェネレーターもあり、BIP-32のテストや実験に非常に便利です。
-
-> **Warning**
->
-> The standalone BIP-32 generator is not an HTTPS site. That's to remind you that using this tool is not secure. It is only for testing. You should not use the keys produced by this site with real funds.
+スタンドアロンのウェブページとして実装されたBIP-32生成器もあり、BIP-32のテストや実験に非常に便利です。
 
 > **警告**
 >
-> スタンドアロンのBIP-32ジェネレーターはHTTPSサイトではありません。これはこのツールの使用が安全でないことを示しています。テスト専用です。このサイトで生成された鍵を実際の資金に使用してはいけません。
+> スタンドアロンのBIP-32生成器はHTTPSサイトではありません。ここでHTTPSサイトでないことを強調しているのは、このツールの使用の安全性が保証されていないことを知ってもらうためです。あくまでもこのツールはテスト専用です。このサイトで生成した鍵は、本物の資金の運用で使うべきではありません。
 
-#### Extended Public and Private Keys
 #### 拡張公開鍵と拡張秘密鍵
 
-In BIP-32 terminology, keys can be "extended." With the right mathematical operations, these extended "parent" keys can be used to derive "child" keys, thus producing the hierarchy of keys and addresses described earlier. A parent key doesn't have to be at the top of the tree. It can be picked out from anywhere in the tree hierarchy. Extending a key involves taking the key itself and appending a special *chain code* to it. A chain code is a 256-bit binary string that is mixed with each key to produce child keys.
-
 BIP-32の用語では、鍵は「拡張」することができます。適切な数学的演算を用いることで、これらの拡張された「親」鍵から「子」鍵を導出し、前述した鍵とアドレスの階層構造を生成できます。親鍵はツリーの最上位にある必要はなく、ツリー階層のどこからでも選択できます。鍵を拡張するとは、鍵自体に特別な*チェーンコード*を付加することです。チェーンコードは256ビットのバイナリ文字列で、各鍵と混合されて子鍵を生成します。
-
-If the key is a private key, it becomes an *extended private key* distinguished by the prefix `xprv`:
 
 鍵が秘密鍵である場合、プレフィックス`xprv`で識別される*拡張秘密鍵*になります：
 
     xprv9s21ZrQH143K2JF8RafpqtKiTbsbaxEeUaMnNHsm5o6wCW3z8ySyH4UxFVSfZ8n7ESu7fgir8i...
 
-An *extended public key* is distinguished by the prefix `xpub`:
-
-*拡張公開鍵*はプレフィックス`xpub`で識別されます：
+拡張された公開鍵は、プレフィックス`xpub`によって識別されます：
 
     xpub661MyMwAqRbcEnKbXcCqD2GT1di5zQxVqoHPAgHNe8dv5JP8gWmDproS6kFHJnLZd23tWevhdn...
 
-A very useful characteristic of HD wallets is the ability to derive child public keys from parent public keys *without* having the private keys. This gives us two ways to derive a child public key: either directly from the child private key or from the parent public key. An extended public key can be used, therefore, to derive all the public keys (and *only* the public keys) in that branch of the HD wallet structure.
+HDウォレットには、秘密鍵を使わずに親の公開鍵から子の公開鍵を生成できるという、とても有用な特徴があります。このことから、子の公開鍵を生成する方法が2種類あることがわかります。子の秘密鍵から直接生成するか、または親の公開鍵から生成するかです。したがって、拡張公開鍵を用いることで、HDウォレットの持つブランチにあるすべての公開鍵（公開鍵のみ）を取得できます。
 
-HDウォレットの非常に便利な特性は、秘密鍵を*持たずに*親公開鍵から子公開鍵を導出できることです。これにより、子公開鍵を導出する方法が2つあります：子秘密鍵から直接導出する方法と、親公開鍵から導出する方法です。したがって、拡張公開鍵を使用して、HDウォレット構造のそのブランチ内のすべての公開鍵（公開鍵*のみ*）を導出できます。
+この仕組みにより、拡張公開鍵のコピーを持っているものの秘密鍵は一切持たないサーバーやアプリケーションにおいて、非常に安全に公開鍵のみがデプロイできます。このようなデプロイにおいては、制限なく公開鍵とイーサリアムアドレスが生成できますが、それらのアドレスに送金された資産を使うことはできません。一方、より安全な別のサーバーにおいて、拡張秘密鍵から対応するすべての秘密鍵を生成し、トランザクションに署名して資産を使うことができます。
 
-This shortcut can be used to create extremely secure public-key-only deployments, where a server or application has a copy of an extended public key but no private keys whatsoever. That kind of deployment can produce an infinite number of public keys and Ethereum addresses but cannot spend any money sent to those addresses. Meanwhile, on another, more secure server, the extended private key can derive all the corresponding private keys to sign transactions and spend the money.
+この方法の応用として一般的なのは、eコマースを提供するウェブサーバーに拡張公開鍵をインストールすることです。このウェブサーバーは、公開鍵の導出関数を使って、すべてのトランザクションのために新しいイーサリアムアドレスを生成することができます（たとえば顧客のショッピングカートごとに）。このウェブサーバーには盗難に脆弱な秘密鍵は保管されません。HDウォレットを使用しなければ、これを実行する唯一の方法は、別の安全なサーバーで何千ものイーサリアムアドレスを生成し、あらかじめeコマースのサーバーにアドレスを読み込んでおくという方法になります。このアプローチは煩雑であり、eコマースサーバーが鍵を使い果たさないようにするためには、定期的なメンテナンスが必要になります。そのためHDウォレットの拡張公開鍵を使用することが好ましいでしょう。
 
-このショートカットを利用することで、サーバーやアプリケーションが拡張公開鍵のコピーを持ちながら秘密鍵を一切持たない、きわめて安全な公開鍵のみのデプロイメントを構築できます。この種のデプロイメントは、無限の公開鍵とイーサリアムアドレスを生成できますが、それらのアドレスに送られた資金を使うことはできません。一方、別のより安全なサーバーで、拡張秘密鍵から対応するすべての秘密鍵を導出して、トランザクションに署名し資金を使うことができます。
-
-One common application of this method is to install an extended public key on a web server that serves an ecommerce application. The web server can use the public key derivation function to create a new Ethereum address for every transaction (e.g., for a customer shopping cart) and will not have any private keys that would be vulnerable to theft. Without HD wallets, the only way to do this is to generate thousands of Ethereum addresses on a separate secure server and then preload them on the ecommerce server. That approach is cumbersome and requires constant maintenance to ensure that the server doesn't run out of keys—hence the preference to use extended public keys from HD wallets.
-
-この方法の一般的な用途の1つは、eコマースアプリケーションを提供するウェブサーバーに拡張公開鍵をインストールすることです。ウェブサーバーは公開鍵導出関数を使用して、トランザクションごと（例えば、顧客のショッピングカートごと）に新しいイーサリアムアドレスを作成でき、盗難に対して脆弱な秘密鍵を一切持ちません。HDウォレットがなければ、これを実現する唯一の方法は、別の安全なサーバーで数千のイーサリアムアドレスを生成し、eコマースサーバーに事前にロードすることです。このアプローチは煩雑であり、サーバーの鍵が枯渇しないように常にメンテナンスが必要です。そのため、HDウォレットの拡張公開鍵を使用する方が好まれます。
-
-Another common application of this solution is for cold-storage or hardware wallets. In that scenario, the extended private key can be stored in a hardware wallet, while the extended public key can be kept online. The user can create "receive" addresses at will while the private keys are safely stored offline. To spend the funds, the user can use the extended private key in an offline signing Ethereum client or sign transactions on the hardware wallet device.
-
-この方法のもう1つの一般的な用途は、コールドストレージやハードウェアウォレットです。このシナリオでは、拡張秘密鍵をハードウェアウォレットに保管し、拡張公開鍵はオンラインで保持できます。ユーザーは秘密鍵が安全にオフラインで保管されたまま、自由に「受信」アドレスを作成できます。資金を使うには、オフライン署名のイーサリアムクライアントで拡張秘密鍵を使用するか、ハードウェアウォレットデバイスでトランザクションに署名します。
+もう1つの一般的な応用としては、コールドストレージもしくはハードウェアウォレットを用いることです。この場合は、拡張秘密鍵はハードウェアウォレットに保管されますが、拡張公開鍵はオンラインで保管することができます。ユーザーは自由に「受信」アドレスを作成できますが、一方で秘密鍵は安全にオフラインで保存されます。資産を使うには、ユーザーは拡張秘密鍵をイーサリアムのオフライン署名クライアントで使用するか、ハードウェアウォレットデバイス上でトランザクションに署名する必要があります。
 
 #### Hardened Child Key Derivation
 #### 強化子鍵導出
