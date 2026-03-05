@@ -306,31 +306,19 @@ HDウォレットには、秘密鍵を使わずに親の公開鍵から子の公
 
 もう1つの一般的な応用としては、コールドストレージもしくはハードウェアウォレットを用いることです。この場合は、拡張秘密鍵はハードウェアウォレットに保管されますが、拡張公開鍵はオンラインで保管することができます。ユーザーは自由に「受信」アドレスを作成できますが、一方で秘密鍵は安全にオフラインで保存されます。資産を使うには、ユーザーは拡張秘密鍵をイーサリアムのオフライン署名クライアントで使用するか、ハードウェアウォレットデバイス上でトランザクションに署名する必要があります。
 
-#### Hardened Child Key Derivation
 #### 強化子鍵導出
 
-The ability to derive a branch of public keys from an extended public key, or `xpub`, is very useful, but it comes with potential risk. Access to an `xpub` does not give access to child private keys. However, because the `xpub` contains the chain code (used to derive child public keys from the parent public key), if a child private key is known or somehow leaked, it can be used with the chain code to derive all the other child private keys. A single leaked child private key, together with a parent chain code, reveals all the private keys of all the children. Worse, the child private key together with a parent chain code can be used to deduce the parent private key.
+拡張公開鍵もしくは`xpub`から公開鍵のブランチを生成する機能は非常に便利ですが、これには潜在的なリスクが伴います。`xpub`へアクセスできても、子秘密鍵へのアクセスはできません。しかしながら、`xpub`には（親公開鍵から子公開鍵を導出するために使用される）チェーンコードが含まれているため、子秘密鍵が知られているか、なんらかの形で漏洩した場合、そのチェーンコードを使ってすべての他の子秘密鍵を生成することができてしまいます。親チェーンコードとともに、1つの子秘密鍵が漏洩してしまえば、すべての子の秘密鍵が明らかになってしまいます。さらに悪いことに、親チェーンコードとともに子秘密鍵を使うことで、親秘密鍵を推測することもできてしまいます。
 
-拡張公開鍵（`xpub`）から公開鍵のブランチを導出する機能は非常に便利ですが、潜在的なリスクを伴います。`xpub`へのアクセスは子秘密鍵へのアクセスを与えません。しかし、`xpub`にはチェーンコード（親公開鍵から子公開鍵を導出するために使用される）が含まれているため、子秘密鍵が判明したり何らかの形で漏洩した場合、チェーンコードと組み合わせて他のすべての子秘密鍵を導出できてしまいます。1つの子秘密鍵の漏洩と親チェーンコードにより、すべての子のすべての秘密鍵が明らかになります。さらに悪いことに、子秘密鍵と親チェーンコードを使って親秘密鍵を推定することも可能です。
+このリスクに対処するため、HDウォレットは、親の公開鍵と子のチェーンコードの関係を「破壊」する*強化導出*（hardened derivation）と呼ばれる鍵導出関数を代わりに使用します。この強化鍵導出関数は、親公開鍵ではなく、親秘密鍵を用いて子チェーンコードを導出します。親または兄弟秘密鍵を危険にさらすことのないチェーンコードを使って、親と子の間に「ファイアウォール」が作られるのです。
 
-To counter this risk, HD wallets use an alternative derivation function called *hardened derivation*, which "breaks" the relationship between parent public key and child chain code. The hardened derivation function uses the parent private key to derive the child chain code, instead of the parent public key. This creates a "firewall" in the parent-child sequence, with a chain code that cannot be used to compromise a parent or sibling private key.
+チェーンコードの漏洩リスクにさらされることなく、`xpub`の利便性を利用して公開鍵のブランチを導出したいのであれば、通常の親（親公開鍵）ではなく、強化された親（親秘密鍵）から導出する必要があります。マスター鍵の第1レベルの子は、マスター鍵への不正アクセスを防ぐために常に強化導出を通じて生成するというのがベストプラクティスになります。
 
-このリスクに対抗するため、HDウォレットは*強化導出*と呼ばれる代替の導出関数を使用します。これは親公開鍵と子チェーンコードの間の関係を「断ち切る」ものです。強化導出関数は、親公開鍵の代わりに親秘密鍵を使用して子チェーンコードを導出します。これにより、親子間のシーケンスに「ファイアウォール」が作成され、親や兄弟の秘密鍵を危殆化させるために使用できないチェーンコードが生成されます。
-
-In simple terms, if you want to use the convenience of an `xpub` to derive branches of public keys without exposing yourself to the risk of a leaked chain code, you should derive it from a hardened parent, rather than a normal parent. Best practice is to have the level-one children of the master keys always derived by hardened derivation, to prevent compromise of the master keys.
-
-簡単に言えば、チェーンコード漏洩のリスクにさらされることなく`xpub`の便利さを利用して公開鍵のブランチを導出したい場合は、通常の親ではなく、強化された親から導出すべきです。ベストプラクティスは、マスター鍵の危殆化を防ぐために、マスター鍵の第1レベルの子は常に強化導出で導出することです。
-
-#### Index Numbers for Normal and Hardened Derivation
 #### 通常導出と強化導出のインデックス番号
 
-It is clearly desirable to be able to derive more than one child key from a given parent key. To manage this, an index number is used. Each index number, when combined with a parent key using the special child derivation function, gives a different child key. The index number used in the BIP-32 parent-to-child derivation function is a 32-bit integer. To easily distinguish between keys derived through the normal (unhardened) derivation function versus keys derived through hardened derivation, this index number is split into two ranges. Index numbers between 0 and 2^31^–1 (0x0 to 0x7FFFFFFF) are used *only* for normal derivation. Index numbers between 2^31^ and 2^32^–1 (0x80000000 to 0xFFFFFFFF) are used *only* for hardened derivation. Therefore, if the index number is less than 2^31^, the child is normal, whereas if the index number is equal to or above 2^31^, the child is hardened.
+与えられた親鍵から複数の子鍵を導出できることは明らかに望ましいことです。これを管理するために、インデックス番号が使用されます。各インデックス番号は、特別な子鍵導出関数を使って親鍵と組み合わされると、異なる子鍵を生成します。BIP-32の親から子への導出関数で使用されるインデックス番号は32ビット整数です。通常（非強化）の鍵導出関数によって導出された鍵と強化導出関数によって導出された鍵とを簡単に区別するために、このインデックス番号は2つの範囲に分割されています。0から2^31^-1（0x0から0x7FFFFFFF）のインデックス番号は、通常の導出にのみ使用されます。2^31^から2^32^-1（0x80000000から0xFFFFFFFF）のインデックス番号は強化導出にのみ使用されます。したがって、インデックス番号が2^31^未満であれば子は通常の鍵導出関数によって導出されており、2^31^以上であれば子は強化導出によって導出されています。
 
-与えられた親鍵から複数の子鍵を導出できることは明らかに望ましいことです。これを管理するために、インデックス番号が使用されます。各インデックス番号は、特別な子導出関数を使って親鍵と組み合わされると、異なる子鍵を生成します。BIP-32の親から子への導出関数で使用されるインデックス番号は32ビット整数です。通常（非強化）導出関数で導出された鍵と強化導出で導出された鍵を容易に区別するために、このインデックス番号は2つの範囲に分割されています。0から2^31^-1（0x0から0x7FFFFFFF）のインデックス番号は通常導出*のみ*に使用されます。2^31^から2^32^-1（0x80000000から0xFFFFFFFF）のインデックス番号は強化導出*のみ*に使用されます。したがって、インデックス番号が2^31^未満であれば子は通常、2^31^以上であれば子は強化です。
-
-To make the index numbers easier to read and display, the index numbers for hardened children are displayed starting from zero, but with a prime symbol. The first normal child key is therefore displayed as 0, whereas the first hardened child (index 0x80000000) is displayed as 0′. In sequence, then, the second hardened key would have an index of 0x80000001 and would be displayed as 1′, and so on. When you see an HD wallet index *i*′, that means 2^31^ + *i*.
-
-インデックス番号を読みやすく表示するために、強化された子のインデックス番号はゼロから始まりますが、プライム記号が付きます。したがって、最初の通常の子鍵は0と表示されますが、最初の強化された子（インデックス0x80000000）は0'と表示されます。順番に、2番目の強化鍵のインデックスは0x80000001で、1'と表示されます。HDウォレットのインデックス*i*'は、2^31^ + *i*を意味します。
+インデックス番号を読みやすく表示するために、強化導出によって導出された子のインデックス番号はゼロから始まり、プライム記号（'）付きで表示されます。したがって、最初の通常導出による子鍵は0として表示され、最初の強化導出による子鍵（インデックス0x80000000）は0'として表示されます。2番目の強化導出鍵はインデックス0x80000001を持ち、1'として表示されます。HDウォレットのインデックス番号*i*'は、2^31^ + *i*を意味します。
 
 #### HD Wallet Key Identifier (Path)
 #### HDウォレットの鍵識別子（パス）
