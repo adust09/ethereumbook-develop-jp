@@ -320,75 +320,47 @@ HDウォレットには、秘密鍵を使わずに親の公開鍵から子の公
 
 インデックス番号を読みやすく表示するために、強化導出によって導出された子のインデックス番号はゼロから始まり、プライム記号（'）付きで表示されます。したがって、最初の通常導出による子鍵は0として表示され、最初の強化導出による子鍵（インデックス0x80000000）は0'として表示されます。2番目の強化導出鍵はインデックス0x80000001を持ち、1'として表示されます。HDウォレットのインデックス番号*i*'は、2^31^ + *i*を意味します。
 
-#### HD Wallet Key Identifier (Path)
 #### HDウォレットの鍵識別子（パス）
 
-Keys in an HD wallet are identified using a "path" naming convention, with each level of the tree separated by a slash (`/`) character (see Table 5-5). Private keys derived from the master private key start with `m`. Public keys derived from the master public key start with `M`. Therefore, the first child private key of the master private key is `m/0`. The first child public key is `M/0`. The second grandchild of the first child is `m/0/1`, and so on.
+HDウォレット内の鍵は「パス」の命名規則を使用して識別され、ツリーの各レベルはスラッシュ（`/`）文字で区切られます（表5-5参照）。マスター秘密鍵から得られた秘密鍵は`m`で始まります。マスター公開鍵から得られた公開鍵は`M`で始まります。したがって、マスター秘密鍵の最初の子秘密鍵は`m/0`です。最初の子公開鍵は`M/0`です。最初の子の2番目の孫は`m/0/1`であり、以下同様に続いていきます。
 
-HDウォレット内の鍵は「パス」命名規則を使用して識別されます。ツリーの各レベルはスラッシュ（`/`）文字で区切られます（表5-5参照）。マスター秘密鍵から導出された秘密鍵は`m`で始まります。マスター公開鍵から導出された公開鍵は`M`で始まります。したがって、マスター秘密鍵の最初の子秘密鍵は`m/0`です。最初の子公開鍵は`M/0`です。最初の子の2番目の孫は`m/0/1`となります。
-
-The "ancestry" of a key is read from right to left, until you reach the master key from which it was derived. For example, identifier `m/x/y/z` describes the key that is the *z*-th child of key `m/x/y`, which is the *y*-th child of key `m/x`, which is the *x*-th child of `m`.
-
-鍵の「系譜」は、導出元のマスター鍵に到達するまで右から左に読みます。例えば、識別子`m/x/y/z`は、鍵`m/x/y`の*z*番目の子を表し、`m/x/y`は鍵`m/x`の*y*番目の子であり、`m/x`は`m`の*x*番目の子です。
-
-**Table 5-5. HD wallet path examples**
+右から左に進むほど「祖先」に近づき、最終的にはマスター鍵にたどり着きます。たとえば、識別子`m/x/y/z`は、鍵`m/x/y`の*z*番目の子である鍵を示します。また鍵`m/x/y`は鍵`m/x`の*y*番目の子です。さらに`m/x`は`m`の*x*番目の子です。
 
 **表5-5. HDウォレットのパスの例**
 
-| HD path | Key described |
-|---|---|
 | HDパス | 鍵の説明 |
 |---|---|
-| m/0 | The first (0) child private key from the master private key (m) |
-| m/0/0 | The first grandchild private key of the first child (m/0) |
-| m/0'/0 | The first normal grandchild of the first hardened child (m/0') |
-| m/1/0 | The first grandchild private key of the second child (m/1) |
-| M/23/17/0/0 | The first great-great-grandchild public key of the first great-grandchild of the 18th grandchild of the 24th child |
+| m/0 | マスター秘密鍵（m）の最初（0）の子秘密鍵 |
+| m/0/0 | 最初の子秘密鍵（m/0）の最初（0）の孫秘密鍵 |
+| m/0'/0 | 最初の強化された子秘密鍵（m/0'）の最初（0）の通常の孫秘密鍵 |
+| m/1/0 | 2番目の子秘密鍵（m/1）の最初（0）の孫秘密鍵 |
+| M/23/17/0/0 | 24番目の子公開鍵の、18番目の孫公開鍵の、最初（0）の曽孫公開鍵の、最初（0）の玄孫公開鍵 |
 
-### Navigating the HD Wallet Tree Structure
-### HDウォレットのツリー構造のナビゲーション
+### HDウォレットのツリー構造をたどる
 
-The HD wallet tree structure is tremendously flexible. The flip side of this is that it also allows for unbounded complexity: each parent extended key can have four billion children—two billion normal children and two billion hardened children. Each of those children can have another four billion children, and so on. The tree can be as deep as you want, with a potentially infinite number of generations. With all that potential, it can become quite difficult to navigate these very large trees.
+HDウォレットのツリー構造はとても柔軟性があります。しかし、その柔軟性の裏返しとして、際限のない複雑さが挙げられます。それぞれの親拡張鍵は40億個の子鍵を持つことができます。そのうちの20億個は普通の子鍵で、そのほかの20億個は強化導出された子鍵です。そして、子鍵のそれぞれが、さらに40億の子鍵を持つことができます。ユーザーの要望に応じてツリーの階層を深くすることができ、無限の世代の鍵を作ることができます。このように無限の世代の鍵を持つことはできますが、際限なく続くツリーのパスをたどっていくことは非常に困難になります。
 
-HDウォレットのツリー構造はきわめて柔軟です。その反面、無限の複雑さも許容します。各親拡張鍵は40億の子を持つことができ、そのうち20億が通常の子、20億が強化された子です。それらの子のそれぞれがさらに40億の子を持つことができ、以下同様に続きます。ツリーは潜在的に無限の世代を持ち、任意の深さにすることができます。これだけの可能性があると、これらの非常に大きなツリーをナビゲートすることはかなり困難になりえます。
-
-Two BIPs offer a way to manage this potential complexity by creating standards for the structure of HD wallet trees. BIP-43 proposes the use of the first hardened child index as a special identifier that signifies the "purpose" of the tree structure. Based on BIP-43, an HD wallet should use only one level-one branch of the tree, with the index number defining the purpose of the wallet by identifying the structure and namespace of the rest of the tree. More specifically, an HD wallet using only branch `m/i′/...` is intended to signify a specific purpose, and that purpose is identified by index number *i*.
-
-2つのBIPが、HDウォレットツリーの構造に関する標準を作ることでこの潜在的な複雑さを管理する方法を提示しています。BIP-43は、ツリー構造の「目的」を示す特別な識別子として、最初の強化子インデックスの使用を提案しています。BIP-43に基づき、HDウォレットはツリーの第1レベルのブランチを1つだけ使用し、インデックス番号がツリーの残りの構造と名前空間を特定することでウォレットの目的を定義します。より具体的には、ブランチ`m/i'/...`のみを使用するHDウォレットは特定の目的を示すことを意図しており、その目的はインデックス番号*i*によって識別されます。
-
-Extending that specification, BIP-44 proposes a multicurrency, multiaccount structure signified by setting the "purpose" number to `44′`. All HD wallets following the BIP-44 structure are identified by the fact that they use only one branch of the tree: `m/44′/*`. BIP-44 specifies the structure as consisting of five predefined tree levels:
+このためBIP-43とBIP-44という2つのBIPは、HDウォレットのツリー構造に関する標準を作ることで、この複雑さを解消しようとしています。BIP-43では、ツリー構造の「目的」を示す特別な識別子として、最初に強化子鍵のインデックス番号を使用することを提案しています。BIP-43によると、BIP-32で定義されているHDウォレットの階層（パス）構造の1階層目を「目的」として使うことにしています。ウォレットの目的を定義するインデックス番号が1階層目に示されており、その目的に応じて2階層目以下の構造と名前空間が決定されることになります。より具体的には、階層`m/i'/...`のブランチのみを使用するHDウォレットは、特定の目的に沿った使用を想定されており、その目的はインデックス番号*i*によって識別されます。
 
 その仕様を拡張して、BIP-44は「目的」番号を`44'`に設定することで示されるマルチ通貨、マルチアカウント構造を提案しています。BIP-44の構造に従うすべてのHDウォレットは、ツリーの1つのブランチ`m/44'/*`のみを使用することで識別されます。BIP-44は、5つの事前定義されたツリーレベルで構成される構造を規定しています：
 
     m / purpose′ / coin_type′ / account′ / change / address_index
 
-The first level, `purpose′`, is always set to `44′`. The second level, `coin_type′`, specifies the type of cryptocurrency coin, allowing for multicurrency HD wallets where each currency has its own subtree under the second level. There are several currencies defined in the standards document SLIP-0044; for example, Ethereum is `m/44′/60′`, Ethereum Classic is `m/44′/61′`, Bitcoin is `m/44′/0′`, and testnet for all currencies is `m/44′/1′`.
-
 第1レベルの`purpose'`は常に`44'`に設定されます。第2レベルの`coin_type'`は暗号通貨の種類を指定し、各通貨が第2レベルの下に独自のサブツリーを持つマルチ通貨HDウォレットを可能にします。標準文書SLIP-0044にはいくつかの通貨が定義されています。例えば、イーサリアムは`m/44'/60'`、イーサリアムクラシックは`m/44'/61'`、ビットコインは`m/44'/0'`、すべての通貨のテストネットは`m/44'/1'`です。
-
-The third level of the tree is `account′`, which allows users to subdivide their wallets into separate logical subaccounts for accounting or organizational purposes. For example, an HD wallet might contain two Ethereum accounts: `m/44′/60′/0′` and `m/44′/60′/1′`. Each account is the root of its own subtree.
 
 ツリーの第3レベルは`account'`で、ユーザーが会計や組織の目的に合わせてウォレットを独立した論理的なサブアカウントに細分化できるようにします。例えば、HDウォレットには2つのイーサリアムアカウントが含まれることがあります：`m/44'/60'/0'`と`m/44'/60'/1'`。各アカウントはそれぞれのサブツリーのルートとなります。
 
-Because BIP-44 was created originally for Bitcoin, it contains a "quirk" that isn't relevant in the Ethereum world. On the fourth level of the path, `change`, an HD wallet has two subtrees: one for creating receiving addresses and one for creating change addresses. Only the "receive" path is used in Ethereum, as there is no necessity for a change address like there is in Bitcoin. Note that whereas the previous levels used hardened derivation, this level uses normal derivation. This is to allow the account level of the tree to export extended public keys for use in a nonsecured environment.
-
-BIP-44はもともとビットコイン用に作成されたため、イーサリアムの世界では関係のない「癖」が含まれています。パスの第4レベルの`change`では、HDウォレットは2つのサブツリーを持ちます。1つは受信アドレスの作成用、もう1つはおつりアドレスの作成用です。イーサリアムではビットコインのようなおつりアドレスの必要がないため、「受信」パスのみが使用されます。前のレベルが強化導出を使用していたのに対し、このレベルでは通常導出が使用されることに注意してください。これは、ツリーのアカウントレベルが安全でない環境での使用のために拡張公開鍵をエクスポートできるようにするためです。
-
-Usable addresses are derived by the HD wallet as children of the fourth level, making the fifth level of the tree the `address_index`. For example, the third receiving address for Ethereum payments in the primary account would be `M/44′/60′/0′/0/2`. Table 5-6 shows a few more examples.
+BIP-44はもともとビットコイン用に作成されたため、イーサリアムの世界では関係のない「癖」が含まれています。パスの第4レベルの`change`では、HDウォレットは2つのサブツリーを持ちます。1つは受信アドレスの作成用、もう1つはお釣りアドレスの作成用です。イーサリアムではビットコインのようなお釣りアドレスの必要がないため、「受信」パスのみが使用されます。前のレベルが強化導出を使用していたのに対し、このレベルでは通常導出が使用されることに注意してください。これは、ツリーのアカウントレベルが安全でない環境での使用のために拡張公開鍵をエクスポートできるようにするためです。
 
 利用可能なアドレスは、HDウォレットによって第4レベルの子として導出され、ツリーの第5レベルが`address_index`になります。例えば、プライマリアカウントでのイーサリアム支払い用の3番目の受信アドレスは`M/44'/60'/0'/0/2`となります。表5-6にさらにいくつかの例を示します。
 
-**Table 5-6. BIP-44 HD wallet structure examples**
-
 **表5-6. BIP-44 HDウォレット構造の例**
 
-| HD path | Key described |
+| HDパス | 説明 |
 |---|---|
-| HDパス | 鍵の説明 |
-|---|---|
-| M/44′/60′/0′/0/2 | The third receiving public key for the primary Ethereum account |
-| M/44′/0′/3′/1/14 | The 15th change-address public key for the fourth Bitcoin account |
-| m/44′/2′/0′/0/1 | The second private key in the Litecoin main account, for signing transactions |
+| M/44'/60'/0'/0/2 | 最初（0'）のイーサリアムアカウントの3番目の受信用公開鍵 |
+| M/44'/0'/3'/1/14 | 4番目のビットコインアカウントの15番目のお釣り用公開鍵 |
+| m/44'/2'/0'/0/1 | トランザクションに署名するためのLitecoinメインアカウントの2番目の秘密鍵 |
 
 ## Security
 ## セキュリティ
