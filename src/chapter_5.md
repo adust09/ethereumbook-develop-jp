@@ -26,7 +26,7 @@
 
 2つ目のタイプは*決定性ウォレット*です。すべての鍵は*シード*と呼ばれる1つのマスター鍵から導出されます。決定性ウォレット内のすべての鍵は互いに関連しており、元のシードがあれば再び生成することができます。決定性ウォレットではいくつかの異なる鍵導出方法が使用されています。最も一般的な導出方法は、「階層的決定性ウォレット（BIP-32/BIP-44）」で説明しているように、ツリー状の構造を用いたものです。
 
-携帯電話が盗まれたりトイレに落としたりするといったデータ消失事故に対して、決定性ウォレットの安全性を少しでも高める目的で、シードを単語のリスト（英語もしくは他の言語）にエンコードし、書き留めて、もしもの際に使えるようにすることがよくあります。この単語のリストはウォレットの*ニーモニックコードワード*として知られています。もちろん、誰かがあなたのニーモニックコードワードを入手した場合、あなたのウォレットを再生成してイーサやスマートコントラクトにアクセスすることもできます。したがって、リカバリ用の単語リストの取り扱いには細心の注意を払ってください！電子的に保存してはいけません。コンピュータや携帯電話のファイルに保管してはいけません。紙に書き留め、安全で確実な場所に保管してください。
+携帯電話が盗まれたりトイレに落としたりするといったデータ消失事故に対して、決定性ウォレットの安全性を少しでも高める目的で、シードを単語のリスト（英語もしくは他の言語）にエンコードし、書き留めて、もしもの際に使えるようにすることがよくあります。この単語のリストはウォレットの*ニーモニックコードワード*として知られています。もちろん、誰かがあなたのニーモニックコードワードを入手した場合、あなたのウォレットを再生成してイーサやスマートコントラクトにアクセスすることもできます。したがって、リカバリー用の単語リストの取り扱いには細心の注意を払ってください！電子的に保存してはいけません。コンピュータや携帯電話のファイルに保管してはいけません。紙に書き留め、安全で確実な場所に保管してください。
 
 次項以降では、それぞれのウォレット技術について概説します。
 
@@ -88,7 +88,7 @@ HDウォレットのもう1つの利点は、ユーザーが対応する秘密�
 
 ### シードとニーモニックコード（BIP-39）
 
-安全なバックアップと復元のために秘密鍵をエンコードする方法はたくさんあります。現在推奨されている方法は、正しい順序でまとめると秘密鍵を一意に再生成できる一連の単語を使用することです。これは*ニーモニック*と呼ばれることがあり、BIP-39で標準化されています。今日では、多くのイーサリアムウォレット（および他の暗号通貨ウォレット）がこの標準を使用しており、相互運用可能なニーモニックを用いてバックアップおよびリカバリ用のシードをインポート・エクスポートすることができます。
+安全なバックアップと復元のために秘密鍵をエンコードする方法はたくさんあります。現在推奨されている方法は、正しい順序でまとめると秘密鍵を一意に再生成できる一連の単語を使用することです。これは*ニーモニック*と呼ばれることがあり、BIP-39で標準化されています。今日では、多くのイーサリアムウォレット（および他の暗号通貨ウォレット）がこの標準を使用しており、相互運用可能なニーモニックを用いてバックアップおよびリカバリー用のシードをインポート・エクスポートすることができます。
 
 このアプローチが普及した理由を理解するために、以下の例を見てみましょう：
 
@@ -98,9 +98,9 @@ wolf juice proud gown wool unfair
 wall cliff insect more detail hub ← BIP-39表記のシード
 ```
 
-実際の問題として、16進数の文字列を書き留める際に転記ミスが発生する確率は容認できないほど高くなります。その一方で、既知の単語のリストは扱いがとても簡単です。主な理由は、単語（特に英語の単語）の書き取りには高い冗長性があるためです。もし誤って*inzect*が記録された場合、ウォレットのリカバリの際に*inzect*は正しい英単語ではなく、代わりに*insect*が使用されるべきだとすぐに判断できます。HDウォレットを管理する際にシードの表記を書き留めておくことを推奨しているのは、データの消失（事故や盗難）に備えてウォレットのリカバリにシードが必要になるためです。バックアップを取っておくことは非常に賢明です。ただし、シードは極めて秘密に保たなければならないため、デジタルバックアップは慎重に避けるべきです。ペンと紙でバックアップすることをおすすめします。
+実際の問題として、16進数の文字列を書き留める際に転記ミスが発生する確率は容認できないほど高くなります。その一方で、既知の単語のリストは扱いがとても簡単です。主な理由は、単語（特に英語の単語）の書き取りには高い冗長性があるためです。もし誤って*inzect*が記録された場合、ウォレットのリカバリーの際に*inzect*は正しい英単語ではなく、代わりに*insect*が使用されるべきだとすぐに判断できます。HDウォレットを管理する際にシードの表記を書き留めておくことを推奨しているのは、データの消失（事故や盗難）に備えてウォレットのリカバリーにシードが必要になるためです。バックアップを取っておくことは非常に賢明です。ただし、シードは極めて秘密に保たなければならないため、デジタルバックアップは慎重に避けるべきです。ペンと紙でバックアップすることをおすすめします。
 
-要約すると、HDウォレットのシードをエンコードしたリカバリワードリストを使用することが、秘密鍵のセットを安全にエクスポートし、転記し、紙に記録し、エラーなく読み取り、別のウォレットにインポートするための最も簡単な方法です。
+要約すると、HDウォレットのシードをエンコードしたリカバリーワードリストを使用することが、秘密鍵のセットを安全にエクスポートし、転記し、紙に記録し、エラーなく読み取り、別のウォレットにインポートするための最も簡単な方法です。
 
 ## ウォレットのベストプラクティス
 
@@ -113,7 +113,7 @@ wall cliff insect more detail hub ← BIP-39表記のシード
 
 これらの標準は将来の開発によって変わるかもしれませんし、また時代遅れになるかもしれません。しかし、今のところこれらの標準は、それぞれに連動した技術を形成しており、ほとんどのブロックチェーンプラットフォームとそれらの暗号通貨のデファクトスタンダードになっています。
 
-幅広いソフトウェアウォレットおよびハードウェアウォレットがこれらの標準を採用しており、すべて相互運用が可能です。ユーザーは、これらのウォレットの1つで生成されたニーモニックをエクスポートし、別のウォレットにインポートすることで、すべての鍵とアドレスをリカバリできます。
+幅広いソフトウェアウォレットおよびハードウェアウォレットがこれらの標準を採用しており、すべて相互運用が可能です。ユーザーは、これらのウォレットの1つで生成されたニーモニックをエクスポートし、別のウォレットにインポートすることで、すべての鍵とアドレスをリカバリーできます。
 
 これらの標準をサポートするソフトウェアウォレットの例としては、Rabby Wallet、MetaMask、Phantomがあります。ハードウェアウォレットの例としては、LedgerおよびTrezorの各種モデルがあります。
 
@@ -240,7 +240,7 @@ BIP-39標準では、シードの導出にオプションのパスフレーズ�
 - もしウォレットの所有者が、活動することができないか死亡しており、誰もパスフレーズを知らない場合、そのシードは役に立たない。ウォレットに保存されているすべての資産は永遠に失われる
 - 逆に、所有者がシードと同じ場所にパスフレーズをバックアップすると、シード生成のための第2の要素としての役割を果たさない
 
-パスフレーズは非常に便利ですが、一方で、相続人が暗号通貨資産をリカバリできるようにしておくなど、バックアップとリカバリのために慎重に計画したプロセスと組み合わせてパスフレーズを使用する必要があります。
+パスフレーズは非常に便利ですが、一方で、相続人が暗号通貨資産をリカバリーできるようにしておくなど、バックアップとリカバリーのために慎重に計画したプロセスと組み合わせてパスフレーズを使用する必要があります。
 
 #### ニーモニックコードとの連携
 
@@ -362,72 +362,37 @@ BIP-44はもともとビットコイン用に作成されたため、イーサ�
 | M/44'/0'/3'/1/14 | 4番目のビットコインアカウントの15番目のお釣り用公開鍵 |
 | m/44'/2'/0'/0/1 | トランザクションに署名するためのLitecoinメインアカウントの2番目の秘密鍵 |
 
-## Security
 ## セキュリティ
 
-Let's start by introducing the concept of security versus ease of recovery. Taking these concepts to the extreme: what's the most secure seed? It's the one that no one can recover, not even you. So if the seed is created and all copies (physical or digital) are destroyed, that's the most secure seed in the world. Not great, as you wouldn't be able to recover it, but it's technically the most secure.
+セキュリティとリカバリーのしやすさはトレードオフの関係にあります。極端な話、最も安全なシードとは何でしょうか？それは誰もリカバリーできないシード、自分自身でさえもリカバリーできないシードです。つまり、シードが作成され、すべてのコピー（物理的・デジタル的）が破壊されたなら、それは世界で最も安全なシードです。リカバリーできないので実用的ではありませんが、技術的には最も安全です。
 
-まず、セキュリティとリカバリの容易さの概念を紹介しましょう。これらの概念を極端にとらえると、最も安全なシードとは何でしょうか？それは誰もリカバリできないシード、自分自身でさえもリカバリできないシードです。つまり、シードが作成され、すべてのコピー（物理的・デジタル的）が破壊されたなら、それは世界で最も安全なシードです。リカバリできないので実用的ではありませんが、技術的には最も安全です。
+逆に、リカバリーのしやすさについて言えば、最もリカバリーしやすいシードとは何でしょうか？シードフレーズがあらゆるところに書かれている、例えば体に刺青として見える場所に入れてあるようなものです。そのシードはリカバリーが非常に簡単ですが、まったく安全ではありません。
 
-On the flip side, for ease of recovery, what's the easiest seed to recover? One that has the seed phrase written everywhere, like getting it tattooed on your body, in plain sight. That seed will be super easy to recover but not secure at all.
+セルフカストディにおける運用セキュリティ（OpSec）のためにあなたが行うあらゆる選択は、シードフレーズのセキュリティまたはリカバリーのしやすさのいずれかを向上させる可能性が高いです。セキュリティを高めると通常はリカバリーのしやすさが低下し、その逆も同様です。場合によっては両方を低下させてしまうこともあり、これは避けるべきです。
 
-逆に、リカバリの容易さについて言えば、最もリカバリしやすいシードとは何でしょうか？シードフレーズがあらゆるところに書かれている、例えば体に刺青として見える場所に入れてあるようなものです。そのシードはリカバリが非常に簡単ですが、まったく安全ではありません。
-
-Any choice you make for your operational security (OpSec) in self-custody will likely increase either the security or the ease of recovery of your seed phrase. Increasing security typically reduces ease of recovery, and vice versa. Sometimes, you may end up reducing both, which should be avoided.
-
-セルフカストディにおける運用セキュリティ（OpSec）のためにあなたが行うあらゆる選択は、シードフレーズのセキュリティまたはリカバリの容易さのいずれかを向上させる可能性が高いです。セキュリティを高めると通常はリカバリの容易さが低下し、その逆も同様です。場合によっては両方を低下させてしまうこともあり、これは避けるべきです。
-
-Even with a high-security system, no setup is 100% secure. You can do everything in your power to create a perfect system, but there will still be vulnerabilities. One of the most interesting is private-key collisions: essentially generating a seed that's already been used. Since seeds in hardware wallets are generated offline and there's no database of generated seeds, it's technically possible to generate the same wallet twice. The chances of this happening are astronomically small (you're more likely to win the lottery twice in a row), but it's still a possibility.
-
-高セキュリティのシステムであっても、100%安全な設定は存在しません。完璧なシステムを作るためにできる限りのことをしても、脆弱性は依然として存在します。最も興味深いものの1つは秘密鍵の衝突です。本質的には、すでに使用されたシードを生成してしまうことです。ハードウェアウォレットのシードはオフラインで生成され、生成済みシードのデータベースは存在しないため、技術的には同じウォレットを2回生成することが可能です。これが起こる確率は天文学的に小さいですが（宝くじに2回連続で当たる確率よりも低い）、可能性としては存在します。
-
-> **Warning**
->
-> Often, there's no urgency in seed security. Either your seed has been stolen, in which case you're already in trouble, or it hasn't. This is especially true for Bitcoin wallets. For Ethereum, it is still the case, but there are situations where acting fast can save funds—for example, removing approvals to dangerous smart contracts. If you receive any urgent messages about your seed, it's probably a scam.
+高セキュリティのシステムであっても、100%安全な設定は存在しません。完璧なシステムを作るためにできる限りのことをしても、脆弱性は依然として存在します。中でも興味深い脆弱性として秘密鍵の衝突があります。これは本質的には、すでに使われているシードと同じものを偶然生成してしまうことによって発生します。ハードウェアウォレットのシードはオフラインで生成され、生成済みシードのデータベースは存在しないため、技術的には同じウォレットを2回生成することが可能です。これが起こる確率は天文学的に小さいですが（宝くじに2回連続で当たる確率よりも低い）、可能性としては存在します。
 
 > **警告**
 >
-> シードのセキュリティに関しては、緊急性がないことがほとんどです。シードが盗まれていればすでに問題が発生していますし、盗まれていなければ問題はありません。これは特にビットコインウォレットに当てはまります。イーサリアムでも同様ですが、迅速な行動で資金を救える状況もあります。例えば、危険なスマートコントラクトへの承認を取り消す場合です。シードに関する緊急メッセージを受け取った場合、それはおそらく詐欺です。
+> シードのセキュリティについては、多くの場合、急いで対処する必要はありません。シードが盗まれていればすでに手遅れですし、盗まれていなければ何も問題はないからです。これは特にビットコインウォレットに当てはまります。イーサリアムでも基本的には同様ですが、危険なスマートコントラクトへの承認を取り消すなど、迅速に行動すれば資金を守れるケースもあります。シードについて緊急の対応を求めるメッセージを受け取った場合、それはおそらく詐欺です。
 
-Complex security mechanisms for hiding your seed are not a best practice. Although they may seem foolproof at first, professionals in the field can often recover these types of seeds with the right tools. And if it's so complex that even professionals can't recover it, there's a good chance you won't be able to when needed.
+シードを隠すための複雑なセキュリティメカニズムはベストプラクティスではありません。一見完璧に見えるかもしれませんが、その分野の専門家は適切なツールを使えばこの種のシードをリカバリーできることが多いです。そして、専門家でもリカバリーできないほど複雑であれば、必要なときに自分自身でもリカバリーできない可能性が高いです。
 
-シードを隠すための複雑なセキュリティメカニズムはベストプラクティスではありません。一見完璧に見えるかもしれませんが、その分野の専門家は適切なツールを使えばこの種のシードをリカバリできることが多いです。そして、専門家でもリカバリできないほど複雑であれば、必要なときに自分自身でもリカバリできない可能性が高いです。
-
-Another non–best practice is relying on obscurity for security. Your system should have as few "secret" components as possible, with the seed itself being the main one. If revealing parts of your system causes it to collapse, it's not secure.
-
-もう1つのベストプラクティスではないことは、セキュリティを隠蔽に頼ることです。システムには「秘密」のコンポーネントをできるだけ少なくし、シード自体を主要なものとすべきです。システムの一部を公開するとシステムが崩壊するのであれば、それは安全ではありません。
-
-A best practice is to follow what most others do. Trying to invent new systems or, worse, creating everything from scratch is wrong. It's not secure, and the majority of people don't have the technical skills to do it. Keep things simple. Simplicity is absolutely a best practice.
+もう1つの避けるべきプラクティスは、セキュリティを隠蔽に頼ることです。システムには「秘密」のコンポーネントをできるだけ少なくし、秘密にすべきものはシード自体に限定すべきです。システムの一部を公開するとシステムが崩壊するのであれば、それは安全ではありません。
 
 ベストプラクティスは、他の多くの人がやっていることに従うことです。新しいシステムを発明しようとしたり、さらに悪いことにすべてをゼロから作ろうとするのは間違いです。安全ではありませんし、ほとんどの人にはそれを行う技術的スキルがありません。シンプルに保ちましょう。シンプルさは間違いなくベストプラクティスです。
 
-Making a backup of your seed is probably the most important best practice. Whether it's a hardware wallet or a browser wallet, a backup is essential. Backup storage should (a) withstand natural disasters, (b) be geographically separate from your hardware wallet, (c) be in a secure place, and (d) have tamper-evident packaging. Dividing your seed across multiple pieces of paper is not a best practice. It gives a false sense of security.
+シードのバックアップを作成することは、おそらく最も重要なベストプラクティスです。ハードウェアウォレットであれブラウザウォレットであれ、バックアップは不可欠です。バックアップの保管場所は、(a) 自然災害に耐えられること、(b) ハードウェアウォレットとは地理的に離れていること、(c) 安全な場所であること、(d) 改ざんの痕跡が分かるパッケージであること、が求められます。シードを複数の紙に分割することはベストプラクティスではありません。誤った安心感を与えるだけです。
 
-シードのバックアップを作成することは、おそらく最も重要なベストプラクティスです。ハードウェアウォレットであれブラウザウォレットであれ、バックアップは不可欠です。バックアップの保管場所は、(a) 自然災害に耐えられること、(b) ハードウェアウォレットとは地理的に離れていること、(c) 安全な場所であること、(d) 改ざん防止のパッケージであること、が求められます。シードを複数の紙に分割することはベストプラクティスではありません。誤った安心感を与えるだけです。
-
-> **Tip**
+> **Tips**
 >
-> If you don't have a secure place to store your seed, consider using a passphrase. The passphrase adds an extra layer of protection by being combined with your seed during the key-generation process. You can even store the passphrase digitally since it's useless without the seed. If someone gets your seed but not your passphrase, they won't be able to access your funds for a certain amount of time; this is because the passphrase can be brute-forced if the attacker has the seed.
-
-> **ヒント**
->
-> シードを保管する安全な場所がない場合は、パスフレーズの使用を検討してください。パスフレーズは鍵生成プロセス中にシードと組み合わされることで、追加の保護層を提供します。パスフレーズはシードなしでは無意味なので、デジタルで保存することもできます。誰かがシードを入手してもパスフレーズを入手しなければ、一定期間は資金にアクセスできません。これは、攻撃者がシードを持っていればパスフレーズをブルートフォースで解読できるためです。
-
-Everyone's needs are different, and their security requirements will vary accordingly. But you should always follow best practices. Your needs may change over time, so stay aware and adjust your OpSec if needed.
+> シードを保管する安全な場所がない場合は、パスフレーズの使用を検討してください。パスフレーズは鍵生成プロセス中にシードと組み合わされることで、追加の保護層を提供します。パスフレーズはシードなしでは無意味なので、デジタルで保存することもできます。誰かがシードを入手してもパスフレーズを入手しなければ、一定期間は資金にアクセスできません。ただし、攻撃者がシードを持っていればパスフレーズは時間をかけてブルートフォースで解読される可能性があります。
 
 人によってニーズは異なり、セキュリティ要件もそれに応じて変わります。しかし、常にベストプラクティスに従うべきです。ニーズは時間とともに変化する可能性があるため、常に注意を払い、必要に応じてOpSecを調整してください。
 
-After setting up your hardware wallet, test your ability to recover the seed. Do this at least once every 12 months, ensuring that your backup works and is accessible.
-
-ハードウェアウォレットをセットアップした後、シードをリカバリする能力をテストしてください。少なくとも12か月に1回はこれを行い、バックアップが機能し、アクセス可能であることを確認してください。
-
-What does a secure system look like? A trusted hardware wallet (like Trezor), at least one safe backup (never saved digitally), and a plan for inheritance in case something happens to you.
+ハードウェアウォレットをセットアップした後、シードをリカバリーする能力をテストしてください。少なくとも12か月に1回はこれを行い、バックアップが機能し、アクセス可能であることを確認してください。
 
 安全なシステムとはどのようなものでしょうか？信頼できるハードウェアウォレット（Trezorなど）、少なくとも1つの安全なバックアップ（デジタルで保存しないこと）、そしてあなたに何かあった場合の相続計画です。
-
-> **Note**
->
-> Inheritance is a very complicated topic. We recommend reading *Cryptoasset Inheritance Planning: A Simple Guide for Owners* by Pamela Morgan (Merkle Bloom).
 
 > **注記**
 >
@@ -449,7 +414,7 @@ Account abstraction (AA) on Ethereum is a way to make user accounts more flexibl
 
 With AA, Ethereum can become more user-friendly and flexible. For example, you could recover a lost account without relying solely on a private key, or you could pay transaction fees in any token, not just ether.
 
-AAにより、イーサリアムはより使いやすく柔軟になります。例えば、秘密鍵だけに頼らずに紛失したアカウントをリカバリしたり、Etherだけでなく任意のトークンでトランザクション手数料を支払ったりできるようになります。
+AAにより、イーサリアムはより使いやすく柔軟になります。例えば、秘密鍵だけに頼らずに紛失したアカウントをリカバリーしたり、Etherだけでなく任意のトークンでトランザクション手数料を支払ったりできるようになります。
 
 There have been multiple proposals to implement AA. The main distinction is that one group of proposals tried to implement AA without changing the Ethereum protocol. Another group of proposals, which will be implemented in the Pectra upgrade, will end up changing the Ethereum protocol.
 
@@ -475,7 +440,7 @@ ERC-4337は、ユーザーアカウントをより多機能、安全、使いや
 
 As we said in Chapter 2, traditional Ethereum accounts are divided into two types: EOAs, controlled solely by private keys, and contract accounts, which operate through smart contracts. EOAs dominate user wallets today because they are simple and economical; however, they are also limited in functionality and prone to security risks. Losing a private key can mean permanent loss of funds, and EOAs are not customizable for security features like multisignature setups or account-recovery options. Contract accounts can incorporate these security measures and more, yet their complexity and higher transaction fees have prevented their widespread use by everyday users. ERC-4337 overcomes this by enabling EOAs to function as smart contracts, merging the simplicity of EOAs with the security and flexibility of contract accounts.
 
-第2章で述べたように、従来のイーサリアムアカウントは2種類に分けられます。秘密鍵のみで制御されるEOAと、スマートコントラクトを通じて動作するコントラクトアカウントです。EOAはシンプルで経済的であるため、現在ユーザーウォレットの主流です。しかし、機能が限定的であり、セキュリティリスクにさらされやすいです。秘密鍵を紛失すると資金の永久的な喪失を意味する可能性があり、EOAはマルチシグ設定やアカウントリカバリオプションなどのセキュリティ機能のカスタマイズができません。コントラクトアカウントはこれらのセキュリティ対策やそれ以上のものを組み込めますが、その複雑さとより高いトランザクション手数料が一般ユーザーへの普及を妨げてきました。ERC-4337は、EOAがスマートコントラクトとして機能できるようにすることでこれを克服し、EOAのシンプルさとコントラクトアカウントのセキュリティおよび柔軟性を融合させます。
+第2章で述べたように、従来のイーサリアムアカウントは2種類に分けられます。秘密鍵のみで制御されるEOAと、スマートコントラクトを通じて動作するコントラクトアカウントです。EOAはシンプルで経済的であるため、現在ユーザーウォレットの主流です。しかし、機能が限定的であり、セキュリティリスクにさらされやすいです。秘密鍵を紛失すると資金の永久的な喪失を意味する可能性があり、EOAはマルチシグ設定やアカウントリカバリーオプションなどのセキュリティ機能のカスタマイズができません。コントラクトアカウントはこれらのセキュリティ対策やそれ以上のものを組み込めますが、その複雑さとより高いトランザクション手数料が一般ユーザーへの普及を妨げてきました。ERC-4337は、EOAがスマートコントラクトとして機能できるようにすることでこれを克服し、EOAのシンプルさとコントラクトアカウントのセキュリティおよび柔軟性を融合させます。
 
 The implementation of ERC-4337 introduces *UserOperations* to handle transactions differently, as shown in Figure 5-5. Rather than directly broadcasting each transaction to the blockchain, users submit UserOperations to a high-level mempool, where transactions are temporarily stored. Special participants, known as *bundlers*, collect and process these UserOperations, packaging them into a single Ethereum transaction. This process reduces network congestion and allows multiple operations to be processed in a more efficient, bundled manner. ERC-4337 also establishes a new role called *paymasters*. Typically, Ethereum transactions require the payment of gas fees in ETH, but paymasters make it possible for users to cover gas fees with alternative tokens or even to have a third-party sponsor pay the fees on their behalf. This shift eliminates a significant barrier, especially for newcomers who may not hold ETH, making the Ethereum network more inclusive and accessible.
 
@@ -495,7 +460,7 @@ EOAの保留中のトランザクションをホストする従来のパブリ�
 
 While ERC-4337 focuses on AA at a high level via smart contracts without changing Ethereum's core, EIP-2938 goes a step further by proposing that AA be embedded within the protocol layer itself. This lower-level approach allows for even more direct and flexible interactions among users, smart contracts, and applications by fundamentally changing how the EVM treats accounts. Through EIP-2938, users could handle operations without traditional EOAs, removing reliance on private-key-based accounts and enabling a greater diversity of account management systems, such as multisignature accounts or social recovery accounts, directly on Ethereum's protocol level.
 
-ERC-4337がイーサリアムのコアを変更せずにスマートコントラクトを通じて高レベルでAAに焦点を当てているのに対し、EIP-2938はさらに一歩進んで、AAをプロトコル層自体に組み込むことを提案しています。この低レベルのアプローチは、EVMがアカウントを扱う方法を根本的に変更することで、ユーザー、スマートコントラクト、アプリケーション間のより直接的で柔軟なインタラクションを可能にします。EIP-2938により、ユーザーは従来のEOAなしでオペレーションを処理でき、秘密鍵ベースのアカウントへの依存を排除し、マルチシグアカウントやソーシャルリカバリアカウントなど、より多様なアカウント管理システムをイーサリアムのプロトコルレベルで直接実現できます。
+ERC-4337がイーサリアムのコアを変更せずにスマートコントラクトを通じて高レベルでAAに焦点を当てているのに対し、EIP-2938はさらに一歩進んで、AAをプロトコル層自体に組み込むことを提案しています。この低レベルのアプローチは、EVMがアカウントを扱う方法を根本的に変更することで、ユーザー、スマートコントラクト、アプリケーション間のより直接的で柔軟なインタラクションを可能にします。EIP-2938により、ユーザーは従来のEOAなしでオペレーションを処理でき、秘密鍵ベースのアカウントへの依存を排除し、マルチシグアカウントやソーシャルリカバリーアカウントなど、より多様なアカウント管理システムをイーサリアムのプロトコルレベルで直接実現できます。
 
 The main difference between EIP-2938 and some existing AA proposals lies in the focus on integrating abstraction directly into the protocol, rather than layering it on top. With EIP-2938, Ethereum would support "operations" rather than "transactions," where each operation could represent a more versatile, customizable transaction type. EIP-2938 can redefine Ethereum's transactions as programmable objects, supporting a broader spectrum of use cases. By treating accounts and transactions as inherently programmable, it expands Ethereum's utility beyond standard payments and contract interactions, fitting perfectly with the increasingly complex applications being built on the network.
 
@@ -599,7 +564,7 @@ Figure 5-9. EIP-3074 delegation flow
 
 EIP-5003 introduces the `AUTHUSURP` opcode, which allows code deployment at an address authorized through EIP-3074, effectively removing the original EOA's signing key (when used with EIP-3607). Traditional EOAs control a lot of value on Ethereum but face limitations. There's no easy way to rotate keys, batch transactions for efficiency, or enable gas sponsorship without holding ETH. Contract accounts and AA address these issues, allowing users to customize security features, authentication methods, spending limits, key rotation, social recovery, and more. However, these benefits are mostly limited to users who actively adopt new standards through smart contract wallets and app-layer solutions, such as those proposed by ERC-4337. This leaves a substantial number of existing users, who have relied on EOAs since Ethereum's inception, with limited security and usability improvements.
 
-EIP-5003は`AUTHUSURP`オペコードを導入します。これにより、EIP-3074を通じて認可されたアドレスにコードをデプロイし、（EIP-3607と併用した場合に）元のEOAの署名鍵を実質的に無効化できます。従来のEOAはイーサリアム上で多くの価値を管理していますが、制限に直面しています。鍵のローテーション、効率のためのトランザクションバッチ処理、ETHを保持せずにガススポンサーシップを有効にする簡単な方法がありません。コントラクトアカウントとAAはこれらの問題に対処し、ユーザーがセキュリティ機能、認証方法、支出制限、鍵のローテーション、ソーシャルリカバリなどをカスタマイズできるようにします。しかし、これらの利点は主に、ERC-4337で提案されているようなスマートコントラクトウォレットやアプリケーション層のソリューションを通じて新しい標準を積極的に採用するユーザーに限定されています。これにより、イーサリアムの誕生以来EOAに依存してきた相当数の既存ユーザーは、セキュリティとユーザビリティの改善が限定的なままとなっています。
+EIP-5003は`AUTHUSURP`オペコードを導入します。これにより、EIP-3074を通じて認可されたアドレスにコードをデプロイし、（EIP-3607と併用した場合に）元のEOAの署名鍵を実質的に無効化できます。従来のEOAはイーサリアム上で多くの価値を管理していますが、制限に直面しています。鍵のローテーション、効率のためのトランザクションバッチ処理、ETHを保持せずにガススポンサーシップを有効にする簡単な方法がありません。コントラクトアカウントとAAはこれらの問題に対処し、ユーザーがセキュリティ機能、認証方法、支出制限、鍵のローテーション、ソーシャルリカバリーなどをカスタマイズできるようにします。しかし、これらの利点は主に、ERC-4337で提案されているようなスマートコントラクトウォレットやアプリケーション層のソリューションを通じて新しい標準を積極的に採用するユーザーに限定されています。これにより、イーサリアムの誕生以来EOAに依存してきた相当数の既存ユーザーは、セキュリティとユーザビリティの改善が限定的なままとなっています。
 
 While EIP-3074 offers an initial solution by enabling EOAs to delegate signing authority to a contract account, it stops short of allowing the EOA to completely revoke this original signing key. This gap introduces a security risk: even with delegated authority, the primary private key remains a potential vulnerability. If compromised, the entire account remains at risk, as there is currently no revocation option for an exposed private key. If a user's private key is leaked, either by accident or through a malicious attack, the only option is to create a new wallet and painstakingly migrate assets individually, an expensive and often incomplete process due to the immovability of certain assets within existing smart contracts.
 
@@ -661,7 +626,7 @@ EOAに機能改善を追加し、ユーザビリティや場合によっては�
 
 Traditional Ethereum accounts rely solely on a single private key, so losing it means losing access to the account and assets. EIP-7702's structure supports various recovery mechanisms, enabling users to regain access if they lose their private keys. Recovery mechanisms are especially valuable for security-focused users and for those who are new to blockchain and may find key management daunting. Potential recovery options include multisignature and social recovery, which allow selected contacts to assist in account restoration; this is a big step in Ethereum accounts' security and user-friendliness.
 
-従来のイーサリアムアカウントは単一の秘密鍵にのみ依存しているため、紛失するとアカウントと資産へのアクセスを失うことを意味します。EIP-7702の構造はさまざまなリカバリメカニズムをサポートし、ユーザーが秘密鍵を紛失した場合にアクセスを回復できるようにします。リカバリメカニズムは、セキュリティを重視するユーザーや、ブロックチェーンの初心者で鍵管理を困難に感じるユーザーにとって特に価値があります。潜在的なリカバリオプションには、選択した連絡先がアカウントの復元を支援できるマルチシグやソーシャルリカバリが含まれます。これはイーサリアムアカウントのセキュリティとユーザーフレンドリーさにおける大きな前進です。
+従来のイーサリアムアカウントは単一の秘密鍵にのみ依存しているため、紛失するとアカウントと資産へのアクセスを失うことを意味します。EIP-7702の構造はさまざまなリカバリーメカニズムをサポートし、ユーザーが秘密鍵を紛失した場合にアクセスを回復できるようにします。リカバリーメカニズムは、セキュリティを重視するユーザーや、ブロックチェーンの初心者で鍵管理を困難に感じるユーザーにとって特に価値があります。潜在的なリカバリーオプションには、選択した連絡先がアカウントの復元を支援できるマルチシグやソーシャルリカバリーが含まれます。これはイーサリアムアカウントのセキュリティとユーザーフレンドリーさにおける大きな前進です。
 
 EIP-7702 also introduces batching and privilege deescalation. Batching allows multiple actions to be processed within a single atomic transaction, enabling users to complete complex workflows—such as ERC-20 approval followed by token spending—in one step rather than two. Privilege deescalation offers subkeys with restricted permissions, authorizing actions like spending a specific amount or interacting only with certain applications, to improve security by minimizing exposure in case of compromise.
 
@@ -703,17 +668,17 @@ AA on Ethereum is a complex but promising idea, with many possible paths forward
 イーサリアムにおけるAAは複雑ですが有望なアイデアであり、前進するための多くの道筋があります。各提案はユーザーのインタラクションをよりシンプルで安全にするための異なる方法を提供しています。EIP-3074の上に構築されたEIP-5003のように以前の提案を改善するものもあれば、EIP-5806のように単独で成立するものや後方互換性を欠くものもあります。この多様性は最適なソリューションの探求を反映しており、最終的な方向性はユーザーが最も簡単で効果的だと感じるオプションによって形作られる可能性が高いです。正確な将来は不透明ですが、AAはイーサリアムの利用体験を改善する真の可能性を秘めています。
 
 ### Social Recovery
-### ソーシャルリカバリ
+### ソーシャルリカバリー
 
 The primary EIP related to social recovery is EIP-2429. Titled "Secret Multisig Recovery," EIP-2429 introduces a mechanism that allows users to regain access to their wallets by assigning trusted individuals or entities as "guardians." In case a user loses their private key, they can use these guardians to help recover control of the wallet. The guardians are involved only during the recovery process, limiting their power, as shown in Figure 5-10.
 
-ソーシャルリカバリに関連する主要なEIPはEIP-2429です。「Secret Multisig Recovery」というタイトルのEIP-2429は、信頼できる個人またはエンティティを「ガーディアン」として指定することで、ユーザーがウォレットへのアクセスを回復できるメカニズムを導入します。ユーザーが秘密鍵を紛失した場合、これらのガーディアンを利用してウォレットの制御を回復できます。図5-10に示すように、ガーディアンはリカバリプロセス中のみ関与し、その権限は限定されています。
+ソーシャルリカバリーに関連する主要なEIPはEIP-2429です。「Secret Multisig Recovery」というタイトルのEIP-2429は、信頼できる個人またはエンティティを「ガーディアン」として指定することで、ユーザーがウォレットへのアクセスを回復できるメカニズムを導入します。ユーザーが秘密鍵を紛失した場合、これらのガーディアンを利用してウォレットの制御を回復できます。図5-10に示すように、ガーディアンはリカバリープロセス中のみ関与し、その権限は限定されています。
 
 ![Social recovery flow](images/ch5/maet_0510.png)
 
 Figure 5-10. Social recovery flow
 
-図5-10. ソーシャルリカバリのフロー
+図5-10. ソーシャルリカバリーのフロー
 
 > **Note**
 >
@@ -721,11 +686,11 @@ Figure 5-10. Social recovery flow
 
 > **注記**
 >
-> Vitalik Buterinは2021年に記事を公開し、引用すると「これが私のウォレットを保護するための好ましい方法、つまりソーシャルリカバリにたどり着く」と述べています。状況が変わったかどうかは不明ですが、ソーシャルリカバリが依然としてButerinの好ましい方法である可能性があります。
+> Vitalik Buterinは2021年に記事を公開し、引用すると「これが私のウォレットを保護するための好ましい方法、つまりソーシャルリカバリーにたどり着く」と述べています。状況が変わったかどうかは不明ですが、ソーシャルリカバリーが依然としてButerinの好ましい方法である可能性があります。
 
 For normal use, a social recovery wallet functions like a regular one, allowing the user to sign transactions with their signing key. If the key is lost, social recovery activates, enabling the user to contact guardians, who sign a transaction to update the wallet's signing key. Guardians can be trusted individuals, devices, or institutions. Guardians can remain anonymous, and to prevent attacks, their identities aren't stored on chain. In case of the user's death, guardians can coordinate to recover the user's funds.
 
-通常の使用では、ソーシャルリカバリウォレットは通常のウォレットと同様に機能し、ユーザーは署名鍵でトランザクションに署名できます。鍵が紛失した場合、ソーシャルリカバリが有効になり、ユーザーはガーディアンに連絡でき、ガーディアンはウォレットの署名鍵を更新するトランザクションに署名します。ガーディアンは信頼できる個人、デバイス、または機関です。ガーディアンは匿名のままでいることができ、攻撃を防ぐために、その身元はオンチェーンに保存されません。ユーザーの死亡時には、ガーディアンが連携してユーザーの資金をリカバリできます。
+通常の使用では、ソーシャルリカバリーウォレットは通常のウォレットと同様に機能し、ユーザーは署名鍵でトランザクションに署名できます。鍵が紛失した場合、ソーシャルリカバリーが有効になり、ユーザーはガーディアンに連絡でき、ガーディアンはウォレットの署名鍵を更新するトランザクションに署名します。ガーディアンは信頼できる個人、デバイス、または機関です。ガーディアンは匿名のままでいることができ、攻撃を防ぐために、その身元はオンチェーンに保存されません。ユーザーの死亡時には、ガーディアンが連携してユーザーの資金をリカバリーできます。
 
 ### ENS
 
