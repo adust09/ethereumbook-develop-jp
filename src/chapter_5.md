@@ -418,27 +418,17 @@ AAに関する主なEIPとEthereum Requests for Comments（ERC）を見ていき
 
 #### ERC-4337
 
-ERC-4337 is an advancement in the Ethereum blockchain that aims to make user accounts more versatile, secure, and user-friendly. Unlike typical upgrades that alter the Ethereum protocol, ERC-4337 introduces new functionality through smart contracts and off-chain components. As of September 2024, the primary on-chain implementation of AA is ERC-4337.
+ERC-4337は、ユーザーアカウントをより多機能で安全かつ使いやすくすることを目的としたイーサリアムの技術的進歩です。イーサリアムプロトコルを変更する一般的なアップグレードとは異なり、ERC-4337はスマートコントラクトとオフチェーンコンポーネントを通じて新しい機能を導入します。2024年9月時点で、AAの主要なオンチェーン実装はERC-4337です。
 
-ERC-4337は、ユーザーアカウントをより多機能、安全、使いやすくすることを目的としたイーサリアムブロックチェーンの進歩です。イーサリアムプロトコルを変更する一般的なアップグレードとは異なり、ERC-4337はスマートコントラクトとオフチェーンコンポーネントを通じて新しい機能を導入します。2024年9月時点で、AAの主要なオンチェーン実装はERC-4337です。
+第2章で述べたように、従来のイーサリアムアカウントは2種類に分けられます。秘密鍵のみで制御されるEOAと、スマートコントラクトを通じて動作するコントラクトアカウントです。EOAはシンプルで経済的であるため現在ユーザーウォレットの主流ですが、機能が限定的でセキュリティリスクにもさらされやすいという問題があります。秘密鍵を紛失すると資金を永久に失う可能性があり、マルチシグ設定やアカウントリカバリーオプションなどのセキュリティ機能をカスタマイズすることもできません。一方、コントラクトアカウントはこれらのセキュリティ対策を組み込めますが、その複雑さとトランザクション手数料の高さから一般ユーザーへの普及が進んでいませんでした。ERC-4337は、EOAにスマートコントラクトの機能を持たせることで、EOAのシンプルさとコントラクトアカウントのセキュリティ・柔軟性を融合させます。
 
-As we said in Chapter 2, traditional Ethereum accounts are divided into two types: EOAs, controlled solely by private keys, and contract accounts, which operate through smart contracts. EOAs dominate user wallets today because they are simple and economical; however, they are also limited in functionality and prone to security risks. Losing a private key can mean permanent loss of funds, and EOAs are not customizable for security features like multisignature setups or account-recovery options. Contract accounts can incorporate these security measures and more, yet their complexity and higher transaction fees have prevented their widespread use by everyday users. ERC-4337 overcomes this by enabling EOAs to function as smart contracts, merging the simplicity of EOAs with the security and flexibility of contract accounts.
-
-第2章で述べたように、従来のイーサリアムアカウントは2種類に分けられます。秘密鍵のみで制御されるEOAと、スマートコントラクトを通じて動作するコントラクトアカウントです。EOAはシンプルで経済的であるため、現在ユーザーウォレットの主流です。しかし、機能が限定的であり、セキュリティリスクにさらされやすいです。秘密鍵を紛失すると資金の永久的な喪失を意味する可能性があり、EOAはマルチシグ設定やアカウントリカバリーオプションなどのセキュリティ機能のカスタマイズができません。コントラクトアカウントはこれらのセキュリティ対策やそれ以上のものを組み込めますが、その複雑さとより高いトランザクション手数料が一般ユーザーへの普及を妨げてきました。ERC-4337は、EOAがスマートコントラクトとして機能できるようにすることでこれを克服し、EOAのシンプルさとコントラクトアカウントのセキュリティおよび柔軟性を融合させます。
-
-The implementation of ERC-4337 introduces *UserOperations* to handle transactions differently, as shown in Figure 5-5. Rather than directly broadcasting each transaction to the blockchain, users submit UserOperations to a high-level mempool, where transactions are temporarily stored. Special participants, known as *bundlers*, collect and process these UserOperations, packaging them into a single Ethereum transaction. This process reduces network congestion and allows multiple operations to be processed in a more efficient, bundled manner. ERC-4337 also establishes a new role called *paymasters*. Typically, Ethereum transactions require the payment of gas fees in ETH, but paymasters make it possible for users to cover gas fees with alternative tokens or even to have a third-party sponsor pay the fees on their behalf. This shift eliminates a significant barrier, especially for newcomers who may not hold ETH, making the Ethereum network more inclusive and accessible.
-
-ERC-4337の実装では、図5-5に示すように、トランザクションを異なる方法で処理する*UserOperation*が導入されます。各トランザクションを直接ブロックチェーンにブロードキャストするのではなく、ユーザーはUserOperationを高レベルのメンプールに送信し、そこでトランザクションは一時的に保存されます。*バンドラー*と呼ばれる特別な参加者がこれらのUserOperationを収集・処理し、1つのイーサリアムトランザクションにパッケージングします。このプロセスはネットワークの輻輳を軽減し、複数のオペレーションをより効率的にバンドルして処理できるようにします。ERC-4337はまた、*ペイマスター*と呼ばれる新しい役割を確立します。通常、イーサリアムトランザクションではETHでガス代を支払う必要がありますが、ペイマスターにより、ユーザーは代替トークンでガス代を支払ったり、第三者のスポンサーに代わりに手数料を支払ってもらったりすることが可能になります。この変革は、特にETHを保有していない新規ユーザーにとっての大きな障壁を取り除き、イーサリアムネットワークをより包括的でアクセスしやすいものにします。
+ERC-4337の実装では、図5-5に示すように、トランザクションを異なる方法で処理する*UserOperation*が導入されます。各トランザクションを直接ブロックチェーンにブロードキャストするのではなく、ユーザーはUserOperationを高レベルのメムプールに送信し、そこでトランザクションが一時的に保存されます。*バンドラー*と呼ばれる特別な参加者がこれらのUserOperationを収集・処理し、1つのイーサリアムトランザクションにまとめます。これによりネットワークの輻輳が軽減され、複数のオペレーションをより効率的に処理できるようになります。また、ERC-4337では*ペイマスター*という新しい役割も導入されます。通常、イーサリアムのトランザクションではETHでガス代を支払う必要がありますが、ペイマスターにより代替トークンでのガス代支払いや、第三者によるガス代の代理支払いが可能になります。これにより、ETHを保有していない新規ユーザーにとっての大きな障壁が取り除かれ、イーサリアムネットワークがより利用しやすくなります。
 
 ![ERC-4337 implementation diagram](images/ch5/maet_0505.png)
 
-Figure 5-5. ERC-4337 implementation diagram
-
 図5-5. ERC-4337の実装図
 
-Instead of using the traditional public mempool, which hosts pending transactions for EOAs, UserOperations are sent to a specialized *UserOperation mempool*: a higher-level mempool specifically designed for these operations. Bundlers monitor the UserOperation mempool, collecting multiple UserOperations to package them into a single "classic" transaction. They start by verifying each UserOperation's validity through the EntryPoint methods. After validation, the bundler submits this bundled transaction directly to the next proposed block, bypassing the regular mempool. Bundlers can either act as block builders themselves or collaborate with block builders to add the transaction to the blockchain.
-
-EOAの保留中のトランザクションをホストする従来のパブリックメンプールを使用する代わりに、UserOperationは専用の*UserOperationメンプール*に送信されます。これはこれらのオペレーション専用に設計された高レベルのメンプールです。バンドラーはUserOperationメンプールを監視し、複数のUserOperationを収集して1つの「従来型」トランザクションにパッケージングします。まず、EntryPointメソッドを通じて各UserOperationの有効性を検証します。検証後、バンドラーはこのバンドルされたトランザクションを通常のメンプールをバイパスして、次の提案ブロックに直接送信します。バンドラーは自らブロックビルダーとして機能することも、ブロックビルダーと連携してトランザクションをブロックチェーンに追加することもできます。
+従来のパブリックメムプールではEOAの保留中のトランザクションを扱いますが、UserOperationはこれらのオペレーション専用に設計された*UserOperationメムプール*に送信されます。バンドラーはこのUserOperationメムプールを監視し、複数のUserOperationを収集して1つの「従来型」トランザクションにまとめます。まずEntryPointメソッドを通じて各UserOperationの有効性を検証し、検証後、バンドルしたトランザクションを通常のメムプールをバイパスして次の提案ブロックに直接送信します。バンドラーは自らブロックビルダーとして機能することも、ブロックビルダーと連携してトランザクションをブロックチェーンに追加することもできます。
 
 #### EIP-2938
 
@@ -618,7 +608,7 @@ EIP-7702はまた、バッチ処理と権限の降格も導入します。バッ
 
 This EIP also modifies the invariants that traditionally govern account balance and nonce behaviors. It breaks the expectation that the balance of an EOA account can only decrease due to transactions from that account, and that an EOA's nonce cannot increment once transaction execution begins. These changes affect the mempool design and other EIPs. However, since the accounts are statically listed in the outer transaction, transaction-propagation rules can be adjusted to prevent forwarding of conflicting transactions. It does have forward compatibility with ERC-4337 and RIP-7560. Among other benefits, it enables EOAs to masquerade as contracts compatible with ERC-4337 bundles via the existing EntryPoint mechanism.
 
-このEIPはまた、従来アカウント残高とナンスの動作を支配してきた不変条件を変更します。EOAアカウントの残高はそのアカウントからのトランザクションによってのみ減少するという期待、およびトランザクション実行が開始されるとEOAのナンスはインクリメントできないという期待を破ります。これらの変更はメンプールの設計と他のEIPに影響します。しかし、アカウントは外部トランザクションに静的にリストされているため、トランザクション伝播ルールを調整して競合するトランザクションの転送を防止できます。ERC-4337およびRIP-7560との前方互換性を持っています。他の利点の中でも、EOAが既存のEntryPointメカニズムを通じてERC-4337バンドルと互換性のあるコントラクトとして振る舞うことを可能にします。
+このEIPはまた、従来アカウント残高とナンスの動作を支配してきた不変条件を変更します。EOAアカウントの残高はそのアカウントからのトランザクションによってのみ減少するという期待、およびトランザクション実行が開始されるとEOAのナンスはインクリメントできないという期待を破ります。これらの変更はメムプールの設計と他のEIPに影響します。しかし、アカウントは外部トランザクションに静的にリストされているため、トランザクション伝播ルールを調整して競合するトランザクションの転送を防止できます。ERC-4337およびRIP-7560との前方互換性を持っています。他の利点の中でも、EOAが既存のEntryPointメカニズムを通じてERC-4337バンドルと互換性のあるコントラクトとして振る舞うことを可能にします。
 
 > **Note**
 >
