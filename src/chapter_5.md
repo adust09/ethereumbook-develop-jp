@@ -492,103 +492,55 @@ EIP-3074は、EOAが「インボーカー」（代理実行コントラクト）
 
 #### EIP-5003
 
-EIP-5003 introduces the `AUTHUSURP` opcode, which allows code deployment at an address authorized through EIP-3074, effectively removing the original EOA's signing key (when used with EIP-3607). Traditional EOAs control a lot of value on Ethereum but face limitations. There's no easy way to rotate keys, batch transactions for efficiency, or enable gas sponsorship without holding ETH. Contract accounts and AA address these issues, allowing users to customize security features, authentication methods, spending limits, key rotation, social recovery, and more. However, these benefits are mostly limited to users who actively adopt new standards through smart contract wallets and app-layer solutions, such as those proposed by ERC-4337. This leaves a substantial number of existing users, who have relied on EOAs since Ethereum's inception, with limited security and usability improvements.
+EIP-5003は`AUTHUSURP`オペコードを導入します。これにより、EIP-3074を通じて認可されたアドレスにコードをデプロイし、（EIP-3607と併用した場合に）元のEOAの署名鍵を実質的に無効化できます。従来のEOAはイーサリアム上で多くの価値を管理していますが、鍵のローテーション、トランザクションのバッチ処理、ETHを保持せずにガス代の代理支払いを利用するといったことが容易にはできません。コントラクトアカウントとAAはこれらの問題に対処し、セキュリティ機能、認証方法、支出制限、鍵のローテーション、ソーシャルリカバリーなどのカスタマイズを可能にします。しかし、これらの利点はERC-4337のようなスマートコントラクトウォレットやアプリケーション層のソリューションを積極的に採用するユーザーに限られており、イーサリアムの誕生以来EOAに依存してきた多くの既存ユーザーにとっては、セキュリティとユーザビリティの改善が限定的なままです。
 
-EIP-5003は`AUTHUSURP`オペコードを導入します。これにより、EIP-3074を通じて認可されたアドレスにコードをデプロイし、（EIP-3607と併用した場合に）元のEOAの署名鍵を実質的に無効化できます。従来のEOAはイーサリアム上で多くの価値を管理していますが、制限に直面しています。鍵のローテーション、効率のためのトランザクションバッチ処理、ETHを保持せずにガススポンサーシップを有効にする簡単な方法がありません。コントラクトアカウントとAAはこれらの問題に対処し、ユーザーがセキュリティ機能、認証方法、支出制限、鍵のローテーション、ソーシャルリカバリーなどをカスタマイズできるようにします。しかし、これらの利点は主に、ERC-4337で提案されているようなスマートコントラクトウォレットやアプリケーション層のソリューションを通じて新しい標準を積極的に採用するユーザーに限定されています。これにより、イーサリアムの誕生以来EOAに依存してきた相当数の既存ユーザーは、セキュリティとユーザビリティの改善が限定的なままとなっています。
+EIP-3074によりEOAからコントラクトアカウントへ署名権限をデリゲートできるようになりましたが、元の署名鍵を完全に取り消すことまではできません。このギャップがセキュリティリスクを生みます。デリゲーションされた権限があっても、元の秘密鍵は潜在的な脆弱性として残り、漏洩した秘密鍵を取り消す手段が存在しないため、アカウント全体がリスクにさらされ続けます。秘密鍵が偶発的または悪意ある攻撃によって漏洩した場合、唯一の手段は新しいウォレットを作成して資産を個別に移行することですが、既存のスマートコントラクト内の一部の資産は移動できないため、コストがかかり不完全なプロセスになりがちです。
 
-While EIP-3074 offers an initial solution by enabling EOAs to delegate signing authority to a contract account, it stops short of allowing the EOA to completely revoke this original signing key. This gap introduces a security risk: even with delegated authority, the primary private key remains a potential vulnerability. If compromised, the entire account remains at risk, as there is currently no revocation option for an exposed private key. If a user's private key is leaked, either by accident or through a malicious attack, the only option is to create a new wallet and painstakingly migrate assets individually, an expensive and often incomplete process due to the immovability of certain assets within existing smart contracts.
-
-EIP-3074はEOAがコントラクトアカウントに署名権限をデリゲートできるようにすることで初期的な解決策を提供しますが、EOAがこの元の署名鍵を完全に取り消すことまでは許可しません。このギャップはセキュリティリスクを生みます。デリゲートされた権限があっても、プライマリ秘密鍵は潜在的な脆弱性として残ります。危殆化した場合、露出した秘密鍵の取り消しオプションが現在存在しないため、アカウント全体がリスクにさらされたままです。ユーザーの秘密鍵が偶発的またはの悪意ある攻撃によって漏洩した場合、唯一のオプションは新しいウォレットを作成し、資産を個別に苦労して移行することですが、既存のスマートコントラクト内の特定の資産は移動できないため、高価で不完全なプロセスとなりがちです。
-
-With this EIP, `AUTHUSURP` provides a secure transition path for EOA holders. It allows EOAs to fully transfer control to a smart contract, removing the original key's authority and thereby eliminating it as a security threat.
-
-このEIPにより、`AUTHUSURP`はEOA保有者に安全な移行パスを提供します。EOAがスマートコントラクトに完全に制御を移譲し、元の鍵の権限を削除することで、セキュリティ上の脅威を排除できます。
+このEIPにより、`AUTHUSURP`はEOA保有者に安全な移行手段を提供します。EOAがスマートコントラクトに完全に制御を移譲し、元の鍵の権限を削除することで、セキュリティ上の脅威を排除できます。
 
 #### EIP-7702
 
-EIP-7702 is the main AA EIP expected to be implemented in Pectra by early 2025. (Note: this chapter was written in September and October 2024, which is why we are using future tense.) EIP-7702 introduces a "set code transaction" under EIP-2718, enabling an EOA to delegate certain code to be executed on its behalf by authorized addresses.
-
-EIP-7702は、2025年初頭までにPectraで実装される予定の主要なAA EIPです。（注：この章は2024年9月から10月に書かれたため、未来形を使用しています。）EIP-7702はEIP-2718の下で「セットコードトランザクション」を導入し、EOAが認可されたアドレスによって自身の代わりに実行される特定のコードをデリゲートできるようにします。
-
-> **Note**
->
-> EIP-2718 introduces a "typed transaction envelope" format for Ethereum, supporting multiple transaction types within the protocol. This standardized format allows backward-compatible transaction upgrades, enabling future improvements with new transaction types while maintaining existing structures. This will be explained in more detail in Chapter 6. This EIP also adjusts EIP-3607's restrictions, allowing transactions from EOAs flagged with a delegation designation. It enables secure delegation for EOAs, adding improved account-management capabilities to Ethereum.
->
-> A question arises around how users should specify the code they intend to run in their accounts. The main options are to include the bytecode directly in the transaction or to reference a pointer to the code. The simplest pointer is the address of some code deployed on chain. Direct code specification allows EOAs to execute arbitrary code within the transaction calldata. One consideration when signing a code pointer is whether that address points to the intended code on another chain; wallet maintainers can hardcode a single EIP-7702 authorization message, ensuring cross-chain code consistency.
+EIP-7702は、2025年初頭のPectraアップグレードで実装が予定されている、AAに関する最も重要なEIPです。（注：この章は2024年9月から10月に執筆されたため、未来形を使用しています。）EIP-7702はEIP-2718の下で「セットコードトランザクション」を導入し、EOAが認可されたアドレスに特定のコードの実行をデリゲートできるようにします。
 
 > **注記**
 >
-> EIP-2718はイーサリアムに「型付きトランザクションエンベロープ」フォーマットを導入し、プロトコル内で複数のトランザクションタイプをサポートします。この標準化されたフォーマットにより、後方互換性のあるトランザクションのアップグレードが可能になり、既存の構造を維持しながら新しいトランザクションタイプによる将来の改善が実現できます。これは第6章でより詳しく説明します。このEIPはまた、EIP-3607の制限を調整し、デリゲーション指定のフラグが付いたEOAからのトランザクションを許可します。EOAの安全なデリゲーションを可能にし、イーサリアムに改善されたアカウント管理機能を追加します。
+> EIP-2718はイーサリアムに「型付きトランザクションエンベロープ（外枠）」フォーマットを導入し、プロトコル内で複数のトランザクションタイプをサポートします。この標準化されたフォーマットにより、既存の構造を維持しながら後方互換性のあるトランザクションのアップグレードが可能になります。詳細は第6章で説明します。このEIPはEIP-3607の制限も調整し、デリゲーション指定のフラグが付いたEOAからのトランザクションを許可します。これによりEOAの安全なデリゲーションが可能になり、イーサリアムのアカウント管理機能が強化されます。
 >
-> ユーザーがアカウントで実行するコードをどのように指定すべきかという疑問が生じます。主なオプションは、トランザクションにバイトコードを直接含めるか、コードへのポインターを参照するかです。最もシンプルなポインターは、オンチェーンにデプロイされたコードのアドレスです。直接コード指定により、EOAはトランザクションのcalldata内で任意のコードを実行できます。コードポインターに署名する際の1つの考慮事項は、そのアドレスが別のチェーン上の意図したコードを指しているかどうかです。ウォレットのメンテナーは単一のEIP-7702認可メッセージをハードコードすることで、クロスチェーンのコードの一貫性を確保できます。
+> ユーザーがアカウントで実行するコードをどのように指定すべきかという疑問が生じます。主なオプションは、トランザクションにバイトコードを直接含めるか、コードへのポインターを参照するかです。最もシンプルなポインターは、オンチェーンにデプロイされたコードのアドレスです。一方、直接コード指定の場合は、EOAがトランザクションのcalldata内で任意のコードを実行できます。コードポインターに署名する際の考慮事項として、そのアドレスが別のチェーン上の意図したコードを指しているかどうかがあります。ウォレットのメンテナーは単一のEIP-7702認可メッセージをハードコードすることで、クロスチェーンでのコードの一貫性を確保できます。
 
-There is an important security consideration to make. Once code is embedded in an EOA, EIP-7702 transactions may allow `msg.sender == tx.origin`, where the transaction creator is also the broadcasting address whenever the EOA code dispatches a call. Without EIP-7702, this scenario only occurs at the topmost execution layer of a transaction. Because EIP-7702 would enable transaction sponsoring, this would also be possible in other layers of execution. Consequently, this EIP breaks that invariant, affecting smart contracts that contain `require(msg.sender == tx.origin)` checks. This check serves at least three purposes:
+重要なセキュリティ上の考慮事項があります。コードがEOAに組み込まれると、EIP-7702トランザクションでは`msg.sender == tx.origin`が成立する可能性があります。つまり、EOAコードがコールを発行するたびに、トランザクションの作成者がブロードキャストアドレスでもある状態になります。EIP-7702がなければ、このシナリオはトランザクションの最上位実行層でのみ発生します。しかしEIP-7702がトランザクションスポンサーリングを可能にするため、他の実行層でもこれが起こりえます。その結果、このEIPは従来の不変条件を破り、`require(msg.sender == tx.origin)`チェックを含むスマートコントラクトに影響を与えます。このチェックには以下の3つの目的があります：
 
-重要なセキュリティ上の考慮事項があります。コードがEOAに組み込まれると、EIP-7702トランザクションは`msg.sender == tx.origin`を許可する可能性があります。これはEOAコードがコールを発行するたびに、トランザクションの作成者がブロードキャストアドレスでもある状態です。EIP-7702がなければ、このシナリオはトランザクションの最上位実行層でのみ発生します。EIP-7702はトランザクションスポンサーリングを可能にするため、他の実行層でもこれが可能になります。その結果、このEIPはその不変条件を破り、`require(msg.sender == tx.origin)`チェックを含むスマートコントラクトに影響を与えます。このチェックは少なくとも3つの目的を果たします：
+1. `msg.sender`がEOAであることの検証（`tx.origin`は常にEOAであるため）。この不変条件は実行層の深さに影響されず、コールの深さが1であれば`tx.origin`が`msg.sender`であることを確認できます。
 
-1. Verifying that `msg.sender` is an EOA (as `tx.origin` must always be an EOA). This invariant remains unaffected by execution-layer depth; it is still possible to ensure that the `tx.origin` is the `msg.sender` if the depth of the call is 1.
-
-1. `msg.sender`がEOAであることの検証（`tx.origin`は常にEOAでなければならないため）。この不変条件は実行層の深さに影響されません。コールの深さが1であれば、`tx.origin`が`msg.sender`であることを確認することは依然として可能です。
-
-2. Preventing atomic sandwich attacks, such as flash loans, which rely on altering state before and after target contract execution within the same atomic transaction. This protection is compromised by this EIP. However, using `tx.origin` for this purpose is generally considered poor practice and can already be bypassed by miners selectively including transactions.
-
-2. フラッシュローンなどのアトミックサンドイッチ攻撃の防止。これは同じアトミックトランザクション内でターゲットコントラクトの実行前後にステートを変更することに依存しています。この保護はこのEIPによって損なわれます。ただし、この目的で`tx.origin`を使用することは一般的に悪いプラクティスと見なされており、マイナーがトランザクションを選択的に含めることですでにバイパスできます。
-
-3. Guarding against reentrancy.
+2. フラッシュローンなどのアトミックサンドイッチ攻撃の防止。同じアトミックトランザクション内でターゲットコントラクトの実行前後にステートを変更する攻撃です。この保護はこのEIPにより損なわれます。ただし、この目的で`tx.origin`を使用することは一般的に悪いプラクティスとされており、マイナーがトランザクションを選択的に含めることですでに回避可能です。
 
 3. リエントランシーに対する防御。
 
-Examples of the first two appear in Ethereum mainnet contracts, with the first being more common (and unaffected by this EIP). However, the third case is more vulnerable under this EIP, although no instances of reentrancy protection relying on `tx.origin` were observed during the initial review by the creators of the proposal.
+上記のうち、1番目と2番目についてはメインネットのコントラクトに実例があります。1番目がより一般的で、このEIPの影響も受けません。一方、3番目はこのEIPにより脆弱性が増しますが、提案の作成者による初期レビューでは、`tx.origin`に依存するリエントランシー保護の事例は確認されていません。
 
-最初の2つの例はイーサリアムメインネットのコントラクトに存在し、1番目がより一般的です（このEIPの影響を受けません）。しかし、3番目のケースはこのEIPの下でより脆弱ですが、提案の作成者による最初のレビューでは、`tx.origin`に依存するリエントランシー保護のインスタンスは観察されませんでした。
-
-> **Tip**
+> **Tips**
 >
-> Unlike prior versions of this EIP and similar proposals, the delegation designation can be revoked at any time by signing and submitting an EIP-7702 authorization targeting a new address, using the account's current nonce. Without such action, a delegation remains valid indefinitely.
+> このEIPの先行バージョンや類似の提案とは異なり、デリゲーション指定はいつでも取り消せます。取り消すには、アカウントの現在のナンスを使用して新しいアドレスを対象とするEIP-7702認可に署名し送信します。取り消さない限り、デリゲーションは有効なままです。
 
-> **ヒント**
->
-> このEIPの以前のバージョンや類似の提案とは異なり、デリゲーション指定はアカウントの現在のナンスを使用して新しいアドレスをターゲットとするEIP-7702認可に署名して送信することで、いつでも取り消すことができます。そのようなアクションを取らない限り、デリゲーションは無期限に有効です。
+EOAの機能を改善することへの関心は高く、ユーザビリティや場合によってはセキュリティの向上が期待されています。主要なユースケースの1つはトランザクションスポンサーシップで、ガス代を賄うためのETHを保持せずにトランザクションを実行可能にします。従来のイーサリアムトランザクションではガス代はETHで支払われますが、他のトークンのみを保持しているユーザーやエコシステムの初心者にとっては不便です。EIP-7702は、トランザクション手数料を第三者が一時的または恒久的に負担できるモデルを導入し、ETHなしでトランザクションを完了できるようにします。これによりオンボーディングが簡素化され、ETH管理を必要とせずに特定のDAppやトークンを利用したい新規ユーザーにとってイーサリアムがより利用しやすくなります。
 
-There is considerable interest in adding functionality improvements to EOAs, improving usability and, in some cases, improving security. One key application is transaction sponsorship, which enables users to transact without holding ETH to cover gas fees. In traditional Ethereum transactions, gas fees are paid in ETH, which may be inconvenient for users holding only other tokens or those who are new to the ecosystem. EIP-7702 introduces a model where transaction fees can be covered by third parties, temporarily or permanently, allowing users to complete transactions without ETH. This could simplify onboarding, making Ethereum applications more accessible to new users interested in specific DApps or tokens without requiring ETH management.
+従来のイーサリアムアカウントは単一の秘密鍵にのみ依存しているため、紛失するとアカウントと資産へのアクセスを失います。EIP-7702の構造はさまざまなリカバリーメカニズムをサポートし、秘密鍵を紛失した場合でもアクセスを回復できるようにします。リカバリーメカニズムは、セキュリティを重視するユーザーや、鍵管理を困難に感じるブロックチェーン初心者にとって特に価値があります。リカバリーオプションとしてはマルチシグやソーシャルリカバリーがあり、選択した信頼できる相手にアカウントの復元を支援してもらうことができます。これはイーサリアムアカウントのセキュリティとユーザーフレンドリーさにおける大きな前進です。
 
-EOAに機能改善を追加し、ユーザビリティや場合によってはセキュリティを向上させることへの関心は高いです。主要なアプリケーションの1つはトランザクションスポンサーシップで、ユーザーがガス代を賄うためにETHを保持せずにトランザクションを実行できるようにします。従来のイーサリアムトランザクションでは、ガス代はETHで支払われますが、これは他のトークンのみを保持しているユーザーやエコシステムの初心者にとっては不便な場合があります。EIP-7702は、トランザクション手数料を第三者が一時的または恒久的に負担できるモデルを導入し、ユーザーがETHなしでトランザクションを完了できるようにします。これによりオンボーディングが簡素化され、ETH管理を必要とせずに特定のDAppやトークンに関心のある新規ユーザーにとってイーサリアムアプリケーションがよりアクセスしやすくなります。
+EIP-7702はバッチ処理と権限の降格も導入します。バッチ処理により、単一のアトミックトランザクション内で複数のアクションを処理でき、ERC-20の承認に続くトークンの使用など、複雑なワークフローを2ステップではなく1ステップで完了できます。権限の降格は、特定の金額の使用や特定のアプリケーションとのやり取りのみを認可する制限付きサブキーを提供し、鍵の漏洩時の被害を最小限に抑えます。
 
-Traditional Ethereum accounts rely solely on a single private key, so losing it means losing access to the account and assets. EIP-7702's structure supports various recovery mechanisms, enabling users to regain access if they lose their private keys. Recovery mechanisms are especially valuable for security-focused users and for those who are new to blockchain and may find key management daunting. Potential recovery options include multisignature and social recovery, which allow selected contacts to assist in account restoration; this is a big step in Ethereum accounts' security and user-friendliness.
-
-従来のイーサリアムアカウントは単一の秘密鍵にのみ依存しているため、紛失するとアカウントと資産へのアクセスを失うことを意味します。EIP-7702の構造はさまざまなリカバリーメカニズムをサポートし、ユーザーが秘密鍵を紛失した場合にアクセスを回復できるようにします。リカバリーメカニズムは、セキュリティを重視するユーザーや、ブロックチェーンの初心者で鍵管理を困難に感じるユーザーにとって特に価値があります。潜在的なリカバリーオプションには、選択した連絡先がアカウントの復元を支援できるマルチシグやソーシャルリカバリーが含まれます。これはイーサリアムアカウントのセキュリティとユーザーフレンドリーさにおける大きな前進です。
-
-EIP-7702 also introduces batching and privilege deescalation. Batching allows multiple actions to be processed within a single atomic transaction, enabling users to complete complex workflows—such as ERC-20 approval followed by token spending—in one step rather than two. Privilege deescalation offers subkeys with restricted permissions, authorizing actions like spending a specific amount or interacting only with certain applications, to improve security by minimizing exposure in case of compromise.
-
-EIP-7702はまた、バッチ処理と権限の降格も導入します。バッチ処理により、単一のアトミックトランザクション内で複数のアクションを処理でき、ERC-20の承認に続くトークンの使用など、複雑なワークフローを2ステップではなく1ステップで完了できます。権限の降格は、特定の金額の使用や特定のアプリケーションとのインタラクションのみを認可するなど、制限された権限を持つサブキーを提供し、危殆化時の露出を最小限に抑えることでセキュリティを向上させます。
-
-This EIP also modifies the invariants that traditionally govern account balance and nonce behaviors. It breaks the expectation that the balance of an EOA account can only decrease due to transactions from that account, and that an EOA's nonce cannot increment once transaction execution begins. These changes affect the mempool design and other EIPs. However, since the accounts are statically listed in the outer transaction, transaction-propagation rules can be adjusted to prevent forwarding of conflicting transactions. It does have forward compatibility with ERC-4337 and RIP-7560. Among other benefits, it enables EOAs to masquerade as contracts compatible with ERC-4337 bundles via the existing EntryPoint mechanism.
-
-このEIPはまた、従来アカウント残高とナンスの動作を支配してきた不変条件を変更します。EOAアカウントの残高はそのアカウントからのトランザクションによってのみ減少するという期待、およびトランザクション実行が開始されるとEOAのナンスはインクリメントできないという期待を破ります。これらの変更はメムプールの設計と他のEIPに影響します。しかし、アカウントは外部トランザクションに静的にリストされているため、トランザクション伝播ルールを調整して競合するトランザクションの転送を防止できます。ERC-4337およびRIP-7560との前方互換性を持っています。他の利点の中でも、EOAが既存のEntryPointメカニズムを通じてERC-4337バンドルと互換性のあるコントラクトとして振る舞うことを可能にします。
-
-> **Note**
->
-> A general design goal for state-transition changes is minimizing special cases in an EIP. Earlier iterations of this EIP resisted adding a special case for clearing an account's delegation designation. Generally, an account delegated to 0x0 behaves like a true EOA; however, most operations interacting with that account incur an additional cost. This extra cost may influence overall EIP adoption. For these reasons, a mechanism was included to allow users to restore their EOAs to their original state.
+このEIPは、従来アカウント残高とナンスの動作を支配してきた不変条件も変更します。EOAアカウントの残高はそのアカウントからのトランザクションによってのみ減少するという前提、およびトランザクションの実行中にEOAのナンスはインクリメントされないという前提を破ります。これらの変更はメムプールの設計や他のEIPに影響します。ただし、デリゲーション対象のアカウントはトランザクション内に明示的に列挙されているため、競合するトランザクションの転送を防ぐようにトランザクション伝播ルールを調整できます。ERC-4337およびRIP-7560との前方互換性も備えており、EOAが既存のEntryPointメカニズムを通じてERC-4337バンドルと互換性のあるコントラクトとして振る舞うことも可能です。
 
 > **注記**
 >
-> 状態遷移の変更に対する一般的な設計目標は、EIP内の特殊ケースを最小限に抑えることです。このEIPの初期のイテレーションでは、アカウントのデリゲーション指定をクリアするための特殊ケースの追加に抵抗していました。一般的に、0x0にデリゲートされたアカウントは真のEOAのように動作しますが、そのアカウントとインタラクションするほとんどのオペレーションでは追加コストが発生します。この追加コストはEIP全体の採用に影響を与える可能性があります。これらの理由から、ユーザーがEOAを元の状態に復元できるメカニズムが含まれました。
+> 状態遷移の変更における一般的な設計目標は、EIP内の特殊ケースを最小限に抑えることです。このEIPの初期バージョンでは、アカウントのデリゲーション指定をクリアするための特殊ケースの追加を避けていました。0x0にデリゲートされたアカウントは基本的に通常のEOAと同様に動作しますが、そのアカウントとのやり取りには余計なコストがかかります。この余計なコストがEIP全体の採用に影響を与える可能性があるため、ユーザーがEOAを完全に元の状態に戻せるようにしました。
 
-This EIP involves multiple security considerations, which will be the responsibility of the implementation and should be carefully evaluated. In addition to the noted `tx.origin` issue, there are three key considerations:
+このEIPには複数のセキュリティ上の考慮事項があり、実装時に慎重に評価する必要があります。前述の`tx.origin`の問題に加えて、3つの主要な考慮事項があります：
 
-このEIPには複数のセキュリティ上の考慮事項が含まれており、実装の責任であり、慎重に評価される必要があります。前述の`tx.origin`の問題に加えて、3つの主要な考慮事項があります：
+- EOAがスマートコントラクトのように動作できるようになることで、トランザクション伝播に課題が生じます。従来、EOAはトランザクションを通じてのみ資金を送信できました。このEIPにより、EOAのデリゲートされたコードは誰でもいつでも呼び出せるようになり、ノードによる静的な残高検証を妨げます。つまり、ノードがアドレスの残高を検証することがより困難になります。
 
-- Enabling EOAs to act like smart contracts challenges transaction propagation. Traditionally, EOAs could only send value via transactions. With this EIP, an EOA's delegated code can be invoked by anyone at any time in a transaction, preventing static balance validation by nodes; it essentially makes it harder for nodes to validate the balance of an address.
+- スマートコントラクトウォレットの開発者は、実行なしでアカウントにコードを設定することの影響を考慮する必要があります。通常、コントラクトはinitcodeでデプロイされ、ストレージスロットが決定論的に初期化されます。このEIPはデリゲーションでのinitcode実行を省略するため、開発者は観察者によるセットアップのフロントランニングを防ぐために初期calldataを検証する必要があります。
 
-- EOAがスマートコントラクトのように動作できるようにすることは、トランザクション伝播に課題をもたらします。従来、EOAはトランザクションを通じてのみ値を送信できました。このEIPにより、EOAのデリゲートされたコードはトランザクション内で誰でもいつでも呼び出すことができ、ノードによる静的な残高検証を妨げます。これは本質的に、ノードがアドレスの残高を検証することをより困難にします。
-
-- Smart contract wallet developers must consider the implications of setting code in an account without execution. Normally, contracts are deployed with initcode, initializing storage slots deterministically. This EIP omits initcode execution for delegation, so developers must verify initial calldata to prevent an observer from front-running setup with an account they control.
-
-- スマートコントラクトウォレットの開発者は、実行なしでアカウントにコードを設定することの影響を考慮する必要があります。通常、コントラクトはinitcodeでデプロイされ、ストレージスロットを決定論的に初期化します。このEIPはデリゲーションのためのinitcode実行を省略するため、開発者は観察者が自分の制御するアカウントでセットアップをフロントランニングすることを防ぐために、初期calldataを検証する必要があります。
-
-- Replay protection (e.g., nonce handling) should be implemented by the delegate and signed. Without this, a malicious actor could reuse a signature, gaining near-complete control over the signer's EOA.
-
-- リプレイ保護（例：ナンスの処理）はデリゲートによって実装され、署名される必要があります。これがなければ、悪意のある行為者が署名を再利用し、署名者のEOAに対するほぼ完全な制御を得る可能性があります。
+- リプレイ保護（例：ナンスの処理）はデリゲートによって実装・署名される必要があります。これがなければ、悪意のある行為者が署名を再利用し、署名者のEOAに対するほぼ完全な制御を得る可能性があります。
 
 #### The future of account abstraction
 #### アカウントアブストラクションの将来
