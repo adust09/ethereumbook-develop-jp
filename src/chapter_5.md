@@ -398,37 +398,21 @@ BIP-44はもともとビットコイン用に作成されたため、イーサ�
 >
 > 相続は非常に複雑なトピックです。パメラ・モーガン著『*Cryptoasset Inheritance Planning: A Simple Guide for Owners*』（Merkle Bloom）を読むことをお勧めします。
 
-## Improving on User Experience
 ## ユーザーエクスペリエンスの改善
 
-As we mentioned earlier, at a high level, a wallet is a software application that serves as the primary user interface to Ethereum. So for most of Ethereum's users, the wallet is most of the user experience. For years, it has not really been improved. For example, the most popular browser wallet at the time of writing is MetaMask, which has not evolved that much since its inception; a close second, Rabby, has recently emerged. We will now examine a few updates to wallets that could drastically improve the user experience.
+前述のように、広義にはウォレットとはイーサリアムへの主要なユーザーインターフェイスとして機能するソフトウェアアプリケーションです。そのため、イーサリアムのユーザーの大部分にとって、ウォレットがユーザーエクスペリエンスのほぼすべてです。しかし、長年にわたりウォレットのUXはほとんど改善されてきませんでした。例えば、執筆時点で最も人気のあるブラウザウォレットはMetaMaskですが、誕生以来それほど進化していません。僅差の2番手としてRabbyが最近登場しました。ここでは、ユーザーエクスペリエンスを劇的に改善しうるウォレットのアップデートについて検討します。
 
-前述のように、広義にはウォレットとはイーサリアムへの主要なユーザーインターフェイスとして機能するソフトウェアアプリケーションです。そのため、イーサリアムのユーザーの大部分にとって、ウォレットがユーザーエクスペリエンスのほぼすべてです。長年にわたり、これは本当に改善されてきませんでした。例えば、執筆時点で最も人気のあるブラウザウォレットはMetaMaskですが、誕生以来それほど進化していません。僅差の2番手としてRabbyが最近登場しました。ここでは、ユーザーエクスペリエンスを劇的に改善しうるウォレットのいくつかのアップデートについて検討します。
-
-### Account Abstraction
 ### アカウントアブストラクション
 
-Account abstraction (AA) on Ethereum is a way to make user accounts more flexible and easier to use. Normally, there are two types of accounts in Ethereum, as described in Chapter 2: EOAs and smart contract accounts. AA combines the benefits of both types. It allows regular accounts (EOAs) to behave more like smart contracts, meaning users can set up custom rules for how their accounts work, such as adding security features or allowing multiple people to sign transactions.
+イーサリアムにおけるアカウントアブストラクション（AA）は、ユーザーアカウントをより柔軟で使いやすくするための仕組みです。通常、第2章で説明したように、イーサリアムにはEOAとスマートコントラクトアカウントの2種類のアカウントがあります。AAはこの両方の利点を組み合わせたものです。通常のアカウント（EOA）がスマートコントラクトのように振る舞えるようになり、セキュリティ機能の追加や複数人によるトランザクション署名の許可など、アカウントの動作にカスタムルールを設定できます。
 
-イーサリアムにおけるアカウントアブストラクション（AA）は、ユーザーアカウントをより柔軟で使いやすくするための方法です。通常、第2章で説明したように、イーサリアムにはEOAとスマートコントラクトアカウントの2種類のアカウントがあります。AAは両方の利点を組み合わせます。通常のアカウント（EOA）がスマートコントラクトのように振る舞えるようになり、セキュリティ機能の追加や複数人によるトランザクション署名の許可など、アカウントの動作に対してカスタムルールを設定できます。
+AAにより、イーサリアムはより使いやすく柔軟になります。例えば、秘密鍵だけに頼らずに紛失したアカウントをリカバリーしたり、イーサだけでなく任意のトークンでトランザクション手数料を支払ったりできるようになります。
 
-With AA, Ethereum can become more user-friendly and flexible. For example, you could recover a lost account without relying solely on a private key, or you could pay transaction fees in any token, not just ether.
+AAを実装するための提案は複数あります。主な違いとして、一方の提案グループはイーサリアムプロトコルを変更せずにAAを実装しようとしたのに対し、もう一方の提案グループはイーサリアムプロトコル自体を変更するもので、Pectraアップグレードで実装される予定です。
 
-AAにより、イーサリアムはより使いやすく柔軟になります。例えば、秘密鍵だけに頼らずに紛失したアカウントをリカバリーしたり、Etherだけでなく任意のトークンでトランザクション手数料を支払ったりできるようになります。
+AAに関する主なEIPとEthereum Requests for Comments（ERC）を見ていきましょう。これらの提案は急速に進化しており、本書が出版される頃にはAAの状況は大きく変わっている可能性があることに留意してください。それでも、何が実装され、近い将来何が計画されているかを把握しておくことは有益です。
 
-There have been multiple proposals to implement AA. The main distinction is that one group of proposals tried to implement AA without changing the Ethereum protocol. Another group of proposals, which will be implemented in the Pectra upgrade, will end up changing the Ethereum protocol.
-
-AAを実装するための提案は複数あります。主な区別は、一方の提案グループがイーサリアムプロトコルを変更せずにAAを実装しようとしたのに対し、もう一方の提案グループはPectraアップグレードで実装される予定であり、イーサリアムプロトコル自体を変更することになるという点です。
-
-Let's look at the main EIPs and Ethereum Requests for Comments (ERCs) for AA. Keep in mind that these proposals are evolving rapidly, and by the time this book is published, the AA landscape may have changed significantly. Nevertheless, it's still useful to explore what has been implemented and what is planned for the near future.
-
-AAに関する主なEIPとEthereum Requests for Comments（ERC）を見ていきましょう。これらの提案は急速に進化しており、本書が出版される頃にはAAの状況は大きく変わっている可能性があることに留意してください。それでも、何が実装され、近い将来何が計画されているかを探ることは有益です。
-
-> **Tip**
->
-> It is important to understand the difference between an ERC, an EIP, and a Rollup Improvement Proposal (RIP). Essentially, EIPs and RIPs are improvements that center on changes in the Ethereum networks, whereas ERCs are application-related changes that do not have any impact on core network capability.
-
-> **ヒント**
+> **Tips**
 >
 > ERC、EIP、およびRollup Improvement Proposal（RIP）の違いを理解することが重要です。基本的に、EIPとRIPはイーサリアムネットワークの変更を中心とした改善であるのに対し、ERCはコアネットワークの機能に影響を与えないアプリケーション関連の変更です。
 
