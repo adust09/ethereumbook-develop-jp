@@ -542,59 +542,34 @@ EIP-7702はバッチ処理と権限の降格も導入します。バッチ処理
 
 - リプレイ保護（例：ナンスの処理）はデリゲートによって実装・署名される必要があります。これがなければ、悪意のある行為者が署名を再利用し、署名者のEOAに対するほぼ完全な制御を得る可能性があります。
 
-#### The future of account abstraction
 #### アカウントアブストラクションの将来
 
-AA on Ethereum is a complex but promising idea, with many possible paths forward. Each proposal offers a different way to make user interactions simpler and more secure. Some improve on previous proposals, such as EIP-5003 building on EIP-3074, while others, such as EIP-5806, stand alone or even lack backward compatibility. This variety reflects a search for the best solution, with the final direction likely shaped by which options users find easiest and most effective. Although the exact future is unclear, AA holds real promise for improving the experience of using Ethereum.
+イーサリアムにおけるAAは複雑ですが有望なアイデアであり、実現に向けた道筋も多数あります。各提案はユーザーのやり取りをよりシンプルで安全にするための異なるアプローチを提供しています。EIP-3074を基盤とするEIP-5003のように先行する提案を改善するものもあれば、EIP-5806のように単独で成立するものや後方互換性を欠くものもあります。この多様性は最適な解決策の模索を反映しており、最終的な方向性はユーザーが最も使いやすく効果的だと感じる選択肢によって決まる可能性が高いです。将来の正確な姿はまだ見えませんが、AAはイーサリアムの利用体験を改善する大きな可能性を秘めています。
 
-イーサリアムにおけるAAは複雑ですが有望なアイデアであり、前進するための多くの道筋があります。各提案はユーザーのインタラクションをよりシンプルで安全にするための異なる方法を提供しています。EIP-3074の上に構築されたEIP-5003のように以前の提案を改善するものもあれば、EIP-5806のように単独で成立するものや後方互換性を欠くものもあります。この多様性は最適なソリューションの探求を反映しており、最終的な方向性はユーザーが最も簡単で効果的だと感じるオプションによって形作られる可能性が高いです。正確な将来は不透明ですが、AAはイーサリアムの利用体験を改善する真の可能性を秘めています。
-
-### Social Recovery
 ### ソーシャルリカバリー
 
-The primary EIP related to social recovery is EIP-2429. Titled "Secret Multisig Recovery," EIP-2429 introduces a mechanism that allows users to regain access to their wallets by assigning trusted individuals or entities as "guardians." In case a user loses their private key, they can use these guardians to help recover control of the wallet. The guardians are involved only during the recovery process, limiting their power, as shown in Figure 5-10.
-
-ソーシャルリカバリーに関連する主要なEIPはEIP-2429です。「Secret Multisig Recovery」というタイトルのEIP-2429は、信頼できる個人またはエンティティを「ガーディアン」として指定することで、ユーザーがウォレットへのアクセスを回復できるメカニズムを導入します。ユーザーが秘密鍵を紛失した場合、これらのガーディアンを利用してウォレットの制御を回復できます。図5-10に示すように、ガーディアンはリカバリープロセス中のみ関与し、その権限は限定されています。
+ソーシャルリカバリーに関連する主要なEIPはEIP-2429です。「Secret Multisig Recovery」と題されたEIP-2429は、信頼できる個人や組織を「ガーディアン」として指定することで、ユーザーがウォレットへのアクセスを回復できる仕組みを導入します。ユーザーが秘密鍵を紛失した場合、ガーディアンの協力によりウォレットの制御を取り戻せます。図5-10に示すように、ガーディアンはリカバリープロセス中のみ関与し、その権限は限定されています。
 
 ![Social recovery flow](images/ch5/maet_0510.png)
 
-Figure 5-10. Social recovery flow
-
 図5-10. ソーシャルリカバリーのフロー
-
-> **Note**
->
-> Vitalik Buterin released an article in 2021 that said, and we are quoting, "This gets us to my preferred method for securing a wallet: social recovery." We do not know if the situation has changed, but it still might be the case that social recovery is Buterin's preferred method.
 
 > **注記**
 >
-> Vitalik Buterinは2021年に記事を公開し、引用すると「これが私のウォレットを保護するための好ましい方法、つまりソーシャルリカバリーにたどり着く」と述べています。状況が変わったかどうかは不明ですが、ソーシャルリカバリーが依然としてButerinの好ましい方法である可能性があります。
+> Vitalik Buterinは2021年に公開した記事で、「これが私のウォレットを保護するための好ましい方法、つまりソーシャルリカバリーにたどり着く」と述べています。現在も状況が同じかは不明ですが、ソーシャルリカバリーが依然としてButerinの推奨する方法である可能性があります。
 
-For normal use, a social recovery wallet functions like a regular one, allowing the user to sign transactions with their signing key. If the key is lost, social recovery activates, enabling the user to contact guardians, who sign a transaction to update the wallet's signing key. Guardians can be trusted individuals, devices, or institutions. Guardians can remain anonymous, and to prevent attacks, their identities aren't stored on chain. In case of the user's death, guardians can coordinate to recover the user's funds.
-
-通常の使用では、ソーシャルリカバリーウォレットは通常のウォレットと同様に機能し、ユーザーは署名鍵でトランザクションに署名できます。鍵が紛失した場合、ソーシャルリカバリーが有効になり、ユーザーはガーディアンに連絡でき、ガーディアンはウォレットの署名鍵を更新するトランザクションに署名します。ガーディアンは信頼できる個人、デバイス、または機関です。ガーディアンは匿名のままでいることができ、攻撃を防ぐために、その身元はオンチェーンに保存されません。ユーザーの死亡時には、ガーディアンが連携してユーザーの資金をリカバリーできます。
+通常の使用では、ソーシャルリカバリーウォレットは一般的なウォレットと同様に機能し、ユーザーは署名鍵でトランザクションに署名できます。鍵を紛失した場合はソーシャルリカバリーが起動し、ユーザーがガーディアンに連絡すると、ガーディアンがウォレットの署名鍵を更新するトランザクションに署名します。ガーディアンには信頼できる個人、デバイス、または機関を指定できます。攻撃を防ぐためにガーディアンの身元はオンチェーンに保存されず、匿名性を保てます。ユーザーが死亡した場合は、ガーディアンが連携して資金をリカバリーすることも可能です。
 
 ### ENS
 
-The Ethereum Name Service is like a Web3 version of traditional domain names, but instead of linking to websites, it connects human-readable names to Ethereum addresses. This makes dealing with long, complex blockchain addresses much easier. For instance, rather than having to send cryptocurrency to an address like `0xd8dA6BF...`, you can simply send it to something like `vitalik.eth`. This simplifies transactions and makes the whole process far less intimidating, especially for newcomers to crypto.
+Ethereum Name Service（ENS）は従来のドメイン名のWeb3バージョンのようなものですが、ウェブサイトにリンクする代わりに、人間が読める名前をイーサリアムアドレスに紐づけます。これにより、長く複雑なブロックチェーンアドレスの扱いがはるかに簡単になります。例えば、`0xd8dA6BF...`のようなアドレスに暗号通貨を送信する代わりに、`vitalik.eth`のような名前に送信するだけで済みます。これによりトランザクションが簡素化され、特に暗号通貨の初心者にとって取り組みやすくなります。
 
-Ethereum Name Service（ENS）は従来のドメイン名のWeb3バージョンのようなものですが、ウェブサイトにリンクする代わりに、人間が読める名前をイーサリアムアドレスに接続します。これにより、長く複雑なブロックチェーンアドレスの扱いがはるかに簡単になります。例えば、`0xd8dA6BF...`のようなアドレスに暗号通貨を送信する代わりに、`vitalik.eth`のようなものに送信するだけで済みます。これによりトランザクションが簡素化され、特に暗号通貨の初心者にとってプロセス全体がはるかに取り組みやすくなります。
+ENSをWeb2の世界と比較すると、DNSの仕組みに似ています。DNSは覚えにくいIPアドレスを`google.com`のようなURLに紐づけるため、ウェブサイトを訪れるのに数字の文字列を覚える必要がありません。しかし、ENSとDNSには重要な違いがあります。ENSは分散型であり、一度`.eth`名を所有すれば、中央の管理者がそれを制御することはありません。Web2ではドメイン名はレジストラによって管理され、検閲、停止、制限される可能性があります。ENSではイーサリアムウォレットを通じて名前を完全に制御できるため、`.eth`名はそれを保持するウォレットと同じレベルの安全性を持ちます。
 
-If you compare ENS to the Web2 world, it's similar to how DNS works. DNS takes IP addresses (which are hard to remember) and connects them to URLs like `google.com`, so you don't have to remember a string of numbers to visit a website. However, there's a key difference between ENS and DNS: ENS is decentralized. No central authority controls your `.eth` name once you own it. In Web2, domain names are managed by registrars and can be censored, suspended, or restricted. In ENS, you control your name entirely through your Ethereum wallet, meaning your `.eth` name is as secure as the wallet that holds it.
+暗号通貨を送受信するとき、長く複雑なイーサリアムアドレスの代わりに`andreas.eth`のような名前を使用すると、よりスムーズで安全になります。アドレスの入力ミスの可能性が減り、トランザクションにおけるリスクを軽減できます。
 
-ENSをWeb2の世界と比較すると、DNSの仕組みに似ています。DNSはIPアドレス（覚えにくい）を`google.com`のようなURLに接続するため、ウェブサイトを訪れるのに数字の文字列を覚える必要がありません。しかし、ENSとDNSの間には重要な違いがあります。ENSは分散型です。一度`.eth`名を所有すれば、中央の権限がそれを制御することはありません。Web2では、ドメイン名はレジストラによって管理され、検閲、停止、制限される可能性があります。ENSでは、イーサリアムウォレットを通じて名前を完全に制御できるため、`.eth`名はそれを保持するウォレットと同じくらい安全です。
+ENSのもう1つの特徴は、デジタルアイデンティティを提供できる点です。ウェブサイトのドメイン名を所有するのと同じように、ユニークな`.eth`名はブロックチェーン上の公開アイデンティティとして機能します。
 
-When you're sending or receiving crypto, using a name like `andreas.eth` instead of a long, complex Ethereum address makes everything smoother and safer. It reduces the chance of making a mistake when entering an address, which can otherwise be a big risk in a transaction.
-
-暗号通貨を送受信するとき、長く複雑なイーサリアムアドレスの代わりに`andreas.eth`のような名前を使用すると、すべてがよりスムーズで安全になります。アドレスの入力時にミスをする可能性が減少します。アドレスの入力ミスは、トランザクションにおいて大きなリスクとなりえます。
-
-Another cool aspect of ENS is that it provides a sense of digital identity. Just like owning a domain name for your website, having a unique `.eth` name can serve as your public identity on the blockchain.
-
-ENSのもう1つの興味深い側面は、デジタルアイデンティティの感覚を提供することです。ウェブサイトのドメイン名を所有するのと同じように、ユニークな`.eth`名はブロックチェーン上のパブリックアイデンティティとして機能できます。
-
-## Conclusion
 ## まとめ
 
-Wallets are the foundation of any user-facing blockchain application. They enable users to manage collections of keys and addresses. Wallets also allow users to demonstrate their ownership of ether and authorize transactions by applying digital signatures, as we will see in Chapter 6.
-
-ウォレットは、ユーザー向けのあらゆるブロックチェーンアプリケーションの基盤です。ウォレットにより、ユーザーは鍵とアドレスのコレクションを管理できます。また、ウォレットはユーザーがEtherの所有権を証明し、第6章で見るようにデジタル署名を適用してトランザクションを承認することも可能にします。
+ウォレットは、ユーザー向けのあらゆるブロックチェーンアプリケーションの基盤です。ウォレットにより、ユーザーは鍵とアドレスのコレクションを管理できます。また、第6章で説明するように、ウォレットはデジタル署名を用いてイーサの所有権を証明し、トランザクションを承認する手段でもあります。
