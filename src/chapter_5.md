@@ -432,105 +432,61 @@ ERC-4337の実装では、図5-5に示すように、トランザクションを
 
 #### EIP-2938
 
-While ERC-4337 focuses on AA at a high level via smart contracts without changing Ethereum's core, EIP-2938 goes a step further by proposing that AA be embedded within the protocol layer itself. This lower-level approach allows for even more direct and flexible interactions among users, smart contracts, and applications by fundamentally changing how the EVM treats accounts. Through EIP-2938, users could handle operations without traditional EOAs, removing reliance on private-key-based accounts and enabling a greater diversity of account management systems, such as multisignature accounts or social recovery accounts, directly on Ethereum's protocol level.
+ERC-4337がイーサリアムのコアを変更せずにスマートコントラクトを通じてAAを実現するのに対し、EIP-2938はさらに一歩進んで、AAをプロトコル層自体に組み込むことを提案しています。このアプローチは、EVMがアカウントを扱う方法を根本的に変更することで、ユーザー、スマートコントラクト、アプリケーション間のより直接的で柔軟なやり取りを可能にします。EIP-2938により、ユーザーは従来のEOAなしでオペレーションを処理でき、秘密鍵ベースのアカウントへの依存を排除し、マルチシグアカウントやソーシャルリカバリーアカウントなど、より多様なアカウント管理システムをイーサリアムのプロトコルレベルで直接実現できます。
 
-ERC-4337がイーサリアムのコアを変更せずにスマートコントラクトを通じて高レベルでAAに焦点を当てているのに対し、EIP-2938はさらに一歩進んで、AAをプロトコル層自体に組み込むことを提案しています。この低レベルのアプローチは、EVMがアカウントを扱う方法を根本的に変更することで、ユーザー、スマートコントラクト、アプリケーション間のより直接的で柔軟なインタラクションを可能にします。EIP-2938により、ユーザーは従来のEOAなしでオペレーションを処理でき、秘密鍵ベースのアカウントへの依存を排除し、マルチシグアカウントやソーシャルリカバリーアカウントなど、より多様なアカウント管理システムをイーサリアムのプロトコルレベルで直接実現できます。
-
-The main difference between EIP-2938 and some existing AA proposals lies in the focus on integrating abstraction directly into the protocol, rather than layering it on top. With EIP-2938, Ethereum would support "operations" rather than "transactions," where each operation could represent a more versatile, customizable transaction type. EIP-2938 can redefine Ethereum's transactions as programmable objects, supporting a broader spectrum of use cases. By treating accounts and transactions as inherently programmable, it expands Ethereum's utility beyond standard payments and contract interactions, fitting perfectly with the increasingly complex applications being built on the network.
-
-EIP-2938と既存のAA提案の主な違いは、アブストラクションをプロトコルの上にレイヤーとして載せるのではなく、プロトコルに直接統合することに焦点を当てている点にあります。EIP-2938により、イーサリアムは「トランザクション」ではなく「オペレーション」をサポートし、各オペレーションはより多機能でカスタマイズ可能なトランザクションタイプを表すことができます。EIP-2938はイーサリアムのトランザクションをプログラム可能なオブジェクトとして再定義し、より広範なユースケースをサポートできます。アカウントとトランザクションを本質的にプログラム可能なものとして扱うことで、標準的な支払いやコントラクトとのインタラクションを超えてイーサリアムの有用性を拡張し、ネットワーク上に構築されるますます複雑なアプリケーションに完璧に適合します。
+EIP-2938と既存のAA提案の主な違いは、アブストラクションをプロトコルの上にレイヤーとして載せるのではなく、プロトコルに直接統合する点にあります。EIP-2938では、イーサリアムは「トランザクション」ではなく「オペレーション」をサポートし、各オペレーションはより多機能でカスタマイズ可能なトランザクションタイプとなります。EIP-2938はイーサリアムのトランザクションをプログラム可能なオブジェクトとして再定義し、より広範なユースケースに対応します。アカウントとトランザクションを本質的にプログラム可能なものとして扱うことで、標準的な支払いやコントラクトとのやり取りを超えてイーサリアムの有用性を拡張し、ネットワーク上で構築される高度なアプリケーションにも対応できます。
 
 #### RIP-7560
 
-The RIP-7560 proposal integrates EIP-2938 and ERC-4337 into a unified approach for native AA, splitting Ethereum's transaction scope into validation, execution, and post-transaction steps. By separating transaction validation into distinct processes for authorization and payment of gas fees, it enables one contract to sponsor gas fees for another account's transaction. This approach maintains compatibility with ERC-4337's ecosystem while working toward the goal of fully native AA.
+RIP-7560提案は、EIP-2938とERC-4337をネイティブAAのための統一的なアプローチに統合し、イーサリアムのトランザクションスコープを検証、実行、トランザクション後のステップに分割します。トランザクションの検証を認可とガス代の支払いに分離することで、あるコントラクトが別のアカウントのトランザクションのガス代をスポンサーすることが可能になります。このアプローチは、完全なネイティブAAの実現を目指しつつ、ERC-4337のエコシステムとの互換性を維持します。
 
-RIP-7560提案は、EIP-2938とERC-4337をネイティブAAのための統一的なアプローチに統合し、イーサリアムのトランザクションスコープを検証、実行、トランザクション後のステップに分割します。トランザクションの検証を認可とガス代の支払いの別々のプロセスに分離することで、あるコントラクトが別のアカウントのトランザクションのガス代をスポンサーすることを可能にします。このアプローチは、完全なネイティブAAの目標に向かいながら、ERC-4337のエコシステムとの互換性を維持します。
+ERC-4337はアプリケーションレベルでAAを導入していますが、プロトコル外の設計であるため制限があります。具体的には、追加のガスコスト、限定的な検閲耐性、非標準RPCメソッドへの依存、既存コントラクトとの互換性の制約などです。EIP-2938で提案されたネイティブAAは、これらの機能をプロトコルに直接組み込むことでより堅牢な代替手段を提示しますが、プロトコル変更なしで広くテスト・実装されてきたERC-4337の構造と完全には一致しません。
 
-ERC-4337 introduces AA at the application level, but it comes with limitations due to its out-of-protocol design. These drawbacks include extra gas costs, limited censorship resistance, a dependency on nonstandard RPC methods, and restrictions that limit compatibility with existing contract expectations. Native AA, as proposed in EIP-2938, presents a more robust alternative by building these features directly into the protocol. However, EIP-2938 doesn't fully align with ERC-4337's structure, which has been widely tested and implemented without protocol changes.
+EIP-2938の組み込みプロトコルレベル機能とERC-4337から得られた実践的な知見を組み合わせることで、この提案は両方のアプローチの長所を統合します。このハイブリッドアプローチは、ガスコストの削減、検閲耐性の向上によるトランザクションの信頼性改善、現在および将来のイーサリアムコントラクトとの互換性確保を目指しています。EOAからスマートコントラクトアカウントへの段階的な移行により秘密鍵に関連するリスクも軽減され、イーサリアムがより安全で使いやすくなります。また、すでにERC-4337を使用しているユーザーがこれらの新機能をスムーズに採用できることも重要な点です。
 
-ERC-4337はアプリケーションレベルでAAを導入しますが、プロトコル外の設計であるため制限があります。これらの欠点には、追加のガスコスト、限定的な検閲耐性、非標準RPCメソッドへの依存、既存のコントラクトの期待との互換性を制限する制約が含まれます。EIP-2938で提案されたネイティブAAは、これらの機能をプロトコルに直接組み込むことで、より堅牢な代替手段を提示します。しかし、EIP-2938はプロトコル変更なしで広くテスト・実装されてきたERC-4337の構造と完全には整合しません。
-
-By combining EIP-2938's built-in protocol-level features with the practical insights gained from ERC-4337, this proposal brings together the best of both approaches. This hybrid approach aims to lower gas costs, improve the reliability of transactions by making them more resistant to censorship, and ensure compatibility with current and future Ethereum contracts. Gradually moving from EOAs to smart contract accounts would also reduce risks tied to private keys, making Ethereum more secure and easier to use. Importantly, this setup ensures that those already using ERC-4337 can smoothly adopt these new features.
-
-EIP-2938の組み込みプロトコルレベル機能とERC-4337から得られた実践的な知見を組み合わせることで、この提案は両方のアプローチの長所を統合します。このハイブリッドアプローチは、ガスコストの削減、検閲耐性の向上によるトランザクションの信頼性の改善、現在および将来のイーサリアムコントラクトとの互換性の確保を目指しています。EOAからスマートコントラクトアカウントへの段階的な移行は、秘密鍵に関連するリスクも軽減し、イーサリアムをより安全で使いやすくします。重要なことに、このセットアップにより、すでにERC-4337を使用しているユーザーがこれらの新機能をスムーズに採用できることが保証されます。
-
-Figure 5-6 represents the transaction flow for AA as outlined in RIP-7560. The process incorporates several key contracts that handle validation, deployment, and execution, creating a streamlined, modular approach to managing user accounts and transactions on the Ethereum blockchain.
-
-図5-6は、RIP-7560で概説されたAAのトランザクションフローを表しています。このプロセスは、検証、デプロイメント、実行を処理するいくつかの主要なコントラクトを組み込み、イーサリアムブロックチェーン上でのユーザーアカウントとトランザクションの管理に対する効率的でモジュラーなアプローチを実現します。
+図5-6は、RIP-7560で概説されたAAのトランザクションフローを表しています。このプロセスは、検証、デプロイメント、実行を処理する主要なコントラクトを組み込み、イーサリアムブロックチェーン上でユーザーアカウントとトランザクションを効率的かつモジュラーに管理します。
 
 ![RIP-7560 transaction flow](images/ch5/maet_0506.png)
 
-Figure 5-6. RIP-7560 transaction flow
-
 図5-6. RIP-7560のトランザクションフロー
 
-The flow begins with a nonce check by the Nonce Manager Contract to ensure that the transaction is unique and hasn't been replayed. This is a crucial step for transaction integrity because it prevents double-spending or accidental repeats. If the nonce is valid, the system moves forward; otherwise, the transaction is halted.
+フローは、Nonce Managerコントラクトによるナンスチェックから始まり、トランザクションが一意でありリプレイされていないことを確認します。これは二重支払いや偶発的な繰り返しを防ぐための重要なステップです。ナンスが有効であればシステムは先に進み、そうでなければトランザクションは停止されます。
 
-フローは、Nonce Managerコントラクトによるナンスチェックから始まり、トランザクションが一意であり、リプレイされていないことを確認します。これは二重支払いや偶発的な繰り返しを防ぐため、トランザクションの整合性にとって重要なステップです。ナンスが有効であればシステムは先に進み、そうでなければトランザクションは停止されます。
+次に、ユーザーのAccountコントラクト（スマートウォレット）がすでに存在するかどうかをチェックします。存在しない場合、Deployerコントラクトがウォレットを作成し、ユーザーがトランザクションに参加できるようにします。デプロイ済み、またはすでに存在する場合は、Accountコントラクト自体が検証チェックを実行し、トランザクションが正当でコントラクトのロジックに整合していることを確認します。これにより、承認されたアクションのみが実行され、各ユーザーのウォレットにセキュリティとカスタマイズの層が加わります。
 
-Next, the process checks if the user's Account Contract (a smart wallet) already exists. If not, the Deployer Contract steps in to create this wallet, allowing the user to participate in transactions. Once it is deployed, or if it is already in place, the Account Contract itself performs a validation check to confirm that the transaction is legitimate and aligns with the contract's logic. This ensures that only authorized actions proceed, adding a layer of security and customization to each user's wallet.
+このフローの特徴的な点は、Paymasterコントラクトをオプションで関与させられることです。指定された場合、このコントラクトはトランザクションのガス代を負担したり、代替の支払い方法を提供したりできます。ペイマスターが関与する場合は、トランザクションコストを正当に負担できることを確認するための独自の検証プロセスを経ます。この柔軟性によりスポンサーシップモデルが可能になり、ユーザーのトランザクション手数料の負担を軽減できる可能性があります。
 
-次に、プロセスはユーザーのAccountコントラクト（スマートウォレット）がすでに存在するかどうかをチェックします。存在しない場合、Deployerコントラクトがこのウォレットを作成し、ユーザーがトランザクションに参加できるようにします。デプロイされた後、またはすでに存在する場合、Accountコントラクト自体が検証チェックを実行し、トランザクションが正当であり、コントラクトのロジックに整合していることを確認します。これにより、承認されたアクションのみが実行され、各ユーザーのウォレットにセキュリティとカスタマイズの層が追加されます。
-
-An interesting feature of this flow is the optional involvement of a Paymaster Contract. If specified, this contract can cover the gas fees for the transaction or offer alternative payment methods. When a paymaster is involved, it undergoes its own validation process to ensure it can legitimately cover the transaction costs. This flexibility allows for sponsorship models and potentially reduces the burden of transaction fees on users.
-
-このフローの興味深い特徴は、Paymasterコントラクトのオプション的な関与です。指定された場合、このコントラクトはトランザクションのガス代を負担したり、代替の支払い方法を提供したりできます。ペイマスターが関与する場合、トランザクションコストを正当に負担できることを確認するために独自の検証プロセスを経ます。この柔軟性により、スポンサーシップモデルが可能になり、ユーザーに対するトランザクション手数料の負担を軽減できる可能性があります。
-
-Once all validations are complete, the Ethereum Execution Layer begins processing the transaction. During execution, an Execution Frame is used to handle the transaction details and monitor its progression. After execution, if a paymaster was involved, it performs any necessary postprocessing to finalize the transaction sponsorship.
-
-すべての検証が完了すると、イーサリアム実行層がトランザクションの処理を開始します。実行中は、Execution Frameがトランザクションの詳細を処理し、その進行を監視するために使用されます。実行後、ペイマスターが関与していた場合、トランザクションのスポンサーシップを完了するために必要なポストプロセッシングを実行します。
+すべての検証が完了すると、イーサリアム実行層がトランザクションの処理を開始します。実行中は、Execution Frameがトランザクションの詳細処理と進行の監視に使用されます。実行後、ペイマスターが関与していた場合は、トランザクションのスポンサーシップを完了するために必要な後処理を実行します。
 
 #### EIP-5806
 
-EIP-5806 introduces a new transaction type, enabling EOAs to run custom code through a "delegate call" mechanism.
-
 EIP-5806は新しいトランザクションタイプを導入し、「デリゲートコール」メカニズムを通じてEOAがカスタムコードを実行できるようにします。
 
-Currently, EOAs can only deploy contracts or send "call" transactions, limiting user interactions with the blockchain. This restriction affects usability since EOAs cannot perform tasks like batching multiple actions into one transaction or executing complex operations. While AA could solve these issues, its adoption path remains uncertain, and not all users can migrate because of costs and nontransferable asset custody.
+現在、EOAはコントラクトのデプロイまたは「コール」トランザクションの送信しかできず、ブロックチェーンとのやり取りが制限されています。複数のアクションを1つのトランザクションにまとめたり、複雑なオペレーションを実行したりできないため、ユーザビリティに影響があります。AAがこれらの問題を解決できる可能性はありますが、採用への道筋はまだ定まっておらず、コストや譲渡不可能な資産のカストディの問題からすべてのユーザーが移行できるわけではありません。
 
-現在、EOAはコントラクトのデプロイまたは「コール」トランザクションの送信のみが可能であり、ブロックチェーンとのユーザーインタラクションが制限されています。EOAは複数のアクションを1つのトランザクションにバッチ処理したり、複雑なオペレーションを実行したりするタスクを実行できないため、この制限はユーザビリティに影響します。AAがこれらの問題を解決できる可能性はありますが、その採用経路は不透明であり、コストや譲渡不可能な資産のカストディのためにすべてのユーザーが移行できるわけではありません。
-
-This proposal offers a straightforward way for EOAs to execute custom code with minimal EVM changes and familiar security standards. By allowing EOAs to delegate calls to specific contracts, users gain more control and flexibility, enabling complex operations like multicall batching or secure token transfers. Unlike other AA proposals, this approach aims to improve EOA user experience without replacing existing abstraction methods, making it an accessible option for enhanced EOA functionality in the near future.
-
-この提案は、最小限のEVM変更と馴染みのあるセキュリティ標準で、EOAがカスタムコードを実行するための簡単な方法を提供します。EOAが特定のコントラクトにコールをデリゲートできるようにすることで、ユーザーはより多くの制御と柔軟性を得て、マルチコールバッチングや安全なトークン転送などの複雑なオペレーションが可能になります。他のAA提案とは異なり、このアプローチは既存のアブストラクション方法を置き換えることなくEOAのユーザーエクスペリエンスを改善することを目指しており、近い将来のEOA機能強化のためのアクセスしやすいオプションとなっています。
+この提案は、最小限のEVM変更と既存のセキュリティ標準を用いて、EOAがカスタムコードを実行するためのシンプルな方法を提供します。EOAが特定のコントラクトにコールをデリゲートできるようにすることで、マルチコールバッチングや安全なトークン転送などの複雑なオペレーションが可能になります。他のAA提案とは異なり、既存のアブストラクション手法を置き換えずにEOAのユーザーエクスペリエンスを改善することを目指しており、近い将来のEOA機能強化に向けた現実的な選択肢です。
 
 #### EIP-3074
 
-EIP-3074 introduces two opcodes, `AUTH` and `AUTHCALL`, to allow EOAs to delegate control of their transactions to an "invoker" contract. The user signs a message containing the invoker and a commit (a hash of transaction values), ensuring that the invoker only processes authorized transactions. Replay protection is handled by the invoker, and users must trust this contract to avoid malicious behavior. This proposal improves transaction batching and enables flexible account delegation.
+EIP-3074は、EOAが「インボーカー」（代理実行コントラクト）にトランザクションの制御をデリゲートできるようにする`AUTH`と`AUTHCALL`の2つのオペコードを導入します。ユーザーはインボーカーのアドレスとコミット（トランザクション値のハッシュ）を含むメッセージに署名することで、インボーカーが承認されたトランザクションのみを処理するよう保証します。リプレイ保護はインボーカーが担当し、ユーザーは悪意のある動作を避けるためにこのコントラクトを信頼する必要があります。この提案はトランザクションのバッチ処理を改善し、柔軟なアカウントデリゲーションを可能にします。
 
-EIP-3074は、EOAが「インボーカー」コントラクトにトランザクションの制御をデリゲートできるようにするために、`AUTH`と`AUTHCALL`の2つのオペコードを導入します。ユーザーはインボーカーとコミット（トランザクション値のハッシュ）を含むメッセージに署名し、インボーカーが承認されたトランザクションのみを処理することを保証します。リプレイ保護はインボーカーが処理し、ユーザーは悪意のある動作を避けるためにこのコントラクトを信頼する必要があります。この提案はトランザクションのバッチ処理を改善し、柔軟なアカウントのデリゲーションを可能にします。
+`AUTH`は、ユーザーがスマートコントラクトに自分の代わりに行動する許可を与えるためのオペコードです。デジタル署名（ECDSA）で認可を検証し、将来のトランザクションのためにユーザーのアドレスを保存します。`AUTHCALL`は、認可されたスマートコントラクトがトークンの送信や他のコントラクトとのやり取りなどのトランザクションを実行できるようにします。例えば、10 DAIをETHにスワップしたい場合、1つの署名でインボーカーを認可（`AUTH`を使用）できます。インボーカーは`AUTHCALL`を使用してUniswapにDAIの使用を承認し、スワップを実行します。
 
-`AUTH` lets users grant a smart contract permission to act on their behalf. It uses a digital signature (ECDSA) to verify this authorization, then stores the user's address for future transactions. `AUTHCALL` allows the authorized smart contract to perform transactions, such as sending tokens or interacting with other contracts. For example, if you want to swap 10 DAI for ETH, you can authorize the invoker (using `AUTH`) with one signature. The invoker will use `AUTHCALL` to approve Uniswap to spend your DAI and then execute the swap.
-
-`AUTH`は、ユーザーがスマートコントラクトに自分の代わりに行動する許可を与えることを可能にします。デジタル署名（ECDSA）を使用してこの認可を検証し、将来のトランザクションのためにユーザーのアドレスを保存します。`AUTHCALL`は、認可されたスマートコントラクトがトークンの送信や他のコントラクトとのインタラクションなどのトランザクションを実行できるようにします。例えば、10 DAIをETHにスワップしたい場合、1つの署名でインボーカーを認可（`AUTH`を使用）できます。インボーカーは`AUTHCALL`を使用してUniswapにDAIの使用を承認し、その後スワップを実行します。
-
-Initially, replay protection and fields like value, gas, and other `AUTHCALL` arguments were also signed. The design evolved to delegate these tasks to the invoker contract, making it crucial for users to trust the invoker. Users can "commit" to particular call properties by hashing them. The invoker validates only if the committed values, such as the nonce for replay protection, match the user's commitment, as shown in Figure 5-7. This ensures that the invoker processes exactly what the user authorized.
-
-当初、リプレイ保護やvalue、gas、その他の`AUTHCALL`引数などのフィールドも署名されていました。設計はこれらのタスクをインボーカーコントラクトにデリゲートするように進化し、ユーザーがインボーカーを信頼することがより重要になりました。ユーザーは特定のコールプロパティをハッシュ化することで「コミット」できます。インボーカーは、図5-7に示すように、リプレイ保護用のナンスなどのコミットされた値がユーザーのコミットメントと一致する場合のみ検証します。これにより、インボーカーがユーザーが認可したものだけを正確に処理することが保証されます。
+当初、リプレイ保護やvalue、gas、その他の`AUTHCALL`引数などのフィールドも署名対象でした。設計が進化し、これらのタスクはインボーカーコントラクトにデリゲートされるようになったため、ユーザーがインボーカーを信頼することがより重要になりました。ユーザーは特定のコールプロパティをハッシュ化することで「コミット」できます。図5-7に示すように、インボーカーはリプレイ保護用のナンスなどコミットされた値がユーザーのコミットメントと一致する場合のみ検証を行います。これにより、インボーカーはユーザーが認可した内容だけを正確に処理します。
 
 ![EIP-3074 commitment validation](images/ch5/maet_0507.png)
 
-Figure 5-7. EIP-3074 commitment validation
-
 図5-7. EIP-3074のコミットメント検証
 
-The commit hash enables invokers to enforce various rules, such as allowing parallel nonces or bundling multiple calls under one signature. This enables multicall flows, such as consolidating an ERC-20 approve-transfer into a single transaction, as seen in Figure 5-8.
-
-コミットハッシュにより、インボーカーは並列ナンスの許可や1つの署名の下での複数コールのバンドルなど、さまざまなルールを適用できます。これにより、図5-8に見られるように、ERC-20のapprove-transferを1つのトランザクションに統合するなどのマルチコールフローが可能になります。
+コミットハッシュにより、インボーカーは並列ナンスの許可や1つの署名での複数コールのバンドルなど、さまざまなルールを適用できます。これにより、図5-8に示すように、ERC-20のapprove-transferを1つのトランザクションに統合するなどのマルチコールフローが可能になります。
 
 ![EIP-3074 multicall flow](images/ch5/maet_0508.png)
 
-Figure 5-8. EIP-3074 multicall flow
-
 図5-8. EIP-3074のマルチコールフロー
 
-Additionally, it supports delegating control of the EOA to other keys by signing a commit message with the delegate's address and an access policy, which the invoker verifies before relaying calls on behalf of the EOA, as seen in Figure 5-9.
-
-さらに、デリゲートのアドレスとアクセスポリシーを含むコミットメッセージに署名することで、EOAの制御を他の鍵にデリゲートすることもサポートしています。インボーカーは、図5-9に示すように、EOAの代わりにコールを中継する前にこれを検証します。
+さらに、デリゲートのアドレスとアクセスポリシーを含むコミットメッセージに署名することで、EOAの制御を他の鍵にデリゲートすることもサポートしています。図5-9に示すように、インボーカーはEOAの代わりにコールを中継する前にこれを検証します。
 
 ![EIP-3074 delegation flow](images/ch5/maet_0509.png)
-
-Figure 5-9. EIP-3074 delegation flow
 
 図5-9. EIP-3074のデリゲーションフロー
 
