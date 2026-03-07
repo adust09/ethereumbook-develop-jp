@@ -941,41 +941,24 @@ async function createAndSendRawEip1559Tx() {
 createAndSendRawEip1559Tx().catch(console.error);
 ```
 
-## Deserializing the Transaction
-
 ## トランザクションの逆シリアライズ
-
-Now that we have created and sent a transaction to the Ethereum network from scratch, we can follow the inverse process and try to rebuild each field of the transaction, starting with the signed raw transaction we get from the previous example. This will help you understand how each field of the transaction is actually included in the transaction itself—you just need to extract it in the correct way.
 
 　ここまでで、イーサリアムネットワークへのトランザクションをゼロから作成して送信しました。次に、逆のプロセスをたどり、前の例で得られた署名済み生トランザクションから各フィールドを復元してみましょう。この作業により、トランザクションの各フィールドが実際にどのようにトランザクションに含まれているかを理解できます。正しい方法で抽出するだけでよいのです。
 
-Let's start with the entire signed raw transaction:
-
-　署名済み生トランザクション全体から始めましょう。
+　まず、署名済み生トランザクションの全体を見てみましょう。
 
 ```
 0x02f87583aa36a714847735940085174876e8008303000094b0920c523d582040f2bcb1bd7fb1c7c1ecebdb34865af3107a400080c001a03f8ed18cb03ee0fe3fbc3f0a7477a2f68db6ec84450e77e702b82a3f2c873aa4a0205c4f6a16ea8ad13a148cc3105814cd4a6860cd26a771651199c85ccb7c7f0f
 ```
 
-Recalling EIP-2718, all Ethereum transactions are made by:
-
 　EIP-2718を思い出すと、すべてのイーサリアムトランザクションは以下の要素で構成されます。
-
-- The first byte that specifies the transaction type
-- The transaction type payload
 
 - トランザクションタイプを指定する最初の1バイト
 - トランザクションタイプのペイロード
 
-This almost always translates in the RLP encoding of all the fields of that specific transaction type.
-
 　この構造は、ほぼ常にその特定のトランザクションタイプの全フィールドのRLPエンコーディングに対応します。
 
-Our transaction starts with a `0x02`. This represents the transaction type, and `0x02` means it's an EIP-1559 transaction. The next part is the RLP encoding of all the transaction fields that make up the EIP-1559 transaction.
-
 　このトランザクションは`0x02`で始まっています。これはトランザクションタイプを表し、`0x02`はEIP-1559トランザクションであることを意味します。次の部分は、EIP-1559トランザクションを構成するすべてのトランザクションフィールドのRLPエンコーディングです。
-
-To quickly decode them, we can use `cast` and the `from-rlp` command, providing the rest of the transaction as input:
 
 　フィールドを素早くデコードするには、`cast`の`from-rlp`コマンドを使用し、トランザクションの残りの部分を入力として渡します。
 
@@ -984,123 +967,63 @@ $ cast from-rlp f87583aa36a714847735940085174876e8008303000094b0920c523d582040f2
 ["0xaa36a7","0x14","0x77359400","0x174876e800","0x030000","0xb0920c523d582040f2bcb1bd7fb1c7c1ecebdb34","0x5af3107a4000","0x",[],"0x01","0x3f8ed18cb03ee0fe3fbc3f0a7477a2f68db6ec84450e77e702b82a3f2c873aa4","0x205c4f6a16ea8ad13a148cc3105814cd4a6860cd26a771651199c85ccb7c7f0f"]
 ```
 
-You can see that the output of the last `cast` command contains a list of hexadecimal items: they are the fields of the EIP-1559 transaction. Let's analyze them one by one and reconstruct the transaction:
-
 　最後の`cast`コマンドの出力には、16進数の項目リストが含まれています。これらはEIP-1559トランザクションのフィールドです。1つずつ分析してトランザクションを再構成しましょう。
 
 **`0xaa36a7`**
-
-**`0xaa36a7`**
-
-The Sepolia chain ID: 11155111 in decimal.
 
 　SepoliaのチェーンID。10進数では11155111です。
 
 **`0x14`**
 
-**`0x14`**
-
-The nonce used in the transaction: 20. You can go to the block explorer and see that it's actually correct.
-
 　トランザクションで使用されたナンス。10進数では20です。ブロックエクスプローラで確認すると、実際に正しいことがわかります。
 
 **`0x77359400`**
-
-**`0x77359400`**
-
-The max priority fee per gas: 2000000000 in decimal. It translates to 2 gwei per gas.
 
 　ガスあたりの最大優先手数料。10進数では2000000000で、ガスあたり2 gweiに相当します。
 
 **`0x174876e800`**
 
-**`0x174876e800`**
-
-The max fee per gas: 100000000000 in decimal. It translates to 100 gwei per gas.
-
 　ガスあたりの最大手数料。10進数では100000000000で、ガスあたり100 gweiに相当します。
 
 **`0x030000`**
-
-**`0x030000`**
-
-The gas limit: 196608 in decimal.
 
 　ガスリミット。10進数では196608です。
 
 **`0xb0920c523d582040f2bcb1bd7fb1c7c1ecebdb34`**
 
-**`0xb0920c523d582040f2bcb1bd7fb1c7c1ecebdb34`**
-
-The recipient address.
-
 　受信者のアドレスです。
 
 **`0x5af3107a4000`**
-
-**`0x5af3107a4000`**
-
-The value in wei sent from the sender to the recipient: 1014 in decimal. It translates to 0.0001 ether.
 
 　送信者から受信者に送られたweiでの値。10進数では10^14で、0.0001 etherに相当します。
 
 **`0x`**
 
-**`0x`**
-
-The empty data payload.
-
 　空のデータペイロードです。
 
 **`[]`**
-
-**`[]`**
-
-The empty access list.
 
 　空のアクセスリストです。
 
 **`0x01`**
 
-**`0x01`**
-
-The `v` value of the signature; `0x01` means an odd y coordinate of the elliptic curve (`0x00` means an even y coordinate).
-
 　署名の`v`値。`0x01`は楕円曲線のy座標が奇数であることを意味します（`0x00`はy座標が偶数であることを意味します）。
 
 **`0x3f8ed18cb03ee0fe3fbc3f0a7477a2f68db6ec84450e77e702b82a3f2c873aa4`**
-
-**`0x3f8ed18cb03ee0fe3fbc3f0a7477a2f68db6ec84450e77e702b82a3f2c873aa4`**
-
-The `r` value of the signature.
 
 　署名の`r`値です。
 
 **`0x205c4f6a16ea8ad13a148cc3105814cd4a6860cd26a771651199c85ccb7c7f0f`**
 
-**`0x205c4f6a16ea8ad13a148cc3105814cd4a6860cd26a771651199c85ccb7c7f0f`**
-
-The `s` value of the signature.
-
 　署名の`s`値です。
-
-## Raw Transaction Creation with EIP-155
 
 ## EIP-155による生トランザクションの作成
 
-The EIP-155 "Simple Replay Attack Protection" standard specifies a replay-attack-protected transaction encoding, which includes a chain ID inside the transaction data prior to signing. This ensures that transactions created for one blockchain (e.g., the Ethereum main network) are invalid on another blockchain (e.g., Ethereum Classic or the Sepolia test network). Therefore, transactions broadcast on one network cannot be replayed on another, hence the name of the standard.
+　EIP-155「シンプルリプレイアタックプロテクション」規格は、署名前にトランザクションデータ内にチェーンIDを含むリプレイ攻撃防御トランザクションエンコーディングを指定しています。この仕組みにより、あるブロックチェーン（例：イーサリアムメインネットワーク）向けに作成されたトランザクションが、別のブロックチェーン（例：イーサリアムクラシックやSepoliaテストネットワーク）上では無効となることが保証されます。したがって、あるネットワーク上でブロードキャストされたトランザクションを別のネットワーク上でリプレイすることはできません。規格名はこの特性に由来しています。
 
-　EIP-155「シンプルリプレイアタックプロテクション」規格は、署名前にトランザクションデータ内にチェーンIDを含むリプレイ攻撃防御トランザクションエンコーディングを指定しています。この仕組みにより、あるブロックチェーン（例：イーサリアムメインネットワーク）向けに作成されたトランザクションが、別のブロックチェーン（例：イーサリアムクラシックやSepoliaテストネットワーク）上では無効となることが保証されます。したがって、あるネットワーク上でブロードキャストされたトランザクションを別のネットワーク上で再生することはできません。規格名はこの特性に由来しています。
-
-By including the chain ID in the data being signed, the transaction signature prevents any changes since the signature is invalidated if the chain ID is modified. Therefore, EIP-155 makes it impossible for a transaction to be replayed on another chain because the signature's validity depends on the chain ID.
-
-　署名対象のデータにチェーンIDを含めることで、チェーンIDが変更されると署名が無効になるため、トランザクション署名が改変を防止します。EIP-155によって、署名の有効性がチェーンIDに依存するため、別のチェーンでトランザクションを再生することが不可能になります。
-
-The chain ID field takes a value according to the network the transaction is meant for, as outlined in Table 6-2.
+　署名対象のデータにチェーンIDが含まれているため、チェーンIDが変更されると署名は無効になります。EIP-155によって、署名の有効性がチェーンIDに依存するため、別のチェーンでトランザクションをリプレイすることが不可能になります。
 
 　チェーンIDフィールドは、トランザクションが対象とするネットワークに応じた値を持ちます（表6-2参照）。
-
-**Table 6-2. Chain identifiers**
 
 **表6-2. チェーン識別子**
 
@@ -1110,39 +1033,21 @@ The chain ID field takes a value according to the network the transaction is mea
 | Ethereum Sepolia | 11155111 |
 | Ethereum Holesky | 17000 |
 
-For an exhaustive list of chain identifiers, see [ChainList](https://chainlist.org).
-
 　チェーン識別子の網羅的なリストについては、[ChainList](https://chainlist.org)を参照してください。
 
-The resulting transaction structure is RLP encoded, hashed, and signed. For more details, see the EIP-155 specification.
-
-　結果として生じるトランザクション構造はRLPエンコードおよびハッシュ化され、署名されます。詳細についてはEIP-155仕様を参照してください。
-
-## The Signature Prefix Value (v) and Public Key Recovery
+　結果としてトランザクション構造はRLPエンコードおよびハッシュ化され、署名されます。詳細についてはEIP-155仕様を参照してください。
 
 ## 署名プレフィックス値（v）と公開鍵リカバリ
 
-As mentioned in "The Structure of a Transaction", the transaction message doesn't include a "from" field. That's because the originator's public key can be computed directly from the ECDSA signature. Once you have the public key, you can compute the address easily. The process of recovering the signer's public key is called *public key recovery*.
-
 　「トランザクションの構造」で説明したように、トランザクションメッセージにはfromフィールドが含まれていません。発行者の公開鍵はECDSA署名から直接計算できるためです。公開鍵を取得できれば、アドレスを簡単に計算できます。署名者の公開鍵を復元するプロセスは*公開鍵リカバリ*と呼ばれます。
-
-Given the values `r` and `s` that were computed in "ECDSA Math", we can compute two possible public keys.
 
 　「ECDSAの数学」で計算した値`r`と`s`から、2つの公開鍵候補を計算できます。
 
-First, we compute two elliptic curve points, `R` and `R′`, from the x coordinate `r` value that is in the signature. There are two points because the elliptic curve is symmetric across the x-axis, so for any value x, there are two possible values that fit the curve, one on each side of the x-axis.
-
 　まず、署名内にあるx座標の`r`値から2つの楕円曲線上の点`R`と`R'`を計算します。楕円曲線はx軸に対して対称であるため、任意の値xに対して、曲線上にはx軸の両側にそれぞれ1つずつ、合計2つの点が存在します。
-
-From `r` we also calculate `r–1`, which is the multiplicative inverse of `r`.
 
 　`r`から、`r`の乗法逆数である`r⁻¹`も計算します。
 
-Finally, we calculate `z`, which is the n lowest bits of the message hash, where n is the order of the elliptic curve.
-
 　最後に、メッセージハッシュのn個の最下位ビットである`z`を計算します。ここでnは楕円曲線の位数です。
-
-The two possible public keys are then:
 
 　2つの公開鍵候補は以下のとおりです。
 
@@ -1150,24 +1055,13 @@ The two possible public keys are then:
 K1 = r–1 (sR – zG)
 ```
 
-and:
-
 および
 
 ```
 K2 = r–1 (sR′ – zG)
 ```
 
-where:
-
 各変数の意味は以下のとおりです。
-
-- `K1` and `K2` are the two possibilities for the signer's public key
-- `r-1` is the multiplicative inverse of the signature's `r` value
-- `s` is the signature's `s` value
-- `R` and `R′` are the two possibilities for the ephemeral public key `Q`
-- `z` is the n-lowest bits of the message hash
-- `G` is the elliptic curve generator point
 
 - `K1`と`K2`は署名者の公開鍵の2つの候補
 - `r⁻¹`は署名の`r`値の乗法逆数
@@ -1176,41 +1070,21 @@ where:
 - `z`はメッセージハッシュのn個の最下位ビット
 - `G`は楕円曲線の生成元
 
-To make things more efficient, the transaction signature includes a prefix value `v`, which tells us which of the two possible R values is the ephemeral public key. If `v` is even, then `R` is the correct value. If `v` is odd, then it is `R′`. That way, we need to calculate only one value for R and only one value for K.
-
 　より効率的にするために、トランザクション署名にはプレフィックス値`v`が含まれています。`v`は、2つのR値候補のうちどちらが一時的な公開鍵であるかを示します。`v`が偶数の場合は`R`が正しい値で、`v`が奇数の場合は`R'`が正しい値です。これにより、Rに対して1つの値、Kに対して1つの値だけを計算すれば済みます。
-
-## Separating Signing and Transmission (Offline Signing)
 
 ## 署名と送信の分離（オフライン署名）
 
-Once a transaction is signed, it is ready to transmit to the Ethereum network. The three steps of creating, signing, and broadcasting a transaction normally happen as a single operation—for example, using the `cast send` command. However, as you saw in "Raw Transaction Creation and Signing", you can create and sign the transaction in two separate steps. Once you have a signed transaction, you can then transmit it using `ethers.JsonRpcProvider("..."").broadcastTransaction`, which takes a hex-encoded and signed transaction and transmits it on the Ethereum network.
-
 　トランザクションが署名されると、イーサリアムネットワークに送信する準備が整います。トランザクションの作成、署名、ブロードキャストの3つのステップは、通常は単一の操作として実行されます。たとえば`cast send`コマンドを使用する場合がその例です。しかし、「生トランザクションの作成と署名」で見たように、トランザクションの作成と署名を2つの別々のステップで行うことも可能です。署名済みトランザクションを取得したら、`ethers.JsonRpcProvider("...").broadcastTransaction`を使用して送信できます。この関数は16進数でエンコードされた署名済みトランザクションを受け取り、イーサリアムネットワーク上に送信します。
-
-Why would you want to separate the signing and transmission of transactions? The most common reason is security. The computer that signs a transaction must have unlocked private keys loaded in memory. The computer that does the transmitting must be connected to the internet (and be running an Ethereum client). If these two functions are on one computer, then you have private keys on an online system, which is quite dangerous.
 
 　なぜ署名と送信を分離するのでしょうか。最も一般的な理由はセキュリティです。トランザクションに署名するコンピュータには、ロック解除された秘密鍵がメモリにロードされている必要があります。一方、送信を行うコンピュータはインターネットに接続されていなければなりません（かつイーサリアムクライアントを実行している必要があります）。この2つの機能が1台のコンピュータ上にあると、オンラインシステム上に秘密鍵が存在することになり、非常に危険です。
 
 > **警告**
 >
-> If you keep your private keys online, you're exposed to several forms of attacks, such as malware and remote hacking, and you're much more susceptible to phishing attacks, too.
-
-> **警告**
->
 > 秘密鍵をオンラインで保管すると、マルウェアやリモートハッキングなど複数の攻撃にさらされ、フィッシング攻撃の被害も受けやすくなる。
-
-Separating the functions of signing and transmitting and performing them on different machines (on an offline and an online device, respectively) is called *offline signing* and is a common security practice.
 
 　署名と送信の機能を分離し、それぞれ別々のマシン（オフラインデバイスとオンラインデバイス）で実行することを*オフライン署名*と呼び、一般的なセキュリティ手法です。
 
-Figure 6-10 shows the process, which follows these steps:
-
 　図6-10にその処理の流れを示します。
-
-1. Create an unsigned transaction on the online computer where the current state of the account—notably, the current nonce and funds available—can be retrieved.
-2. Transfer the unsigned transaction to an "air-gapped" offline device for transaction signing (e.g., via a QR code or USB flash drive).
-3. Transmit the signed transaction (back) to an online device for broadcast on the Ethereum blockchain (e.g., via a QR code or USB flash drive).
 
 1. アカウントの現在の状態（特に現在のナンスと利用可能な資金）を取得できるオンラインコンピュータ上で、未署名トランザクションを作成する
 2. 未署名トランザクションを、QRコードやUSBフラッシュドライブなどを介して、「エアギャップ」のあるオフラインデバイスに転送し、トランザクションに署名する
@@ -1218,15 +1092,9 @@ Figure 6-10 shows the process, which follows these steps:
 
 ![Offline signing workflow](images/ch6/maet_0610.png)
 
-**Figure 6-10.** Offline signing process
-
 **図6-10.** オフライン署名のプロセス
 
-Depending on the level of security you need, your "offline signing" computer can have varying degrees of separation from the online computer, ranging from an isolated and firewalled subnet (online but segregated) to a completely offline system known as an *air-gapped system*. In an air-gapped system, there is no network connectivity at all—the computer is separated from the online environment by a gap of "air." To sign transactions, you transfer them to and from the air-gapped computer using data storage media or (better) a webcam and QR code. Of course, this means you must manually transfer every transaction you want signed, and this doesn't scale.
-
 　必要なセキュリティレベルに応じて、「オフライン署名」コンピュータとオンラインコンピュータの隔離度は様々に設定できます。隔離されたファイアウォール付きサブネット（オンラインだが分離されている環境）から、*エアギャップシステム*と呼ばれる完全にオフラインのシステムまで幅広い選択肢があります。エアギャップシステムにはネットワーク接続が一切ありません。コンピュータはオンライン環境から「空気の壁」によって物理的に隔離されています。トランザクションに署名するには、データ記憶媒体またはウェブカメラとQRコードを使用して、エアギャップのあるコンピュータとの間でトランザクションを転送します。もちろん、署名するすべてのトランザクションを手動で転送しなければならないため、拡張性には限界があります。
-
-While not many environments can utilize a fully air-gapped system, even a small degree of isolation has significant security benefits. For example, an isolated subnet with a firewall that allows through only a message-queue protocol can offer a much reduced attack surface and much higher security than signing on the online system. Many companies use a protocol such as ZeroMQ (0MQ) for this purpose. With a setup like that, transactions are serialized and queued for signing. The queuing protocol transmits the serialized message, in a way similar to a TCP socket, to the signing computer. The signing computer reads the serialized transactions from the queue (carefully), applies a signature with the appropriate key, and places them on an outgoing queue. The outgoing queue transmits the signed transactions to a computer with an Ethereum client that dequeues them and transmits them.
 
 　完全なエアギャップシステムを利用できる環境は多くありませんが、わずかな隔離でも大きなセキュリティ上の利点があります。たとえば、メッセージキュープロトコルのみを通過させるファイアウォールを備えた隔離サブネットは、オンラインシステム上で署名する場合と比較して、攻撃対象を大幅に縮小し、はるかに高いセキュリティを提供できます。多くの企業がこの目的でZeroMQ（0MQ）などのプロトコルを使用しています。このような構成では、トランザクションはシリアライズされ、署名のためにキューに入れられます。キューイングプロトコルは、TCPソケットに類似した方法でシリアライズされたメッセージを署名コンピュータに送信します。署名コンピュータはキューからシリアライズされたトランザクションを慎重に読み込み、適切な鍵で署名を適用して発信キューに配置します。発信キューは署名済みトランザクションをイーサリアムクライアントを持つコンピュータに送信し、デキューして送信を実行します。
 
