@@ -1201,39 +1201,18 @@ K2 = r–1 (sR′ – zG)
 
 　MEV、提案者とビルダーの分離、プライベートメムプールは、ブロック生産の環境を劇的に変化させました。現在、多くのトランザクションは前節で説明した従来のライフサイクルをたどりません。トランザクションは作成・署名された後、プライベートメムプールを通じてビルダーに直接送信されます。ビルダーがトランザクションを受け取り、最適なブロックに取り込もうと試み、最終的に次のブロックを提案するバリデーターにブロック全体を送信します。トランザクションはパブリックメムプールでの伝播をスキップし、構築済みブロックの中に直接出現するのです。
 
-## Multiple-Signature Transactions
-
 ## マルチシグネチャトランザクション
 
-If you are familiar with Bitcoin's scripting capabilities, you know it is possible to create a Bitcoin *multisig* account that can only spend funds when multiple parties sign the transaction (e.g., two of two or three of four signatures). Ethereum's basic EOA value transactions have no provisions for multiple signatures; however, arbitrary signing restrictions can be enforced by smart contracts with any conditions you can think of to handle the transfer of ether and tokens alike.
+　ビットコインのスクリプティング機能に精通しているならば、複数の当事者がトランザクションに署名した場合にのみ資金を使用できるビットコインの*マルチシグ*アカウントを作成できることをご存知でしょう（例：2-of-2や3-of-4の署名）。イーサリアムの基本的なEOAのバリュートランザクションには複数署名の規定がありません。しかし、スマートコントラクトを使えば、イーサやトークンの転送に必要な署名条件を自由に設定できます。
 
-　ビットコインのスクリプティング機能に精通しているならば、複数の当事者がトランザクションに署名する場合にのみ資金を使用できるビットコインの*マルチシグ*アカウントを作成できることをご存知でしょう（例：2-of-2や3-of-4の署名）。イーサリアムの基本的なEOA（外部所有アカウント）のバリュートランザクションには複数署名の規定がありません。しかし、イーサやトークンの転送を処理するために、あらゆる条件を備えたスマートコントラクトによって任意の署名制限を強制できます。
-
-To take advantage of this capability, ether has to be transferred to a wallet contract that is programmed with the desired spending rules, such as multisignature requirements or spending limits (or combinations of the two). The wallet contract then sends the funds when prompted by an authorized EOA once the spending conditions have been satisfied. For example, to protect your ether under a multisig condition, transfer the ether to a multisig contract. Whenever you want to send funds to another account, all the required users will need to send transactions to the contract using a regular wallet app, effectively authorizing the contract to perform the final transaction.
-
-　この機能を利用するには、マルチシグネチャ要件や支出制限（またはその組み合わせ）など、目的の支出ルールでプログラムされたウォレットコントラクトにイーサを転送する必要があります。支出条件が満たされた後、許可されたEOA（外部所有アカウント）によってリクエストされると、ウォレットコントラクトが資金を送信します。たとえば、マルチシグ条件でイーサを保護するには、マルチシグコントラクトにイーサを転送します。別のアカウントに資金を送りたい場合は、必要なすべてのユーザーが通常のウォレットアプリを使用してコントラクトにトランザクションを送信し、コントラクトに最終的なトランザクションの実行を承認する必要があります。
-
-These contracts can also be designed to require multiple signatures before executing local code or to trigger other contracts. The security of the scheme is ultimately determined by the multisig contract code.
+　この機能を利用するには、マルチシグネチャ要件や支払い上限（またはその組み合わせ）といった支払いルールがプログラムされたウォレットコントラクトにイーサを転送する必要があります。支払い条件が満たされると、許可されたEOAからのリクエストに応じてウォレットコントラクトが資金を送信します。たとえば、マルチシグ条件でイーサを保護するには、マルチシグコントラクトにイーサを転送します。別のアカウントに資金を送りたい場合は、必要なすべてのユーザーが通常のウォレットアプリを使用してコントラクトにトランザクションを送信し、最終的なトランザクションの実行を承認する必要があります。
 
 　これらのコントラクトは、ローカルコードを実行する前に複数の署名を要求したり、他のコントラクトをトリガーしたりするようにも設計できます。セキュリティの強度は、最終的にはマルチシグコントラクトのコードによって決まります。
 
-The ability to implement multisignature transactions as a smart contract demonstrates the flexibility of Ethereum. Currently, Gnosis Safe has become the de facto standard for creating multisignature accounts. This suite of battle-tested smart contracts is widely used by major protocols and DAOs, securing more than $6 billion in ETH and more than $74 billion worth of ERC-20 tokens as of November 2024, as illustrated in Figure 6-13.
-
 　マルチシグネチャトランザクションをスマートコントラクトとして実装できることは、イーサリアムの柔軟性を示しています。現在、Gnosis Safeがマルチシグネチャアカウントを作成するためのデファクトスタンダードとなっています。この実戦で検証済みのスマートコントラクトスイートは、主要なプロトコルやDAOで広く使用されており、2024年11月時点で60億ドル以上のETHと740億ドル以上のERC-20トークンを保護しています（図6-13参照）。
 
-![Gnosis Safe value secured over time](images/ch6/maet_0613.png)
-
-**Figure 6-13.** Gnosis Safe securing billions in value
-
+![数十億ドル規模の価値を保護するGnosis Safe](images/ch6/maet_0613.png)
 **図6-13.** 数十億ドル規模の価値を保護するGnosis Safe
-
-> **注記**
->
-> With Gnosis Safe, the usual workflow to execute a transaction is as follows:
->
-> 1. One of the signers of the Safe proposes a transaction that they want to sign and send to the Ethereum network.
-> 2. Other signers see the transaction and sign it if they agree with its purpose.
-> 3. When a quorum is reached, the transaction is finally sent to the network, where it gets processed and executed.
 
 > **注記**
 >
@@ -1243,10 +1222,6 @@ The ability to implement multisignature transactions as a smart contract demonst
 > 2. 他の署名者がトランザクションを確認し、その目的に同意すれば署名する
 > 3. 定足数に達すると、トランザクションが最終的にネットワークに送信され、処理・実行される
 
-## Conclusion
-
 ## まとめ
 
-Transactions are the starting point of every activity in the Ethereum system. Transactions are the "inputs" that cause the EVM to evaluate contracts, update balances, and more generally modify the state of the Ethereum blockchain. Next, we will work with smart contracts in a lot more detail and learn how to program in the Solidity contract-oriented language.
-
-　トランザクションは、イーサリアムシステム内のすべての活動の出発点です。トランザクションは、EVM（イーサリアム仮想マシン）がコントラクトを評価し、残高を更新し、より一般的にはイーサリアムブロックチェーンの状態を変更するための「インプット」です。次章では、スマートコントラクトの詳細を取り上げ、Solidityというコントラクト指向言語を用いたプログラミングを学びます。
+　トランザクションは、イーサリアムシステムにおけるすべての活動の出発点です。トランザクションは、EVMがコントラクトを評価し、残高を更新し、イーサリアムブロックチェーンの状態を変更するための「インプット」です。次章では、スマートコントラクトの詳細を取り上げ、Solidityというコントラクト指向言語を用いたプログラミングを学びます。
