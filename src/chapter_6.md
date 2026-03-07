@@ -144,49 +144,21 @@ EIP-2930トランザクションと同じ
 
 　すべてのトランザクションタイプと同様に、メッセージ構造はRLPエンコーディングスキームを使用してシリアライズされます。
 
-### EIP-4844 Transactions
-
 ### EIP-4844トランザクション
-
-[EIP-4844](https://oreil.ly/JMJmB) transactions were introduced with the Cancun hard fork on March 13, 2024, using `0x03` as transaction type. We've already mentioned them in the section "KZG Commitment" in Chapter 4, and we'll discuss them further in Chapter 16. They are also called *blob-carrying transactions* because they come with a sidecar—a *blob*—which contains a large amount of data (about 131,000 bytes each) that is not accessible by the EVM but whose commitment can be accessed.
 
 　[EIP-4844](https://oreil.ly/JMJmB)トランザクションは、2024年3月13日のCancunハードフォークで導入され、トランザクションタイプは`0x03`です。4章の「KZGコミットメント」のセクションですでに触れており、16章でさらに詳しく説明します。このトランザクションは*blobキャリングトランザクション*とも呼ばれます。サイドカーとして*blob*を伴い、EVMからはアクセスできないものの、コミットメントにはアクセス可能な大量のデータ（各約131,000バイト）が含まれるためです。
 
-A new type of gas—the *blob gas*—is used for blobs. It's completely separated and independent from normal gas. It follows its own targeting rule even though it's still deeply inspired by EIP-1559. The idea is that if the blob gas used is greater than the target blob gas used, then the blob gas price increases; otherwise, it decreases.
-
-　blobには*blobガス*という新しい種類のガスが使用されます。blobガスは通常のガスとは完全に分離され独立しています。EIP-1559に強く触発されたものですが、独自のターゲティングルールに従います。使用されたblobガスがターゲットblobガス使用量を上回ればblobガス価格は増加し、下回れば減少するという仕組みです。
-
-The serialized binary message shares the same format as EIP-1559 with two new additions:
+　blobには*blobガス*という新しい種類のガスが使用されます。blobガスは通常のガスとは完全に分離され独立しています。EIP-1559に強く触発されたものですが、独自のターゲットルールに従います。使用されたblobガスがターゲットblobガス使用量を上回ればblobガス価格は増加し、下回れば減少するという仕組みです。
 
 　シリアライズされたバイナリメッセージはEIP-1559と同じ形式を共有しますが、2つの新しいフィールドが追加されています。
 
-**Max fee per blob gas**
-
 **blobガス当たりの最大フィー**
-
-The price of blob gas (in wei) that the originator is willing to pay for blobs
 
 blobに対して発行者が支払ってもよいと考えるblobガスの価格（単位はwei）
 
-**Blob versioned hashed**
-
 **blobバージョン付きハッシュ**
 
-A list of 32-byte values representing the versioned hash of every KZG commitment related to the blob
-
 blobに関連する各KZGコミットメントのバージョン付きハッシュを表す32バイト値のリスト
-
-> **注記**
->
-> With the Cancun hard fork and the introduction of EIP-4844 transactions, the block header is expanded with two new elements:
->
-> **Blob gas used**
->
-> The total amount of blob gas used by all EIP-4844 transactions in the block
->
-> **Excess blob gas**
->
-> A running total of blob gas consumed in excess of the target, prior to the block
 
 > **注記**
 >
@@ -200,45 +172,25 @@ blobに関連する各KZGコミットメントのバージョン付きハッシ�
 >
 > 当該ブロック以前に、ターゲットを超えて消費されたblobガスの累計
 
-### EIP-7702 Transactions
-
 ### EIP-7702トランザクション
-
-[EIP-7702](https://oreil.ly/W_28X) transactions were included in the Pectra hard fork on May 7, 2025, using `0x04` as transaction type. They allow EOAs to set the code in their account. Traditionally, EOAs have an empty code; they can just start a transaction but cannot really perform complex operations, unless they are interacting with a smart contract. EIP-7702 changes this, making it possible for EOAs to do operations such as the following.
 
 　[EIP-7702](https://oreil.ly/W_28X)トランザクションは、2025年5月7日のPectraハードフォークで導入され、トランザクションタイプは`0x04`です。EOAが自身のアカウントにコードを設定できるようにするものです。従来、EOAのコードは空であり、トランザクションを開始することはできても、スマートコントラクトとやり取りしない限り複雑な操作を実行することはできませんでした。EIP-7702はこの状況を変え、EOAが以下のような操作を行えるようにします。
 
-**Batching**
-
 **バッチ処理**
-
-Allows multiple operations from the same user in one atomic transaction, such as an ERC-20 approval followed by spending that approval, which is a very common workflow in many decentralized exchanges.
 
 同一ユーザーからの複数の操作を1つのアトミックなトランザクションにまとめられる。たとえば、ERC-20の承認とその承認の使用を一度に行う操作は、多くの分散型取引所で非常に一般的なワークフローである
 
-**Sponsorship**
-
 **スポンサーシップ**
-
-Account X pays for a transaction on behalf of account Y.
 
 アカウントXがアカウントYに代わってトランザクションの手数料を支払う
 
-**Privilege deescalation**
-
 **権限の縮小委譲**
-
-Users can sign subkeys and give them specific permissions that are much weaker than global access to the account—for example, a permission to spend up to 1% of the total balance per day or to interact only with a specific application.
 
 ユーザーがサブキーに署名し、アカウントへのグローバルアクセスよりもはるかに弱い特定の権限を付与できる。たとえば、1日の残高の最大1%までの支出権限や、特定のアプリケーションとのみやり取りする権限などである
 
-The low-level details are quite complicated, and we recommend reading the [EIP official website](https://oreil.ly/W_28X) if you're interested. The high-level overview, though, is simple yet really powerful. EIP-7702 allows EOAs to assign themselves a *delegation designator*. This delegation designator points to a smart contract (live on the Ethereum mainnet), and when a transaction is sent to the EOA, it executes the code at the designated address as if that were the EOA's actual code, as shown in Figure 6-2.
-
-　低レベルの詳細はかなり複雑であり、興味がある場合は[EIPの公式ウェブサイト](https://oreil.ly/W_28X)を読むことを推奨します。ただし、ハイレベルの概要はシンプルでありながら非常に強力です。EIP-7702により、EOAは自身に*デリゲーションデジグネーター*を割り当てることができます。デリゲーションデジグネーターはスマートコントラクト（イーサリアムメインネット上に存在するもの）を指し、EOAにトランザクションが送信されると、図6-2に示すように、指定されたアドレスのコードがEOA自身のコードであるかのように実行されます。
+　内部実装の詳細はかなり複雑であり、興味がある場合は[EIPの公式ウェブサイト](https://oreil.ly/W_28X)を読むことを推奨します。ただし、概要はシンプルでありながら非常に強力です。EIP-7702により、EOAは自身に*デリゲーションデジグネーター*（委譲指定子）を割り当てることができます。デリゲーションデジグネーターはスマートコントラクト（イーサリアムメインネット上に存在するもの）を指し、EOAにトランザクションが送信されると、図6-2に示すように、指定されたアドレスのコードがEOA自身のコードであるかのように実行されます。
 
 ![EIP-7702 delegation designator](images/ch6/maet_0602.png)
-
-**Figure 6-2.** EIP-7702 delegation mechanism
 
 **図6-2** EIP-7702のデリゲーションメカニズム
 
