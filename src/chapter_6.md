@@ -70,149 +70,77 @@ transaction = tx_type || tx_payload
 
 　これが実際に送信されるトランザクション構造ですが、ほとんどの内部表現やユーザーインターフェイスの視覚化では、トランザクションやブロックチェーンから得られる追加情報でこの構造が補われます。たとえば、発信元のEOAを識別するアドレスには「from」データがありません。EOAの公開鍵はECDSA署名の`v`、`r`、`s`要素から導出でき、アドレスは公開鍵から導出できるためです。トランザクションに「from」フィールドが表示されている場合、それはトランザクションを視覚化するためのソフトウェアによって追加されたものです。クライアントソフトウェアによってトランザクションに頻繁に追加されるその他のメタデータには、ブロック番号（ブロックチェーンに公開され含まれた際のもの）とトランザクションID（計算されたハッシュ値）が含まれます。このデータもトランザクションから得られるものであり、トランザクションメッセージ自体の一部を構成するものではありません。
 
-### EIP-2930 Transactions
-
 ### EIP-2930トランザクション
 
-[EIP-2930](https://oreil.ly/1dSza) transactions are the first ones to use the EIP-2718 typed transaction envelope, with `0x01` as transaction type. They are basically equal to the previous transaction type, but a new field called *access list* is added. It's an array of (addresses, storage slots) that lets a user prepay for addresses and storage slots that are going to be touched by the transaction. This way, during the execution in the EVM, the user is charged less gas.
-
-　[EIP-2930](https://oreil.ly/1dSza)トランザクションは、EIP-2718のタイプ付きトランザクションエンベロープを最初に使用するもので、トランザクションタイプは`0x01`です。基本的にはレガシートランザクションと同じですが、*アクセスリスト*という新しいフィールドが追加されています。アクセスリストは（アドレス、ストレージスロット）の配列で、トランザクションが触れるアドレスとストレージスロットをユーザーが事前に支払えるようにします。これにより、EVMでの実行時にユーザーが課されるガス代が低くなります。
-
-> **注記**
->
-> To be more precise, addresses and their storage slots contained in the access list are included, respectively, in `accessed_addresses` and `accessed_storage_keys`, which are used by the EVM to differentiate between a warm and a cold access. Cold accesses charge way more gas than warm ones. For example, the `SLOAD` opcode charges 100 gas if the storage slot accessed is warm, 2,100 otherwise.
+　[EIP-2930](https://oreil.ly/1dSza)トランザクションは、EIP-2718のタイプ付きトランザクションエンベロープを最初に使用するもので、トランザクションタイプは`0x01`です。基本的にはレガシートランザクションと同じですが、*アクセスリスト*という新しいフィールドが追加されています。アクセスリストは（アドレス、ストレージスロット）の配列で、トランザクションがアクセスするアドレスとストレージスロットのアクセスコストをユーザーが事前に支払えるようにします。これにより、EVMでの実行時にユーザーが課されるガス代が低くなります。
 
 > **注記**
 >
 > より正確に言うと、アクセスリストに含まれるアドレスとそのストレージスロットは、それぞれ`accessed_addresses`と`accessed_storage_keys`に含まれる。EVMはこれらを使用して、ウォーム（warm）アクセスとコールド（cold）アクセスを区別する。コールドアクセスはウォームアクセスよりもはるかに多くのガスを消費する。たとえば、`SLOAD`オペコードはストレージスロットがウォームの場合100ガス、それ以外の場合は2,100ガスを課す。
 
-This new transaction type was primarily introduced to address issues stemming from [EIP-2929](https://oreil.ly/_9kTv). EIP-2929 increased gas costs for state-access opcodes, which caused some smart contracts to fail when processing transactions correctly due to out-of-gas errors. By introducing access lists, users can prepay for the addresses and storage slots their transactions will access, preventing these failures.
-
 　この新しいトランザクションタイプは、主に[EIP-2929](https://oreil.ly/_9kTv)に起因する問題に対処するために導入されました。EIP-2929は状態アクセスオペコードのガスコストを増加させましたが、一部のスマートコントラクトがガス不足エラーによりトランザクションを正しく処理できなくなる問題が生じました。アクセスリストを導入することで、ユーザーはトランザクションがアクセスするアドレスとストレージスロットを事前に支払い、このような障害を防止できるようになりました。
-
-### EIP-1559 Transactions
 
 ### EIP-1559トランザクション
 
-[EIP-1559](https://oreil.ly/ZBON6) transactions were introduced during the London hard fork on August 5, 2021, using `0x02` as transaction type. They completely change the structure of the fee market on Ethereum by introducing a new protocol parameter: the *base fee*.
-
-　[EIP-1559](https://oreil.ly/ZBON6)トランザクションは、2021年8月5日のLondonハードフォークで導入され、トランザクションタイプは`0x02`です。このトランザクションは、新しいプロトコルパラメータである*ベースフィー*を導入し、イーサリアムの手数料市場の構造を根本的に変えました。
-
-The base fee represents the minimum fee you need to pay to send a transaction on the Ethereum network. The block gas limit is doubled from 15 million to 30 million gas, and the *block gas target* is introduced equal to half the block gas limit: 15 million gas. The idea is to maintain the same amount of load on the Ethereum network than before on average but to let blocks be much bigger in size (potentially twice as big) if needed.
+　[EIP-1559](https://oreil.ly/ZBON6)トランザクションは、2021年8月5日のLondonハードフォークで導入され、トランザクションタイプは`0x02`です。このトランザクションは、新しいプロトコルパラメータである*ベースフィー*（基本手数料）を導入し、イーサリアムの手数料市場の構造を根本的に変えました。
 
 　ベースフィーは、イーサリアムネットワーク上でトランザクションを送信するために支払う必要のある最低手数料を表します。ブロックガスリミットは1,500万から3,000万ガスに倍増され、*ブロックガスターゲット*がブロックガスリミットの半分である1,500万ガスとして導入されました。イーサリアムネットワークの平均的な負荷を従来と同じ水準に維持しつつ、必要に応じてブロックサイズを大幅に拡大（最大2倍）できるようにするという考え方です。
 
-To keep blocks at an average of 15 million gas used, the base fee isn't a fixed value: it changes based on blocks' utilization rate. If a block's gas used is higher than the block gas target, then the base fee increases; if the gas used is lower than the gas target, then it decreases.
-
 　ブロックの平均ガス使用量を1,500万ガスに維持するため、ベースフィーは固定値ではなく、ブロックの利用率に基づいて変動します。ブロックの使用ガスがブロックガスターゲットを上回ればベースフィーは増加し、下回れば減少します。
-
-Block gas limit has (almost) always been increased at specific blocks at fixed, rounded values: 10 million, 12.5 million, 15 million, and 30 million, as you can see in Figure 6-1. In fact, even though validators (and miners with the old PoW consensus protocol) can slightly adjust the gas target on every block, which directly translates to the gas limit, block gas limit is a very crucial value, and everyone usually follows core developers' recommendations.
 
 　ブロックガスリミットは、図6-1に示すように、特定のブロックで切りのよい値に増加されてきました。1,000万、1,250万、1,500万、3,000万といった具合です。実際にはバリデーター（および旧PoWコンセンサスプロトコルのマイナー）は各ブロックでガスターゲットを微調整でき、その結果がガスリミットに直接反映されますが、ブロックガスリミットは非常に重要な値であり、通常はコア開発者の推奨に従います。
 
 ![Block gas limit evolution over time](images/ch6/maet_0601.png)
 
-**Figure 6-1.** Block gas limit evolution
-
 **図6-1** ブロックガスリミットの推移
 
-Base fees do not go to validators (or miners) who create blocks; instead, they are immediately burned, reducing the total supply of ETH. A new fee is introduced—the *priority fee*—which you can think of as the tip you pay to validators (or miners) to incentivize them to include your transactions in the next block.
-
-　ベースフィーはブロックを作成するバリデーター（またはマイナー）には渡されず、直ちにバーンされ、ETHの総供給量が減少します。新たに*プライオリティフィー*が導入されました。プライオリティフィーは、バリデーター（またはマイナー）がトランザクションを次のブロックに含めるよう動機付けるためのチップと考えることができます。
-
-> **ヒント**
->
-> In theory, you could create transactions that only pay the base fee—which is mandatory—and zero priority fee. The protocol doesn't oblige you to pay a tip to validators. But in reality, you should always include it to see your transactions confirmed in a reasonable amount of time. Note that wallets normally handle base and priority fees automatically for you and set them to the correct values.
+　ベースフィーはブロックを作成するバリデーター（またはマイナー）には渡されず、直ちにバーン（焼却）され、ETHの総供給量が減少します。新たに*プライオリティフィー*（優先手数料）が導入されました。プライオリティフィーは、バリデーター（またはマイナー）がトランザクションを次のブロックに含めるよう動機付けるためのチップと考えることができます。
 
 > **ヒント**
 >
 > 理論上は、必須であるベースフィーのみを支払い、プライオリティフィーをゼロにしたトランザクションを作成することもできる。プロトコルはバリデーターへのチップの支払いを義務付けていない。しかし実際には、妥当な時間内にトランザクションが承認されるよう、常にプライオリティフィーを含めるべきである。なお、通常ウォレットはベースフィーとプライオリティフィーを自動的に処理し、適切な値に設定する。
 
-An EIP-1559 transaction is a serialized binary message that contains the following data:
-
 　EIP-1559トランザクションは、以下のデータを含むシリアライズされたバイナリメッセージです。
-
-**Chain ID**
 
 **チェーンID**
 
-Same as legacy transactions
-
 レガシートランザクションと同じ
-
-**Nonce**
 
 **ナンス**
 
-Same as legacy transactions
-
 レガシートランザクションと同じ
-
-**Max priority fee per gas**
 
 **ガス当たりの最大プライオリティフィー**
 
-The price of gas (in wei) that the originator is willing to pay directly to validators as a tip for including the transaction in the block
-
 トランザクションをブロックに含めるためのチップとして、発行者がバリデーターに直接支払ってもよいと考えるガスの価格（単位はwei）
-
-**Max fee per gas**
 
 **ガス当たりの最大フィー**
 
-The price of gas (in wei) that the originator is willing to pay in total, comprehensive of base fee and priority fee
-
 ベースフィーとプライオリティフィーを含む、発行者が合計で支払ってもよいと考えるガスの価格（単位はwei）
-
-**Gas limit**
 
 **ガスリミット**
 
-Same as legacy transactions
-
 レガシートランザクションと同じ
-
-**Recipient**
 
 **受信者**
 
-Same as legacy transactions
-
 レガシートランザクションと同じ
-
-**Access list**
 
 **アクセスリスト**
 
-Same as EIP-2930 transactions
-
 EIP-2930トランザクションと同じ
-
-**Value**
 
 **バリュー**
 
-Same as legacy transactions
-
 レガシートランザクションと同じ
-
-**Data**
 
 **データ**
 
-Same as legacy transactions
-
 レガシートランザクションと同じ
-
-**v,r,s**
 
 **v、r、s**
 
-Same as legacy transactions
-
 レガシートランザクションと同じ
-
-As with all transaction types, the message structure is serialized using the RLP encoding scheme.
 
 　すべてのトランザクションタイプと同様に、メッセージ構造はRLPエンコーディングスキームを使用してシリアライズされます。
 
