@@ -1,24 +1,12 @@
-# Chapter 6. Transactions
-
 # 6章 トランザクション
 
-*Transactions* are signed messages originated by an externally owned account, transmitted by the Ethereum network, and recorded on the Ethereum blockchain. This basic definition conceals a lot of surprising and fascinating details. Another way to look at transactions is that they are the only things that can trigger a change of state, or cause a contract to execute in the EVM. Ethereum is a global singleton state machine, and transactions are what make that state machine "tick," changing its state. Contracts don't run on their own. Ethereum doesn't run autonomously. Everything starts with a transaction.
+　*トランザクション*は、外部所有アカウントから発信された署名付きのメッセージです。これはイーサリアムネットワークに送信され、イーサリアムブロックチェーンに記録されます。この基本的な定義には、多くの驚くべき魅力的な詳細が隠されています。別の観点からトランザクションを見てみると、トランザクションは状態の変更を引き起こしたり、またはEVM（イーサリアム仮想マシン）でコントラクトを実行できる唯一の存在だとも言えます。イーサリアムはグローバルなシングルトン状態マシンであり、トランザクションは状態マシンを作動させ、状態を変更します。コントラクトは単独では実行されません。そして、イーサリアムは自律的に実行されません。すべてはトランザクションから始まるのです。
 
-　*トランザクション*とは、EOA（外部所有アカウント）から発信された署名付きメッセージであり、イーサリアムネットワークに送信され、イーサリアムブロックチェーンに記録されます。この基本的な定義には、多くの驚くべき魅力的な詳細が隠されています。トランザクションを別の観点から見ると、状態の変更を引き起こしたり、EVM（イーサリアム仮想マシン）でコントラクトを実行できる唯一の存在だとも言えます。イーサリアムはグローバルなシングルトン状態マシンであり、トランザクションが状態マシンを作動させ、状態を変更します。コントラクトは単独では実行されません。イーサリアムは自律的に実行されません。すべてはトランザクションから始まるのです。
-
-In this chapter, we will dissect transactions, show how they work, and examine the details. Note that much of this chapter is addressed to those who are interested in managing their own transactions at a low level, perhaps because they are writing a wallet app; you don't have to worry about this if you are happy using existing wallet applications, although you may find the details interesting!
-
-　この章では、トランザクションを分析し、どのように動作するかを示し、詳細について考察します。この章の内容の多くは、ウォレットアプリを開発しているなど、独自のトランザクションを低レベルで管理することに関心がある人を対象としています。既存のウォレットアプリケーションを使用しており問題がないのであれば、トランザクションの仕組みについて心配する必要はありませんが、詳細は興味深い内容のはずです。
-
-## The Structure of a Transaction
+　この章では、トランザクションを分析し、どのように動作するかを示し、詳細について考察します。この章の内容のほとんどの部分は、すでにウォレットアプリケーションを開発しており、独自のトランザクションを低レベルで管理することに関心がある人を対象としています。既存のウォレットアプリケーションを使用しており問題がないのであれば、トランザクションの仕組みについて懸念を持つ必要はありませんが、この章で触れるトランザクションの詳細は興味深い内容のはずです。
 
 ## トランザクションの構造
 
-First, let's take a look at the basic structure of a transaction as it is serialized and transmitted on the Ethereum network. Each client that receives a serialized transaction will store it in memory using its own internal data structure, perhaps embellished with metadata that doesn't exist in the network serialized transaction itself. The network serialization is the only standard form of a transaction.
-
 　最初に、イーサリアムネットワーク上でシリアライズされて送信されるトランザクションの基本的な構造を見てみましょう。シリアライズされたトランザクションを受け取る各クライアントは、ネットワーク内のシリアライズされたトランザクション自体には存在しないメタデータが追加された、独自の内部データ構造を用いて、トランザクションをメモリに格納します。ネットワークのシリアライゼーションはトランザクション唯一の標準形式です。
-
-While in the first days of Ethereum, there was only a single type of transaction, [*EIP-2718*](https://oreil.ly/6Ku5V) has introduced a way to deal with different transaction types and handle them in a different way. In particular, every transaction starts with a single byte that specifies the type of the transaction:
 
 　イーサリアム初期にはトランザクションの種類は1つだけでしたが、[*EIP-2718*](https://oreil.ly/6Ku5V)によって、異なるトランザクションタイプを扱い、それぞれ異なる方法で処理する仕組みが導入されました。具体的には、すべてのトランザクションはトランザクションタイプを指定する1バイトで始まります。
 
@@ -26,11 +14,7 @@ While in the first days of Ethereum, there was only a single type of transaction
 transaction = tx_type || tx_payload
 ```
 
-At the time of writing (June 2025), five transaction types exist, listed in Table 6-1.
-
 　執筆時点（2025年6月）では、表6-1に示す5つのトランザクションタイプが存在します。
-
-**Table 6-1. EIP-2718 transaction types**
 
 **表6-1 EIP-2718トランザクションタイプ**
 
@@ -42,93 +26,49 @@ At the time of writing (June 2025), five transaction types exist, listed in Tabl
 | `0x03` | EIP-4844トランザクション |
 | `0x04` | EIP-7702トランザクション |
 
-Let's analyze all of these in more detail.
-
 　それぞれについて詳しく見ていきましょう。
-
-### Legacy Transactions
 
 ### レガシートランザクション
 
-A *legacy transaction* is a serialized binary message that contains the following data:
-
 　*レガシートランザクション*は、以下のデータを含むシリアライズされたバイナリメッセージです。
-
-**Chain ID**
 
 **チェーンID**
 
-The chain ID of the network you're sending the transaction to. It was added with EIP-155 as a simple replay-attack-protection mechanism.
-
-トランザクションの送信先ネットワークのチェーンID。リプレイアタック防止の簡易的な仕組みとしてEIP-155で追加された
-
-**Nonce**
+トランザクションの送信先ネットワークのチェーンID。リプレイ攻撃防止の簡易的な仕組みとしてEIP-155で追加された
 
 **ナンス**
 
-A sequence number, issued by the originating EOA and used to prevent message replay.
-
 メッセージの再利用を防ぐために使用されるシーケンス番号。発信元EOAから発行される
-
-**Gas price**
 
 **ガス価格**
 
-The price of gas (in wei) that the originator is willing to pay.
-
 トランザクション発行者が支払ってもよいと考えるガスの価格（単位はwei）
-
-**Gas limit**
 
 **ガスリミット**
 
-The maximum amount of gas the originator is willing to buy for this transaction. Note that you will pay only for the real gas used in the transaction. Gas limit only represents the maximum amount of gas you're willing to pay for.
-
-トランザクション発行者がこのトランザクションのために購入してもよいと考えるガスの最大量。実際に支払うのはトランザクションで使用された実際のガス量のみである。ガスリミットは支払ってもよいと考えるガスの最大量を表すにすぎない
-
-**Recipient**
+トランザクション発行者がこのトランザクションのために購入してもよいと考えるガスの最大量。支払うのはトランザクションで実際に使用されたガス量のみである。ガスリミットは支払ってもよいと考えるガスの最大量を表すにすぎない
 
 **受信者**
 
-The destination Ethereum address.
-
 宛先となるイーサリアムアドレス
-
-**Value**
 
 **バリュー**
 
-The amount of ether to send to the destination.
-
 宛先に送信するetherの量
-
-**Data**
 
 **データ**
 
-The variable-length binary data payload.
-
 可変長バイナリデータのペイロード
-
-**v,r,s**
 
 **v、r、s**
 
-The three components of an ECDSA digital signature of the originating EOA.
-
 発信元EOAのECDSAデジタル署名の3つの要素
 
-The transaction message's structure is serialized using the *recursive-length prefix (RLP)* encoding scheme, which was created specifically for simple, byte-perfect data serialization in Ethereum. All numbers in Ethereum are encoded as big-endian integers, of lengths that are multiples of 8 bits.
+　トランザクションメッセージの構造は、RLP（Recursive Length Prefix）エンコーディングスキームを使用してシリアライズされます。このRLPエンコーディングスキームは、イーサリアムのシンプルで完全なデータのシリアライズのために特別に作成されました。イーサリアムのすべての数値は、8ビットの倍数の長さのビッグエンディアン整数としてエンコードされます。
 
-　トランザクションメッセージの構造は、*RLP（Recursive Length Prefix）*エンコーディングスキームを使用してシリアライズされます。このRLPエンコーディングスキームは、イーサリアムのシンプルで完全なデータのシリアライズのために特別に作成されました。イーサリアムのすべての数値は、8ビットの倍数の長さのビッグエンディアン整数としてエンコードされます。
+　なお、ここで示しているフィールドラベル（`to`、`gasLimit`など）は、RLPエンコードされたフィールド値を含む、シリアライズされたトランザクションデータの一部ではありません。一般的には、RLPにはフィールド区切り文字やラベルは含まれていません。RLPは、各フィールドの長さを識別するために使用されます。定義された長さを超えるものは構造内の次のフィールドに属します。
 
-Note that the field labels (`to`, `gas limit`, etc.) are shown here for clarity but are not part of the transaction serialized data, which contains the RLP-encoded field values. In general, RLP does not contain any field delimiters or labels. RLP's length prefix is used to identify the length of each field. Anything beyond the defined length belongs to the next field in the structure.
-
-　明確にするために、ここではフィールドラベル（`to`、`gas limit`など）が示されていますが、これらはRLPエンコードされたフィールド値を含む、シリアライズされたトランザクションデータの一部ではありません。一般に、RLPにはフィールド区切り文字やラベルは含まれていません。RLPの長さプレフィックスは各フィールドの長さを識別するために使用されます。定義された長さを超えるものは構造内の次のフィールドに属します。
-
-While this is the actual transaction structure that is transmitted, most internal representations and user interface visualizations embellish this with additional information derived from the transaction or from the blockchain. For example, you may notice there is no "from" data in the address identifying the originator EOA. That is because the EOA's public key can be derived from the `v`, `r`, `s` components of the ECDSA signature. The address can, in turn, be derived from the public key. When you see a transaction showing a `from` field, that was added by the software used to visualize the transaction. Other metadata frequently added to the transaction by client software include the block number (once it is published and included in the blockchain) and a transaction ID (calculated hash). Again, this data is derived from the transaction and does not form part of the transaction message itself.
-
-　これが実際に送信されるトランザクション構造ですが、ほとんどの内部表現やユーザーインターフェイスの視覚化では、トランザクションまたはブロックチェーンから導出された追加情報でこの構造が補われます。たとえば、発信元のEOAを識別するアドレスには「from」データがありません。EOAの公開鍵はECDSA署名の`v`、`r`、`s`要素から導出でき、アドレスは公開鍵から導出できるためです。トランザクションに「from」フィールドが表示されている場合、それはトランザクションを視覚化するためのソフトウェアによって追加されたものです。クライアントソフトウェアによってトランザクションに頻繁に追加されるその他のメタデータには、ブロック番号（ブロックチェーンに公開され含まれた際のもの）とトランザクションID（計算されたハッシュ値）が含まれます。このデータもトランザクションから導出されたものであり、トランザクションメッセージ自体の一部を構成するものではありません。
+　これが実際に送信されるトランザクション構造ですが、ほとんどの内部表現やユーザーインターフェイスの視覚化では、トランザクションやブロックチェーンから得られる追加情報でこの構造が補われます。たとえば、発信元のEOAを識別するアドレスには「from」データがありません。EOAの公開鍵はECDSA署名の`v`、`r`、`s`要素から導出でき、アドレスは公開鍵から導出できるためです。トランザクションに「from」フィールドが表示されている場合、それはトランザクションを視覚化するためのソフトウェアによって追加されたものです。クライアントソフトウェアによってトランザクションに頻繁に追加されるその他のメタデータには、ブロック番号（ブロックチェーンに公開され含まれた際のもの）とトランザクションID（計算されたハッシュ値）が含まれます。このデータもトランザクションから得られるものであり、トランザクションメッセージ自体の一部を構成するものではありません。
 
 ### EIP-2930 Transactions
 
