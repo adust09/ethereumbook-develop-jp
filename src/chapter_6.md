@@ -365,59 +365,31 @@ $ cast nonce 0x7e41354AfE84800680ceB104c5Fc99eCB98A25f0 --rpc-url https://ethere
 >
 > パブリックなメムプールは普遍的なものではない。各ノードは独自のメムプールを持っている。メムプールとは保留中のトランザクションを一時的に保持する動的なリポジトリであり、ブロックチェーンで承認されるまでトランザクションを保管する。新しいトランザクションの受け入れや拒否に関するルールをカスタマイズすることも可能である。RPCプロバイダーは大規模なノードネットワークを持ち、すべての保留中トランザクションの（ほぼ）完全なビューを持っているはずだが、その値を100%正確なものとして扱うことには慎重であるべきである。
 
-### Gaps in Nonces, Duplicate Nonces, and Confirmation
-
-### ナンスの欠落、ナンスの重複と承認
-
-It is important to keep track of nonces if you are creating transactions programmatically, especially if you are doing so from multiple independent processes simultaneously.
+### ナンスの欠落、複製したナンスと承認
 
 　トランザクションをプログラムで作成している場合、特に複数の独立したプロセスから同時に実行している場合、ナンスを把握することが重要です。
 
-The Ethereum network processes transactions sequentially based on the nonce. That means that if you transmit a transaction with nonce 0 and then transmit a transaction with nonce 2, the second transaction will not be included in any blocks. It will be stored in the mempool, while the Ethereum network waits for the missing nonce to appear. All nodes will assume that the missing nonce has simply been delayed and that the transaction with nonce 2 was received out of sequence.
-
 　イーサリアムネットワークは、ナンスに基づいてトランザクションを順次処理します。ナンス0のトランザクションを送信してから、ナンス2のトランザクションを送信すると、2番目のトランザクションはどのブロックにも含まれません。2番目のトランザクションはメムプールに保存され、イーサリアムネットワークは欠落したナンスを持つトランザクションが現れるのを待ちます。すべてのノードは、欠落したナンスが単に遅延しており、ナンス2のトランザクションが順序どおりに受信されなかっただけだと想定します。
-
-If you then transmit a transaction with the missing nonce 1, both transactions (nonces 1 and 2) will be processed and included (if valid, of course). Once you fill the gap, the network can mine the out-of-sequence transaction that it held in the mempool.
 
 　欠落しているナンス1を含むトランザクションを送信すると、両方のトランザクション（ナンス1とナンス2）が処理されブロックに含まれます（もちろん両方が有効である場合）。欠落を埋めると、ネットワークはメムプールで保持していた順序外のトランザクションをマイニングすることができます。
 
-What this means is that if you create several transactions in sequence and one of them does not get officially included in any blocks, all the subsequent transactions will be "stuck," waiting for the missing nonce. A transaction can create an inadvertent "gap" in the nonce sequence because it is invalid or has insufficient gas. To get things moving again, you have to transmit a valid transaction with the missing nonce. You should be equally mindful that once a transaction with the "missing" nonce is validated by the network, all the broadcast transactions with subsequent nonces will incrementally become valid; it is not possible to "recall" a transaction!
-
 　つまり、複数のトランザクションを順番に作成し、そのうちの1つが正式にどのブロックにも含まれなかった場合、以降のトランザクションはすべて「スタック」し、欠落しているナンスを持つトランザクションを待つことになります。トランザクションが無効であったりガスが不足していたりすると、ナンスシーケンスに意図しない「欠落」が発生する可能性があります。再び動かすには、欠落しているナンスを持つ有効なトランザクションを送信する必要があります。「欠落した」ナンスを持つトランザクションがネットワークによって検証されると、以降のナンスを含むすべてのブロードキャスト済みトランザクションが順次有効になることにも留意してください。トランザクションを「リコール（呼び戻し）」することはできません。
-
-If, on the other hand, you accidentally duplicate a nonce—for example, by transmitting two transactions with the same nonce but different recipients or values—then one of them will be confirmed and one will be rejected. Which one is confirmed will be determined by the sequence in which they arrive at the first validating node that receives them—that is, it will be fairly random.
 
 　一方で、同じナンスで受信者や値が異なる2つのトランザクションを送信するなど、誤ってナンスを重複させた場合、1つが承認され、もう1つが拒否されます。どちらが承認されるかは、トランザクションを受け取った最初の検証ノードに到着する順番によって決まります。つまり、かなりランダムです。
 
-As you can see, keeping track of nonces is necessary, and if your application doesn't manage that process correctly, you will run into problems. Unfortunately, things get even more difficult if you are trying to do this concurrently, as we will see in the next section.
-
 　ここまで見てきたように、ナンスの追跡は不可欠です。アプリケーションがナンスのプロセスを正しく管理しなければ、問題が発生します。残念ながら、並行処理を行おうとすると事態はさらに困難になります。次のセクションで詳しく見ていきましょう。
-
-### Concurrency, Transaction Origination, and Nonces
 
 ### 並行処理、トランザクションの生成とナンス
 
-*Concurrency* is a complex aspect of computer science, and it crops up unexpectedly sometimes, especially in decentralized and distributed real-time systems like Ethereum.
-
 　*並行処理*はコンピュータサイエンスにおける難問であり、特にイーサリアムのような分散型のリアルタイムシステムでは、時に予期せぬ問題が生じます。
-
-In simple terms, concurrency is when you have simultaneous computation by multiple independent systems. These can be in the same program (e.g., multithreading), on the same CPU (e.g., multiprocessing), or on different computers (e.g., distributed systems). Ethereum, by definition, is a system that allows concurrency of operations (nodes, clients, DApps) but enforces a singleton state through consensus.
 
 　簡単に言うと、並行処理とは複数の独立したシステムで同時に演算を行うことです。同じプログラム（たとえばマルチスレッド）、同じCPU（たとえばマルチプロセッシング）、または異なるコンピュータ（たとえば分散システム）上で実行できます。イーサリアムは定義上、操作（ノード、クライアント、DApp）の並行性を許容しつつ、コンセンサスを通じてシングルトン状態を強制するシステムです。
 
-Now, imagine that you have multiple independent wallet applications that are generating transactions from the same address or addresses. One example of such a situation would be an exchange processing withdrawals from the exchange's *hot wallet* (a wallet whose keys are stored online, in contrast to a *cold wallet* where the keys are never online). Ideally, you'd want to have more than one computer processing withdrawals, so it doesn't become a bottleneck or single point of failure. However, this quickly becomes problematic because having more than one computer producing withdrawals will result in some thorny concurrency problems, not least of which is the selection of nonces. How do multiple computers generating, signing, and broadcasting transactions from the same hot wallet account coordinate?
-
 　ここで、同じアドレスまたは複数のアドレスからトランザクションを生成している、複数の独立したウォレットアプリケーションがあるとします。このような状況の一例は、取引所が*ホットウォレット*（鍵がオンラインで保管されているウォレット。鍵がオンラインにならない*コールドウォレット*とは対照的）から引き出しを処理する場合です。理想的には、ボトルネックや単一障害点にならないよう複数のコンピュータで引き出しを処理すべきです。しかし、複数のコンピュータから引き出しを行うと、厄介な並行処理の問題が急速に顕在化します。特にナンスの選択が重大な問題です。同じホットウォレットアカウントから、複数のコンピュータでトランザクションの生成、署名、ブロードキャストをどう調整すればよいのでしょうか。
-
-You could use a single computer to assign nonces, on a first-come, first-served basis, to computers signing transactions. However, this computer is now a single point of failure. Worse, if several nonces are assigned and one of them never gets used (because of a failure in the computer processing the transaction with that nonce), all subsequent transactions will get stuck.
 
 　1台のコンピュータを使用して、先着順にトランザクションに署名するコンピュータにナンスを割り当てるやり方が考えられます。しかし、このコンピュータ自体が単一障害点になります。さらに悪いことに、複数のナンスが割り当てられ、そのうち1つが使用されなかった場合（そのナンスでトランザクションを処理するコンピュータの障害のため）、以降のすべてのトランザクションがスタックします。
 
-Another approach would be to generate the transactions but not assign a nonce to them (and therefore leave them unsigned—remember that the nonce is an integral part of the transaction data and therefore needs to be included in the digital signature that authenticates the transaction). You could then queue them to a single node that signs them and keeps track of nonces. Again, though, this would be a choke point in the process: the signing and tracking of nonces is the part of your operation that is likely to become congested under load, whereas generating the unsigned transaction is the part you don't really need to parallelize. You would have some concurrency, but it would be lacking in a critical part of the process.
-
 　もう1つのアプローチは、トランザクションを生成するがナンスを割り当てないことです（したがってトランザクションは未署名のままとなります。ナンスはトランザクションデータの不可欠な部分であり、トランザクションを認証するデジタル署名に含める必要があることを思い出してください）。その後、署名を行いナンスを追跡する単一ノードにキューイングします。しかし、このアプローチもプロセス上のボトルネックになります。署名とナンスの追跡は、負荷がかかると混雑する可能性が高い操作であり、一方で未署名トランザクションの生成は並列化の必要性が低い部分です。いくらかの並行処理は実現できますが、プロセスの重要な部分で不十分なままです。
-
-In the end, these concurrency problems, on top of the difficulty of tracking account balances and transaction confirmations in independent processes, force most implementations toward avoiding concurrency and creating bottlenecks, such as a single process handling all withdrawal transactions in an exchange or a setup of multiple hot wallets that can work completely independently for withdrawals and only need to be intermittently rebalanced.
 
 　結局、これらの並行処理の問題と、独立したプロセスでアカウント残高やトランザクションの承認を追跡することの困難さが重なり、ほとんどの実装では並行処理を避けてボトルネックを作ることを余儀なくされます。たとえば、取引所のすべての引き出し処理を単一プロセスで実行するか、引き出しに対して完全に独立して機能し、断続的にリバランスするだけでよい複数のホットウォレットを設定するといった対応です。
 
