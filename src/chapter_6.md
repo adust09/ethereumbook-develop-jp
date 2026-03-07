@@ -1098,97 +1098,49 @@ K2 = r–1 (sR′ – zG)
 
 　完全なエアギャップシステムを利用できる環境は多くありませんが、わずかな隔離でも大きなセキュリティ上の利点があります。たとえば、メッセージキュープロトコルのみを通過させるファイアウォールを備えた隔離サブネットは、オンラインシステム上で署名する場合と比較して、攻撃対象を大幅に縮小し、はるかに高いセキュリティを提供できます。多くの企業がこの目的でZeroMQ（0MQ）などのプロトコルを使用しています。このような構成では、トランザクションはシリアライズされ、署名のためにキューに入れられます。キューイングプロトコルは、TCPソケットに類似した方法でシリアライズされたメッセージを署名コンピュータに送信します。署名コンピュータはキューからシリアライズされたトランザクションを慎重に読み込み、適切な鍵で署名を適用して発信キューに配置します。発信キューは署名済みトランザクションをイーサリアムクライアントを持つコンピュータに送信し、デキューして送信を実行します。
 
-## Transaction Life Cycle
-
 ## トランザクションのライフサイクル
 
-In this section, we'll explore the full life cycle of a transaction, starting from the moment it's signed to when it's included in a block and the block gets finalized.
-
-　この節では、トランザクションが署名された時点からブロックに取り込まれ、そのブロックがファイナライズされるまでの完全なライフサイクルを説明します。
-
-### Creating and Signing the Transaction
+　この節では、トランザクションが署名された時点からブロックに取り込まれ、そのブロックがファイナライズされるまでのライフサイクル全体を説明します。
 
 ### トランザクションの作成と署名
 
-The first step is to create the transaction, choosing the transaction type and filling all the fields required for it. For example, in the section "Raw Transaction Creation and Signing", we created an EIP-1559 transaction.
-
 　最初のステップは、トランザクションタイプを選択し、必要なすべてのフィールドを入力してトランザクションを作成することです。たとえば、「生トランザクションの作成と署名」の節ではEIP-1559トランザクションを作成しました。
-
-Once we have the transaction, we need to sign it with the correct private key (or the transaction will be invalid due to the invalid signature) in order to obtain the final and definitive signed transaction. This is the actual piece of data that we need to send to the network and wait for it to be included in a block.
 
 　トランザクションを作成したら、正しい秘密鍵で署名する必要があります（署名が無効だとトランザクションも無効になります）。署名によって最終的かつ確定的な署名済みトランザクションが得られます。このデータをネットワークに送信し、ブロックへの取り込みを待つことになります。
 
-### Sending the Transaction to the Network
-
 ### トランザクションのネットワークへの送信
-
-The transaction needs to be included in a block to be considered confirmed by the Ethereum protocol; otherwise, it's just a signed transaction that only we know about.
 
 　トランザクションがイーサリアムプロトコルによって確認済みとみなされるには、ブロックに取り込まれなければなりません。ブロックに取り込まれなければ、自分だけが知っている署名済みトランザクションにすぎません。
 
 > **ヒント**
 >
-> It's very important to understand that the Ethereum protocol considers valid only transactions that are included into blocks that are part of the valid chain. To update its state, you need to send your signed transaction to the network and wait for it to include your transaction into a block. Your signed transaction alone doesn't do anything if it's not included into a block.
-
-> **ヒント**
->
-> イーサリアムプロトコルが有効とみなすのは、有効なチェーンの一部であるブロックに取り込まれたトランザクションのみであることを理解することが非常に重要である。状態を更新するには、署名済みトランザクションをネットワークに送信し、ブロックへの取り込みを待つ必要がある。署名済みトランザクション単体では、ブロックに取り込まれない限り何の効果も持たない。
-
-So we need to send our signed transaction to the network. To do that, we just need to send our transaction to an Ethereum node: this can be our own node or a third-party one, such as Alchemy, Infura, or Public Node (which is the one we used in our previous example).
+> イーサリアムプロトコルでは、有効なチェーンに属するブロックに取り込まれたトランザクションのみが有効とみなされる。この点を理解しておくことが非常に重要である。状態を更新するには、署名済みトランザクションをネットワークに送信し、ブロックへの取り込みを待つ必要がある。署名済みトランザクション単体では、ブロックに取り込まれない限り何の効果も持たない。
 
 　署名済みトランザクションをネットワークに送信するには、イーサリアムノードにトランザクションを送る必要があります。自分自身のノードを使うこともできますし、Alchemy、Infura、Public Node（前の例で使用したもの）などのサードパーティノードを使うこともできます。
 
 > **注記**
 >
-> By default, all wallets use a third-party node so that a user doesn't need to install anything to start using the Ethereum network. Nevertheless, if you want to maximize your privacy and really don't want to depend on anyone, you should use your own client. You can refer to Chapter 3 for a detailed guide on how to install your first Ethereum node.
-
-> **注記**
->
 > デフォルトでは、すべてのウォレットがサードパーティノードを使用しており、ユーザーはイーサリアムネットワークを利用開始するために何もインストールする必要がない。ただし、プライバシーを最大化し、誰にも依存したくない場合は、自分自身のクライアントを使用するべきである。イーサリアムノードの初回インストールに関する詳細なガイドは、3章を参照のこと。
 
-When our signed transaction reaches the first node, the node performs some validation in order to immediately remove spam invalid transactions. If the validation succeeds, then the node adds the transaction to its *mempool* and propagates it to a subsection of all its peers. Each of them validates it, adds it to its own mempool, and propagates it further.
-
 　署名済みトランザクションが最初のノードに到達すると、そのノードはスパムや無効なトランザクションを即座に排除するためにいくつかの検証を行います。検証に成功すると、ノードはトランザクションを自身の*メムプール*（mempool）に追加し、接続しているピアの一部に伝播します。ピアの各々がトランザクションを検証し、自身のメムプールに追加し、さらに別のピアに伝播します。
-
-This process is part of the Ethereum P2P gossip protocol, and the result is that within just a few seconds, an Ethereum transaction propagates to all the Ethereum nodes around the globe. From the perspective of each node, it is not possible to discern the origin of the transaction. The neighbor that sent it to the node may be the originator of the transaction or may have received it from one of its neighbors. To be able to track the origins of transactions or interfere with propagation, an attacker would have to control a significant percentage of all nodes. This is part of the security and privacy design of P2P networks, especially as applied to blockchain networks.
 
 　このプロセスはイーサリアムのP2Pゴシッププロトコルの一部であり、その結果、イーサリアムトランザクションはわずか数秒で世界中のすべてのイーサリアムノードに伝播します。各ノードの観点からは、トランザクションの発信元を識別することはできません。トランザクションを送ってきた隣接ノードがトランザクションの発行者である場合もあれば、別の隣接ノードから受信しただけの場合もあります。トランザクションの発信元を追跡したり、伝播を妨害したりするには、攻撃者が全ノードのかなりの割合を支配する必要があります。これがP2Pネットワーク、特にブロックチェーンネットワークに適用されるセキュリティとプライバシー設計の一部です。
 
 > **注記**
 >
-> You may wonder why nodes don't flood transactions to all their neighbors and instead send them to just a subsection of neighbors. The answer is efficiency and bandwidth preservation. In fact, it would be highly inefficient to send all transactions to all nodes: there would be lots of duplicate messages, network traffic would be huge, and scalability would be poor as network traffic would grow exponentially with the number of transactions.
-
-> **注記**
->
 > ノードがすべての隣接ノードにトランザクションをフラッディングせず、隣接ノードの一部にのみ送信するのはなぜか疑問に思うかもしれない。その理由は効率性と帯域幅の節約である。すべてのトランザクションをすべてのノードに送信すると、重複メッセージが大量に発生し、ネットワークトラフィックが膨大になり、トランザクション数の増加に伴ってネットワークトラフィックが指数関数的に増大するため、スケーラビリティが低下する。
-
-### Building the Block
 
 ### ブロックの構築
 
-Right now, our transaction has reached almost all the Ethereum nodes, but it's still not confirmed because it's not included into a block—until a validator that is selected to propose the next block finally takes all the transactions from its own mempool, adds them to the block, and publishes the block to the network.
-
 　この時点で、トランザクションはほぼすべてのイーサリアムノードに到達していますが、ブロックに取り込まれていないため、まだ確認済みではありません。次のブロックの提案を担当するバリデーターが自身のメムプールからトランザクションを取り出し、ブロックに追加してネットワークに公開するまで待つ必要があります。
 
-Once transactions are included into a block, they modify the Ethereum state, either by modifying the balance of an account (in the case of a simple payment) or by invoking contracts that change their internal state. These changes are recorded alongside the transaction, in the form of a *transaction receipt*, which may also include events. In the example in "Raw Transaction Creation and Signing", you can find the final receipt of our transaction.
-
-　トランザクションがブロックに取り込まれると、イーサリアムの状態が変更されます。単純な支払いの場合はアカウントの残高が変更され、コントラクトを呼び出す場合はコントラクトの内部状態が変更されます。これらの変更はトランザクションとともに*トランザクションレシート*の形式で記録され、レシートにはイベントも含まれます。「生トランザクションの作成と署名」の例で、トランザクションの最終レシートを確認できます。
-
-### Finalizing the Transaction
+　トランザクションがブロックに取り込まれると、イーサリアムの状態が変更されます。単純な支払いの場合はアカウントの残高が変更され、コントラクトを呼び出す場合はコントラクトの内部状態が変更されます。これらの変更はトランザクションとともに*トランザクションレシート*の形式で記録され、レシートにはイベントも含まれます。「生トランザクションの作成と署名」で示した例の通り、トランザクションの最終レシートでこれらの内容を確認できます。
 
 ### トランザクションのファイナライゼーション
 
-Our transaction is now included into a block and has already modified the Ethereum state. Nevertheless, the block that contains it could still be reverted and substituted with another one that doesn't include our transaction, even though that's highly unlikely to happen. This is called *block reorganization*, or *block reorgs* for short.
-
 　トランザクションはブロックに取り込まれ、イーサリアムの状態を変更しました。しかし、トランザクションを含むブロックは、可能性としては極めて低いものの、トランザクションを含まない別のブロックに差し替えられる可能性が残っています。これを*ブロック再編成*（*ブロックリオーグ*）と呼びます。
 
-To be completely sure that our transaction cannot be reverted, we need to wait for the block that includes it to be finalized by the Ethereum consensus protocol (we'll explore that in much more detail in Chapter 15). This usually takes around 12 minutes.
-
 　トランザクションが取り消し不可能であることを完全に確認するには、トランザクションを含むブロックがイーサリアムのコンセンサスプロトコルによってファイナライズされるのを待つ必要があります（詳細は15章で説明します）。通常、ファイナライゼーションには約12分かかります。
-
-> **注記**
->
-> Even though it's true that you should wait for the finalization to be completely sure that your transaction is confirmed on the blockchain, you can usually wait for only a couple of blocks. Wallets usually show your transaction as confirmed immediately after it has been included into a block.
 
 > **注記**
 >
