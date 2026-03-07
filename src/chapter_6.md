@@ -54,7 +54,7 @@ transaction = tx_type || tx_payload
 
 **バリュー**
 
-宛先に送信するetherの量
+宛先に送信するイーサの量
 
 **データ**
 
@@ -214,7 +214,7 @@ blobに関連する各KZGコミットメントのバージョン付きハッシ�
 
 **シナリオ2**
 
-　100 etherのアカウントを持っているとします。本当に購入したい商品があり、その支払いをetherで受け付けてくれる人をオンライン上で見つけました。2 etherを送り、相手は商品を送ってくれます。その2 etherの支払いのために、自分のアカウントから相手のアカウントへ2 etherを送信するトランザクションに署名し、イーサリアムネットワークにブロードキャストして検証とブロックチェーンへの取り込みを待ちます。ここで、トランザクションにナンス値がなければ、同じアドレスに2 etherを再度送信した場合、そのトランザクションは最初のものとまったく同じに見えます。つまり、イーサリアムネットワーク上のトランザクションを見ている人は誰でも（受信者や悪意のある者を含むすべての人が）、元のトランザクションをコピーしてネットワークに再送信することで、すべてのetherがなくなるまで何度でもトランザクションを「リプレイ」できてしまいます。しかし、トランザクションにナンス値があれば、同一の受信者アドレスに同じ量のetherを複数回送信する場合であっても、毎回のトランザクションは一意になります。したがって、インクリメントされるナンスがトランザクションの一部として含まれることで、支払いの「複製」は不可能になります。
+　100 etherのアカウントを持っているとします。本当に購入したい商品があり、その支払いをイーサで受け付けてくれる人をオンライン上で見つけました。2 etherを送り、相手は商品を送ってくれます。その2 etherの支払いのために、自分のアカウントから相手のアカウントへ2 etherを送信するトランザクションに署名し、イーサリアムネットワークにブロードキャストして検証とブロックチェーンへの取り込みを待ちます。ここで、トランザクションにナンス値がなければ、同じアドレスに2 etherを再度送信した場合、そのトランザクションは最初のものとまったく同じに見えます。つまり、イーサリアムネットワーク上のトランザクションを見ている人は誰でも（受信者や悪意のある者を含むすべての人が）、元のトランザクションをコピーしてネットワークに再送信することで、すべてのイーサがなくなるまで何度でもトランザクションを「リプレイ」できてしまいます。しかし、トランザクションにナンス値があれば、同一の受信者アドレスに同じ量のイーサを複数回送信する場合であっても、毎回のトランザクションは一意になります。したがって、インクリメントされるナンスがトランザクションの一部として含まれることで、支払いの「複製」は不可能になります。
 
 　要約すると、ビットコインプロトコルの*UTXO（Unspent Transaction Output）*メカニズムとは対照的に、ナンスの使用はアカウントベースのプロトコルにとってまさに必要不可欠であることを強調しておきます。
 
@@ -393,63 +393,33 @@ $ cast nonce 0x7e41354AfE84800680ceB104c5Fc99eCB98A25f0 --rpc-url https://ethere
 
 　結局、これらの並行処理の問題と、独立したプロセスでアカウント残高やトランザクションの承認を追跡することの困難さが重なり、ほとんどの実装では並行処理を避けてボトルネックを作ることを余儀なくされます。たとえば、取引所のすべての引き出し処理を単一プロセスで実行するか、引き出しに対して完全に独立して機能し、断続的にリバランスするだけでよい複数のホットウォレットを設定するといった対応です。
 
-## Transaction Gas
-
 ## トランザクションガス
-
-We talked about *gas* a little in earlier chapters, and we'll discuss it in more detail in Chapter 14. However, let's cover some basics about the role of the `gasPrice` and `gasLimit` components of a transaction.
 
 　ガスについては前の章で少し説明しましたが、14章でより詳細に取り上げます。ここでは、トランザクションの`gasPrice`と`gasLimit`の役割に関する基本事項を説明します。
 
-Gas is the fuel of Ethereum. Gas is not ether: it's a separate virtual currency with its own exchange rate against ether. Ethereum uses gas to control the amount of resources that a transaction can use, since it will be processed on thousands of computers around the world. The open-ended (Turing-complete) computation model requires some form of metering to avoid DoS attacks or inadvertent resource-devouring transactions.
+　ガスはイーサリアムの燃料です。ガスはイーサではありません。イーサに対する独自の為替レートを持つ、別の仮想通貨です。イーサリアムは、世界中の何千ものコンピュータで処理されるトランザクションが使用できるリソース量を制御するためにガスを使用します。オープンエンド（チューリング完全）な計算モデルでは、DoS攻撃や不用意にリソースを浪費するトランザクションを回避するために、なんらかの計測方式が必要です。
 
-　ガスはイーサリアムの燃料です。ガスはetherではありません。etherに対する独自の為替レートを持つ、別の仮想通貨です。イーサリアムは、世界中の何千ものコンピュータで処理されるトランザクションが使用できるリソース量を制御するためにガスを使用します。オープンエンド（チューリング完全）な計算モデルでは、DoS攻撃や不用意にリソースを浪費するトランザクションを回避するために、なんらかの計測方式が必要です。
-
-Gas is separate from ether to protect the system from the volatility that might arise along with rapid changes in the value of ether and as a way to manage the important and sensitive ratios between the costs of the various resources that gas pays for (computation, memory, and storage).
-
-　ガスがetherから分離されているのは、etherの価値の急激な変動からシステムを保護するためであり、また計算、メモリ、ストレージといった重要資源のコスト比率を管理するためです。
-
-The `gasPrice` field in a transaction allows the transaction originator to set the price they are willing to pay in exchange for gas. The price is measured in wei per gas unit.
+　ガスがイーサから分離されているのは、イーサの価値の急激な変動からシステムを保護するためであり、また計算、メモリ、ストレージといった重要資源のコスト比率を管理するためです。
 
 　トランザクションの`gasPrice`フィールドでは、トランザクション発行者がガスと引き換えに支払う価格を設定できます。価格はガス単位あたりのweiで測定されます。
 
 > **ヒント**
 >
-> The popular site [Etherscan](https://oreil.ly/ZIqcq) provides information on the current prices of gas and other relevant gas metrics for the Ethereum main network.
-
-> **ヒント**
->
 > 人気サイトの[Etherscan](https://oreil.ly/ZIqcq)では、イーサリアムメインネットワークのガス価格や、その他の関連するガス指標に関する情報を提供しています。
-
-Wallets can adjust the `gasPrice` in transactions they originate to achieve faster confirmation of transactions. The higher the `gasPrice`, the faster the transaction is likely to be confirmed. Conversely, lower-priority transactions can carry a reduced price, resulting in slower confirmation. The minimum value that `gasPrice` can be set to is equal to the base fee (we've introduced it with EIP-1559 transactions) of the block in which they are included.
 
 　ウォレットは、トランザクションの承認を迅速化するために、発行したトランザクションの`gasPrice`を調整できます。`gasPrice`が高いほど、トランザクションはより早く承認される可能性が高くなります。逆に、優先順位の低いトランザクションは価格を下げることで、承認が遅くなります。`gasPrice`に設定できる最小値は、トランザクションが含まれるブロックのベースフィー（EIP-1559トランザクションで導入された概念）と等しくなります。
 
 > **注記**
 >
-> Before the London hard fork and EIP-1559, the minimum acceptable `gasPrice` was zero. That means that wallets could generate completely free transactions. Depending on capacity, these might never be confirmed, but there was nothing in the protocol that prohibited free transactions. You can find several examples of such transactions successfully included on the Ethereum blockchain during the first months of Ethereum.
-
-> **注記**
->
 > Londonハードフォーク以前およびEIP-1559以前は、許容される`gasPrice`の最小値はゼロであった。つまり、ウォレットは完全に無料のトランザクションを生成できた。容量によっては承認されない場合もあったが、プロトコルに無料トランザクションを禁止する仕組みはなかった。イーサリアムの初期数カ月間に、ブロックチェーンに正常に含まれた無料トランザクションの例がいくつか確認できる。
-
-### EIP-1559: Base Fee and Priority Fee
 
 ### EIP-1559：ベースフィーとプライオリティフィー
 
-As we have already briefly explained, EIP-1559 completely changes the structure of the fee market on Ethereum by introducing a new protocol parameter: the base fee. It represents the minimum gas price that a transaction needs to pay to be considered valid and included in a block.
-
 　すでに簡単に説明したとおり、EIP-1559はプロトコルの新しいパラメータであるベースフィーを導入することで、イーサリアムの手数料市場の構造を根本的に変更しました。ベースフィーは、トランザクションが有効と見なされブロックに含まれるために支払う必要のある最小ガス価格を表します。
-
-The difference between the base fee and the actual gas fee paid by a transaction is called the *priority fee*. It flows directly to the validator that creates the block in which that transaction lives.
 
 　ベースフィーとトランザクションが実際に支払うガス手数料との差額は、*プライオリティフィー*と呼ばれます。プライオリティフィーは、トランザクションを含むブロックを作成したバリデーターに直接渡されます。
 
-### How to Know the "Correct" Gas Price
-
-### 「正しい」ガス価格の知り方
-
-Cast offers a gas-price suggestion by calculating a median price across several blocks:
+### 適切なガス価格の調べ方
 
 　Castは、複数のブロックにわたるガス価格の中央値を計算することで、ガス価格を提案します。
 
@@ -458,51 +428,27 @@ $ cast gas-price --rpc-url https://ethereum-sepolia-rpc.publicnode.com
 4845187414
 ```
 
-The second important field related to gas is `gasLimit`. In simple terms, `gasLimit` gives the maximum number of units of gas that the transaction originator is willing to buy in order to complete the transaction. For simple payments—meaning transactions that transfer ether from one EOA to another EOA—the gas amount needed is fixed at 21,000 gas units. To calculate how much ether that will cost, you multiply 21,000 by the `gasPrice` (or the `maxFeePerGas` for EIP-1559 transactions) you're willing to pay.
-
-　ガスに関連する2番目の重要なフィールドは`gasLimit`です。簡単に言えば、`gasLimit`はトランザクション発行者がトランザクションを完了するために購入する意思のあるガスの最大単位数を示します。単純な支払い、つまりあるEOA（外部所有アカウント）から別のEOA（外部所有アカウント）にetherを送金するトランザクションでは、必要なガス量は21,000ガス単位に固定されています。etherでの手数料を計算するには、21,000に支払う意思のある`gasPrice`（EIP-1559トランザクションの場合は`maxFeePerGas`）を掛けます。
-
-If your transaction's destination address is a contract, then the amount of gas needed can be estimated but cannot be determined with accuracy. That's because a contract can evaluate different conditions that lead to different execution paths, with different total gas costs. The contract may execute only a simple computation or a more complex one, depending on conditions that are outside of your control and cannot be predicted. To demonstrate this, let's look at an example: we can write a smart contract that increments a counter each time it is called and executes a particular loop a number of times equal to the call count. Maybe on the one-hundredth call, it gives out a special prize, like a lottery, but it needs to do additional computation to calculate the prize. If you call the contract 99 times, one thing happens, but on the one-hundredth call, something very different happens. The amount of gas you would pay for that depends on how many other transactions have called that function before your transaction is included in a block. Perhaps your estimate is based on being the 99th transaction, but just before your transaction is confirmed someone else calls the contract for the 99th time. Now you're the one-hundredth transaction to call, and the computation effort (and gas cost) is much higher.
+　ガスに関連する2番目の重要なフィールドは`gasLimit`です。簡単に言えば、`gasLimit`はトランザクション発行者がトランザクションを完了するために購入する意思のあるガスの最大単位数を示します。単純な支払い、つまりあるEOA（外部所有アカウント）から別のEOAにイーサを送金するトランザクションでは、必要なガス量は21,000ガス単位に固定されています。イーサでの手数料を計算するには、21,000に支払う意思のある`gasPrice`（EIP-1559トランザクションの場合は`maxFeePerGas`）を掛けます。
 
 　トランザクションの宛先アドレスがコントラクトである場合、必要なガスの量を見積もることはできますが、正確に決定することはできません。コントラクトは異なる実行パスにつながる異なる条件を評価でき、実行パスによって総ガスコストが異なるためです。制御できず予測もできない条件に応じて、コントラクトは単純な計算だけを行うかもしれませんし、より複雑な計算を実行するかもしれません。例を見てみましょう。呼び出されるたびにカウンタを増やし、呼び出し回数に等しい回数だけ特定のループを実行するスマートコントラクトを書いたとします。100回目の呼び出しで宝くじのような特別な賞を出すとすると、賞を計算するために追加の計算が必要です。コントラクトを99回呼び出すまでは単一の処理が行われますが、100回目の呼び出しではまったく異なる処理が発生します。そのために支払うガスの量は、トランザクションがブロックに含まれる前に他のいくつのトランザクションがその関数を呼び出したかに依存します。見積もりとしては99回目のトランザクションに基づいていたとしても、トランザクションが承認される直前に他の誰かが99回目にコントラクトを呼び出したとします。すると、あなたのトランザクションは100回目の呼び出しとなり、計算量（およびガスコスト）は想定よりもずっと高くなります。
 
-To borrow a common analogy used in Ethereum, you can think of `gasLimit` as the capacity of the fuel tank in your car (your car is the transaction). You fill the tank with as much gas as you think it will need for the journey (the computation needed to validate your transaction). You can estimate the amount to some degree, but there might be unexpected changes to your journey, such as a diversion (a more complex execution path), that increase fuel consumption.
-
 　イーサリアムでよく使われるたとえですが、`gasLimit`は車（トランザクション）の燃料タンクの容量と見立てることができます。旅に必要となる量のガソリン（トランザクションを検証するために必要な計算）をタンクに入れます。金額はある程度見積もることができますが、燃料消費を増加させる迂回（より複雑な実行パス）のような予期しない変更が発生する可能性があります。
 
-The analogy to a fuel tank is somewhat misleading, however. It's actually more like a credit account for a gas station company, where you pay after the trip is completed, based on how much gas you actually used. When you transmit your transaction, one of the first validation steps is to check that the account it originated from has enough ether to pay the `maxFeePerGas × gasLimit` (or the `gasPrice × gasLimit` for legacy transactions) fee. But the amount is not actually deducted from your account until the transaction finishes executing. You are billed only for gas actually consumed by your transaction, but you have to have enough balance for the maximum amount you are willing to pay before you send your transaction.
-
-　しかし、この燃料タンクのたとえはやや誤解を招きます。実際には、旅行から帰ったあとに使用したガスの量に応じて支払う、ガソリンスタンド会社のクレジットアカウントのようなものです。トランザクションを送信する際、最初の検証ステップの1つとして、発行元アカウントに`maxFeePerGas × gasLimit`（レガシートランザクションの場合は`gasPrice × gasLimit`）を支払うのに十分なetherがあることを確認します。しかし、トランザクションの実行が完了するまで、実際にはアカウントから金額が差し引かれることはありません。トランザクションで実際に消費されたガスについてのみ請求されますが、トランザクションを送信する前に、支払い可能な最大額に応じた十分な残高を持っていなければなりません。
-
-## Transaction Recipient
+　しかし、この燃料タンクのたとえはやや誤解を招きます。実際には、旅行から帰ったあとに使用したガスの量に応じて支払う、ガソリンスタンド会社のクレジットアカウントのようなものです。トランザクションを送信する際、最初の検証ステップの1つとして、発行元アカウントに`maxFeePerGas × gasLimit`（レガシートランザクションの場合は`gasPrice × gasLimit`）を支払うのに十分なイーサがあることを確認します。しかし、トランザクションの実行が完了するまで、実際にはアカウントから金額が差し引かれることはありません。トランザクションで実際に消費されたガスについてのみ請求されますが、トランザクションを送信する前に、支払い可能な最大額に応じた十分な残高を持っていなければなりません。
 
 ## トランザクション受信者
 
-The recipient of a transaction is specified in the `to` field. This contains a 20-byte Ethereum address. The address can be an EOA or a contract address.
-
 　トランザクションの受信者は`to`フィールドで指定されます。このフィールドには20バイトのイーサリアムアドレスが格納されます。アドレスはEOA（外部所有アカウント）またはコントラクトのアドレスにすることができます。
-
-Ethereum does no further validation of this field. Any 20-byte value is considered valid. If the 20-byte value corresponds to an address without a corresponding private key or without a corresponding contract, the transaction is still valid. Ethereum has no way of knowing whether an address was correctly derived from a public key (and therefore from a private key) in existence.
 
 　イーサリアムは`to`フィールドに対してこれ以上の検証を行いません。20バイトの値はすべて有効と見なされます。対応する秘密鍵のないアドレスや、対応するコントラクトがないアドレスであっても、トランザクションは有効です。アドレスが存在する公開鍵から（したがって秘密鍵から）正しく導出されたかどうかを、イーサリアムは知る方法がありません。
 
 > **警告**
 >
-> The Ethereum protocol does not validate recipient addresses in transactions. You can send to an address that has no corresponding private key or contract, thereby "burning" the ether, rendering it forever unspendable. Validation should be done at the user interface level.
+> イーサリアムプロトコルは、トランザクション内の受信者アドレスを検証しない。対応する秘密鍵やコントラクトが存在しないアドレスに送信すると、イーサは「バーン（焼却）」され、永遠に使用できなくなる。検証はユーザーインターフェイスレベルで行う必要がある。
 
-> **警告**
->
-> イーサリアムプロトコルは、トランザクション内の受信者アドレスを検証しない。対応する秘密鍵やコントラクトが存在しないアドレスに送信すると、etherは「焼却（burning）」され、永遠に使用できなくなる。検証はユーザーインターフェイスレベルで行う必要がある。
-
-Sending a transaction to the wrong address will probably burn the ether sent, rendering it forever inaccessible (unspendable), since most addresses do not have a known private key, and therefore no signature can be generated to spend it. It is assumed that validation of the address happens at the user interface level (see "Hex Encoding with Checksum in Capitalization (ERC-55)"). In fact, there are a number of valid reasons for burning ether—for example, as a disincentive to cheating in payment channels and other smart contracts—and since the amount of ether is finite, burning ether effectively distributes the value burned to all ether holders (in proportion to the amount of ether they hold).
-
-　トランザクションを誤ったアドレスに送信した場合、送信されたetherは焼却され、永遠にアクセスできなく（使用不可に）なります。ほとんどのアドレスは既知の秘密鍵を持っていないため、署名を生成して使用することができないためです。アドレスの検証はユーザーインターフェイスレベルで行われるものと想定されています（「大文字を使用するチェックサム付き16進数エンコーディング（ERC-55）」を参照）。実際にetherを焼却する正当な理由はいくつかあります。たとえば、ペイメントチャネルや他のスマートコントラクトでの不正行為に対する抑止策として使われます。etherの量は有限であるため、etherを焼却することで、焼却された分の価値がすべてのether保有者に（保有するetherの量に比例して）効果的に分配されます。
-
-## Transaction Value and Data
+　トランザクションを誤ったアドレスに送信した場合、送信されたイーサは焼却され、永遠にアクセスできなく（使用不可に）なります。ほとんどのアドレスは既知の秘密鍵を持っていないため、署名を生成して使用することができないためです。アドレスの検証はユーザーインターフェイスレベルで行われるものと想定されています（「大文字を使用するチェックサム付き16進数エンコーディング（ERC-55）」を参照）。実際にイーサを焼却する正当な理由はいくつかあります。たとえば、ペイメントチャネルや他のスマートコントラクトでの不正行為に対する抑止策として使われます。イーサの量は有限であるため、イーサを焼却することで、焼却された分の価値がすべてのイーサ保有者に（保有するイーサの量に比例して）効果的に分配されます。
 
 ## トランザクションのバリューとデータ
-
-The main "payload" of a transaction is contained in two fields: `value` and `data`. Transactions can have both value and data, only value, only data, or neither value nor data. All four combinations are valid.
 
 　トランザクションの主な「ペイロード」は`value`と`data`という2つのフィールドに格納されています。トランザクションはバリューとデータの両方、バリューのみ、データのみ、またはバリューとデータの両方を持たないこともできます。この4つの組み合わせはすべて有効です。
 
@@ -604,7 +550,7 @@ If the destination address (`to`) is a contract (or an EOA that has previously d
 
 A contract can reject incoming payments by throwing an exception immediately when a function is called or as determined by conditions coded in a function. If the function terminates successfully (without an exception), then the contract's state is updated to reflect an increase in the contract's ether balance.
 
-　コントラクトは、関数が呼び出された時点で、または関数にコーディングされた条件に基づいて、即座に例外をスローすることで入金を拒否できます。関数が正常に（例外なく）終了すると、コントラクトの状態はコントラクトのether残高の増加を反映するように更新されます。
+　コントラクトは、関数が呼び出された時点で、または関数にコーディングされた条件に基づいて、即座に例外をスローすることで入金を拒否できます。関数が正常に（例外なく）終了すると、コントラクトの状態はコントラクトのイーサ残高の増加を反映するように更新されます。
 
 ## Transmitting a Data Payload to an EOA or Contract
 
@@ -670,7 +616,7 @@ withdraw(uint256,address)
 
 > **注記**
 >
-> `payable`キーワードはSolidityでアドレスがetherを受け取れることを示すために使用されるが、関数セレクタの計算には含まれない。プロトタイプには基本型の`address`のみが含まれる。
+> `payable`キーワードはSolidityでアドレスがイーサを受け取れることを示すために使用されるが、関数セレクタの計算には含まれない。プロトタイプには基本型の`address`のみが含まれる。
 
 Let's calculate the Keccak-256 hash of this string:
 
@@ -708,7 +654,7 @@ One special case that we should mention is a transaction that creates a new cont
 
 Note that the *zero address* (`0x0000000000000000000000000000000000000000`) is a distinct concept: it is a valid 20-byte address that can receive ether. Sending a transaction to the zero address does not create a contract, it simply transfers ether to that address like any other transaction. The zero address sometimes receives payments from various addresses. There are two explanations for this: either this is by accident, resulting in the loss of ether, or it is an intentional *ether burn* (deliberately destroying ether by sending it to an address from which it can never be spent). However, if you want to do an intentional ether burn, you should make your intention clear to the network and use the specially designated burn address instead:
 
-　*ゼロアドレス*（`0x0000000000000000000000000000000000000000`）はこれとは異なる概念です。ゼロアドレスはetherを受け取ることができる有効な20バイトのアドレスです。ゼロアドレスにトランザクションを送信しても、コントラクトは作成されず、他のトランザクションと同様にetherがそのアドレスに送金されるだけです。ゼロアドレスはさまざまなアドレスから支払いを受け取ることがあります。これには2つの説明があります。偶然によるもの（etherの損失）か、意図的な*ether焼却*（使用できないアドレスにetherを送ることで意図的に破壊すること）です。ただし、意図的にether焼却を行いたい場合は、ネットワークに対して意図を明確にし、代わりに特別に指定された焼却アドレスを使用すべきです。
+　*ゼロアドレス*（`0x0000000000000000000000000000000000000000`）はこれとは異なる概念です。ゼロアドレスはイーサを受け取ることができる有効な20バイトのアドレスです。ゼロアドレスにトランザクションを送信しても、コントラクトは作成されず、他のトランザクションと同様にイーサがそのアドレスに送金されるだけです。ゼロアドレスはさまざまなアドレスから支払いを受け取ることがあります。これには2つの説明があります。偶然によるもの（イーサの損失）か、意図的な*イーサ焼却*（使用できないアドレスにイーサを送ることで意図的に破壊すること）です。ただし、意図的にイーサ焼却を行いたい場合は、ネットワークに対して意図を明確にし、代わりに特別に指定された焼却アドレスを使用すべきです。
 
 ```
 0x000000000000000000000000000000000000dEaD
@@ -720,11 +666,11 @@ Note that the *zero address* (`0x0000000000000000000000000000000000000000`) is a
 
 > **警告**
 >
-> 指定された焼却アドレスに送信されたすべてのetherは使用不可能になり、永遠に失われる。
+> 指定された焼却アドレスに送信されたすべてのイーサは使用不可能になり、永遠に失われる。
 
 A contract-creation transaction need only contain a data payload that contains the compiled bytecode that will create the contract. The only effect of this transaction is to create the contract. You can include an ether amount in the `value` field if you want to set the new contract up with a starting balance, but that is entirely optional. If you send a value (ether) to the contract-creation address without a data payload (no contract), then the effect is the same as sending to a burn address—there is no contract to credit, so the ether is lost.
 
-　コントラクト作成トランザクションに含める必要があるのは、コントラクトを作成するコンパイル済みバイトコードを含むデータペイロードだけです。このトランザクションの唯一の効果は、コントラクトを作成することです。新規コントラクトを開始残高で設定したい場合は、`value`フィールドにether量を含めることもできますが、これは完全に任意です。データペイロードなし（コントラクトなし）でコントラクト作成アドレスにバリュー（ether）を送信すると、焼却アドレスに送信した場合と同じ効果になります。クレジットすべきコントラクトが存在しないため、etherは失われます。
+　コントラクト作成トランザクションに含める必要があるのは、コントラクトを作成するコンパイル済みバイトコードを含むデータペイロードだけです。このトランザクションの唯一の効果は、コントラクトを作成することです。新規コントラクトを開始残高で設定したい場合は、`value`フィールドにイーサ量を含めることもできますが、これは完全に任意です。データペイロードなし（コントラクトなし）でコントラクト作成アドレスにバリュー（イーサ）を送信すると、焼却アドレスに送信した場合と同じ効果になります。クレジットすべきコントラクトが存在しないため、イーサは失われます。
 
 As an example, we can create the `Faucet.sol` contract used in Chapter 2 by manually creating a transaction with an empty `to` field and the contract bytecode in the data payload. The contract needs to be compiled into a bytecode representation. This can be done with the Solidity compiler:
 
@@ -798,7 +744,7 @@ $ CONTRACT_ADDRESS=0x4658eD241397F08cba8d5F3a69c7774cebE7f67F
 
 Now we can fund it with some ether:
 
-　次に、etherを送金してコントラクトに資金を入れます。
+　次に、イーサを送金してコントラクトに資金を入れます。
 
 ```bash
 $ cast send --account example $CONTRACT_ADDRESS --value 0.02ether --rpc-url https://ethereum-sepolia-rpc.publicnode.com
@@ -842,7 +788,7 @@ The digital signature algorithm used in Ethereum is the *Elliptic Curve Digital 
 
 A digital signature serves three purposes in Ethereum (see the following sidebar). First, the signature proves that the owner of the private key, who is by implication the owner of an Ethereum account, has authorized the spending of ether or the execution of a contract. Second, it guarantees *nonrepudiation*: the proof of authorization is undeniable. Third, the signature proves that the transaction data has not been and cannot be modified by anyone after the transaction has been signed.
 
-　デジタル署名はイーサリアムで3つの目的を果たします（以下のサイドバーを参照）。第1に、署名は秘密鍵の所有者（つまりイーサリアムアカウントの所有者）が、etherの支払いまたはコントラクトの実行を承認したことを証明します。第2に、*否認不可*を保証します。つまり、承認の証拠を否定することはできません。第3に、署名はトランザクションデータが署名後に誰にも変更されていないこと、そして変更できないことを証明します。
+　デジタル署名はイーサリアムで3つの目的を果たします（以下のサイドバーを参照）。第1に、署名は秘密鍵の所有者（つまりイーサリアムアカウントの所有者）が、イーサの支払いまたはコントラクトの実行を承認したことを証明します。第2に、*否認不可*を保証します。つまり、承認の証拠を否定することはできません。第3に、署名はトランザクションデータが署名後に誰にも変更されていないこと、そして変更できないことを証明します。
 
 #### Definition of a Digital Signature
 
@@ -1720,11 +1666,11 @@ MEV, proposer and builder separation, and private mempools have drastically chan
 
 If you are familiar with Bitcoin's scripting capabilities, you know it is possible to create a Bitcoin *multisig* account that can only spend funds when multiple parties sign the transaction (e.g., two of two or three of four signatures). Ethereum's basic EOA value transactions have no provisions for multiple signatures; however, arbitrary signing restrictions can be enforced by smart contracts with any conditions you can think of to handle the transfer of ether and tokens alike.
 
-　ビットコインのスクリプティング機能に精通しているならば、複数の当事者がトランザクションに署名する場合にのみ資金を使用できるビットコインの*マルチシグ*アカウントを作成できることをご存知でしょう（例：2-of-2や3-of-4の署名）。イーサリアムの基本的なEOA（外部所有アカウント）のバリュートランザクションには複数署名の規定がありません。しかし、etherやトークンの転送を処理するために、あらゆる条件を備えたスマートコントラクトによって任意の署名制限を強制できます。
+　ビットコインのスクリプティング機能に精通しているならば、複数の当事者がトランザクションに署名する場合にのみ資金を使用できるビットコインの*マルチシグ*アカウントを作成できることをご存知でしょう（例：2-of-2や3-of-4の署名）。イーサリアムの基本的なEOA（外部所有アカウント）のバリュートランザクションには複数署名の規定がありません。しかし、イーサやトークンの転送を処理するために、あらゆる条件を備えたスマートコントラクトによって任意の署名制限を強制できます。
 
 To take advantage of this capability, ether has to be transferred to a wallet contract that is programmed with the desired spending rules, such as multisignature requirements or spending limits (or combinations of the two). The wallet contract then sends the funds when prompted by an authorized EOA once the spending conditions have been satisfied. For example, to protect your ether under a multisig condition, transfer the ether to a multisig contract. Whenever you want to send funds to another account, all the required users will need to send transactions to the contract using a regular wallet app, effectively authorizing the contract to perform the final transaction.
 
-　この機能を利用するには、マルチシグネチャ要件や支出制限（またはその組み合わせ）など、目的の支出ルールでプログラムされたウォレットコントラクトにetherを転送する必要があります。支出条件が満たされた後、許可されたEOA（外部所有アカウント）によってリクエストされると、ウォレットコントラクトが資金を送信します。たとえば、マルチシグ条件でetherを保護するには、マルチシグコントラクトにetherを転送します。別のアカウントに資金を送りたい場合は、必要なすべてのユーザーが通常のウォレットアプリを使用してコントラクトにトランザクションを送信し、コントラクトに最終的なトランザクションの実行を承認する必要があります。
+　この機能を利用するには、マルチシグネチャ要件や支出制限（またはその組み合わせ）など、目的の支出ルールでプログラムされたウォレットコントラクトにイーサを転送する必要があります。支出条件が満たされた後、許可されたEOA（外部所有アカウント）によってリクエストされると、ウォレットコントラクトが資金を送信します。たとえば、マルチシグ条件でイーサを保護するには、マルチシグコントラクトにイーサを転送します。別のアカウントに資金を送りたい場合は、必要なすべてのユーザーが通常のウォレットアプリを使用してコントラクトにトランザクションを送信し、コントラクトに最終的なトランザクションの実行を承認する必要があります。
 
 These contracts can also be designed to require multiple signatures before executing local code or to trigger other contracts. The security of the scheme is ultimately determined by the multisig contract code.
 
