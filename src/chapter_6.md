@@ -194,55 +194,33 @@ blobに関連する各KZGコミットメントのバージョン付きハッシ�
 
 **図6-2** EIP-7702のデリゲーションメカニズム
 
-## The Transaction Nonce
-
 ## トランザクションナンス
-
-The *nonce* is one of the most important and least understood components of a transaction. Its definition in the "Yellow Paper" reads:
 
 　*ナンス*は、トランザクションにおいて最も重要で、最も理解されていない要素の1つです。イーサリアムの「イエローペーパー」での定義は次のとおりです。
 
-> Nonce: A scalar value equal to the number of transactions sent from this address or, in the case of accounts with associated code, the number of contract-creations made by this account.
+> ナンス：アドレスから送信されたトランザクションの数に等しいスカラー値。または、コードを持つアカウントの場合は、そのアカウントがコントラクトを作成した回数。
 
-> ナンス：アドレスから送信されたトランザクションの数に等しいスカラー値。または、関連するコードを持つアカウントの場合は、そのアカウントが行ったコントラクト作成の回数。
+　厳密に言えば、ナンスは送信元アドレスの属性です。つまり、送信元アドレスの文脈でのみ意味があります。しかし、ナンスはブロックチェーンのアカウントの状態の一部として明示的に保存されていません。アドレスから発信された承認済みトランザクションの数をカウントすることによって、動的に計算されます。
 
-Strictly speaking, the nonce is an attribute of the originating address—that is, it only has meaning in the context of the sending address. However, the nonce is not stored explicitly as part of an account's state on the blockchain. Instead, it is calculated dynamically by counting the number of confirmed transactions that have originated from an address.
-
-　厳密に言えば、ナンスは送信元アドレスの属性です。つまり、送信元アドレスのコンテキストでのみ意味があります。しかし、ナンスはブロックチェーンのアカウントの状態の一部として明示的に保存されていません。アドレスから発信された承認済みトランザクションの数をカウントすることによって、動的に計算されます。
-
-There are two scenarios where the existence of a transaction-counting nonce is important: the usability feature of transactions being included in the order of creation and the vital feature of transaction-duplication protection. Let's look at an example scenario for each of these:
+> **翻訳者注釈**
+>
+> 原著では「明示的に保存されていない」「動的に計算される」と記述されているが、これは不正確である。実際にはナンスはアカウントステートの一部としてワールドステートトライに保存されている。go-ethereumの実装では`StateAccount`構造体に`Nonce`フィールドが含まれており（[core/types/state_account.go](https://github.com/ethereum/go-ethereum/blob/master/core/types/state_account.go)）、`eth_getTransactionCount`もステートから直接読み取る。
 
 　トランザクションをカウントするナンスの存在が重要となるシナリオが2つあります。トランザクションが作成順に含まれるという利便性の機能と、トランザクションの重複保護という重要な機能です。それぞれのシナリオの例を見てみましょう。
 
-**Scenario 1**
-
 **シナリオ1**
 
-Imagine you want to make two transactions. You have an important payment to make of 6 ether and another payment of 8 ether. You sign and broadcast the 6-ether transaction first because it is the more important one, and then you sign and broadcast the 8-ether transaction. Sadly, you have overlooked the fact that your account contains only 10 ether, so the network can't accept both transactions: one of them will fail. Because you sent the more important 6-ether one first, you understandably expect that one to go through and the 8-ether one to be rejected. However, in a decentralized system like Ethereum, nodes may receive the transactions in either order; there is no guarantee that a particular node will have one transaction propagated to it before the other. As such, it will almost certainly be the case that some nodes receive the 6-ether transaction first and others receive the 8-ether transaction first. Without the nonce, it would be random as to which one gets accepted and which rejected. However, with the nonce included, the first transaction you sent will have a nonce of, let's say, 3, while the 8-ether transaction has the next nonce value (i.e., 4). So that transaction will be ignored until the transactions with nonces from 0 to 3 have been processed, even if it is received first. Phew!
-
-　2つのトランザクションを作るとしましょう。6 etherの重要な支払いと、8 etherの支払いです。6 etherのトランザクションのほうが重要なので、最初に署名してブロードキャストし、次に8 etherのトランザクションに署名してブロードキャストします。残念なことに、アカウントには10 etherしかないので、ネットワークは両方のトランザクションを受け入れることができず、片方は失敗します。より重要な6 etherのトランザクションを最初に送ったので、そちらが通過し、8 etherのトランザクションが拒否されると思うかもしれません。しかし、イーサリアムのような分散システムでは、ノードがどちらの順序でトランザクションを受け取るかは決まっていません。特定のノードが他より先にあるトランザクションを受け取るという保証はないのです。そのため、一部のノードが先に6 etherのトランザクションを受信し、他のノードが先に8 etherのトランザクションを受信するケースがほぼ確実に起こります。ナンスがなければ、どちらが受け入れられ、どちらが拒否されるかはランダムです。しかしナンスが含まれていれば、最初に送ったトランザクションはたとえば3のナンスを持ち、8 etherのトランザクションは次のナンス値（つまり4）を持つことになります。したがって、8 etherのトランザクションが最初に受け取られたとしても、ナンス0から3までのトランザクションが処理されるまでは無視されます。
-
-**Scenario 2**
+　2つのトランザクションを作るとしましょう。6 etherの重要な支払いと、8 etherの支払いです。6 etherのトランザクションのほうが重要なので、最初に署名してブロードキャストし、次に8 etherのトランザクションに署名してブロードキャストします。残念なことに、アカウントには10 etherしかないので、ネットワークは両方のトランザクションを受け入れることができず、片方は失敗します。より重要な6 etherのトランザクションを最初に送ったので、そちらが通過し、8 etherのトランザクションが拒否されると思うかもしれません。しかし、イーサリアムのような分散システムでは、ノードがどちらの順序でトランザクションを受け取るかは決まっていません。特定のノードに一方のトランザクションがもう一方より先に届くという保証はないのです。そのため、一部のノードが先に6 etherのトランザクションを受信し、他のノードが先に8 etherのトランザクションを受信するケースがほぼ確実に起こります。ナンスがなければ、どちらが受け入れられ、どちらが拒否されるかはランダムです。しかしナンスが含まれていれば、最初に送ったトランザクションはたとえば3のナンスを持ち、8 etherのトランザクションは次のナンス値（つまり4）を持つことになります。したがって、8 etherのトランザクションが最初に受け取られたとしても、ナンス0から3までのトランザクションが処理されるまでは無視されます。
 
 **シナリオ2**
 
-Now imagine you have an account with 100 ether. Fantastic! You find someone online who will accept payment in ether for a mcguffin-widget that you really want to buy. You send them 2 ether, and they send you the mcguffin-widget. Lovely. To make that 2-ether payment, you signed a transaction sending 2 ether from your account to their account and then broadcast it to the Ethereum network to be verified and included on the blockchain. Now, without a nonce value in the transaction, a second transaction sending 2 ether to the same address a second time will look exactly the same as the first transaction. This means that anyone who sees your transaction on the Ethereum network (which means everyone, including the recipient or your enemies) can "replay" the transaction again and again and again until all your ether is gone, simply by copying and pasting your original transaction and resending it to the network. However, with the nonce value included in the transaction data, every single transaction is unique, even when sending the same amount of ether to the same recipient address multiple times. Thus, with the incrementing nonce as part of the transaction, it is simply not possible for anyone to "duplicate" a payment you have made.
-
-　100 etherのアカウントを持っているとします。本当に購入したい商品があり、その支払いをetherで受け付けてくれる人をオンライン上で見つけました。2 etherを送り、相手は商品を送ってくれます。その2 etherの支払いのために、自分のアカウントから相手のアカウントへ2 etherを送信するトランザクションに署名し、イーサリアムネットワークにブロードキャストして検証とブロックチェーンへの取り込みを待ちます。ここで、トランザクションにナンス値がなければ、同じアドレスに再度2 etherを送信するトランザクションは最初のトランザクションとまったく同じに見えます。つまり、イーサリアムネットワーク上のトランザクションを見ている人は誰でも（受信者や悪意のある者を含むすべての人が）、元のトランザクションをコピーしてネットワークに再送信することで、すべてのetherがなくなるまで何度でもトランザクションを「再生」できてしまいます。しかし、トランザクションにナンス値があれば、同一の受信者アドレスに同じ量のetherを複数回送信する場合であっても、毎回のトランザクションは一意になります。したがって、インクリメントされるナンスがトランザクションの一部として含まれることで、支払いの「複製」は不可能になります。
-
-In summary, it is important to note that use of the nonce is actually vital for an account-based protocol, in contrast to the *unspent transaction output (UTXO)* mechanism of the Bitcoin protocol.
+　100 etherのアカウントを持っているとします。本当に購入したい商品があり、その支払いをetherで受け付けてくれる人をオンライン上で見つけました。2 etherを送り、相手は商品を送ってくれます。その2 etherの支払いのために、自分のアカウントから相手のアカウントへ2 etherを送信するトランザクションに署名し、イーサリアムネットワークにブロードキャストして検証とブロックチェーンへの取り込みを待ちます。ここで、トランザクションにナンス値がなければ、同じアドレスに2 etherを再度送信した場合、そのトランザクションは最初のものとまったく同じに見えます。つまり、イーサリアムネットワーク上のトランザクションを見ている人は誰でも（受信者や悪意のある者を含むすべての人が）、元のトランザクションをコピーしてネットワークに再送信することで、すべてのetherがなくなるまで何度でもトランザクションを「リプレイ」できてしまいます。しかし、トランザクションにナンス値があれば、同一の受信者アドレスに同じ量のetherを複数回送信する場合であっても、毎回のトランザクションは一意になります。したがって、インクリメントされるナンスがトランザクションの一部として含まれることで、支払いの「複製」は不可能になります。
 
 　要約すると、ビットコインプロトコルの*UTXO（Unspent Transaction Output）*メカニズムとは対照的に、ナンスの使用はアカウントベースのプロトコルにとってまさに必要不可欠であることを強調しておきます。
 
-### Keeping Track of Nonces
-
 ### ナンスの追跡
 
-In this and future sections, we'll use the Foundry suite—in particular, the `cast` tool, which is really helpful for interacting with the blockchain in a very easy way. Make sure to install it if you want to replicate the following examples.
-
 　このセクション以降では、Foundryスイート、特に`cast`ツールを使用します。`cast`はブロックチェーンとの対話を非常に簡単にしてくれるツールです。以降の例を再現したい場合は、事前にインストールしておいてください。
-
-First, we need to set up our wallet that we're going to use throughout this chapter. Open a terminal window and type:
 
 　まず、この章を通じて使用するウォレットをセットアップする必要があります。ターミナルウィンドウを開き、次のように入力します。
 
@@ -255,13 +233,7 @@ Private key: 0xd6d2672c6b4489e6bcd4e93b9af620fa0204b639b7d7f93765479c0846be0b58
 
 > **警告**
 >
-> If you send funds to the address mentioned here, you are wasting your money as the private key is known and anyone could use it to send all the funds to themselves.
-
-> **警告**
->
 > ここに記載されているアドレスに資金を送信すると、秘密鍵が公開されているため、誰でもその資金を自分自身に送金できてしまい、資金を失うことになる。
-
-Now, we need to import the private key into the computer keystore so that we can later leverage it easily:
 
 　次に、秘密鍵をコンピュータのキーストアにインポートして、後から簡単に利用できるようにします。
 
@@ -272,11 +244,7 @@ Enter password:
 `example` keystore was saved successfully. Address: 0x7e41354afe84800680ceb104c5fc99ecb98a25f0
 ```
 
-You can optionally (recommended) set a password that will be required when you create transactions with that account. Now we're correctly set up, but we still don't have any ETH.
-
 　任意でパスワードを設定することもできます（推奨）。パスワードは、そのアカウントでトランザクションを作成する際に要求されます。これでセットアップは完了ですが、まだETHを保有していません。
-
-You can always check your balance. First, you need to get the address associated with the account:
 
 　残高はいつでも確認できます。まず、アカウントに関連付けられたアドレスを取得します。
 
@@ -285,8 +253,6 @@ $ cast wallet address --account example
 Enter keystore password:
 0x7e41354AfE84800680ceB104c5Fc99eCB98A25f0
 ```
-
-Then, you can query the blockchain for the balance. In all the examples in this chapter, we're going to use Ethereum Sepolia, a testnet blockchain:
 
 　次に、ブロックチェーンに残高を問い合わせます。この章のすべての例では、テストネットブロックチェーンであるEthereum Sepoliaを使用します。
 
@@ -297,31 +263,17 @@ $ cast balance 0x7e41354AfE84800680ceB104c5Fc99eCB98A25f0 --rpc-url https://ethe
 
 > **注記**
 >
-> Note the `--rpc-url` flag in the last `cast` command. It should point to an RPC endpoint of the blockchain you're interested in. Reliable RPC endpoints often require a payment, but if you just want to experiment with it (as we'll do in this chapter), there are a lot of free options, such as:
->
-> - [Public Node](https://www.publicnode.com)
-> - [LlamaNodes](https://llamarpc.com/eth)
-> - [ChainList](https://chainlist.org)
-
-> **注記**
->
 > 最後の`cast`コマンドにある`--rpc-url`フラグに注目してほしい。対象のブロックチェーンのRPCエンドポイントを指定する必要がある。信頼性の高いRPCエンドポイントは有料の場合が多いが、実験するだけであれば（この章で行うように）、以下のような無料の選択肢が多数ある。
 >
 > - [Public Node](https://www.publicnode.com)
 > - [LlamaNodes](https://llamarpc.com/eth)
 > - [ChainList](https://chainlist.org)
 
-To get some free Sepolia ETH tokens, you can use one of the online faucets. We're going to use the Google Cloud Web3 faucet that gives 0.05 ETH, shown in Figure 6-3. Go to [Ethereum Sepolia Faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia). Paste your address and click the "Receive 0.05 Sepolia ETH" button. You should receive 0.05 ETH really soon.
-
 　無料のSepolia ETHトークンを入手するには、オンラインのフォーセットを利用できます。ここでは、図6-3に示すGoogle Cloud Web3フォーセットを使用します。0.05 ETHが提供されます。[Ethereum Sepolia Faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia)にアクセスし、アドレスを貼り付けて「Receive 0.05 Sepolia ETH」ボタンをクリックしてください。すぐに0.05 ETHを受け取れるはずです。
 
 ![Google Cloud Web3 faucet interface](images/ch6/maet_0603.png)
 
-**Figure 6-3.** Google Cloud Web3 faucet
-
 **図6-3** Google Cloud Web3フォーセット
-
-You can check that your balance is changed now and is different than 0:
 
 　残高が変更され、0ではなくなっていることを確認できます。
 
@@ -330,11 +282,7 @@ $ cast balance 0x7e41354AfE84800680ceB104c5Fc99eCB98A25f0 --rpc-url https://ethe
 50000000000000000
 ```
 
-Great! Now we're completely set up, and we can go back to our experiments with the transaction nonce.
-
 　これでセットアップは完了です。トランザクションナンスの実験に戻りましょう。
-
-In practical terms, the nonce is an up-to-date count of the number of confirmed (i.e., on-chain) transactions that have originated from an account. To find out what the nonce is, you can interrogate the blockchain using `cast`. Just open a new terminal window and type:
 
 　実際には、ナンスはアカウントから発信された承認済み（つまりオンチェーン）トランザクションの最新のカウント数です。ナンスの値を確認するには、`cast`を使用してブロックチェーンに問い合わせます。新しいターミナルウィンドウを開き、次のように入力します。
 
@@ -345,13 +293,7 @@ $ cast nonce 0x7e41354AfE84800680ceB104c5Fc99eCB98A25f0 --rpc-url https://ethere
 
 > **ヒント**
 >
-> The nonce is a zero-based counter, meaning the first transaction has nonce 0. In fact, in this example we haven't sent any transactions yet. Also note that the RPC response always points to the next available nonce—for example, if an address has already sent 10 transactions, meaning that it has used nonces from 0 to 9, the RPC response to a nonce query would be 10.
-
-> **ヒント**
->
 > ナンスはゼロベースのカウンタであり、最初のトランザクションはナンス0を持つ。実際、この例ではまだトランザクションを送信していない。また、RPCのレスポンスは常に次に利用可能なナンスを返す。たとえば、あるアドレスがすでに10件のトランザクションを送信し、ナンス0から9を使用している場合、ナンスクエリに対するRPCレスポンスは10となる。
-
-Let's try to send some ETH now. We'll send 0.001 ether to `vitalik.eth`, which is the ENS address of Vitalik Buterin, cofounder of Ethereum:
 
 　ETHを送信してみましょう。イーサリアムの共同創設者であるヴィタリック・ブテリンのENSアドレスである`vitalik.eth`に0.001 etherを送信します。
 
@@ -377,11 +319,7 @@ authorizationList
 to                      0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
 ```
 
-Your wallet will keep track of nonces for each address it manages. It's fairly simple to do that as long as you are only originating transactions from a single point. Let's say you are writing your own wallet software or some other application that originates transactions. How do you track nonces?
-
 　ウォレットは管理している各アドレスのナンスを追跡します。1つのアドレスからのみトランザクションを生成しているのであれば、追跡はとても簡単です。自分のウォレットソフトウェアやトランザクションを生成するアプリケーションを書いているとしましょう。ナンスをどのように追跡すればよいでしょうか。
-
-When you create a new transaction, you assign the next nonce in the sequence. But until it is confirmed, it will not count toward the nonce total. Let's look at this example by quickly sending the following commands one after the other:
 
 　新しいトランザクションを作成するときに、シーケンス内の次のナンスを割り当てます。しかし、トランザクションが承認されるまで、ナンスの合計にはカウントされません。以下のコマンドを素早く連続して送信する例を見てみましょう。
 
@@ -396,19 +334,11 @@ $ cast nonce 0x7e41354AfE84800680ceB104c5Fc99eCB98A25f0 --rpc-url https://ethere
 11
 ```
 
-As you can see, the transaction we sent didn't immediately increase the nonce count; it stayed equal to 10 even after sending the transaction. If we wait a few seconds to allow for network communications to settle down and the transaction to be included in a block, the nonce call will return the expected number, 11.
-
 　このとおり、送信したトランザクションはナンスカウントを直ちに増加させませんでした。トランザクション送信後もナンスは10のままです。ネットワーク通信が落ち着き、トランザクションがブロックに含まれるまで数秒待つと、ナンスの呼び出しは期待どおりの数値11を返します。
 
 > **注記**
 >
-> Note the `--async` flag used in the `cast send` command: if you don't use it, `cast` will block the terminal until the transaction is confirmed inside a block. With that flag, it sends the transaction to the network and immediately returns the transaction hash, without waiting for it to be included in a block.
-
-> **注記**
->
 > `cast send`コマンドで使用されている`--async`フラグに注目してほしい。このフラグを使用しない場合、`cast`はトランザクションがブロック内で承認されるまでターミナルをブロックする。このフラグを使用すると、トランザクションをネットワークに送信して直ちにトランザクションハッシュを返し、ブロックへの取り込みを待たない。
-
-Now let's take a look at a different example:
 
 　次に、別の例を見てみましょう。
 
@@ -425,25 +355,15 @@ $ cast nonce 0x7e41354AfE84800680ceB104c5Fc99eCB98A25f0 --rpc-url https://ethere
 12
 ```
 
-Before sending the transaction, our nonce count is 11; then we send the transaction and immediately ask for the new nonce. As we would expect from the previous example, the nonce is not updated yet since the transaction is still pending in the mempool and has not been included in a block. Nevertheless, we use a new query that is actually able to get the real nonce number even though the transaction is still not confirmed (`0xc` is 12 in hexadecimal format). After a few seconds, the transaction gets added to a block and the `cast nonce` call returns the new correct value.
+　トランザクション送信前のナンスカウントは11です。トランザクションを送信し、直ちに新しいナンスを問い合わせます。前の例から予想されるとおり、トランザクションはまだメムプール内で保留中でブロックに含まれていないため、ナンスはまだ更新されていません。しかし、トランザクションがまだ承認されていなくても実際のナンス値を取得できる新しいクエリを使用しています（`0xc`は16進数で12です）。数秒後にトランザクションがブロックに追加されると、`cast nonce`の呼び出しは新しい正しい値を返します。
 
-　トランザクション送信前のナンスカウントは11です。トランザクションを送信し、直ちに新しいナンスを問い合わせます。前の例から予想されるとおり、トランザクションはまだメモリプール内で保留中でブロックに含まれていないため、ナンスはまだ更新されていません。しかし、トランザクションがまだ承認されていなくても実際のナンス値を取得できる新しいクエリを使用しています（`0xc`は16進数で12です）。数秒後にトランザクションがブロックに追加されると、`cast nonce`の呼び出しは新しい正しい値を返します。
-
-The difference between `cast nonce` and `eth_getTransactionCount pending` is simply that the first considers only confirmed transactions—that is, included in a block—while the latter tries to also include transactions that are still pending in the mempool.
-
-　`cast nonce`と`eth_getTransactionCount pending`の違いは、前者が承認済み（ブロックに含まれた）トランザクションのみを考慮するのに対し、後者はメモリプール内でまだ保留中のトランザクションも含めようとする点です。
+　`cast nonce`と`eth_getTransactionCount pending`の違いは、前者が承認済み（ブロックに含まれた）トランザクションのみを考慮するのに対し、後者はメムプール内でまだ保留中のトランザクションも含めようとする点です。
 
 > **警告**
 >
-> Be careful when using `eth_getTransactionCount pending` for counting pending transactions. In fact, even though it tries to return the real nonce value for an address, there is no way to be completely sure that there are no other pending transactions waiting in the mempool to be confirmed.
+> 保留中のトランザクションをカウントするために`eth_getTransactionCount pending`を使用する場合は注意が必要である。このクエリはあるアドレスの実際のナンス値を返そうとするが、メムプール内で承認待ちの他の保留中トランザクションが存在しないことを完全に保証する方法はない。
 >
-> The public mempool is not a universal thing. Every node has its own mempool: a sort of dynamic repository for pending transactions, temporarily holding them until they are confirmed on the blockchain. It can be customized by setting different rules for accepting or rejecting new transactions. While it's true that RPC companies have a big network of nodes and should have a (almost) complete view of all pending transactions, you should still be wary of treating that value as 100% correct.
-
-> **警告**
->
-> 保留中のトランザクションをカウントするために`eth_getTransactionCount pending`を使用する場合は注意が必要である。このクエリはあるアドレスの実際のナンス値を返そうとするが、メモリプール内で承認待ちの他の保留中トランザクションが存在しないことを完全に保証する方法はない。
->
-> パブリックなメモリプールは普遍的なものではない。各ノードは独自のメモリプールを持っている。メモリプールとは保留中のトランザクションを一時的に保持する動的なリポジトリであり、ブロックチェーンで承認されるまでトランザクションを保管する。新しいトランザクションの受け入れや拒否に関するルールをカスタマイズすることも可能である。RPCプロバイダーは大規模なノードネットワークを持ち、すべての保留中トランザクションの（ほぼ）完全なビューを持っているはずだが、その値を100%正確なものとして扱うことには慎重であるべきである。
+> パブリックなメムプールは普遍的なものではない。各ノードは独自のメムプールを持っている。メムプールとは保留中のトランザクションを一時的に保持する動的なリポジトリであり、ブロックチェーンで承認されるまでトランザクションを保管する。新しいトランザクションの受け入れや拒否に関するルールをカスタマイズすることも可能である。RPCプロバイダーは大規模なノードネットワークを持ち、すべての保留中トランザクションの（ほぼ）完全なビューを持っているはずだが、その値を100%正確なものとして扱うことには慎重であるべきである。
 
 ### Gaps in Nonces, Duplicate Nonces, and Confirmation
 
@@ -455,11 +375,11 @@ It is important to keep track of nonces if you are creating transactions program
 
 The Ethereum network processes transactions sequentially based on the nonce. That means that if you transmit a transaction with nonce 0 and then transmit a transaction with nonce 2, the second transaction will not be included in any blocks. It will be stored in the mempool, while the Ethereum network waits for the missing nonce to appear. All nodes will assume that the missing nonce has simply been delayed and that the transaction with nonce 2 was received out of sequence.
 
-　イーサリアムネットワークは、ナンスに基づいてトランザクションを順次処理します。ナンス0のトランザクションを送信してから、ナンス2のトランザクションを送信すると、2番目のトランザクションはどのブロックにも含まれません。2番目のトランザクションはメモリプールに保存され、イーサリアムネットワークは欠落したナンスを持つトランザクションが現れるのを待ちます。すべてのノードは、欠落したナンスが単に遅延しており、ナンス2のトランザクションが順序どおりに受信されなかっただけだと想定します。
+　イーサリアムネットワークは、ナンスに基づいてトランザクションを順次処理します。ナンス0のトランザクションを送信してから、ナンス2のトランザクションを送信すると、2番目のトランザクションはどのブロックにも含まれません。2番目のトランザクションはメムプールに保存され、イーサリアムネットワークは欠落したナンスを持つトランザクションが現れるのを待ちます。すべてのノードは、欠落したナンスが単に遅延しており、ナンス2のトランザクションが順序どおりに受信されなかっただけだと想定します。
 
 If you then transmit a transaction with the missing nonce 1, both transactions (nonces 1 and 2) will be processed and included (if valid, of course). Once you fill the gap, the network can mine the out-of-sequence transaction that it held in the mempool.
 
-　欠落しているナンス1を含むトランザクションを送信すると、両方のトランザクション（ナンス1とナンス2）が処理されブロックに含まれます（もちろん両方が有効である場合）。欠落を埋めると、ネットワークはメモリプールで保持していた順序外のトランザクションをマイニングすることができます。
+　欠落しているナンス1を含むトランザクションを送信すると、両方のトランザクション（ナンス1とナンス2）が処理されブロックに含まれます（もちろん両方が有効である場合）。欠落を埋めると、ネットワークはメムプールで保持していた順序外のトランザクションをマイニングすることができます。
 
 What this means is that if you create several transactions in sequence and one of them does not get officially included in any blocks, all the subsequent transactions will be "stuck," waiting for the missing nonce. A transaction can create an inadvertent "gap" in the nonce sequence because it is invalid or has insufficient gas. To get things moving again, you have to transmit a valid transaction with the missing nonce. You should be equally mindful that once a transaction with the "missing" nonce is validated by the network, all the broadcast transactions with subsequent nonces will incrementally become valid; it is not possible to "recall" a transaction!
 
@@ -1666,7 +1586,7 @@ So we need to send our signed transaction to the network. To do that, we just ne
 
 When our signed transaction reaches the first node, the node performs some validation in order to immediately remove spam invalid transactions. If the validation succeeds, then the node adds the transaction to its *mempool* and propagates it to a subsection of all its peers. Each of them validates it, adds it to its own mempool, and propagates it further.
 
-　署名済みトランザクションが最初のノードに到達すると、そのノードはスパムや無効なトランザクションを即座に排除するためにいくつかの検証を行います。検証に成功すると、ノードはトランザクションを自身の*メモリプール*（mempool）に追加し、接続しているピアの一部に伝播します。ピアの各々がトランザクションを検証し、自身のメモリプールに追加し、さらに別のピアに伝播します。
+　署名済みトランザクションが最初のノードに到達すると、そのノードはスパムや無効なトランザクションを即座に排除するためにいくつかの検証を行います。検証に成功すると、ノードはトランザクションを自身の*メムプール*（mempool）に追加し、接続しているピアの一部に伝播します。ピアの各々がトランザクションを検証し、自身のメムプールに追加し、さらに別のピアに伝播します。
 
 This process is part of the Ethereum P2P gossip protocol, and the result is that within just a few seconds, an Ethereum transaction propagates to all the Ethereum nodes around the globe. From the perspective of each node, it is not possible to discern the origin of the transaction. The neighbor that sent it to the node may be the originator of the transaction or may have received it from one of its neighbors. To be able to track the origins of transactions or interfere with propagation, an attacker would have to control a significant percentage of all nodes. This is part of the security and privacy design of P2P networks, especially as applied to blockchain networks.
 
@@ -1686,7 +1606,7 @@ This process is part of the Ethereum P2P gossip protocol, and the result is that
 
 Right now, our transaction has reached almost all the Ethereum nodes, but it's still not confirmed because it's not included into a block—until a validator that is selected to propose the next block finally takes all the transactions from its own mempool, adds them to the block, and publishes the block to the network.
 
-　この時点で、トランザクションはほぼすべてのイーサリアムノードに到達していますが、ブロックに取り込まれていないため、まだ確認済みではありません。次のブロックの提案を担当するバリデーターが自身のメモリプールからトランザクションを取り出し、ブロックに追加してネットワークに公開するまで待つ必要があります。
+　この時点で、トランザクションはほぼすべてのイーサリアムノードに到達していますが、ブロックに取り込まれていないため、まだ確認済みではありません。次のブロックの提案を担当するバリデーターが自身のメムプールからトランザクションを取り出し、ブロックに追加してネットワークに公開するまで待つ必要があります。
 
 Once transactions are included into a block, they modify the Ethereum state, either by modifying the balance of an account (in the case of a simple payment) or by invoking contracts that change their internal state. These changes are recorded alongside the transaction, in the form of a *transaction receipt*, which may also include events. In the example in "Raw Transaction Creation and Signing", you can find the final receipt of our transaction.
 
@@ -1726,7 +1646,7 @@ The life cycle we explored in the previous section is the old standard flow that
 
 As we'll explore further in Chapter 15, every 12 seconds a validator is required to propose a new block to advance the Ethereum chain. The validator collects transactions from its mempool, organizes them to fill the block, and publishes the block to the network so that all other nodes can validate and propagate the block.
 
-　15章で詳しく説明しますが、12秒ごとにバリデーターがイーサリアムチェーンを進めるための新しいブロックを提案する必要があります。バリデーターはメモリプールからトランザクションを収集し、ブロックを埋めるように整理して、すべてのノードが検証・伝播できるようにブロックをネットワークに公開します。
+　15章で詳しく説明しますが、12秒ごとにバリデーターがイーサリアムチェーンを進めるための新しいブロックを提案する必要があります。バリデーターはメムプールからトランザクションを収集し、ブロックを埋めるように整理して、すべてのノードが検証・伝播できるようにブロックをネットワークに公開します。
 
 Traditionally, Ethereum nodes have prioritized transactions based on the transaction fees paid to the validator (specifically, the priority fee for EIP-1559 transactions) in order to maximize profit. This approach was the standard method for optimizing miner and validator earnings for many years.
 
@@ -1800,7 +1720,7 @@ The solution to this problem came in January 2021 with the release of Flashbots 
 
 ### Private Mempools
 
-### プライベートメモリプール
+### プライベートメムプール
 
 The MEV ecosystem has grown so much that right now, builders compete not only to find the best strategy to maximize profits but also on the transactions they can use to fill the block. The more transactions they have, the better they can apply their strategies.
 
@@ -1808,11 +1728,11 @@ The MEV ecosystem has grown so much that right now, builders compete not only to
 
 That has led to the creation of *private mempools*. These mempools allow users or entities to submit transactions directly to block producers without exposing them to the general network. They play a significant role in mitigating risks like front-running and enabling privacy-focused workflows.
 
-　この状況が*プライベートメモリプール*の誕生につながりました。プライベートメモリプールでは、ユーザーやエンティティが一般のネットワークに公開することなく、ブロック生産者に直接トランザクションを送信できます。フロントランニングなどのリスクを軽減し、プライバシー重視のワークフローを実現する上で重要な役割を果たしています。
+　この状況が*プライベートメムプール*の誕生につながりました。プライベートメムプールでは、ユーザーやエンティティが一般のネットワークに公開することなく、ブロック生産者に直接トランザクションを送信できます。フロントランニングなどのリスクを軽減し、プライバシー重視のワークフローを実現する上で重要な役割を果たしています。
 
 Flashbots developed its own solution called [Flashbots Protect](https://oreil.ly/Jq4rT). MetaMask, the most popular wallet, has started to use private mempools by default for its users (called [smart transactions](https://oreil.ly/nnZVR)).
 
-　Flashbotsは[Flashbots Protect](https://oreil.ly/Jq4rT)という独自のソリューションを開発しました。最も人気のあるウォレットであるMetaMaskも、ユーザー向けにデフォルトでプライベートメモリプールの使用を開始しています（[スマートトランザクション](https://oreil.ly/nnZVR)と呼ばれています）。
+　Flashbotsは[Flashbots Protect](https://oreil.ly/Jq4rT)という独自のソリューションを開発しました。最も人気のあるウォレットであるMetaMaskも、ユーザー向けにデフォルトでプライベートメムプールの使用を開始しています（[スマートトランザクション](https://oreil.ly/nnZVR)と呼ばれています）。
 
 ### New Transaction Life Cycle
 
@@ -1820,7 +1740,7 @@ Flashbots developed its own solution called [Flashbots Protect](https://oreil.ly
 
 MEV, proposer and builder separation, and private mempools have drastically changed the environment of block production. Nowadays, lots of transactions don't follow the usual life cycle we explained in the previous section; after they are created and signed, they are sent directly to a builder through a private mempool. The builder will take care of them, trying to include them in an optimal block and finally sending the whole block to the validator who is going to propose the next block. The transactions skip the public mempool propagation and directly appear in a built block.
 
-　MEV、提案者とビルダーの分離、プライベートメモリプールは、ブロック生産の環境を劇的に変化させました。現在、多くのトランザクションは前節で説明した従来のライフサイクルをたどりません。トランザクションは作成・署名された後、プライベートメモリプールを通じてビルダーに直接送信されます。ビルダーがトランザクションを受け取り、最適なブロックに取り込もうと試み、最終的に次のブロックを提案するバリデーターにブロック全体を送信します。トランザクションはパブリックメモリプールでの伝播をスキップし、構築済みブロックの中に直接出現するのです。
+　MEV、提案者とビルダーの分離、プライベートメムプールは、ブロック生産の環境を劇的に変化させました。現在、多くのトランザクションは前節で説明した従来のライフサイクルをたどりません。トランザクションは作成・署名された後、プライベートメムプールを通じてビルダーに直接送信されます。ビルダーがトランザクションを受け取り、最適なブロックに取り込もうと試み、最終的に次のブロックを提案するバリデーターにブロック全体を送信します。トランザクションはパブリックメムプールでの伝播をスキップし、構築済みブロックの中に直接出現するのです。
 
 ## Multiple-Signature Transactions
 
