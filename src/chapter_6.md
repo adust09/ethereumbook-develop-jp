@@ -1146,113 +1146,58 @@ K2 = r–1 (sR′ – zG)
 >
 > ファイナライゼーションを待つことでトランザクションの確定をブロックチェーン上で完全に保証できるのは事実であるが、通常は数ブロック待てば十分である。ウォレットの多くは、トランザクションがブロックに取り込まれた直後に確認済みとして表示する。
 
-## An Alternative Life Cycle
-
 ## もう1つのライフサイクル
 
-The life cycle we explored in the previous section is the old standard flow that a transaction follows, from its start to its end inside a finalized block. Over the past three to four years, and even more nowadays, a new life cycle has been established for transactions. To explain it, we need to introduce a concept called *proposer and builder separation*.
-
-　前節で説明したライフサイクルは、トランザクションが開始からファイナライズされたブロック内に到達するまでの従来の標準的な流れです。しかし、過去3〜4年の間に、そして現在ではさらに広く、トランザクションの新しいライフサイクルが確立されています。この新しいライフサイクルを説明するには、*提案者とビルダーの分離*（Proposer and Builder Separation）という概念を導入する必要があります。
-
-### MEV and Proposer and Builder Separation
+　前節で説明したライフサイクルは、トランザクションが開始からファイナライズされたブロック内に到達するまでの従来の標準的な流れです。しかし、過去3〜4年の間に、そして特に現在では、トランザクションの新しいライフサイクルが確立されています。この新しいライフサイクルを説明するには、*提案者とビルダーの分離*（Proposer and Builder Separation）という概念を導入する必要があります。
 
 ### MEVと提案者・ビルダーの分離
 
-As we'll explore further in Chapter 15, every 12 seconds a validator is required to propose a new block to advance the Ethereum chain. The validator collects transactions from its mempool, organizes them to fill the block, and publishes the block to the network so that all other nodes can validate and propagate the block.
-
-　15章で詳しく説明しますが、12秒ごとにバリデーターがイーサリアムチェーンを進めるための新しいブロックを提案する必要があります。バリデーターはメムプールからトランザクションを収集し、ブロックを埋めるように整理して、すべてのノードが検証・伝播できるようにブロックをネットワークに公開します。
-
-Traditionally, Ethereum nodes have prioritized transactions based on the transaction fees paid to the validator (specifically, the priority fee for EIP-1559 transactions) in order to maximize profit. This approach was the standard method for optimizing miner and validator earnings for many years.
+　15章で詳しく説明しますが、バリデーターは12秒ごとにイーサリアムチェーンを進めるための新しいブロックを提案する必要があります。バリデーターはメムプールからトランザクションを収集し、ブロックを埋めるよう取りまとめ、すべてのノードが検証・伝播できるようにネットワークに公開します。
 
 　従来、イーサリアムノードはバリデーターへの報酬（具体的にはEIP-1559トランザクションの優先手数料）を最大化するために、トランザクション手数料に基づいてトランザクションの優先順位を決めていました。この手法は、マイナーやバリデーターの収益を最適化する標準的な方法として長年使用されてきました。
 
-However, with the rising popularity of Ethereum during the 2020 "DeFi Summer," and even more so during the 2021 bull run, a new phenomenon emerged: *maximal extractable value* (*MEV*, previously called miner extractable value). This concept has significantly altered how Ethereum miners and validators create blocks.
-
 　しかし、2020年の「DeFi Summer」におけるイーサリアムの人気の高まり、そしてさらに2021年の強気相場において、新たな現象が出現しました。*最大抽出可能価値*（*MEV*、旧称マイナー抽出可能価値）です。この概念は、イーサリアムのマイナーやバリデーターがブロックを作成する方法を大きく変えました。
 
-MEV refers to the maximum value that block producers can extract from a block by making strategic decisions about:
-
 　MEVとは、ブロック生産者が以下の戦略的判断によってブロックから抽出できる最大の価値を指します。
-
-- Which transactions to include in the block
-- The order of transactions within the block
-- Which transactions to exclude from the block
 
 - ブロックにどのトランザクションを含めるか
 - ブロック内のトランザクションの順序
 - ブロックからどのトランザクションを除外するか
 
-While this may sound innocuous, it had and still has a huge impact on block-production dynamics. For example, think about a transaction that is going to buy a big quantity of a certain token X on a decentralized exchange such as Uniswap. The validator can see this transaction and know in advance that it'll make the price go up by a lot. That means the validator could add two transactions to profit from this situation:
-
-　一見無害に思えますが、ブロック生産のダイナミクスに非常に大きな影響を及ぼしてきました。たとえば、Uniswapのような分散型取引所で特定のトークンXを大量に購入するトランザクションを考えてみましょう。バリデーターはこのトランザクションを事前に確認でき、価格が大幅に上昇することがわかります。バリデーターはこの状況を利用して利益を得るために、2つのトランザクションを追加できます。
-
-1. The first is a transaction that buys some tokens X, and it's ordered to happen before the big buy transaction.
-2. The second sells the tokens X bought in the previous transaction, and it's ordered to happen after the big buy transaction.
+　一見無害に思えますが、ブロック生産の動態に非常に大きな影響を及ぼしてきましたし、今もなお影響を与え続けています。たとえば、Uniswapのような分散型取引所で特定のトークンXを大量に購入するトランザクションを考えてみましょう。バリデーターはこのトランザクションを事前に確認でき、価格が大幅に上昇することがわかります。そこで、この状況を利用して利益を得るために2つのトランザクションを追加できます。
 
 1. 1つ目はトークンXを購入するトランザクションで、大量購入トランザクションの前に実行されるよう配置する
 2. 2つ目は前のトランザクションで購入したトークンXを売却するトランザクションで、大量購入トランザクションの後に実行されるよう配置する
 
-This is called a *sandwich attack*: the validator profits from the slippage created by the big buy transaction. Let's demonstrate this concept with a toy (and simplified) example.
-
-　これを*サンドイッチ攻撃*と呼びます。バリデーターは大量購入トランザクションが生み出すスリッページから利益を得ます。この概念を簡略化した例で説明しましょう。
-
-A user submits a transaction (tx1) buying one thousand tokens xyz, as shown in Figure 6-11. Suppose the price of the token xyz is $1,000, so this user is going to buy $1 million worth of tokens. This buy pressure will raise the price of the token to $1,010.
+　これを*サンドイッチ攻撃*と呼びます。バリデーターは大量購入トランザクションが生み出すスリッページ（注文時と約定時の価格差）から利益を得ます。この概念を簡略化した例で説明しましょう。
 
 　あるユーザーがトークンxyzを1,000枚購入するトランザクション（tx1）を送信したとします（図6-11参照）。トークンxyzの価格が1,000ドルだとすると、100万ドル相当のトークンを購入することになります。この買い圧力によりトークン価格は1,010ドルに上昇します。
 
-![User submitting a large buy transaction](images/ch6/maet_0611.png)
-
-**Figure 6-11.** User transaction before MEV intervention
-
+![MEV介入前のユーザートランザクション](images/ch6/maet_0611.png)
 **図6-11.** MEV介入前のユーザートランザクション
 
-But the validator sees an opportunity to make money by front-running tx1. They create two transactions: tx0 and tx2, where tx0 contains a buy order of 10 xyz tokens and tx2 a sell order of the same amount. The validator places these transactions exactly before and after the user's tx1, as you can see in Figure 6-12. Remember that the validator can do this because they are the actor who is actually creating the block, so they can freely choose the ordering of transactions in it.
+　しかし、バリデーターはtx1をフロントランニングして利益を得る機会を見出します。バリデーターは2つのトランザクションを作成します。tx0にはxyzトークン10枚の買い注文、tx2には同量の売り注文を含めます。図6-12のように、ユーザーのtx1の直前と直後にこれらのトランザクションを配置します。バリデーターが実際にブロックを作成するアクターであるため、ブロック内のトランザクションの順序を自由に決定できるのです。
 
-　しかし、バリデーターはtx1をフロントランニングして利益を得る機会を見出します。バリデーターは2つのトランザクションを作成します。tx0にはxyzトークン10枚の買い注文、tx2には同量の売り注文を含めます。図6-12のように、バリデーターはユーザーのtx1の直前と直後にトランザクションを配置します。バリデーターが実際にブロックを作成するアクターであるため、ブロック内のトランザクションの順序を自由に決定できるのです。
-
-![Validator sandwiching user transaction](images/ch6/maet_0612.png)
-
-**Figure 6-12.** Sandwich attack by validator
-
+![バリデーターによるサンドイッチ攻撃](images/ch6/maet_0612.png)
 **図6-12.** バリデーターによるサンドイッチ攻撃
-
-The outcome is that the validator is able to buy 10 tokens xyz at $1,000 and sell them at $1,010, making a profit of $10 × 10 = $100.
 
 　その結果、バリデーターはxyzトークン10枚を1,000ドルで購入し1,010ドルで売却することで、10ドル × 10 = 100ドルの利益を得ます。
 
-This is a very simple strategy used by validators to maximize their profits. There are lots of other, more complex strategies. Competition is so high that a new actor has emerged: *builders*.
-
 　これはバリデーターが利益を最大化するために使用する非常にシンプルな戦略の1つです。他にもはるかに複雑な戦略が数多く存在します。競争が非常に激しいため、*ビルダー*という新しいアクターが出現しました。
 
-In fact, running all these strategies requires a lot of processing power, much more than the average validator has (remember, you can run a validator node with just 16 GB of ram). That means MEV was also threatening the decentralization of the validators, favoring big entities that could afford to spend millions of dollars on infrastructure and on people working hard on discovering new profitable strategies to build "better" blocks.
+　実際のところ、これらの戦略を実行するには膨大な処理能力が必要であり、平均的なバリデーターの能力をはるかに超えています（バリデーターノードはわずか16 GBのRAMで運用できることを思い出してください）。つまり、MEVはバリデーターの分散性をも脅かしていました。インフラに数百万ドルを費やし、より利益の高い「より良い」ブロックを構築するための新しい戦略の発見に尽力できる大規模な組織ほど有利になる構造だったのです。
 
-　実際のところ、これらの戦略を実行するには膨大な処理能力が必要であり、平均的なバリデーターが持つ能力をはるかに超えています（バリデーターノードはわずか16 GBのRAMで運用できることを思い出してください）。つまり、MEVはバリデーターの分散性をも脅かし、インフラに数百万ドルを費やし、より利益の高い「より良い」ブロックを構築するための新しい戦略の発見に尽力できる大規模な組織を優遇していたのです。
-
-The solution to this problem came in January 2021 with the release of Flashbots v0.1. It enables block proposers (miners first, validators now) to trustlessly outsource the task of finding the optimal block construction to these new entities called builders. Thanks to this separation of duties—builders filling the block with transactions and creating the block with the highest amount of fee paid to validators (builders take a portion of this fee, too) and validators proposing the block to the network—validators can still run on average vendor machines.
-
-　この問題の解決策は、2021年1月のFlashbots v0.1のリリースとともに登場しました。Flashbotsにより、ブロック提案者（かつてはマイナー、現在はバリデーター）は、最適なブロック構築を見つけるタスクをビルダーと呼ばれる新しいエンティティにトラストレスに委託できるようになりました。ビルダーがトランザクションでブロックを埋め、バリデーターに支払われる手数料が最大となるブロックを作成し（ビルダーも手数料の一部を受け取ります）、バリデーターがブロックをネットワークに提案するという役割分担のおかげで、バリデーターは引き続き平均的なハードウェアで運用を続けることができます。
-
-### Private Mempools
+　この問題の解決策として、2021年1月にFlashbots v0.1がリリースされました。Flashbotsにより、ブロック提案者（かつてはマイナー、現在はバリデーター）は、最適なブロック構築を見つけるタスクをビルダーと呼ばれる新しいエンティティにトラストレスに委託できるようになりました。ビルダーがトランザクションでブロックを埋め、バリデーターに支払われる手数料が最大となるブロックを作成し（ビルダーも手数料の一部を受け取ります）、バリデーターがブロックをネットワークに提案するという役割分担のおかげで、バリデーターは引き続き一般的なハードウェアで運用を続けることができます。
 
 ### プライベートメムプール
 
-The MEV ecosystem has grown so much that right now, builders compete not only to find the best strategy to maximize profits but also on the transactions they can use to fill the block. The more transactions they have, the better they can apply their strategies.
-
 　MEVのエコシステムは大きく成長し、現在ではビルダー同士が利益最大化のための最適な戦略を見つけるだけでなく、ブロックを埋めるために利用できるトランザクションの獲得でも競争しています。より多くのトランザクションを持つほど、戦略をより効果的に適用できるからです。
-
-That has led to the creation of *private mempools*. These mempools allow users or entities to submit transactions directly to block producers without exposing them to the general network. They play a significant role in mitigating risks like front-running and enabling privacy-focused workflows.
 
 　この状況が*プライベートメムプール*の誕生につながりました。プライベートメムプールでは、ユーザーやエンティティが一般のネットワークに公開することなく、ブロック生産者に直接トランザクションを送信できます。フロントランニングなどのリスクを軽減し、プライバシー重視のワークフローを実現する上で重要な役割を果たしています。
 
-Flashbots developed its own solution called [Flashbots Protect](https://oreil.ly/Jq4rT). MetaMask, the most popular wallet, has started to use private mempools by default for its users (called [smart transactions](https://oreil.ly/nnZVR)).
-
 　Flashbotsは[Flashbots Protect](https://oreil.ly/Jq4rT)という独自のソリューションを開発しました。最も人気のあるウォレットであるMetaMaskも、ユーザー向けにデフォルトでプライベートメムプールの使用を開始しています（[スマートトランザクション](https://oreil.ly/nnZVR)と呼ばれています）。
 
-### New Transaction Life Cycle
-
 ### 新しいトランザクションのライフサイクル
-
-MEV, proposer and builder separation, and private mempools have drastically changed the environment of block production. Nowadays, lots of transactions don't follow the usual life cycle we explained in the previous section; after they are created and signed, they are sent directly to a builder through a private mempool. The builder will take care of them, trying to include them in an optimal block and finally sending the whole block to the validator who is going to propose the next block. The transactions skip the public mempool propagation and directly appear in a built block.
 
 　MEV、提案者とビルダーの分離、プライベートメムプールは、ブロック生産の環境を劇的に変化させました。現在、多くのトランザクションは前節で説明した従来のライフサイクルをたどりません。トランザクションは作成・署名された後、プライベートメムプールを通じてビルダーに直接送信されます。ビルダーがトランザクションを受け取り、最適なブロックに取り込もうと試み、最終的に次のブロックを提案するバリデーターにブロック全体を送信します。トランザクションはパブリックメムプールでの伝播をスキップし、構築済みブロックの中に直接出現するのです。
 
