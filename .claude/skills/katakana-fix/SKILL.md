@@ -43,7 +43,6 @@ perl -CSD -i -pe '
 
 - `src/*.md` - all chapter files
 - `glosary.md` - root glossary
-- `.claude/skills/translate/glosary.md` - skill glossary
 
 ### Verification
 
