@@ -659,47 +659,25 @@ $ cast send --account example $CONTRACT_ADDRESS \
 
 **図6-9.** コントラクトへの送金と引き出しのトランザクション
 
-## Digital Signatures
-
 ## デジタル署名
-
-So far, we have not delved into any detail about digital signatures. In this section, we will look at how digital signatures work and how they can be used to present proof of ownership of a private key without revealing that private key.
 
 　ここまで、デジタル署名の詳細については触れてきませんでした。このセクションでは、デジタル署名がどのように機能するか、そして秘密鍵を明かすことなく秘密鍵の所有権証明を提示するためにどのように使用できるかを説明します。
 
-### The ECDSA
-
 ### ECDSA
-
-The digital signature algorithm used in Ethereum is the *Elliptic Curve Digital Signature Algorithm (ECDSA)*. It's based on elliptic curve private–public key pairs, as described in "Elliptic Curve Cryptography Explained".
 
 　イーサリアムで使用されるデジタル署名アルゴリズムは、*楕円曲線デジタル署名アルゴリズム（ECDSA）*です。「楕円曲線暗号の解説」で説明しているように、楕円曲線の秘密鍵と公開鍵のペアに基づいています。
 
-A digital signature serves three purposes in Ethereum (see the following sidebar). First, the signature proves that the owner of the private key, who is by implication the owner of an Ethereum account, has authorized the spending of ether or the execution of a contract. Second, it guarantees *nonrepudiation*: the proof of authorization is undeniable. Third, the signature proves that the transaction data has not been and cannot be modified by anyone after the transaction has been signed.
-
 　デジタル署名はイーサリアムで3つの目的を果たします（以下のサイドバーを参照）。第1に、署名は秘密鍵の所有者（つまりイーサリアムアカウントの所有者）が、イーサの支払いまたはコントラクトの実行を承認したことを証明します。第2に、*否認不可*を保証します。つまり、承認の証拠を否定することはできません。第3に、署名はトランザクションデータが署名後に誰にも変更されていないこと、そして変更できないことを証明します。
-
-#### Definition of a Digital Signature
 
 #### デジタル署名の定義
 
-According to [Wikipedia](https://oreil.ly/kRnY2), a digital signature is a mathematical scheme for presenting the authenticity of digital messages or documents. A valid digital signature gives a recipient reason to believe that the message was created by a known sender (authentication), that the sender cannot deny having sent the message (nonrepudiation), and that the message was not altered in transit (integrity).
-
 　[Wikipedia](https://oreil.ly/kRnY2)によれば、デジタル署名は、デジタルメッセージやデジタルドキュメントの信頼性を提示するための数学的手法です。有効なデジタル署名は、既知の送信者によってメッセージが作成されたこと（認証）、送信者がメッセージの送信を否認できないこと（否認防止）、そしてメッセージが送信中に変更されなかったこと（完全性）を受信者が信じる根拠を示します。
-
-### How Digital Signatures Work
 
 ### デジタル署名の仕組み
 
-A digital signature is a mathematical scheme that consists of two parts. The first part is an algorithm for creating a signature, using a private key (the signing key), from a message (which in our case is the transaction). The second part is an algorithm that allows anyone to verify the signature by using only the message and a public key.
-
 　デジタル署名は2つの部分からなる数学的手法です。1つ目は、秘密鍵（署名鍵）を使用してメッセージ（ここではトランザクション）から署名を作成するアルゴリズムです。2つ目は、メッセージと公開鍵だけを使って誰でも署名を検証できるようにするアルゴリズムです。
 
-#### Creating a digital signature
-
 #### デジタル署名の作成
-
-In Ethereum's implementation of ECDSA, the "message" being signed is the transaction, or more accurately, the Keccak-256 hash of the RLP-encoded data from the transaction. The signing key is the EOA's private key. The result is the signature:
 
 　イーサリアムのECDSA実装では、署名される「メッセージ」はトランザクション、より正確にはトランザクションのRLPエンコードされたデータのKeccak-256ハッシュです。署名鍵はEOA（外部所有アカウント）の秘密鍵であり、結果は署名です。
 
@@ -707,15 +685,7 @@ In Ethereum's implementation of ECDSA, the "message" being signed is the transac
 Sig = Fsig (Fkeccak256 (m), k)
 ```
 
-where:
-
 ここでの各変数の意味は以下のとおりです。
-
-- `k` is the signing private key
-- `m` is the RLP-encoded transaction
-- `Fkeccak256` is the Keccak-256 hash function
-- `Fsig` is the signing algorithm
-- `Sig` is the resulting signature
 
 - `k`は署名する秘密鍵
 - `m`はRLPエンコードされたトランザクション
@@ -723,53 +693,30 @@ where:
 - `Fsig`は署名アルゴリズム
 - `Sig`は結果の署名
 
-The function `Fsig` produces a signature `Sig` that is composed of two values, commonly referred to as `r` and `s`:
-
 　関数`Fsig`は、一般に`r`および`s`と呼ばれる2つの値で構成される署名`Sig`を生成します。
 
 ```
 Sig = (r, s)
 ```
 
-#### Verifying the signature
-
 #### 署名の検証
-
-To verify the signature, you must have the signature (`r` and `s`), the serialized transaction, and the public key that corresponds to the private key used to create the signature. Essentially, verification of a signature means only the owner of the private key that generated this public key could have produced this signature on this transaction.
 
 　署名を検証するには、署名（`r`と`s`）、シリアライズされたトランザクション、および署名の作成に使用された秘密鍵に対応する公開鍵が必要です。本質的に、署名の検証とは、「この公開鍵を生成した秘密鍵の所有者だけが、このトランザクションでこの署名を生成できた」ということを意味します。
 
-The signature-verification algorithm takes the message (i.e., a hash of the transaction for our usage), the signer's public key, and the signature (`r` and `s` values) and returns true if the signature is valid for this message and public key.
-
 　署名検証アルゴリズムは、メッセージ（ここではトランザクションのハッシュ）、署名者の公開鍵、および署名（`r`と`s`の値）を受け取り、署名がこのメッセージおよび公開鍵に対して有効である場合にtrueを返します。
-
-### ECDSA Math
 
 ### ECDSAの数学
 
-As mentioned previously, signatures are created by a mathematical function `Fsig` that produces a signature composed of two values, `r` and `s`. In this section, we'll look at the function `Fsig` in more detail.
-
 　前述のように、署名は2つの値`r`と`s`で構成され、数学的関数`Fsig`によって作成されます。このセクションでは、関数`Fsig`をより詳細に見ていきます。
 
-The signature algorithm first generates an *ephemeral* (temporary) private key in a cryptographically secure way. This temporary key is used in the calculation of the `r` and `s` values to ensure that the sender's actual private key can't be calculated by attackers watching signed transactions on the Ethereum network.
-
-　署名アルゴリズムは、まず暗号学的に安全な方法で*一時的な*（テンポラリな）秘密鍵を生成します。この一時的な鍵は`r`と`s`の値の計算に使用され、イーサリアムネットワーク上で署名されたトランザクションを監視している攻撃者が送信者の実際の秘密鍵を計算できないようにします。
-
-As we know from Chapter 4, the ephemeral private key is used to derive the corresponding (ephemeral) public key, so we have:
+　署名アルゴリズムは、まず暗号学的に安全な方法で*一時的な*（エフェメラルな）秘密鍵を生成します。この一時的な鍵は`r`と`s`の値の計算に使用され、イーサリアムネットワーク上で署名されたトランザクションを監視している攻撃者が送信者の実際の秘密鍵を計算できないようにします。
 
 　4章で説明したように、一時的な秘密鍵は対応する（一時的な）公開鍵を導出するために使用されます。
-
-- A cryptographically secure random number `q`, which is used as the ephemeral private key
-- The corresponding ephemeral public key `Q`, generated from `q` and the elliptic curve generator point `G`
 
 - 暗号学的に安全な乱数`q`は、一時的な秘密鍵として使用される
 - 対応する一時公開鍵`Q`は、`q`と楕円曲線生成元`G`から生成される
 
-The `r` value of the digital signature is then the x coordinate of the ephemeral public key `Q`.
-
 　デジタル署名の`r`値は、一時公開鍵`Q`のx座標です。
-
-From there, the algorithm calculates the `s` value of the signature, such that:
 
 　そこから、アルゴリズムは署名の`s`値を以下のように計算します。
 
@@ -777,15 +724,7 @@ From there, the algorithm calculates the `s` value of the signature, such that:
 s ≡ q-1 (Keccak256(m) + r * k) (mod p)
 ```
 
-where:
-
 ここでの各変数の意味は以下のとおりです。
-
-- `q` is the ephemeral private key
-- `r` is the x coordinate of the ephemeral public key
-- `k` is the signing (EOA owner's) private key
-- `m` is the transaction data
-- `p` is the prime order of the elliptic curve
 
 - `q`は一時的な秘密鍵
 - `r`は一時公開鍵のx座標
@@ -793,15 +732,7 @@ where:
 - `m`はトランザクションデータ
 - `p`は楕円曲線の素数位数
 
-Verification is the inverse of the signature-generation function, using the `r` and `s` values and the sender's public key to calculate a value `Q`, which is a point on the elliptic curve (the ephemeral public key used in signature creation). The steps are as follows:
-
 　検証は署名生成関数の逆で、`r`と`s`の値および送信者の公開鍵を使用して、楕円曲線上の点である値`Q`（署名作成時に使用された一時公開鍵）を計算します。手順は以下のとおりです。
-
-1. Check all inputs are correctly formed.
-2. Calculate `w = s-1 mod p`.
-3. Calculate `u1 = Keccak256(m) * w mod p`.
-4. Calculate `u2 = r * w mod p`.
-5. Finally, calculate the point on the elliptic curve `Q ≡ u1 * G + u2 * K (mod p)`
 
 1. すべての入力が正しく構成されていることを確認する
 2. `w = s-1 mod p`を計算する
@@ -809,15 +740,7 @@ Verification is the inverse of the signature-generation function, using the `r` 
 4. `u2 = r * w mod p`を計算する
 5. 楕円曲線上の点`Q ≡ u1 * G + u2 * K (mod p)`を計算する
 
-where:
-
 ここでの各変数の意味は以下のとおりです。
-
-- `r` and `s` are the signature values
-- `K` is the signer's (EOA owner's) public key
-- `m` is the transaction data that was signed
-- `G` is the elliptic curve generator point
-- `p` is the prime order of the elliptic curve
 
 - `r`と`s`は署名値
 - `K`は署名者（EOA（外部所有アカウント）の所有者）の公開鍵
@@ -825,13 +748,7 @@ where:
 - `G`は楕円曲線生成元
 - `p`は楕円曲線の素数位数
 
-If the x coordinate of the calculated point `Q` is equal to `r`, then the verifier can conclude that the signature is valid. Note that in verifying the signature, the private key is neither known nor revealed.
-
 　計算された点`Q`のx座標が`r`に等しい場合、検証者は署名が有効であると結論づけることができます。署名の検証では、秘密鍵は知られることも公開されることもないことに注意してください。
-
-> **ヒント**
->
-> ECDSA is necessarily a fairly complicated piece of math; a full explanation is beyond the scope of this book. A number of guides online take you through it step-by-step: search for "ECDSA explained" or try [this one](https://oreil.ly/KUv9P).
 
 > **ヒント**
 >
