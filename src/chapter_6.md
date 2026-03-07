@@ -569,17 +569,11 @@ $ cast calldata "withdraw(uint256,address)" 0.000001ether 0xd8dA6BF26964aF9D7eEd
 
 　これがトランザクションのデータペイロードです。`withdraw`関数を呼び出し、`withdraw_amount`として0.000001 ether、`_to`アドレスとして`vitalik.eth`を要求しています。
 
-## Special Transaction: Contract Creation
-
 ## 特別なトランザクション：コントラクト作成
 
-One special case that we should mention is a transaction that creates a new contract on the blockchain, deploying it for future use. *Contract-creation transactions* are identified by an empty `to` field (null). When the `to` field is empty, the Ethereum protocol interprets this as a request to deploy a new contract, with the bytecode provided in the `data` field.
+　ここで触れておくべき特殊なケースとして、ブロックチェーン上に新しいコントラクトを作成し、今後使用できるようにデプロイするトランザクションがあります。*コントラクト作成トランザクション*は、空の`to`フィールド（null）によって識別されます。`to`フィールドが空の場合、イーサリアムプロトコルは新しいコントラクトのデプロイ要求として解釈し、`data`フィールドに含まれるバイトコードを使用します。
 
-　ブロックチェーン上に新しいコントラクトを作成し、将来の使用に備えてデプロイするトランザクションについて触れておく必要があります。*コントラクト作成トランザクション*は、空の`to`フィールド（null）によって識別されます。`to`フィールドが空の場合、イーサリアムプロトコルは新しいコントラクトのデプロイ要求として解釈し、`data`フィールドに含まれるバイトコードを使用します。
-
-Note that the *zero address* (`0x0000000000000000000000000000000000000000`) is a distinct concept: it is a valid 20-byte address that can receive ether. Sending a transaction to the zero address does not create a contract, it simply transfers ether to that address like any other transaction. The zero address sometimes receives payments from various addresses. There are two explanations for this: either this is by accident, resulting in the loss of ether, or it is an intentional *ether burn* (deliberately destroying ether by sending it to an address from which it can never be spent). However, if you want to do an intentional ether burn, you should make your intention clear to the network and use the specially designated burn address instead:
-
-　*ゼロアドレス*（`0x0000000000000000000000000000000000000000`）はこれとは異なる概念です。ゼロアドレスはイーサを受け取ることができる有効な20バイトのアドレスです。ゼロアドレスにトランザクションを送信しても、コントラクトは作成されず、他のトランザクションと同様にイーサがそのアドレスに送金されるだけです。ゼロアドレスはさまざまなアドレスから支払いを受け取ることがあります。これには2つの説明があります。偶然によるもの（イーサの損失）か、意図的な*イーサ焼却*（使用できないアドレスにイーサを送ることで意図的に破壊すること）です。ただし、意図的にイーサ焼却を行いたい場合は、ネットワークに対して意図を明確にし、代わりに特別に指定された焼却アドレスを使用すべきです。
+　*ゼロアドレス*（`0x0000000000000000000000000000000000000000`）はこれとは異なる概念です。ゼロアドレスはイーサを受け取ることができる有効な20バイトのアドレスです。ゼロアドレスにトランザクションを送信しても、コントラクトは作成されず、他のトランザクションと同様にイーサがそのアドレスに送金されるだけです。ゼロアドレスはさまざまなアドレスから支払いを受け取ることがあります。理由は2つ考えられます。偶然によるもの（イーサの損失）か、意図的な*イーサ焼却*（使用できないアドレスにイーサを送ることで意図的に破壊すること）です。ただし、意図的にイーサ焼却を行いたい場合は、ネットワークに対して意図を明確にし、代わりに特別に指定された焼却アドレスを使用すべきです。
 
 ```
 0x000000000000000000000000000000000000dEaD
@@ -587,19 +581,11 @@ Note that the *zero address* (`0x0000000000000000000000000000000000000000`) is a
 
 > **警告**
 >
-> Any ether sent to the designated burn address will become unspendable and will be lost forever.
-
-> **警告**
->
 > 指定された焼却アドレスに送信されたすべてのイーサは使用不可能になり、永遠に失われる。
 
-A contract-creation transaction need only contain a data payload that contains the compiled bytecode that will create the contract. The only effect of this transaction is to create the contract. You can include an ether amount in the `value` field if you want to set the new contract up with a starting balance, but that is entirely optional. If you send a value (ether) to the contract-creation address without a data payload (no contract), then the effect is the same as sending to a burn address—there is no contract to credit, so the ether is lost.
+　コントラクト作成トランザクションに含める必要があるのは、コントラクトを作成するコンパイル済みバイトコードを含むデータペイロードだけです。このトランザクションの唯一の効果は、コントラクトを作成することです。新規コントラクトに初期残高を持たせたい場合は、`value`フィールドにイーサ量を含めることもできますが、これは完全に任意です。データペイロードなし（コントラクトなし）でコントラクト作成アドレスにバリュー（イーサ）を送信すると、焼却アドレスに送信した場合と同じ効果になります。入金先のコントラクトが存在しないため、イーサは失われます。
 
-　コントラクト作成トランザクションに含める必要があるのは、コントラクトを作成するコンパイル済みバイトコードを含むデータペイロードだけです。このトランザクションの唯一の効果は、コントラクトを作成することです。新規コントラクトを開始残高で設定したい場合は、`value`フィールドにイーサ量を含めることもできますが、これは完全に任意です。データペイロードなし（コントラクトなし）でコントラクト作成アドレスにバリュー（イーサ）を送信すると、焼却アドレスに送信した場合と同じ効果になります。クレジットすべきコントラクトが存在しないため、イーサは失われます。
-
-As an example, we can create the `Faucet.sol` contract used in Chapter 2 by manually creating a transaction with an empty `to` field and the contract bytecode in the data payload. The contract needs to be compiled into a bytecode representation. This can be done with the Solidity compiler:
-
-　例として、2章で使用した`Faucet.sol`コントラクトを、空の`to`フィールドとデータペイロードにコントラクトバイトコードを含むトランザクションを手動で作成することでデプロイできます。コントラクトはバイトコード表現にコンパイルする必要があります。Solidityコンパイラで行うことができます。
+　例として、空の`to`フィールドとコントラクトバイトコードを含むデータペイロードを持つトランザクションを手動で作成することで、2章で使用した`Faucet.sol`コントラクトをデプロイできます。コントラクトはバイトコード表現にコンパイルする必要があります。これはSolidityコンパイラで行うことができます。
 
 ```bash
 $ solc --bin Faucet.sol
@@ -607,11 +593,7 @@ Binary:
 6080604052348015600e575f5ffd5…0033
 ```
 
-The same information can be obtained from the Remix online compiler.
-
 　Remixオンラインコンパイラからも同じ情報を得ることができます。
-
-Now we can use the binary output to create the transaction:
 
 　バイナリ出力を使用してトランザクションを作成できます。
 
@@ -619,17 +601,11 @@ Now we can use the binary output to create the transaction:
 $ cast send --account example --rpc-url https://ethereum-sepolia-rpc.publicnode.com --create 6080604052348015600e575f5ffd5…0033
 ```
 
-Once the contract is published, we can see it on the Etherscan block explorer, as shown in Figure 6-8.
-
 　コントラクトが公開されると、図6-8に示すようにEtherscanブロックエクスプローラで確認できます。
 
 ![Contract creation on Etherscan](images/ch6/maet_0608.png)
 
-**Figure 6-8.** Contract creation transaction on Etherscan
-
 **図6-8.** Etherscan上のコントラクト作成トランザクション
-
-We can look at the receipt of the transaction (using the transaction hash to reference it) to get information about the contract:
 
 　トランザクションのレシートを確認して（トランザクションハッシュを使用して参照）、コントラクトに関する情報を取得できます。
 
@@ -655,11 +631,7 @@ blobGasUsed
 authorizationList
 ```
 
-This includes the address of the contract (see `contractAddress`), which we can use to send funds to and receive funds from the contract as shown in the previous section.
-
 　レシートにはコントラクトのアドレス（`contractAddress`を参照）が含まれており、前のセクションで示したように、コントラクトへの送金やコントラクトからの受領に使用できます。
-
-Let's start by saving the newly created contract address in a variable:
 
 　まず、新しく作成されたコントラクトアドレスを変数に保存します。
 
@@ -667,15 +639,11 @@ Let's start by saving the newly created contract address in a variable:
 $ CONTRACT_ADDRESS=0x4658eD241397F08cba8d5F3a69c7774cebE7f67F
 ```
 
-Now we can fund it with some ether:
-
 　次に、イーサを送金してコントラクトに資金を入れます。
 
 ```bash
 $ cast send --account example $CONTRACT_ADDRESS --value 0.02ether --rpc-url https://ethereum-sepolia-rpc.publicnode.com
 ```
-
-And finally, let's call the `withdraw` function using the data payload we calculated previously, withdrawing 0.000001 ether to the `vitalik.eth` address:
 
 　最後に、先ほど計算したデータペイロードを使用して`withdraw`関数を呼び出し、0.000001 etherを`vitalik.eth`のアドレスに引き出します。
 
@@ -685,13 +653,9 @@ $ cast send --account example $CONTRACT_ADDRESS \
   --rpc-url https://ethereum-sepolia-rpc.publicnode.com
 ```
 
-After a while, both transactions are visible on Etherscan, as shown in Figure 6-9.
-
 　しばらくすると、両方のトランザクションが図6-9に示すようにEtherscanで表示されます。
 
 ![Contract interactions on Etherscan](images/ch6/maet_0609.png)
-
-**Figure 6-9.** Contract funding and withdrawal transactions
 
 **図6-9.** コントラクトへの送金と引き出しのトランザクション
 
