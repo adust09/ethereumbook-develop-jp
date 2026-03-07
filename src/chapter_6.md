@@ -452,15 +452,9 @@ $ cast gas-price --rpc-url https://ethereum-sepolia-rpc.publicnode.com
 
 　トランザクションの主な「ペイロード」は`value`と`data`という2つのフィールドに格納されています。トランザクションはバリューとデータの両方、バリューのみ、データのみ、またはバリューとデータの両方を持たないこともできます。この4つの組み合わせはすべて有効です。
 
-A transaction with only value is a payment. A transaction with only data is an invocation. A transaction with both value and data is both a payment and an invocation. A transaction with neither value nor data—well, that's probably just a waste of gas! But it is still possible.
-
 　バリューのみのトランザクションは支払いです。データのみのトランザクションは呼び出しです。バリューとデータの両方を持つトランザクションは、支払いと呼び出しの両方です。バリューもデータもないトランザクションは、おそらくガスの無駄でしかありませんが、それでも可能です。
 
-Let's try all of these combinations. We'll use `cast` in the same way we did before to send transactions on Sepolia testnet.
-
 　これらの組み合わせをすべて試してみましょう。以前と同様に`cast`を使用して、Sepoliaテストネットでトランザクションを送信します。
-
-Our first transaction contains only a value (payment) and no data payload:
 
 　最初のトランザクションにはバリュー（支払い）のみが含まれ、データペイロードはありません。
 
@@ -468,17 +462,11 @@ Our first transaction contains only a value (payment) and no data payload:
 $ cast send --account example vitalik.eth --value 0.001ether --rpc-url https://ethereum-sepolia-rpc.publicnode.com
 ```
 
-In Figure 6-4, you can see that the value sent is 0.001 ether and the data payload (input data on etherscan) is empty (`0x00`).
-
 　図6-4に示すように、送信されたバリューは0.001 etherであり、データペイロード（Etherscan上のinput data）は空（`0x00`）です。
 
 ![Transaction with only value](images/ch6/maet_0604.png)
 
-**Figure 6-4.** Transaction with only value (payment)
-
 **図6-4.** バリューのみのトランザクション（支払い）
-
-The next example specifies both a value and a data payload (even though this payload will be ignored as we'll send a transaction to an EOA):
 
 　次の例では、バリューとデータペイロードの両方を指定しています（EOA宛に送信するため、このペイロードは無視されます）。
 
@@ -486,17 +474,11 @@ The next example specifies both a value and a data payload (even though this pay
 $ cast send --account example vitalik.eth 0x0001 --value 0.001ether --rpc-url https://ethereum-sepolia-rpc.publicnode.com
 ```
 
-In Figure 6-5, you can see that input data now contains some value, in particular `0x0001`.
-
 　図6-5に示すように、input dataには値が含まれており、具体的には`0x0001`です。
 
 ![Transaction with value and data](images/ch6/maet_0605.png)
 
-**Figure 6-5.** Transaction with both value and data
-
 **図6-5.** バリューとデータの両方を含むトランザクション
-
-The next transaction includes a data payload but specifies a value of zero:
 
 　次のトランザクションにはデータペイロードが含まれますが、バリューはゼロを指定しています。
 
@@ -504,17 +486,11 @@ The next transaction includes a data payload but specifies a value of zero:
 $ cast send --account example vitalik.eth 0x0001 --rpc-url https://ethereum-sepolia-rpc.publicnode.com
 ```
 
-Figure 6-6 shows a confirmation screen indicating a value of zero ether sent in the transaction and the data payload equals to `0x0001`.
-
-　図6-6に示す確認画面では、トランザクションで送信されたバリューはゼロetherで、データペイロードは`0x0001`です。
+　図6-6に示す確認画面では、トランザクションで送信されたバリューは0 etherで、データペイロードは`0x0001`です。
 
 ![Transaction with only data](images/ch6/maet_0606.png)
 
-**Figure 6-6.** Transaction with only data (invocation)
-
 **図6-6.** データのみのトランザクション（呼び出し）
-
-Finally, the last transaction includes neither a value to send nor a data payload:
 
 　最後のトランザクションは、送信するバリューもデータペイロードも含んでいません。
 
@@ -522,69 +498,37 @@ Finally, the last transaction includes neither a value to send nor a data payloa
 $ cast send --account example vitalik.eth --rpc-url https://ethereum-sepolia-rpc.publicnode.com
 ```
 
-Figure 6-7 shows our transaction that sent zero ether and included an empty payload.
-
-　図6-7に示すトランザクションは、ゼロetherを送信し、空のペイロードを含んでいます。
+　図6-7に示すトランザクションは、0 etherを送信し、空のペイロードを含んでいます。
 
 ![Transaction with neither value nor data](images/ch6/maet_0607.png)
 
-**Figure 6-7.** Transaction with neither value nor data
-
 **図6-7.** バリューもデータもないトランザクション
-
-## Transmitting Value to EOAs and Contracts
 
 ## EOAとコントラクトへのバリューの送信
 
-When you construct an Ethereum transaction that contains a value, that is the equivalent of a payment. Such transactions behave differently depending on whether the destination address is a contract or not.
-
 　バリューを含むイーサリアムトランザクションを構築した場合、それは支払いに相当します。宛先アドレスがコントラクトであるかどうかによって、トランザクションの動作は異なります。
-
-For EOA addresses—or rather, for any address that isn't flagged as a contract on the blockchain—Ethereum will record a state change, adding the value you sent to the balance of the address. If the address has not been seen before, it will be added to the client's internal representation of the state and its balance initialized to the value of your payment.
 
 　EOA（外部所有アカウント）アドレス、つまりブロックチェーン上でコントラクトとしてフラグが立てられていないアドレスの場合、イーサリアムは状態の変更を記録し、送信されたバリューをアドレスの残高に追加します。以前に確認されていないアドレスの場合は、クライアントの状態の内部表現に追加され、残高は支払い額で初期化されます。
 
-If the destination address (`to`) is a contract (or an EOA that has previously delegated a contract through an EIP-7702 transaction), then the EVM will execute the contract and will attempt to call the function named in the data payload of your transaction. If there is no data in your transaction, the EVM will call a *fallback function* and, if that function is payable, will execute it to determine what to do next. If there is no fallback function, then the effect of the transaction will be to increase the balance of the contract, exactly like a payment to a wallet.
-
-　宛先アドレス（`to`）がコントラクト（またはEIP-7702トランザクションを通じてコントラクトを委任済みのEOA（外部所有アカウント））の場合、EVM（イーサリアム仮想マシン）はコントラクトを実行し、トランザクションのデータペイロードに指定された関数の呼び出しを試みます。トランザクションにデータがない場合、EVM（イーサリアム仮想マシン）は*フォールバック関数*を呼び出し、その関数がpayable（支払い可能）であれば、フォールバック関数を実行して次の処理を決定します。フォールバック関数がない場合、トランザクションの効果はウォレットへの支払いとまったく同様に、コントラクトの残高を増加させることになります。
-
-A contract can reject incoming payments by throwing an exception immediately when a function is called or as determined by conditions coded in a function. If the function terminates successfully (without an exception), then the contract's state is updated to reflect an increase in the contract's ether balance.
+　宛先アドレス（`to`）がコントラクト（またはEIP-7702トランザクションを通じてコントラクトを委任済みのEOA）の場合、EVMはコントラクトを実行し、トランザクションのデータペイロードに指定された関数の呼び出しを試みます。トランザクションにデータがない場合、EVMは*フォールバック関数*を呼び出し、その関数がpayable（支払い可能）であれば、フォールバック関数を実行して次の処理を決定します。フォールバック関数がない場合、トランザクションの効果はウォレットへの支払いとまったく同様に、コントラクトの残高を増加させることになります。
 
 　コントラクトは、関数が呼び出された時点で、または関数にコーディングされた条件に基づいて、即座に例外をスローすることで入金を拒否できます。関数が正常に（例外なく）終了すると、コントラクトの状態はコントラクトのイーサ残高の増加を反映するように更新されます。
 
-## Transmitting a Data Payload to an EOA or Contract
-
 ## EOAやコントラクトへのデータペイロードの送信
 
-When your transaction contains data, it is most likely addressed to a contract address. That doesn't mean you cannot send a data payload to an EOA—that is completely valid in the Ethereum protocol. However, in that case, the interpretation of the data is up to the wallet you use to access the EOA. It is ignored by the Ethereum protocol. Most wallets also ignore any data received in a transaction to an EOA they control. In the future, standards may emerge that allow wallets to interpret data the way contracts do, thereby allowing transactions to invoke functions running inside user wallets. The critical difference is that any interpretation of the data payload by an EOA is not subject to Ethereum's consensus rules, unlike a contract execution.
-
-　トランザクションにデータが含まれている場合、そのほとんどはコントラクトアドレス宛です。ただし、EOA（外部所有アカウント）にデータペイロードを送信することもイーサリアムプロトコルでは問題ありません。その場合、データの解釈はEOA（外部所有アカウント）にアクセスするために使用するウォレット次第です。イーサリアムプロトコルではデータは無視されます。また、ほとんどのウォレットは、自分が管理するEOA（外部所有アカウント）へのトランザクションで受信したデータを無視します。将来的には、ウォレットがコントラクトのようにデータを解釈できるようにする標準規約が生まれるかもしれません。そうなれば、トランザクションがユーザーのウォレット内で実行されている機能を呼び出せるようになります。重要な違いは、EOA（外部所有アカウント）によるデータペイロードの解釈は、コントラクトの実行とは異なり、イーサリアムのコンセンサスルールの対象にならないことです。
-
-For now, let's assume your transaction is delivering data to a contract address. In that case, the data will be interpreted by the EVM as a contract invocation. Most contracts use this data more specifically as a function invocation, calling the named function and passing any encoded arguments to the function.
+　トランザクションにデータが含まれている場合、そのほとんどはコントラクトアドレス宛です。ただし、EOAにデータペイロードを送信することもイーサリアムプロトコルでは問題ありません。その場合、データの解釈はEOAにアクセスするために使用するウォレット次第です。イーサリアムプロトコルではデータは無視されます。また、ほとんどのウォレットは、自分が管理するEOAへのトランザクションで受信したデータを無視します。将来的には、ウォレットがコントラクトのようにデータを解釈できるようにする標準規約が生まれるかもしれません。そうなれば、トランザクションがユーザーのウォレット内で実行されている機能を呼び出せるようになります。重要な違いは、EOAによるデータペイロードの解釈は、コントラクトの実行とは異なり、イーサリアムのコンセンサスルールの対象にならないことです。
 
 　ここでは、トランザクションがコントラクトアドレスにデータを送信していると仮定します。その場合、データはEVM（イーサリアム仮想マシン）によってコントラクトの呼び出しとして解釈されます。ほとんどのコントラクトは、このデータをより具体的に関数の呼び出しとして使用し、名前付き関数を呼び出してエンコードされた引数を渡します。
 
-The data payload sent to a contract that is compatible with an *application binary interface (ABI)*, which you can assume all contracts are, is a hex-serialized encoding of the following:
-
 　*アプリケーションバイナリインターフェイス（ABI）*に準拠したコントラクト（すべてのコントラクトがそうであると想定できます）に送信されるデータペイロードは、以下の16進シリアライズエンコーディングです。
-
-**A function selector**
 
 **関数セレクタ**
 
-The first 4 bytes of the Keccak-256 hash of the function's prototype. This allows the contract to unambiguously identify which function you wish to invoke.
-
 関数のプロトタイプのKeccak-256ハッシュの最初の4バイト。これにより、コントラクトはどの関数を呼び出したいのかを明確に識別できる。
-
-**The function arguments**
 
 **関数の引数**
 
-The function's arguments, encoded according to the rules for the various elementary types defined in the ABI specification.
-
 ABI仕様で定義されたさまざまな基本型の規則に従ってエンコードされた関数の引数。
-
-In Example 2-1, we defined a function for withdrawals:
 
 　例2-1では、引き出しのための関数を定義しました。
 
@@ -592,17 +536,10 @@ In Example 2-1, we defined a function for withdrawals:
 function withdraw(uint256 _withdrawAmount, address payable _to) public {
 ```
 
-The prototype of a function is defined as the string containing the name of the function, followed by the data types of each of its arguments, enclosed in parentheses and separated by commas. The function name here is `withdraw`, and it takes two arguments:
-
 　関数のプロトタイプは、関数名を含む文字列として定義され、関数名のあとに各引数のデータ型が括弧で囲まれ、コンマで区切られます。ここでの関数名は`withdraw`であり、2つの引数を取ります。
-
-- `_withdrawAmount` that is a `uint256`
-- `_to` that is an `address`
 
 - `_withdrawAmount`は`uint256`型である
 - `_to`は`address`型である
-
-So the prototype of `withdraw` would be:
 
 　したがって`withdraw`のプロトタイプは次のようになります。
 
@@ -612,13 +549,7 @@ withdraw(uint256,address)
 
 > **注記**
 >
-> The `payable` keyword is used in Solidity to indicate that the address can receive ether, but it's not part of the function selector calculation. Only the base type `address` is included in the prototype.
-
-> **注記**
->
 > `payable`キーワードはSolidityでアドレスがイーサを受け取れることを示すために使用されるが、関数セレクタの計算には含まれない。プロトタイプには基本型の`address`のみが含まれる。
-
-Let's calculate the Keccak-256 hash of this string:
 
 　この文字列のKeccak-256ハッシュを計算しましょう。
 
@@ -627,11 +558,7 @@ $ cast keccak256 "withdraw(uint256,address)"
 0x00f714ce93c4a188ecc0c802ca78036f638c1c4b3ee9b98f3ed75364b45f50b1
 ```
 
-The first 4 bytes of the hash are `0x00f714ce`. That's our function selector value, which will tell the contract which function we want to call.
-
 　ハッシュの最初の4バイトは`0x00f714ce`です。これが関数セレクタの値であり、どの関数を呼び出したいのかをコントラクトに伝えます。
-
-Next, let's calculate two values to pass as the argument `withdraw_amount` and `_to`. We want to withdraw 0.000001 ether to the address `vitalik.eth`, which is `0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045`. Let's encode them together with the function selector calculated in the previous step in order to obtain the final data payload (it's also called *calldata*):
 
 　次に、引数`withdraw_amount`と`_to`として渡す2つの値を計算しましょう。0.000001 etherを`vitalik.eth`（`0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045`）のアドレスに引き出します。前のステップで計算した関数セレクタと組み合わせてエンコードし、最終的なデータペイロード（*calldata*とも呼ばれます）を生成します。
 
@@ -639,8 +566,6 @@ Next, let's calculate two values to pass as the argument `withdraw_amount` and `
 $ cast calldata "withdraw(uint256,address)" 0.000001ether 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
 0x00f714ce000000000000000000000000000000000000000000000000000000e8d4a51000000000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045
 ```
-
-That's the data payload for our transaction, invoking the `withdraw` function and requesting 0.000001 ether as the `withdraw_amount` and `vitalik.eth` as the `_to` address.
 
 　これがトランザクションのデータペイロードです。`withdraw`関数を呼び出し、`withdraw_amount`として0.000001 ether、`_to`アドレスとして`vitalik.eth`を要求しています。
 
