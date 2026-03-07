@@ -754,23 +754,11 @@ s ≡ q-1 (Keccak256(m) + r * k) (mod p)
 >
 > ECDSAを説明するにはどうしても複雑な数学を扱わなければならず、完全に説明するのは本書の範囲を超えています。多数のガイドがオンラインで順を追って説明してくれます。「ECDSA explained」で検索するか、[こちら](https://oreil.ly/KUv9P)にアクセスしてみてください。
 
-## Transaction Signing in Practice
-
 ## トランザクション署名の実践
-
-To produce a valid transaction, the originator must digitally sign the message using the ECDSA. When we say "sign the transaction," we actually mean "sign the Keccak-256 hash of the RLP-serialized transaction data." The signature is applied to the hash of the transaction data, not the transaction itself.
 
 　有効なトランザクションを生成するには、発行者がECDSAを使用してメッセージにデジタル署名する必要があります。「トランザクションに署名する」とは、実際には「RLPシリアライズされたトランザクションデータのKeccak-256ハッシュに署名する」ことを意味します。署名はトランザクションそのものではなく、トランザクションデータのハッシュに対して適用されます。
 
-To sign a transaction in Ethereum, the originator must:
-
 　イーサリアムでトランザクションに署名するには、発行者が以下の手順を実行しなければなりません。
-
-1. Create a transaction data structure, containing all the fields required for that particular transaction type.
-2. Produce an RLP-encoded serialized message of the transaction data structure.
-3. Compute the Keccak-256 hash of this serialized message.
-4. Compute the ECDSA signature, signing the hash with the originating EOA's private key.
-5. Append the ECDSA signature's computed `v`, `r`, and `s` values to the transaction.
 
 1. 特定のトランザクションタイプに必要なすべてのフィールドを含むトランザクションデータ構造を作成する
 2. トランザクションデータ構造のRLPエンコードされたシリアライズメッセージを生成する
@@ -778,27 +766,15 @@ To sign a transaction in Ethereum, the originator must:
 4. 発行元EOA（外部所有アカウント）の秘密鍵でハッシュに対するECDSA署名を計算する
 5. ECDSA署名の計算結果である`v`、`r`、`s`の値をトランザクションに追加する
 
-The special signature variable `v` indicates two things: the chain ID and the recovery identifier to help the ECDSArecover function check the signature. In nonlegacy transactions, the `v` variable no longer encodes the chain ID because that is directly included as one of the items that forms the transaction itself. For more information on the chain ID, see "Raw Transaction Creation with EIP-155". The recovery identifier is used to indicate the parity of the y component of the public key (see "The Signature Prefix Value (v) and Public Key Recovery" for more details).
-
-　特別な署名変数`v`は、チェーンIDとリカバリ識別子の2つを示します。リカバリ識別子は、ECDSArecover関数が署名を検証する際に使用されます。レガシーでないトランザクションでは、チェーンIDがトランザクション自体の項目として直接含まれるため、`v`変数にはチェーンIDがエンコードされません。チェーンIDの詳細については、「EIP-155による生トランザクションの作成」を参照してください。リカバリ識別子は、公開鍵のy成分のパリティを示すために使用されます（詳細は「署名プレフィックス値（v）と公開鍵リカバリ」を参照してください）。
+　特別な署名変数`v`は、チェーンIDとリカバリ識別子の2つを示します。リカバリ識別子は、ECDSArecover関数が署名を検証する際に使用されます。非レガシートランザクションでは、チェーンIDがトランザクション自体の項目として直接含まれるため、`v`変数にはチェーンIDがエンコードされません。チェーンIDの詳細については、「EIP-155による生トランザクションの作成」を参照してください。リカバリ識別子は、公開鍵のy成分のパリティを示すために使用されます（詳細は「署名プレフィックス値（v）と公開鍵リカバリ」を参照してください）。
 
 > **注記**
 >
-> At block 2,675,000, Ethereum implemented the Spurious Dragon hard fork, which, among other changes, introduced a new signing scheme that includes transaction replay protection (preventing transactions meant for one network from being replayed on others). This new signing scheme is specified in EIP-155. This change affects the form of the transaction and its signature, so attention must be paid to the first of the three signature variables (i.e., `v`), which takes one of two forms and indicates the data fields included in the transaction message being hashed.
-
-> **注記**
->
-> ブロック番号2,675,000で、イーサリアムはSpurious Dragonハードフォークを実装しました。この変更により、トランザクションリプレイ保護（あるネットワーク向けのトランザクションが別のネットワークで再生されることを防止する機能）を含む新しい署名方式が導入されました。この新しい署名方式はEIP-155で規定されています。トランザクションの形式と署名に影響を与えるため、2つの形式のいずれかをとる3つの署名変数の最初のもの（すなわち`v`）に注意が必要です。`v`の値は、ハッシュ化されるトランザクションメッセージに含まれるデータフィールドを示します。
-
-### Raw Transaction Creation and Signing
+> ブロック番号2,675,000で、イーサリアムはSpurious Dragonハードフォークを実装しました。この変更により、トランザクションリプレイ保護（あるネットワーク向けのトランザクションが別のネットワークでリプレイされることを防止する機能）を含む新しい署名方式が導入されました。この新しい署名方式はEIP-155で規定されています。トランザクションの形式と署名に影響を与えるため、2つの形式のいずれかをとる3つの署名変数の最初のもの（すなわち`v`）に注意が必要です。`v`の値は、ハッシュ化されるトランザクションメッセージに含まれるデータフィールドを示します。
 
 ### 生トランザクションの作成と署名
 
-In this section, we'll create a raw transaction and sign it, using the `ethers.js` library. Example 6-1 demonstrates the functions that would normally be used inside a wallet or an application that signs transactions on behalf of a user.
-
 　この節では、`ethers.js`ライブラリを使用して生トランザクションを作成し、署名します。例6-1は、ウォレットの内部やユーザーに代わってトランザクションに署名するアプリケーションで通常使用される関数を示しています。
-
-**Example 6-1. Creating and signing a raw Ethereum transaction**
 
 **例6-1. 生のイーサリアムトランザクションの作成と署名**
 
@@ -855,8 +831,6 @@ async function signAndSend() {
 signAndSend().catch(console.error);
 ```
 
-Running the example code produces the following results:
-
 　サンプルコードを実行すると、以下の結果が得られます。
 
 ```bash
@@ -886,11 +860,7 @@ Transaction Receipt:  TransactionReceipt {
 }
 ```
 
-### Low-Level Manual Construction of an EIP-1559 Raw Transaction
-
 ### EIP-1559生トランザクションの低レベル手動構築
-
-The following example demonstrates the complete low-level process for creating and signing an EIP-1559 (type 0x02) transaction by manually building the field list, RLP-encoding it, and signing the typed payload. This approach reveals exactly what happens inside `wallet.signTransaction`.
 
 　以下の例は、EIP-1559（タイプ0x02）トランザクションを作成・署名するための完全な低レベルプロセスを示しています。フィールドリストを手動で構築し、RLPエンコードし、型付きペイロードに署名します。この手法により、`wallet.signTransaction`の内部で何が行われているかを正確に確認できます。
 
