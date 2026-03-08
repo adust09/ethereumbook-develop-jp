@@ -42,83 +42,43 @@ EVMはすべてのイーサリアムノード上でローカルインスタン�
 
 前述のように、コントラクトのコードは一度デプロイされると変更できません。かつては、コントラクトのコードと内部状態（ストレージ）をアドレスから取り除き、空のアカウントとすることが可能でした。削除後、そのアドレスに送信されたトランザクションによってコードが実行されることはありません。なぜなら、実行するコードがなくなっているからです。この削除は`SELFDESTRUCT`というEVMオペコードを使用して行われ、保存された状態を削除することでネットワークリソースの解放にインセンティブを与えるガスの払い戻しが提供されていました。しかし、`SELFDESTRUCT`オペレーションは、アカウントの状態に対する大きな変更──特にすべてのコードとストレージの削除──を伴うため、2023年に[EIP-6780](https://oreil.ly/5LcZo)によって非推奨となりました。イーサリアムロードマップにおける今後のアップグレードにより、このオペレーションは実行不可能になる予定です。
 
-## Introduction to Ethereum High-Level Languages
-
 ## イーサリアム高級言語の紹介
-
-The EVM is a virtual machine that runs a special form of code called *EVM bytecode*, analogous to your computer's CPU, which runs machine code such as x86_64. We will examine the operation and language of the EVM in much more detail in Chapter 14. In this section, we will look at how smart contracts are written to run on the EVM.
 
 EVMは、EVMバイトコードと呼ばれる特別な形式のコードを実行する仮想マシンです。これはx86_64などのマシンコードを実行するコンピュータのCPUに似ています。EVMの操作と言語については、14章で詳しく説明します。この節では、EVMで実行するためのスマートコントラクトの書き方について説明します。
 
-While it is possible to program smart contracts directly in bytecode, EVM bytecode is rather unwieldy and very difficult for programmers to read and understand. Instead, most Ethereum developers use a high-level language to write programs and a compiler to convert them into bytecode.
+スマートコントラクトをバイトコードで直接プログラムすることは可能ですが、EVMバイトコードはかなり扱いにくく、プログラマーが読んで理解するのは非常に困難です。その代わりに、ほとんどのイーサリアム開発者はプログラムを書くために高級言語を使い、それらをバイトコードに変換するためにコンパイラを使います。
 
-スマートコントラクトをバイトコードで直接プログラムすることは可能ですが、EVMバイトコードはかなり扱いにくく、プログラマーが読んで理解するのは非常に困難です。その代わりに、ほとんどのイーサリアム開発者はプログラムを書くために高級言語を使い、それらをバイトコードに変換するためのコンパイラを使います。
+どんな高級言語でもスマートコントラクトを書くことに使えるかもしれませんが、任意の言語をEVMバイトコードにコンパイルできるように適応させるのは非常に面倒な作業であり、通常は難航するでしょう。スマートコントラクトは、非常に制約された最小限の実行環境（EVM）で機能します。さらに、EVM固有のシステム変数と関数の特別なセットが利用可能でなければなりません。そのため、汎用言語をスマートコントラクトの作成に適したものにするよりも、最初からスマートコントラクト言語を構築するほうが簡単です。その結果、スマートコントラクトを書くために、特定の目的のための言語が数多く登場しました。イーサリアムには、EVMで実行可能なバイトコードを生成するために必要なコンパイラといくつかの開発言語があります。
 
-Although any high-level language could be adapted to write smart contracts, adapting an arbitrary language to be compilable to EVM bytecode is quite a cumbersome exercise and would in general lead to some amount of confusion. Smart contracts operate in a highly constrained and minimalistic execution environment (the EVM). In addition, a special set of EVM-specific system variables and functions needs to be available. As such, it is easier to build a smart contract language from scratch than it is to make a general-purpose language suitable for writing smart contracts. As a result, a number of special-purpose languages have emerged for programming smart contracts. Ethereum has several such languages, together with the compilers needed to produce EVM-executable bytecode.
-
-どんな高級言語でもスマートコントラクトを書くために使えるかもしれませんが、任意の言語をEVMバイトコードにコンパイルできるように適応させるのは非常に面倒な作業であり、通常はある程度の混乱を招くことになります。スマートコントラクトは、非常に制約された最小限の実行環境（EVM）で機能します。さらに、EVM固有のシステム変数と関数の特別なセットが利用可能でなければなりません。そのため、汎用言語をスマートコントラクトの作成に適したものにするよりも、最初からスマートコントラクト言語を構築するほうが簡単です。その結果、スマートコントラクトを書くために、特定の目的のための言語が数多く登場しました。イーサリアムには、EVMで実行可能なバイトコードを生成するために必要なコンパイラとともに、いくつかの開発言語があります。
-
-In general, programming languages can be classified into two broad programming paradigms: *declarative* and *imperative*, also known as *functional* and *procedural*, respectively. In declarative programming, we write functions that express the *logic* of a program but not its *flow*. Declarative programming is used to create programs where there are no *side effects*, meaning that there are no changes to state outside of a function. Declarative programming languages include Haskell and SQL. Imperative programming, by contrast, is where a programmer writes a set of procedures that combine the logic and flow of a program. Imperative programming languages include C++ and Java. Some languages are "hybrid," meaning that they encourage declarative programming but can also be used to express an imperative programming paradigm. Such hybrids include Lisp, JavaScript, and Python. In general, any imperative language can be used to write in a declarative paradigm, but it often results in inelegant code. By comparison, pure declarative languages cannot be used to write in an imperative paradigm. In purely declarative languages, there are no "variables."
-
-一般に、プログラミング言語は、宣言型（declarative）と命令型（imperative）の2つのプログラミングパラダイムに分類できます。それぞれ、関数型（functional）と手続き型（procedural）とも呼ばれています。宣言型プログラミングでは、プログラムのロジック（logic）を表現する関数を書く一方、プログラムのフロー（flow）を表現する関数は書きません。宣言型プログラミングは副作用（side effect）がないプログラム、つまり関数の外側の状態変化のないプログラムを作成するために使用されます。宣言型プログラミング言語にはHaskellやSQLが含まれます。これとは対照的に、命令型プログラミングでは、プログラマーがプログラムのロジックとフローを組み合わせた一連のプロシージャを作成します。命令型プログラミング言語には、C++とJavaがあります。一部の言語は「ハイブリッド」で、宣言型プログラミングを奨励するものの、命令型プログラミングのパラダイムを表現するためにも使用できます。このようなハイブリッドには、Lisp、JavaScript、Pythonなどが含まれます。一般に、宣言型のパラダイムを書くためにどんな命令型言語でも使えますが、それはしばしばエレガントではないコードになります。一方、純粋な宣言型言語を使用して、命令型パラダイムを書くことはできません。純粋な宣言型の言語には「変数」がないためです。
-
-While imperative programming is more commonly used by programmers, it can be very difficult to write programs that execute exactly as expected. The ability of any part of the program to change the state of any other makes it difficult to reason about a program's execution and introduces many opportunities for bugs. Declarative programming, by comparison, makes it easier to understand how a program will behave: since it has no side effects, any part of a program can be understood in isolation.
+一般に、プログラミング言語は、宣言型（declarative）と命令型（imperative）の2つのプログラミングパラダイムに分類できます。それぞれ、関数型（functional）と手続き型（procedural）とも呼ばれています。宣言型プログラミングでは、プログラムのロジック（logic）を表現する関数を書く一方、プログラムのフロー（flow）を表現する関数は書きません。宣言型プログラミングは副作用（side effect）がないプログラム、つまり関数の外側の状態変化のないプログラムを作成するために使用されます。宣言型プログラミング言語にはHaskellやSQLが含まれます。これとは対照的に、命令型プログラミングでは、プログラマーがプログラムのロジックとフローを組み合わせた一連のプロシージャを作成します。命令型プログラミング言語には、C++とJavaがあります。一部の言語は「ハイブリッド」で、宣言型プログラミングを奨励するものの、命令型プログラミングのパラダイムを表現するためにも使用できます。このようなハイブリッドには、Lisp、JavaScript、Pythonなどが含まれます。一般に、宣言型のパラダイムを書くために、どんな命令型言語でも使えますが、それはしばしばエレガントではないコードになります。一方、純粋な宣言型言語を使用して、命令型パラダイムを書くことはできません。純粋な宣言型の言語には「変数」はないためです。
 
 命令型プログラミングはプログラマーによってより広く使用されていますが、完全に期待どおりに実行するプログラムを書くことは非常に困難です。プログラム内のあらゆる部分がプログラム内の状態を変更できるため、プログラムが正しく実行されているかどうか判断を難しくし、バグが発生する可能性を高めます。これに対して宣言型プログラミングでは、副作用がなくプログラムのどの部分でも単独で理解できるため、プログラムの動作が理解しやすくなっています。
 
-In smart contracts, bugs literally cost money. As a result, it is critically important to write smart contracts without unintended effects. To do that, you must be able to clearly reason about the expected behavior of the program. So declarative languages play a much bigger role in smart contracts than they do in general-purpose software. Nevertheless, as you will see, the most widely used language for smart contracts (Solidity) is imperative. Programmers, like most humans, resist change!
-
 スマートコントラクトでは、バグは文字どおり資産に関わってきます。つまり、意図しない影響がないようにスマートコントラクトを作成することが極めて重要です。そのためにも、開発者はプログラムの動作について明確に推論できなければなりません。したがって宣言型言語は、汎用ソフトウェアにおいてよりもスマートコントラクトにおいてはるかに大きな役割を持ちます。それにもかかわらず、見てわかるとおり、最も広く使われているスマートコントラクト用言語（Solidity）は命令型です。プログラマーも人の常として、変化には抵抗するものです。
-
-Currently supported high-level programming languages for smart contracts include the following (ordered by popularity):
 
 スマートコントラクト向けに現在サポートされている高級プログラミング言語は次のとおりです（人気順に挙げています）。
 
 **Solidity**
 
-**Solidity**
-
-A procedural (imperative) programming language with a syntax similar to JavaScript, C++, or Java. The most popular and frequently used language for Ethereum smart contracts.
-
 JavaScript、C++、またはJavaに似た構文を持つ手続き型（命令型）プログラミング言語。イーサリアムのスマートコントラクト開発において、最もよく使用されている言語です。
 
 **Yul**
-
-**Yul**
-
-An intermediate language used in standalone mode or inline within Solidity, which is ideal for high-level optimizations across platforms. Beginners should start with Solidity or Vyper before exploring Yul, as it requires advanced knowledge of smart contract security and the EVM.
 
 スタンドアロンモードまたはSolidity内のインラインで使用される中間言語で、プラットフォーム間の高レベルな最適化に適しています。スマートコントラクトのセキュリティとEVMに関する高度な知識が必要なため、初心者はYulを学ぶ前にSolidityまたはVyperから始めるべきです。
 
 **Vyper**
 
-**Vyper**
-
-A contract-oriented programming language with Python-like syntax that prioritizes user safety and encourages clear coding practices via language design and efficient execution.
-
 Pythonのような構文を持つコントラクト指向プログラミング言語で、ユーザーの安全性を優先し、言語設計と効率的な実行を通じて明確なコーディングプラクティスを奨励しています。
 
 **Huff**
-
-**Huff**
-
-A low-level programming language primarily used by developers who require highly efficient and minimalistic contract code, allowing for advanced optimizations beyond what higher-level languages like Solidity offer. Like Yul, it's not suggested for beginners.
 
 高効率で最小限のコントラクトコードを必要とする開発者が主に使用する低レベルプログラミング言語で、Solidityのような高級言語では実現できない高度な最適化が可能です。Yulと同様に、初心者には推奨されません。
 
 **Fe**
 
-**Fe**
-
-A statically typed smart contract language for the EVM, inspired by Python and Rust. It aims to be easy to learn, even for developers who are new to Ethereum, with its development still in the early stages since its alpha release in January 2021.
-
 PythonとRustにインスパイアされた、EVM向けの静的型付けスマートコントラクト言語です。イーサリアムが初めての開発者でも学びやすいことを目指しており、2021年1月のアルファリリース以来、まだ開発の初期段階にあります。
 
-Other languages were developed in the past but are not maintained anymore, such as LLL, Serpent, and Bamboo.
-
 過去に開発されたものの、現在はメンテナンスされていない言語もあります。LLL、Serpent、Bambooなどがその例です。
-
-As you can see, there are many languages to choose from. However, of all of these, Solidity is by far the most popular, to the point of being the de facto high-level language of Ethereum and even other EVM-like blockchains.
 
 このように、選択できる言語はたくさんあります。しかし、これらのなかでもSolidityが圧倒的に人気があり、事実上イーサリアム、さらには他のEVM互換ブロックチェーンの高級言語となっています。
 
