@@ -237,151 +237,79 @@ contract Faucet {
 
 バージョンプラグマを追加することは、コンパイラと言語のバージョンの不一致による問題を回避するため、ベストプラクティスです。この章では、他のベストプラクティスを検討し、`Faucet`コントラクトの改善を続けます。
 
-## Programming with Solidity
-
 ## Solidityを使ったプログラミング
-
-In this section, we will look at some of the capabilities of the Solidity language. As we mentioned in Chapter 2, our first contract example was very simple and also flawed in various ways. We'll gradually improve it here while exploring how to use Solidity. This won't be a comprehensive Solidity tutorial, however, as Solidity is quite complex and rapidly evolving. We'll cover the basics and give you enough of a foundation to be able to explore the rest on your own.
 
 この節では、Solidity言語の機能を見ていきます。2章で述べたように、最初のコントラクト例は非常に単純であり、さまざまな点で不備がありました。ここではSolidityの使い方を学びながら、徐々に改良していきます。しかしながら、Solidityは非常に複雑で急速に進化しているため、包括的なSolidityのチュートリアルにはなりません。ここでは基本をカバーし、自分で調べてゆけるようになるための十分な基礎を提供します。
 
-### Data Types
-
 ### データ型
-
-First, let's look at some of the basic data types offered in Solidity:
 
 まず、Solidityで提供されているいくつかの基本的なデータ型を見てみましょう。
 
-**Boolean (bool)**
-
 **ブーリアン型（bool）**
-
-Boolean value, `true` or `false`, with logical operators ! (not), && (and), || (or), == (equal), and != (not equal).
 
 論理演算子を使用したブール値、`true`または`false`です。論理演算子には、!（否定）、&&（論理積）、||（論理和）、==（等価演算子）、!=（非等価演算子）があります。
 
-**Integer (int, uint)**
-
 **整数型（int、uint）**
 
-Signed (`int`) and unsigned (`uint`) integers, declared in increments of 8 bits from `int8` to `uint256`. Without a size suffix, 256-bit quantities are used to match the word size of the EVM.
-
-符号付き（`int`）および符号なし（`uint`）の整数。`int8`から`uint256`までの8ビット刻みで宣言します。サイズのサフィックスがない場合は、EVMのワードサイズに合わせて256ビットの量が使用されます。
-
-**Fixed point (fixed, ufixed)**
+符号付き（`int`）および符号なし（`uint`）の整数。`int8`から`uint256`までの8ビット刻みで宣言します。サイズのサフィックスがない場合は、EVMのワードサイズに合わせて256ビットが使用されます。
 
 **固定小数点数型（fixed、ufixed）**
 
-Fixed-point numbers, declared with `(u)fixedMxN` where *M* is the size in bits (increments of 8 up to 256) and *N* is the number of decimals after the point (up to 18)—for example, `ufixed32x2`.
-
 固定小数点数。`(u)fixedMxN`で宣言されます。ここで*M*はビット単位のサイズ（8から256までの8刻み）、*N*はそのポイント以降の小数の数（最大18）です。たとえば、`ufixed32x2`です。
-
-> **Note**
->
-> Fixed-point numbers are not fully supported by Solidity yet. They can be declared but cannot be assigned to or from.
 
 > **注記**
 >
 > 固定小数点数はSolidityではまだ完全にはサポートされていません。宣言はできますが、値の代入や読み出しはできません。
 
-**Address**
-
 **アドレス型（address）**
 
-A 20-byte Ethereum address. The `address` object has many helpful member functions, the main ones being `balance` (returns the account balance) and `transfer` (transfers ether to the account).
-
-20バイトのイーサリアムアドレス。`address`オブジェクトには多くの便利なメンバー関数があります。主なものとしては、`balance`（口座残高を返す）と`transfer`（口座へのイーサ送金）があります。
-
-**Byte array (fixed)**
+20バイトのイーサリアムアドレス。`address`オブジェクトには多くの便利なメンバー関数があります。主なものとしては、`balance`（アカウント残高を返す）と`transfer`（アカウントへのイーサ送金）があります。
 
 **固定バイト配列型**
 
-Fixed-size arrays of bytes, declared with `bytes1` up to `bytes32`.
-
 `bytes1`から`bytes32`までで宣言された固定サイズのバイト配列です。
-
-**Byte array (dynamic)**
 
 **動的バイト配列型**
 
-Variable-sized arrays of bytes, declared with `bytes` or `string`.
-
 `bytes`または`string`で宣言された可変サイズのバイト配列です。
-
-**Enum**
 
 **列挙型（enum）**
 
-User-defined type for enumerating discrete values: `enum NAME {LABEL1, LABEL 2, ...}`. Enum's underlying type is `uint8`; thus, it can have no more than 256 members and can be explicitly converted to all integer types.
-
 離散値を列挙するためのユーザー定義型です。`enum NAME {LABEL1, LABEL2, ...}`のように指定します。列挙型の基底型は`uint8`であるため、メンバーは256個以下であり、すべての整数型に明示的に変換できます。
-
-**Arrays**
 
 **配列型（array）**
 
-An array of any type, either fixed or dynamic: `uint32[][5]` is a fixed-size array of five dynamic arrays of unsigned integers.
-
 固定または動的のいずれかのタイプの配列です。`uint32[][5]`は、符号なし整数の5つの動的配列の固定サイズ配列です。
-
-**Struct**
 
 **構造体型（struct）**
 
-User-defined data containers for grouping variables: `struct NAME {TYPE1 VARIABLE1; TYPE2 VARIABLE2; ...}`.
-
 変数をグループ化するためのユーザー定義データコンテナです。`struct NAME {TYPE1 VARIABLE1; TYPE2 VARIABLE2; ...}`のように指定します。
-
-**Mapping**
 
 **マッピング型（mapping）**
 
-Hash lookup tables for *key* ⇒ *value* pairs: `mapping(KEY_TYPE` `⇒` `VALUE_TYPE) NAME`.
-
 *キー* ⇒ *値*ペアのハッシュルックアップテーブルです。`mapping(KEY_TYPE ⇒ VALUE_TYPE) NAME`のように指定します。
-
-In addition to these data types, Solidity offers a variety of value literals that can be used to calculate different units:
 
 これらのデータ型に加えて、異なる単位を計算するために使用できる値リテラルもSolidityは提供しています。
 
-**Time units**
-
 **時間単位**
 
-The global variable `block.timestamp` represents the time, in seconds, when a block was published and added to the blockchain, counting from the Unix Epoch (January 1. 70). The units `seconds`, `minutes`, `hours`, and `days` can be used as suffixes, converting to multiples of the base unit `seconds`.
-
 グローバル変数`block.timestamp`は、ブロックが公開されてブロックチェーンに追加された時刻を、Unixエポック（1970年1月1日）からの秒数で表します。`seconds`、`minutes`、`hours`、`days`の単位を、基本単位`seconds`の倍数に変換して、サフィックスとして使用できます。
-
-> **Note**
->
-> Since a block can contain multiple transactions, all transactions within a block share the same `block.timestamp`, which reflects the time the block was published, not the exact moment each transaction was initiated.
 
 > **注記**
 >
 > 1つのブロックには複数のトランザクションを含めることができるため、ブロック内のすべてのトランザクションは同じ`block.timestamp`を共有します。これは各トランザクションが開始された正確な瞬間ではなく、ブロックが公開された時刻を反映しています。
 
-**Ether units**
-
 **イーサ単位**
-
-The units `wei` and `ether` can be used as suffixes, converting to multiples of the base unit `wei`. Previously, the denominations `finney` and `szabo` were also available, but they were dropped in Solidity version 0.7.0.
 
 `wei`と`ether`の単位を、基本単位`wei`の倍数に変換して、サフィックスとして使用できます。以前は`finney`と`szabo`の単位も利用可能でしたが、Solidityバージョン0.7.0で廃止されました。
 
-In our `Faucet` contract example, we used a `uint` (which is an alias for `uint256`) for the `withdrawAmount` variable. We also indirectly used an `address` variable, which we set with `msg.sender`. We will use more of these data types in our examples in the rest of this chapter.
-
-ファウセットコントラクトの例では、`withdrawAmount`変数に`uint`（これは`uint256`のエイリアスです）を使用しました。`msg.sender`で設定した`address`変数も間接的に使用しました。この章の残りの部分では、これらのデータ型を例で使用します。
-
-Let's use one of the unit multipliers to improve the readability of our example contract. In the `withdraw` function, we limit the maximum withdrawal, expressing the limit in wei, the base unit of ether:
+ファウセットコントラクトの例では、`withdrawAmount`変数に`uint`（これは`uint256`のエイリアスです）を使用しました。`msg.sender`で設定した`address`変数も間接的に使用しました。この章の残りの部分では、これらのデータ型を使っていきます。
 
 サンプルコントラクトの読みやすさを向上させるために、単位乗数を使ってみましょう。`withdraw`関数では、最大引き出し量を制限し、イーサの基本単位であるweiで制限を表します。
 
 ```solidity
 require(withdrawAmount <= 100000000000000000);
 ```
-
-That's not very easy to read. We can improve our code by using the unit multiplier `ether`, to express the value in ether instead of wei:
 
 これでは数字列が長くてわかりにくいので、weiの代わりにイーサで値を表現するために、単位乗数`ether`を使用してコードを改善します。
 
