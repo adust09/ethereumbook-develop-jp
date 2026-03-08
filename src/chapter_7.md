@@ -316,99 +316,51 @@ require(withdrawAmount <= 100000000000000000);
 ```solidity
 require(withdrawAmount <= 0.1 ether);
 ```
-### Variables: Definition and Scope
-
 ### 変数：定義とスコープ
 
-In Solidity, the syntax for defining variables and functions is similar to other statically typed languages: we assign a type, a name, and an optional value to each variable. For state variables, we can also specify their visibility. The default visibility is `internal`, meaning the variable is accessible only within the contract and its derived contracts. To make them accessible from other smart contracts, we need to use the `public` visibility.
-
-Solidityにおける変数や関数の定義構文は、他の静的型付け言語と似ています。各変数に型、名前、そしてオプションで値を割り当てます。状態変数（state variables）については、可視性（visibility）を指定することもできます。デフォルトの可視性は`internal`であり、その変数はコントラクト自身とその派生コントラクトからのみアクセス可能です。他のスマートコントラクトからアクセスできるようにするには、`public`の可視性を使用する必要があります。
-
-Solidity smart contracts feature three types of variable scopes:
+Solidityにおける変数や関数の定義構文は、他の静的型付け言語と似ています。各変数に型と名前を指定し、必要に応じて初期値を割り当てます。状態変数（state variables）については、可視性（visibility）を指定することもできます。デフォルトの可視性は`internal`であり、その変数はコントラクト自身とその派生コントラクトからのみアクセス可能です。他のスマートコントラクトからアクセスできるようにするには、`public`の可視性を使用する必要があります。
 
 Solidityのスマートコントラクトには、3種類の変数スコープがあります。
 
-**State variables**
-
 **状態変数（State variables）**
-
-These store permanent data in the smart contract, known as *persistent state*, by recording values on the blockchain. State variables are defined within the smart contract but outside any function. Example: `uint public count;`
 
 スマートコントラクト内に永続的なデータを保存するもので、ブロックチェーン上に値を記録することにより*永続的な状態*（persistent state）として知られています。状態変数はスマートコントラクト内で定義されますが、関数の外側に置かれます。例：`uint public count;`
 
-**Local variables**
-
 **ローカル変数（Local variables）**
-
-These are temporary pieces of data used during computations that hold information for short periods. Local variables are not stored on the blockchain; they exist within functions and are not accessible outside their defined scope. Example: `uint count = 1;`
 
 計算処理中に使用される一時的なデータで、短期間だけ情報を保持します。ローカル変数はブロックチェーン上には保存されず、関数内に存在し、定義されたスコープの外からはアクセスできません。例：`uint count = 1;`
 
-**Global variables**
-
 **グローバル変数（Global variables）**
-
-These are automatically provided by Solidity and are available without explicit declaration or import. They offer information about the blockchain environment and include utility functions for use within the program. The predefined global variables are exhaustively listed in the following section.
 
 Solidityによって自動的に提供され、明示的な宣言やインポートなしに利用できます。ブロックチェーン環境に関する情報を提供し、プログラム内で使用するためのユーティリティ関数も含まれています。定義済みのグローバル変数は、次の項で網羅的に紹介します。
 
-As we briefly mentioned, state variables can be declared specifying their visibility. Solidity offers three different visibility levels: *public variables* generate automatic getter functions, allowing external contracts to read their values, although they cannot modify them; *internal variables* are accessible only within the contract and its derived contracts; and *private variables* are similar to internal variables but cannot be accessed even by derived contracts.
-
 先ほど簡単に触れたとおり、状態変数は可視性を指定して宣言できます。Solidityは3つの異なる可視性レベルを提供しています。*public変数*は自動的にgetter関数を生成し、外部のコントラクトがその値を読み取ることを可能にしますが、変更はできません。*internal変数*はコントラクト自身とその派生コントラクトからのみアクセス可能です。*private変数*はinternal変数と似ていますが、派生コントラクトからもアクセスできません。
-
-### Predefined Global Variables and Functions
 
 ### 定義済みのグローバル変数とグローバル関数
 
-When a contract is executed in the EVM, it has access to a small set of global objects. These include the `block`, `msg`, and `tx` objects. In addition, Solidity exposes a number of EVM opcodes as predefined functions. In this section we will examine the variables and functions you can access from within a smart contract in Solidity.
-
 EVMでコントラクトが実行されると、少数のグローバルオブジェクトへのアクセス権を持ちます。これらには`block`、`msg`、`tx`といったオブジェクトが含まれます。さらにSolidityは、いくつかのEVMオペコードを定義済み関数として公開しています。この項では、Solidityのスマートコントラクト内からアクセスできる変数と関数について調べます。
 
-#### Transaction/message call context
-
 #### トランザクション／メッセージコールコンテクスト
-
-The `msg` object is the transaction call (EOA originated) or message call (contract originated) that launched this contract execution. It contains a number of useful attributes:
 
 `msg`オブジェクトは、このコントラクトの実行を開始したトランザクションコール（EOAによる）またはメッセージコール（コントラクトによる）です。これには有用な属性が多数含まれます。
 
 **msg.sender**
 
-**msg.sender**
-
-We've already used this one. It represents the address that initiated this contract call, not necessarily the originating EOA that sent the transaction. If our contract was called directly by an EOA transaction, then this is the address that signed the transaction, but otherwise, it will be a contract address.
-
 本書ではすでに使っています。msg.senderは、このコントラクトコールを開始したアドレスを表します。これはトランザクションを送信した発信元のEOAとは限りません。コントラクトがEOAトランザクションによって直接呼び出された場合は、トランザクションに署名したアドレスになりますが、そうでなければコントラクトアドレスになります。
 
 **msg.value**
-
-**msg.value**
-
-The value of ether sent with this call (in wei).
 
 このコールで送信されたイーサの値（wei単位）です。
 
 **msg.data**
 
-**msg.data**
-
-The data payload of this call into our contract.
-
-コントラクトへのこのコールのデータペイロードです。
+このコントラクト呼び出しのデータペイロードです。
 
 **msg.sig**
-
-**msg.sig**
-
-The first four bytes of the data payload, which is the function selector.
 
 データペイロードの最初の4バイトで、関数セレクタ（function selector）にあたります。
 
-> **Note**
->
-> Whenever a contract calls another contract, the values of all the attributes of `msg` change to reflect the new caller's information. The only exception to this is the `delegatecall` function, which runs the code of another contract or library within the original `msg` context.
-
-> **注意**
+> **注記**
 >
 > あるコントラクトが別のコントラクトを呼び出すたびに、`msg`のすべての属性の値が新しい呼び出し元の情報を反映して変わります。唯一の例外はdelegatecall関数です。この関数は、元の`msg`コンテクスト内で別のコントラクトやライブラリのコードを実行します。
 
