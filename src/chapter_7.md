@@ -1,70 +1,36 @@
-# Chapter 7. Smart Contracts and Solidity
-
 # 7章 スマートコントラクトとSolidity
-
-As we discussed in Chapter 2, there are two different types of accounts in Ethereum: EOAs and contract accounts. EOAs are controlled by users, often via software such as a wallet application that is external to the Ethereum platform. In contrast, contract accounts are controlled by program code (also commonly referred to as *smart contracts*) that is executed by the EVM.
 
 2章で述べたように、イーサリアムには外部所有アカウント（EOA）とコントラクトアカウントの2種類のアカウントがあります。EOAは多くの場合、イーサリアムプラットフォームの外部にあるウォレットアプリケーションなどのソフトウェアを介して、ユーザーによって制御されます。対照的に、コントラクトアカウントは、EVMによって実行されるプログラムコード（一般的に「スマートコントラクト」と呼ばれます）によって制御されます。
 
-In short, EOAs are simple accounts without any associated code or data storage, while contract accounts have both associated code and data storage. EOAs are controlled by transactions created and cryptographically signed with a private key in the "real world" external to and independent of the protocol, while contract accounts don't have private keys and so "control themselves" in the predetermined way prescribed by their smart contract code. Both types of accounts are identified by an Ethereum address. In this chapter, we'll discuss contract accounts and the program code that controls them.
-
 簡潔に言えば、EOAは関連するコードやデータストレージのないシンプルなアカウントですが、コントラクトアカウントは関連するコードとデータストレージの両方を持っています。EOAは、プロトコルから独立した「現実世界」における秘密鍵によって作成され暗号学的に署名されたトランザクションによって制御されます。これに対して、コントラクトアカウントは秘密鍵を持たないので、スマートコントラクトコードであらかじめ規定された方法で「自分自身を制御」します。両方のアカウントタイプは、イーサリアムアドレスによって識別されます。この章では、コントラクトアカウントと、それを制御するプログラムコードについて説明します。
-
-## What Is a Smart Contract?
 
 ## スマートコントラクトとは何か？
 
-The term *smart contract* has been used over the years to describe a wide variety of things. In the 1990s, cryptographer Nick Szabo coined the term and defined it as "a set of promises, specified in digital form, including protocols within which the parties perform on the other promises." Since then, the concept of smart contracts has evolved, especially after the introduction of decentralized blockchain platforms with the launch of Bitcoin in 2009.
-
 「スマートコントラクト」という用語は、さまざまな異なるものを表現するために長年にわたって使われてきました。1990年代に、暗号学者であるニック・ザボ（Nick Szabo）がこの用語を作り、「当事者が他の約束を実行する手順まで含んだ、デジタル形式で規定された一連の約束」と定義しました。その後、スマートコントラクトの概念は発展していきましたが、それが顕著になったのは、2009年にビットコインが登場した分散型ブロックチェーンプラットフォームが導入されてからでした。
 
-In the context of Ethereum, the term is actually a bit of a misnomer, given that Ethereum smart contracts are neither smart nor legal contracts, but the term has stuck. In this book, we use the term *smart contracts* to refer to immutable computer programs that run deterministically in the context of the EVM as part of the Ethereum network protocol—that is, on the decentralized Ethereum world computer.
+イーサリアムの文脈では、スマートコントラクトはスマートでも法的な契約でもないことを考えるとやや不適切な名称ですが、すでに定着しています。本書では、「スマートコントラクト」という用語は、イーサリアムネットワークプロトコルの一部としてEVMの中で──つまり、分散型イーサリアムワールドコンピュータにおいて──決定論的に実行される、イミュータブルなコンピュータプログラムを指します。
 
-イーサリアムの文脈における「スマートコントラクト」という用語は、イーサリアムのスマートコントラクトがスマートでも法的な契約でもないことを考えればやや不適切な名称ですが、すでに定着しています。本書では、「スマートコントラクト」という用語は、イーサリアム仮想マシン（EVM）の文脈で、イーサリアムネットワークプロトコルの一部として──つまり、分散型イーサリアムワールドコンピュータにおいて──決定論的に実行される、イミュータブルなコンピュータプログラムを指します。
-
-Let's unpack that definition:
-
-いま示した定義で使われている用語の意味を示しておきましょう。
-
-**Computer programs**
+いま示した定義で使われている用語の意味を確認しておきましょう。
 
 **コンピュータプログラム**
 
-Smart contracts are simply computer programs. The word *contract* has no legal meaning in this context.
-
 スマートコントラクトは単純なコンピュータプログラムです。この文脈では、「コントラクト」という言葉に（「契約」といった）法的な意味はありません。
-
-**Immutable**
 
 **イミュータブル**
 
-Once deployed, the code of a smart contract cannot change. Unlike with traditional software, the only way to modify a smart contract is to deploy a new instance.
-
 スマートコントラクトは一度デプロイされると、そのコードを変更することができません。従来のソフトウェアとは異なり、スマートコントラクトを変更する唯一の方法は、新しいインスタンスをデプロイすることです。
-
-**Deterministic**
 
 **決定論的**
 
-The outcome of the execution of a smart contract is the same for everyone who runs it, given the context of the transaction that initiated its execution and the state of the Ethereum blockchain at the moment of execution.
-
-実行を開始するトランザクションのコンテクストと、実行時のイーサリアムブロックチェーンの状態を前提に、スマートコントラクトの実行結果はそれを実行するすべての人にとって同一になります。
-
-**EVM context**
+スマートコントラクトの実行結果は、実行を開始したトランザクションのコンテクストと実行時のイーサリアムブロックチェーンの状態が同じであれば、誰が実行しても同一になります。
 
 **EVMのコンテクスト**
 
-Smart contracts operate with a very limited execution context. They can access their own state, the context of the transaction that called them, and some information about the most recent blocks.
-
 スマートコントラクトは非常に限られた実行コンテクストで機能します。自分の状態、そのコントラクトを呼び出したトランザクションのコンテクスト、最新ブロックに関する情報にアクセスできます。
-
-**Decentralized world computer**
 
 **分散型ワールドコンピュータ**
 
-The EVM runs as a local instance on every Ethereum node, but because all instances of the EVM operate on the same initial state and produce the same final state, the system as a whole operates as a single "world computer."
-
-EVMはすべてのイーサリアムノード上でローカルインスタンスとして動作します。しかし、EVMのすべてのインスタンスは同じ初期状態で動作し、同じ最終状態を生成するため、システム全体が1つの「ワールドコンピュータ」として動作します。
+EVMはすべてのイーサリアムノード上でローカルインスタンスとして動作しますが、すべてのインスタンスが同じ初期状態で動作し同じ最終状態を生成するため、システム全体が1つの「ワールドコンピュータ」として機能します。
 
 ## Life Cycle of a Smart Contract
 
