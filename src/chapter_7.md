@@ -175,23 +175,13 @@ Binary:
 
 solcが生成する結果は16進数にシリアライズされたバイナリで、イーサリアムブロックチェーンに送信することができます。
 
-## The Ethereum Contract ABI
-
 ## イーサリアムコントラクトABI
 
-In computer software, an *application binary interface* is an interface between two program modules—often between the operating system and user programs. An ABI defines how data structures and functions are accessed in *machine code*; this is not to be confused with an API, which defines this access in high-level, often human-readable formats as *source code*. The ABI is thus the primary way of encoding and decoding data into and out of machine code.
-
-コンピュータソフトウェアにおいて、アプリケーションバイナリインターフェイス（ABI）とは、2つのプログラムモジュール間の──しばしば、オペレーティングシステムとユーザープログラムの間の──インターフェイスです。ABIは、機械語（machine code）においてデータ構造と関数がどのようにアクセスされるかを定義します。これをAPIと混同しないでください。APIは高レベルで、しばしばソースコード（source code）として人間が読める形式で、データ構造と関数へのアクセスを定義します。したがって、ABIはデータを機械語へとエンコードあるいは機械語からデコードするための主要な方法です。
-
-In Ethereum, the ABI is used to encode contract calls for the EVM and to read data out of transactions. The purpose of an ABI is to define the functions in the contract that can be invoked and describe how each function will accept arguments and return its result.
+コンピュータソフトウェアにおいてABI（Application Binary Interface）とは、2つのプログラムモジュール間の（しばしば、オペレーティングシステムとユーザープログラムの間の）インターフェイスです。ABIは、機械語（machine code）においてデータ構造と関数がどのようにアクセスされるかを定義します。これをAPIと混同しないでください。APIは高レベルで、しばしばソースコード（source code）として人間が読める形式で、データ構造と関数へのアクセスを定義します。したがって、ABIはデータを機械語へとエンコードあるいは機械語からデコードするための主要な方法です。
 
 イーサリアムでは、ABIを使用してEVMのコントラクト呼び出しをエンコードし、トランザクションからデータを読み取ります。ABIの目的は、呼び出される関数をコントラクトに定義し、各関数が引数を受け入れてその結果を返す方法を記述することです。
 
-A contract's ABI is specified as a JSON array of function descriptions (see "Functions") and events (see "Events"). A function description is a JSON object with fields `type`, `name`, `inputs`, `outputs`, `constant`, and `payable`. An event description object has fields `type`, `name`, `inputs`, and `anonymous`.
-
-コントラクトのABIは、関数の説明（「関数」を参照）およびイベント（「イベント」を参照）のJSON配列として指定されています。関数の説明は、`type`、`name`、`inputs`、`outputs`、`constant`、`payable`のフィールドを持つJSONオブジェクトです。イベント記述オブジェクトには、`type`、`name`、`inputs`、`anonymous`のフィールドがあります。
-
-We use the solc command-line Solidity compiler to produce the ABI for our *Faucet.sol* example contract:
+コントラクトのABIは、関数定義（「関数」を参照）およびイベント（「イベント」を参照）のJSON配列で構成されます。関数定義は、`type`、`name`、`inputs`、`outputs`、`constant`、`payable`のフィールドを持つJSONオブジェクトです。イベント定義オブジェクトには、`type`、`name`、`inputs`、`anonymous`のフィールドがあります。
 
 *Faucet.sol*サンプルコントラクトのABIを生成するには、solcコマンドラインSolidityコンパイラを使用します。
 
@@ -204,23 +194,13 @@ Contract JSON ABI
 {"stateMutability":"payable","type":"receive"}]
 ```
 
-As you can see, the compiler produces a JSON array describing the two functions that are defined by *Faucet.sol*. This JSON can be used by any application that wants to access the `Faucet` contract once it is deployed. Using the ABI, an application such as a wallet or DApp browser can construct transactions that call the functions in `Faucet` with the correct arguments and argument types. For example, a wallet would know that to call the function `withdraw`, it would have to provide a `uint256` argument named `withdrawAmount`. The wallet could prompt the user to provide that value, then create a transaction that encodes it and executes the `withdraw` function.
-
 コンパイラは、*Faucet.sol*によって定義されている2つの関数を記述するJSON配列を生成します。このJSONは、デプロイされた`Faucet`コントラクトにアクセスしたいどのアプリケーションでも使用できます。ABIを使用すると、ウォレットやDAppブラウザなどのアプリケーションは、正しい引数と引数タイプを使用して`Faucet`内の関数を呼び出すトランザクションを構築できます。たとえば、ウォレットが`withdraw`関数を呼び出すには、`withdrawAmount`という名前の`uint256`引数を指定する必要があることがわかります。ウォレットは、必要な値を入力するようにユーザーに促し、次にその値をエンコードして`withdraw`関数を実行するトランザクションを作成することができます。
-
-All that is needed for an application to interact with a contract is an ABI and the address where the contract has been deployed.
 
 アプリケーションがコントラクトと対話するために必要なものは、ABIとそのコントラクトがデプロイされているアドレスだけです。
 
-## Selecting a Solidity Compiler and Language Version
-
 ## Solidityコンパイラと言語バージョンの選択
 
-As we saw in the previous code, our `Faucet` contract compiles successfully with Solidity version 0.8.26. But what if we had used a different version of the Solidity compiler? The language is still in constant flux, and things may change in unexpected ways. Our contract is fairly simple, but what if our program used a feature that was added only in Solidity version 0.8.26 and we tried to compile it with 0.8.25?
-
-前述のコードで見たように、`Faucet`コントラクトはSolidityバージョン0.8.26で正常にコンパイルされています。しかし、Solidityコンパイラの異なるバージョンを使いたいとしたら、どうでしょうか。言語はまだ流動的であり、仕様は予想外の形で変わるかもしれません。私たちのコントラクトはとてもシンプルですが、コントラクトのプログラムがSolidityバージョン0.8.26で追加された機能を使用しており、そのプログラムをバージョン0.8.25でコンパイルしようとするとどうなるでしょうか？
-
-To resolve such issues, Solidity offers a compiler directive known as a *version pragma* that instructs the compiler that the program expects a specific compiler (and language) version. Let's look at an example:
+前述のコードで見たように、`Faucet`コントラクトはSolidityバージョン0.8.26で正常にコンパイルされています。しかし、Solidityコンパイラの異なるバージョンを使いたいとしたら、どうでしょうか。言語はまだ流動的であり、予期しない変更が加わるかもしれません。私たちのコントラクトはとてもシンプルですが、コントラクトのプログラムがSolidityバージョン0.8.26で追加された機能を使用しており、そのプログラムをバージョン0.8.25でコンパイルしようとするとどうなるでしょうか？
 
 このような問題を解決するために、Solidityはバージョンプラグマ（version pragma）と呼ばれるコンパイラ命令を提供しています。これは、プログラムが特定のコンパイラ（および言語）バージョンを期待することをコンパイラに指示します。例を見てみましょう。
 
@@ -228,23 +208,13 @@ To resolve such issues, Solidity offers a compiler directive known as a *version
 pragma solidity 0.8.26;
 ```
 
-The Solidity compiler reads the version pragma and will produce an error if the compiler version is incompatible with the version pragma. In this case, our version pragma says that this program can be compiled by a Solidity compiler with version 0.8.26. Pragma directives are not compiled into EVM bytecode; they are compile-time directives used by the compiler only to check compatibility.
-
 Solidityコンパイラはバージョンプラグマを読み込み、コンパイラのバージョンがバージョンプラグマと互換性がない場合はエラーを生成します。この場合、バージョンプラグマはこのプログラムがSolidityコンパイラのバージョン0.8.26でコンパイルできることを宣言しています。プラグマ命令はEVMバイトコードにコンパイルされません。互換性をチェックするために、コンパイラにのみ使用されるコンパイル時の命令です。
-
-> **Note**
->
-> In the pragma directive, the symbol ^ states that we allow compilation with any *minor revision* equal to or above the specified one. For example, a pragma directive `pragma solidity ^0.7.1;` means that the contract can be compiled with a solc version of 0.7.1, 0.7.2, and 0.7.3 but not 0.8.0 (which is a major revision, not a minor revision).
 
 > **注記**
 >
 > プラグマ命令において、^記号は、指定されたバージョン以上のマイナーリビジョン（minor revision）でのコンパイルを許可することを示しています。たとえば、`pragma solidity ^0.7.1;`というプラグマ命令は、solcのバージョン0.7.1、0.7.2、0.7.3でコンパイルできますが、0.8.0ではコンパイルできないことを意味します（これはマイナーリビジョンではなくメジャーリビジョンです）。
 
-Let's add a pragma directive to our `Faucet` contract. We will name the new file *Faucet2.sol*, to keep track of our changes as we proceed through these examples, starting in Example 7-2.
-
 ファウセットコントラクトにプラグマ命令を追加しましょう。新しいファイルに*Faucet2.sol*という名前を付けて、例7-2以降の例を見ながら変更を追跡します。
-
-**Example 7-2. Faucet2.sol: Adding the version pragma to Faucet**
 
 **例7-2 Faucet2.sol：バージョンプラグマをファウセットに追加する**
 
@@ -264,8 +234,6 @@ contract Faucet {
     receive() external payable {}
 }
 ```
-
-Adding a version pragma is a best practice because it avoids problems with mismatched compiler and language versions. We will explore other best practices and continue to improve the `Faucet` contract throughout this chapter.
 
 バージョンプラグマを追加することは、コンパイラと言語のバージョンの不一致による問題を回避するため、ベストプラクティスです。この章では、他のベストプラクティスを検討し、`Faucet`コントラクトの改善を続けます。
 
