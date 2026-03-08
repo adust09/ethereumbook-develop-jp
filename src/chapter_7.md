@@ -82,51 +82,27 @@ PythonとRustにインスパイアされた、EVM向けの静的型付けスマ�
 
 このように、選択できる言語はたくさんあります。しかし、これらのなかでもSolidityが圧倒的に人気があり、事実上イーサリアム、さらには他のEVM互換ブロックチェーンの高級言語となっています。
 
-## Building a Smart Contract with Solidity
-
 ## Solidityでのスマートコントラクトの作成
-
-Solidity was created by Gavin Wood (coauthor of the first edition of this book) as a language explicitly for writing smart contracts with features to directly support execution in the decentralized environment of the Ethereum world computer. The resulting attributes are quite general, and so it has ended up being used for coding smart contracts on several other blockchain platforms. It was developed by Christian Reitwiessner and then by Alex Beregszaszi, Liana Husikyan, Yoichi Hirai, and several former Ethereum core contributors. Solidity is now developed and maintained as an independent project on [GitHub](https://oreil.ly/ik9kH).
 
 Solidityはスマートコントラクトを明示的に記述するための言語で、イーサリアムワールドコンピュータの分散環境での実行を直接にサポートする機能を備えています。ギャヴィン・ウッド（本書初版の共著者）によって作られました。結果として得られる特性が非常に一般的であるため、他のいくつかのブロックチェーンプラットフォームでスマートコントラクトをコーディングするために使用されることになりました。クリスチャン・ライトウィーズナー、その後アレックス・ベリックスサシィ、リアーナ・フシキヤン、平井洋一、また何人かの元イーサリアムのコアコントリビュータによって開発されました。Solidityは現在[GitHub](https://oreil.ly/ik9kH)上の独立したプロジェクトとして開発、維持されています。
 
-The main "product" of the Solidity project is the Solidity compiler, solc, which converts programs written in the Solidity language to EVM bytecode. The project also manages the important ABI standard for Ethereum smart contracts, which we will explore in detail in this chapter. Each version of the Solidity compiler corresponds to and compiles a specific version of the Solidity language.
-
 Solidityプロジェクトの主な「プロダクト」は、Solidity言語で書かれたプログラムをEVMバイトコードに変換するSolidityコンパイラであるsolcです。このプロジェクトは、イーサリアムスマートコントラクトの重要なABI規格も管理しています。ABIについては、この章で詳しく説明します。Solidityコンパイラの各バージョンは、Solidity言語の特定バージョンに対応し、それをコンパイルします。
-
-To get started, we will download a binary executable of the Solidity compiler. Then, we will develop and compile a simple contract, following on from the example we started with in Chapter 2.
 
 はじめに、Solidityコンパイラのバイナリ実行ファイルをダウンロードします。その後、2章で始めた例から続けて、簡単なコントラクトを作成してコンパイルします。
 
-### Selecting a Version of Solidity
-
 ### Solidityのバージョンの選択
-
-Solidity follows a versioning model called [*semantic versioning*](https://semver.org), which specifies version numbers structured as three numbers separated by dots: MAJOR.MINOR.PATCH. The "major" number is incremented for major and backward-incompatible changes, the "minor" number is incremented when backward-compatible features are added in between major releases, and the "patch" number is incremented for backward-compatible bug fixes.
 
 Solidityは[セマンティックバージョニング](https://semver.org)と呼ばれるバージョニングモデルに従います。これはドット（.）で区切られた3つの数字（メジャー.マイナー.パッチ）として構造化されたバージョン番号を指定します。「メジャー」番号は、メジャーリリースと後方互換性のない変更があると増え、「マイナー」番号はメジャーリリース間で後方互換性のある機能が追加されると増え、「パッチ」番号は後方互換性のあるバグ修正に対して増えます。
 
-At the time of writing, Solidity is at version 0.8.26. The rules for major version 0, which is for initial development of a project, are different: anything may change at any time. In practice, Solidity treats the "minor" number as if it were the major version and the "patch" number as if it were the minor version. Therefore, in 0.8.26, 8 is considered to be the major version and 26 the minor version. As you saw in Chapter 2, your Solidity programs can contain a pragma directive that specifies the minimum and maximum versions of Solidity that it is compatible with and can be used to compile your contract. Since Solidity is rapidly evolving, it is often better to install the latest release.
-
 本書執筆時点でのSolidityのバージョンは0.8.26です。プロジェクトの初期開発のためのメジャーバージョン0のルールは異なり、いつでも何でも変更される可能性があります。実際には、Solidityは「マイナー」番号をメジャーバージョンであるかのように扱い、「パッチ」番号をマイナーバージョンであるかのように扱います。したがって、0.8.26では8がメジャーバージョン、26がマイナーバージョンとみなされます。2章で見たように、Solidityプログラムは、互換性のあるSolidityの最小と最大バージョンを指定するプラグマ命令を含めることができ、コントラクトをコンパイルするのに使用することができます。Solidityは急速に進化しているので、最新のリリースをインストールすることを推奨します。
-
-> **Note**
->
-> Another consequence of the rapid evolution of Solidity is the pace at which documentation gets outdated. Right now, we're working with Solidity version 0.8.26, and everything in this book is based on that version. While this book will always give you a solid foundation for learning Solidity, future versions might change some syntax and functionality. So, whenever you have questions or run into something new, it's a good idea to check the [official Solidity documentation](https://oreil.ly/LzV7L) to stay current.
 
 > **注記**
 >
 > Solidityの急速な進化がもたらすもう1つの結果は、ドキュメントが陳腐化するペースの速さです。現在、本書ではSolidityバージョン0.8.26を使用しており、本書の内容はすべてこのバージョンに基づいています。本書はSolidityを学ぶための確かな基礎を常に提供しますが、将来のバージョンでは構文や機能が変更される可能性があります。そのため、疑問があったり新しいことに遭遇した場合は、[Solidityの公式ドキュメント](https://oreil.ly/LzV7L)を確認して最新の情報を得ることをお勧めします。
 
-### Downloading and Installing Solidity
-
 ### ダウンロードとインストール
 
-There are a number of methods you can use to download and install Solidity, depending on your operating system and requirements: either as a binary release or by compiling from source code. You can find detailed and updated instructions in the [Solidity documentation](https://oreil.ly/JW--z).
-
 Solidityのダウンロードおよびインストールを行い、使えるようにする方法はいくつかあります。バイナリリリースを利用する方法もありますし、ソースコードからコンパイルする方法もあります。詳細で最新の手順は、[Solidityのドキュメント](https://oreil.ly/JW--z)を参照してください。
-
-Here's how to install the latest binary release of Solidity on an Ubuntu/Debian operating system, using the apt package manager:
 
 以下が、aptパッケージマネージャを使って、Solidityの最新のバイナリリリースをUbuntu/Debianオペレーティングシステムにインストールする方法です。
 
@@ -136,8 +112,6 @@ $ sudo apt update
 $ sudo apt install solc
 ```
 
-Once you have solc installed, check the version by running:
-
 solcをインストールしたら、次のコマンドを実行してバージョンを確認してください。
 
 ```bash
@@ -146,19 +120,11 @@ solc, the solidity compiler commandline interface
 Version: 0.8.26+commit.8a97fa7a.Linux.g++
 ```
 
-### Development Environment
-
 ### 開発環境
 
-While it's entirely possible to develop Solidity smart contracts using a simple text editor, leveraging a development framework like [Hardhat](https://hardhat.org) or [Foundry](https://oreil.ly/-7Qvy) can significantly enhance your efficiency and effectiveness as a developer. These frameworks offer a comprehensive suite of tools that simplify and improve the development process. For example, they provide robust testing environments, allowing you to write and run unit tests to validate your contracts' behavior, and they offer forking capabilities to create local instances of the mainnet for realistic testing scenarios. With advanced debugging and tracing capabilities, you can easily step through your code execution and quickly identify and resolve issues, saving time and reducing errors. Additionally, these frameworks support scripting and deployment automation, plug-in ecosystems that extend functionality, and seamless network management across different environments. Integrating these capabilities into your workflow ensures a higher level of code quality and security, which is difficult to achieve with a simple text editor.
-
-シンプルなテキストエディタを使ってSolidityスマートコントラクトを開発することは十分に可能ですが、[Hardhat](https://hardhat.org)や[Foundry](https://oreil.ly/-7Qvy)のような開発フレームワークを活用することで、開発者としての効率と生産性を大幅に向上させることができます。これらのフレームワークは、開発プロセスを簡素化し改善するための包括的なツール群を提供します。たとえば、堅牢なテスト環境を提供し、コントラクトの動作を検証するためのユニットテストの作成と実行が可能です。また、リアルなテストシナリオのためにメインネットのローカルインスタンスを作成するフォーク機能も備えています。高度なデバッグおよびトレース機能により、コードの実行をステップ実行し、問題を迅速に特定して解決でき、時間の節約とエラーの削減につながります。さらに、これらのフレームワークはスクリプティングとデプロイの自動化、機能を拡張するプラグインエコシステム、異なる環境間のシームレスなネットワーク管理をサポートしています。これらの機能をワークフローに統合することで、シンプルなテキストエディタでは達成が難しい、より高いレベルのコード品質とセキュリティが確保されます。
-
-Beyond frameworks, adopting a modern IDE like VS Code further enhances productivity. VS Code offers a wide array of extensions for Solidity, including syntax highlighting, which makes your code easier to read; advanced commenting and bookmarking tools to help organize and navigate complex projects; and visual analysis tools that provide insights into your code's structure and potential issues. There are also web-based development environments, such as [Remix IDE](https://oreil.ly/Fz0jJ).
+シンプルなテキストエディタを使ってSolidityスマートコントラクトを開発することは十分に可能ですが、[Hardhat](https://hardhat.org)や[Foundry](https://oreil.ly/-7Qvy)のような開発フレームワークを活用することで、開発者としての効率と生産性を大幅に向上させることができます。これらのフレームワークは、開発プロセスを簡素化し改善するための包括的なツール群を提供します。たとえば、堅牢なテスト環境が用意されており、コントラクトの動作を検証するユニットテストを作成・実行できます。また、リアルなテストシナリオのためにメインネットのローカルインスタンスを作成するフォーク機能も備えています。高度なデバッグおよびトレース機能により、コードをステップ実行して問題を迅速に特定・解決でき、時間の節約とエラーの削減につながります。さらに、これらのフレームワークはスクリプティングとデプロイの自動化、機能を拡張するプラグインエコシステム、異なる環境間のシームレスなネットワーク管理をサポートしています。これらの機能をワークフローに統合することで、シンプルなテキストエディタでは達成が難しい、より高いレベルのコード品質とセキュリティが確保されます。
 
 フレームワーク以外にも、VS CodeのようなモダンなIDEを採用することで、生産性をさらに向上させることができます。VS CodeはSolidity向けの幅広い拡張機能を提供しており、コードを読みやすくするシンタックスハイライト、複雑なプロジェクトの整理とナビゲーションを支援する高度なコメントやブックマークツール、コードの構造や潜在的な問題に関する洞察を提供するビジュアル分析ツールなどがあります。[Remix IDE](https://oreil.ly/Fz0jJ)などのWebベースの開発環境もあります。
-
-Together, these tools not only improve code quality but also accelerate the development process, allowing us to build and deploy smart contracts more quickly and securely.
 
 これらのツールを組み合わせることで、コード品質が向上するだけでなく、開発プロセスが加速され、スマートコントラクトをより迅速かつ安全に構築してデプロイすることが可能になります。
 
