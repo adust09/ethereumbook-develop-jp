@@ -128,19 +128,11 @@ Version: 0.8.26+commit.8a97fa7a.Linux.g++
 
 これらのツールを組み合わせることで、コード品質が向上するだけでなく、開発プロセスが加速され、スマートコントラクトをより迅速かつ安全に構築してデプロイすることが可能になります。
 
-### Writing a Simple Solidity Program
-
 ### シンプルなSolidityプログラムを書く
-
-In Chapter 2, we wrote our first Solidity program. When we first built the `Faucet` contract, we used the Remix IDE to compile and deploy the contract. In this section, we will revisit, improve, and embellish `Faucet`.
 
 2章では、最初のSolidityプログラムを書きました。最初に`Faucet`コントラクトを作成したときは、Remix IDEを使用してそのコントラクトをコンパイルおよびデプロイしました。この節では、`Faucet`を見直し、改良し、装飾します。
 
-Our first attempt looked like Example 7-1.
-
 最初のファウセットコントラクトは、例7-1のようなものでした。
-
-**Example 7-1. Faucet.sol: a Solidity contract implementing a faucet**
 
 **例7-1 Faucet.sol：ファウセットを実装するSolidityコントラクト**
 
@@ -160,19 +152,11 @@ contract Faucet {
 }
 ```
 
-As we saw in Chapter 2, the SPDX license identifier in the comment indicates that the smart contract is licensed under GPL-3.0, informing users and developers of their legal rights and obligations for using and distributing the code.
-
-2章で見たように、コメント内のSPDXライセンス識別子は、スマートコントラクトがGPL-3.0の下でライセンスされていることを示しており、コードの使用と配布に関する法的権利と義務をユーザーと開発者に通知します。
-
-### Compiling with the Solidity Compiler (solc)
+2章で見たように、コメント内のSPDXライセンス識別子は、スマートコントラクトがGPL-3.0の下でライセンスされていることを示しており、コードの使用と配布に関する法的権利と義務をユーザーと開発者に伝えています。
 
 ### Solidityコンパイラ（solc）を使ってコンパイルする
 
-Now, we will use the Solidity compiler on the command line to compile our contract directly. The Solidity compiler solc offers a variety of options, which you can see by passing the `--help` argument.
-
 それでは、コマンドラインでSolidityコンパイラを使用して、コントラクトを直接コンパイルします。Solidityコンパイラsolcはさまざまなオプションを提供しています。それらは`--help`引数を指定すれば確認できます。
-
-We use the `--bin` and `--optimize` arguments of solc to produce an optimized binary of our example contract:
 
 solcの`--bin`引数と`--optimize`引数を使用して、例に挙げたコントラクトの最適化されたバイナリを生成します。
 
@@ -188,8 +172,6 @@ Binary:
 06673582212208935b6cf5d9070b7609ad59ac4b727e512522c674cacf09a2eff88dafa3242ee64736f6c634300
 081b0033
 ```
-
-The result that solc produces is a hex-serialized binary that can be submitted to the Ethereum blockchain.
 
 solcが生成する結果は16進数にシリアライズされたバイナリで、イーサリアムブロックチェーンに送信することができます。
 
