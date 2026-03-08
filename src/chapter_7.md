@@ -364,267 +364,135 @@ EVMでコントラクトが実行されると、少数のグローバルオブ�
 >
 > あるコントラクトが別のコントラクトを呼び出すたびに、`msg`のすべての属性の値が新しい呼び出し元の情報を反映して変わります。唯一の例外はdelegatecall関数です。この関数は、元の`msg`コンテクスト内で別のコントラクトやライブラリのコードを実行します。
 
-#### Transaction context
-
 #### トランザクションコンテクスト
-
-The `tx` object provides a means of accessing transaction-related information:
 
 `tx`オブジェクトは、トランザクション関連の情報にアクセスする手段を提供します。
 
 **tx.gasprice**
 
-**tx.gasprice**
-
-The gas price in the calling transaction
-
 呼び出し元トランザクションのガス価格です。
 
 **tx.origin**
 
-**tx.origin**
-
-The address of the originating EOA for this transaction
-
 このトランザクションの発信元EOAのアドレスです。
 
-#### Block context
-
 #### ブロックコンテクスト
-
-The `block` object contains the following information about the current block:
 
 `block`オブジェクトには、現在のブロックに関する以下の情報が含まれています。
 
 **block.basefee**
 
-**block.basefee**
-
-The current block's base fee, a dynamically adjusted value representing the minimum gas fee required for a transaction to be included in the block.
-
-現在のブロックのベースフィー（base fee）です。ブロックにトランザクションが含まれるために必要な最低ガス料金を表す、動的に調整される値です。
+現在のブロックのベースフィー（base fee）です。トランザクションがブロックに含まれるために必要な最低ガス料金を表す、動的に調整される値です。
 
 **block.blobbasefee**
-
-**block.blobbasefee**
-
-The dynamically adjusting base fee for blob transactions, which was introduced to handle large data efficiently as part of Ethereum's scalability improvements with EIP-4844.
 
 blobトランザクションのための動的に調整されるベースフィーです。EIP-4844によるイーサリアムのスケーラビリティ改善の一環として、大規模データを効率的に処理するために導入されました。
 
 **block.chainid**
 
-**block.chainid**
-
-The unique identifier of the blockchain on which the block is currently being built.
-
 ブロックが現在構築されているブロックチェーンの一意の識別子です。
 
 **block.prevrandao**
 
-**block.prevrandao**
-
-A pseudorandom value derived from the randomness beacon of the previous block, provided by the beacon chain. This can be useful for smart contracts that require random numbers—only for nonsensitive operations, as it can be manipulated to some extent.
-
-ビーコンチェーンによって提供される、前のブロックのランダムネスビーコンから導出された擬似乱数値です。乱数を必要とするスマートコントラクトに有用ですが、ある程度操作される可能性があるため、機密性の低い操作にのみ使用すべきです。
+ビーコンチェーンによって提供される、前のブロックのランダムネスビーコンから導出された擬似乱数値です。乱数を必要とするスマートコントラクトに有用ですが、ある程度操作される可能性があるため、重要度の低い処理にのみ使用すべきです。
 
 **block.coinbase**
-
-**block.coinbase**
-
-The address of the recipient of the current block's fees and block reward.
 
 現在のブロックの手数料とブロック報酬の受取人のアドレスです。
 
 **block.difficulty**
 
-**block.difficulty**
-
-The difficulty (PoW) of the current block for EVM versions before Paris (The Merge). For subsequent EVM versions adopting a PoS consensus model, it behaves as a deprecated alias of `block.prevrandao`.
-
 Paris（The Merge）以前のEVMバージョンにおける現在のブロックのディフィカルティ（PoW）です。PoSコンセンサスモデルを採用するそれ以降のEVMバージョンでは、`block.prevrandao`の非推奨エイリアスとして機能します。
 
 **block.gaslimit**
-
-**block.gaslimit**
-
-The maximum amount of gas that can be spent across all transactions included in the current block.
 
 現在のブロックに含まれるすべてのトランザクションで消費できる最大ガス量です。
 
 **block.number**
 
-**block.number**
-
-The current block number (blockchain height).
-
 現在のブロック番号（ブロックチェーンの高さ）です。
 
 **block.timestamp**
 
-**block.timestamp**
-
-The timestamp placed in the current block by the miner (number of seconds since the Unix epoch).
-
 マイナーによって現在のブロックに配置されたタイムスタンプ（Unixエポック以降の秒数）です。
-
-#### Address object
 
 #### アドレスオブジェクト
 
-Any address, either passed as an input or cast from a contract object, has a number of attributes and methods.
-
-入力として渡されるか、コントラクトオブジェクトからキャストされるかにかかわらず、すべてのアドレスには多くの属性とメソッドがあります。
+入力として渡されるか、コントラクトオブジェクトからキャストされるかにかかわらず、すべてのアドレスには次のような多くの属性とメソッドがあります。
 
 **address.balance**
-
-**address.balance**
-
-The balance of the address in wei. For example, the current contract balance is `address(this).balance`.
 
 アドレスの残高（wei単位）です。たとえば、現在のコントラクト残高は`address(this).balance`となります。
 
 **address.code**
 
-**address.code**
-
-The contract bytecode stored at the address. Returns an empty-bytes array for EOA addresses.
-
 そのアドレスに保存されているコントラクトバイトコードです。EOAアドレスの場合は空のバイト配列を返します。
 
 **address.codehash**
-
-**address.codehash**
-
-The Keccak-256 hash of the contract bytecode stored at the address.
 
 そのアドレスに保存されているコントラクトバイトコードのKeccak-256ハッシュです。
 
 **address.transfer(amount)**
 
-**address.transfer(amount)**
-
-Transfers the amount (in wei) to this address, throwing an exception on any error. We used this function in our `Faucet` example as a method on the `msg.sender` address, as `msg.sender.transfer`.
-
-このアドレスに金額（wei単位）を送金し、エラーが発生した場合は例外をスローします。`Faucet`の例では、`msg.sender`アドレスのメソッドとして`msg.sender.transfer`としてこの関数を使用しました。
+このアドレスに金額（wei単位）を送金します。エラーが発生した場合は例外をスローします。`Faucet`の例では、`msg.sender`アドレスのメソッドとして`msg.sender.transfer`としてこの関数を使用しました。
 
 **address.send(amount)**
-
-**address.send(amount)**
-
-Similar to `transfer`, only instead of throwing an exception, it returns `false` on error. Be careful to always check the return value of `send`.
 
 `transfer`と同様ですが、例外をスローする代わりにエラー時に`false`を返します。`send`の戻り値を必ず確認してください。
 
 **address.call(payload)**
 
-**address.call(payload)**
-
-Low-level `CALL` function that can construct an arbitrary message call with a data payload. Returns `false` on error. Be careful: a recipient can (accidentally or maliciously) use up all your gas, causing your contract to halt with an OOG (out of gas) exception; always check the return value of `call`.
-
 データペイロードを使用して任意のメッセージコールを構築できる低レベルの`CALL`関数です。エラー時には`false`を返します。注意：受信者は（偶然にまたは悪意を持って）あなたのガスをすべて使い果たし、コントラクトをOOG（out of gas）例外で停止させる可能性があります。`call`の戻り値を必ず確認してください。
 
 **address.delegatecall(payload)**
-
-**address.delegatecall(payload)**
-
-Low-level `DELEGATECALL` function, like `address(this).call(...)` but with this contract's code replaced with that of `address`. Particularly useful for implementing the proxy pattern. Returns `false` on error. Warning: advanced use only!
 
 `address(this).call(...)`のような低レベルの`DELEGATECALL`関数ですが、このコントラクトのコードが`address`のコードに置き換えられます。プロキシパターン（proxy pattern）の実装に特に有用です。エラー時には`false`を返します。警告：上級者向けです。
 
 **address.staticcall(payload)**
 
-**address.staticcall(payload)**
-
-Low-level `STATICCALL` function, like `address(this).call(...)` but in read-only mode, meaning that the called function cannot modify any state or send ether. Returns `false` on error.
-
 `address(this).call(...)`のような低レベルの`STATICCALL`関数ですが、読み取り専用モードで実行されるため、呼び出された関数は状態を変更したりイーサを送信したりすることはできません。エラー時には`false`を返します。
 
-> **Note**
->
-> Both `address.send()` and `address.transfer()` forward a fixed amount of 2,300 units of gas, which might be insufficient to execute fallback logic. With EIP-7702 going live, their usage is discouraged in favor of the more flexible `address.call()`. More on this in Chapter 9.
-
-> **注意**
+> **注記**
 >
 > `address.send()`と`address.transfer()`はいずれも固定量の2,300ガスユニットを転送しますが、これはフォールバック（fallback）ロジックを実行するには不十分な場合があります。EIP-7702の導入に伴い、より柔軟な`address.call()`の使用が推奨されています。詳しくは9章で説明します。
 
-#### Built-in functions
-
 #### 組み込み関数
-
-Other functions worth noting are:
 
 その他、知っておくべき関数は次のとおりです。
 
 **addmod, mulmod**
 
-**addmod, mulmod**
-
-For modulo addition and multiplication. For example, `addmod(x,y,k)` calculates (x + y) % k.
-
 モジュロ加算およびモジュロ乗算のための関数です。たとえば`addmod(x,y,k)`は(x + y) % kを計算します。
 
 **keccak256, sha256, ripemd160**
-
-**keccak256, sha256, ripemd160**
-
-Functions to calculate hashes with various standard hash algorithms.
 
 さまざまな標準ハッシュアルゴリズムでハッシュを計算するための関数です。
 
 **ecrecover**
 
-**ecrecover**
-
-Recovers the address used to sign a message from the signature.
-
-署名からメッセージの署名に使用されたアドレスを復元します。
+署名からメッセージに署名したアドレスを復元します。
 
 **selfdestruct(recipient_address)**
-
-**selfdestruct(recipient_address)**
-
-Deprecated. Used to delete the current contract and send any remaining ether in the account to the recipient address. After EIP-6780, this happens only if the self-destruct instruction is invoked in the same transaction as creation. In all other cases, the funds will be moved, but the contract and its state won't be cleared.
 
 非推奨です。現在のコントラクトを削除し、アカウントに残っているイーサを受信者アドレスに送信するために使用されていました。EIP-6780以降、セルフデストラクト命令がコントラクト作成と同じトランザクション内で呼び出された場合にのみ削除が行われます。それ以外の場合は、資金は移動されますが、コントラクトとその状態はクリアされません。
 
 **this**
 
-**this**
-
-The current contract, explicitly convertible to `Address` type to retrieve the address of the currently executing contract account: `address(this)`.
-
 現在のコントラクトです。`Address`型に明示的に変換して、現在実行中のコントラクトアカウントのアドレスを取得できます：`address(this)`。
 
 **super**
-
-**super**
-
-The contract that is one level higher in the inheritance hierarchy.
 
 継承（inheritance）階層において1つ上のレベルにあるコントラクトです。
 
 **gasleft**
 
-**gasleft**
-
-The amount of gas remaining for the current execution context.
-
 現在の実行コンテクストで残っているガスの量です。
 
 **blockhash(block_number)**
 
-**blockhash(block_number)**
-
-The hash of a given block identified by its block number; only available for the most recent 256 blocks.
-
 ブロック番号で指定されたブロックのハッシュです。直近の256ブロック分のみ利用可能です。
 
 **blobhash(index)**
-
-**blobhash(index)**
-
-The hash of the `index-th` blob associated with the current transaction.
 
 現在のトランザクションに関連付けられた`index`番目のblobのハッシュです。
 
