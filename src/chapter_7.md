@@ -1,110 +1,218 @@
 # Chapter 7. Smart Contracts and Solidity
 
+# 7章 スマートコントラクトとSolidity
+
 As we discussed in Chapter 2, there are two different types of accounts in Ethereum: EOAs and contract accounts. EOAs are controlled by users, often via software such as a wallet application that is external to the Ethereum platform. In contrast, contract accounts are controlled by program code (also commonly referred to as *smart contracts*) that is executed by the EVM.
 
-In short, EOAs are simple accounts without any associated code or data storage, while contract accounts have both associated code and data storage. EOAs are controlled by transactions created and cryptographically signed with a private key in the “real world” external to and independent of the protocol, while contract accounts don’t have private keys and so “control themselves” in the predetermined way prescribed by their smart contract code. Both types of accounts are identified by an Ethereum address. In this chapter, we’ll discuss contract accounts and the program code that controls them.
+2章で述べたように、イーサリアムには外部所有アカウント（EOA）とコントラクトアカウントの2種類のアカウントがあります。EOAは多くの場合、イーサリアムプラットフォームの外部にあるウォレットアプリケーションなどのソフトウェアを介して、ユーザーによって制御されます。対照的に、コントラクトアカウントは、EVMによって実行されるプログラムコード（一般的に「スマートコントラクト」と呼ばれます）によって制御されます。
+
+In short, EOAs are simple accounts without any associated code or data storage, while contract accounts have both associated code and data storage. EOAs are controlled by transactions created and cryptographically signed with a private key in the "real world" external to and independent of the protocol, while contract accounts don't have private keys and so "control themselves" in the predetermined way prescribed by their smart contract code. Both types of accounts are identified by an Ethereum address. In this chapter, we'll discuss contract accounts and the program code that controls them.
+
+簡潔に言えば、EOAは関連するコードやデータストレージのないシンプルなアカウントですが、コントラクトアカウントは関連するコードとデータストレージの両方を持っています。EOAは、プロトコルから独立した「現実世界」における秘密鍵によって作成され暗号学的に署名されたトランザクションによって制御されます。これに対して、コントラクトアカウントは秘密鍵を持たないので、スマートコントラクトコードであらかじめ規定された方法で「自分自身を制御」します。両方のアカウントタイプは、イーサリアムアドレスによって識別されます。この章では、コントラクトアカウントと、それを制御するプログラムコードについて説明します。
 
 ## What Is a Smart Contract?
 
-The term *smart contract* has been used over the years to describe a wide variety of things. In the 1990s, cryptographer Nick Szabo coined the term and defined it as “a set of promises, specified in digital form, including protocols within which the parties perform on the other promises.” Since then, the concept of smart contracts has evolved, especially after the introduction of decentralized blockchain platforms with the launch of Bitcoin in 2009.
+## スマートコントラクトとは何か？
+
+The term *smart contract* has been used over the years to describe a wide variety of things. In the 1990s, cryptographer Nick Szabo coined the term and defined it as "a set of promises, specified in digital form, including protocols within which the parties perform on the other promises." Since then, the concept of smart contracts has evolved, especially after the introduction of decentralized blockchain platforms with the launch of Bitcoin in 2009.
+
+「スマートコントラクト」という用語は、さまざまな異なるものを表現するために長年にわたって使われてきました。1990年代に、暗号学者であるニック・ザボ（Nick Szabo）がこの用語を作り、「当事者が他の約束を実行する手順まで含んだ、デジタル形式で規定された一連の約束」と定義しました。その後、スマートコントラクトの概念は発展していきましたが、それが顕著になったのは、2009年にビットコインが登場した分散型ブロックチェーンプラットフォームが導入されてからでした。
 
 In the context of Ethereum, the term is actually a bit of a misnomer, given that Ethereum smart contracts are neither smart nor legal contracts, but the term has stuck. In this book, we use the term *smart contracts* to refer to immutable computer programs that run deterministically in the context of the EVM as part of the Ethereum network protocol—that is, on the decentralized Ethereum world computer.
 
-Let’s unpack that definition:
+イーサリアムの文脈における「スマートコントラクト」という用語は、イーサリアムのスマートコントラクトがスマートでも法的な契約でもないことを考えればやや不適切な名称ですが、すでに定着しています。本書では、「スマートコントラクト」という用語は、イーサリアム仮想マシン（EVM）の文脈で、イーサリアムネットワークプロトコルの一部として──つまり、分散型イーサリアムワールドコンピュータにおいて──決定論的に実行される、イミュータブルなコンピュータプログラムを指します。
+
+Let's unpack that definition:
+
+いま示した定義で使われている用語の意味を示しておきましょう。
 
 **Computer programs**
 
+**コンピュータプログラム**
+
 Smart contracts are simply computer programs. The word *contract* has no legal meaning in this context.
+
+スマートコントラクトは単純なコンピュータプログラムです。この文脈では、「コントラクト」という言葉に（「契約」といった）法的な意味はありません。
 
 **Immutable**
 
+**イミュータブル**
+
 Once deployed, the code of a smart contract cannot change. Unlike with traditional software, the only way to modify a smart contract is to deploy a new instance.
+
+スマートコントラクトは一度デプロイされると、そのコードを変更することができません。従来のソフトウェアとは異なり、スマートコントラクトを変更する唯一の方法は、新しいインスタンスをデプロイすることです。
 
 **Deterministic**
 
+**決定論的**
+
 The outcome of the execution of a smart contract is the same for everyone who runs it, given the context of the transaction that initiated its execution and the state of the Ethereum blockchain at the moment of execution.
+
+実行を開始するトランザクションのコンテクストと、実行時のイーサリアムブロックチェーンの状態を前提に、スマートコントラクトの実行結果はそれを実行するすべての人にとって同一になります。
 
 **EVM context**
 
+**EVMのコンテクスト**
+
 Smart contracts operate with a very limited execution context. They can access their own state, the context of the transaction that called them, and some information about the most recent blocks.
+
+スマートコントラクトは非常に限られた実行コンテクストで機能します。自分の状態、そのコントラクトを呼び出したトランザクションのコンテクスト、最新ブロックに関する情報にアクセスできます。
 
 **Decentralized world computer**
 
-The EVM runs as a local instance on every Ethereum node, but because all instances of the EVM operate on the same initial state and produce the same final state, the system as a whole operates as a single “world computer.”
+**分散型ワールドコンピュータ**
+
+The EVM runs as a local instance on every Ethereum node, but because all instances of the EVM operate on the same initial state and produce the same final state, the system as a whole operates as a single "world computer."
+
+EVMはすべてのイーサリアムノード上でローカルインスタンスとして動作します。しかし、EVMのすべてのインスタンスは同じ初期状態で動作し、同じ最終状態を生成するため、システム全体が1つの「ワールドコンピュータ」として動作します。
 
 ## Life Cycle of a Smart Contract
 
-Smart contracts are typically written in a high-level language such as Solidity. But in order to run, they must be compiled to the low-level bytecode that runs in the EVM. Once compiled, they are deployed on the Ethereum platform using a special contract-creation transaction, which is identified by having an empty `to` field (see "Special Transaction: Contract Creation" in Chapter 6). Each contract is identified by an Ethereum address, which is derived from the contract-creation transaction as a function of the originating account and nonce. The Ethereum address of a contract can be used in a transaction as the recipient, sending funds to the contract or calling one of the contract’s functions. Note that, unlike with EOAs, there are no keys associated with an account created for a new smart contract. As the contract creator, you don’t get any special privileges at the protocol level (although you can explicitly code them into the smart contract). You certainly don’t receive the private key for the contract account, which in fact does not exist—we can say that smart contract accounts own themselves.
+## スマートコントラクトのライフサイクル
 
-Importantly, contracts *only run if they are called by a transaction*. All smart contracts in Ethereum are executed, ultimately, because of a transaction initiated from an EOA. A contract can call another contract that can call another contract, and so on, but the first contract in such a chain of execution will always have been called by a transaction from an EOA. Contracts never run “on their own” or “in the background.” Contracts effectively lie dormant until a transaction triggers execution, either directly or indirectly as part of a chain of contract calls. It is also worth noting that smart contracts are not executed “in parallel” in any sense—the Ethereum world computer can be considered to be a single-threaded machine.
+Smart contracts are typically written in a high-level language such as Solidity. But in order to run, they must be compiled to the low-level bytecode that runs in the EVM. Once compiled, they are deployed on the Ethereum platform using a special contract-creation transaction, which is identified as such by being sent to the contract-creation address, namely `0x0` (see "Special Transaction: Contract Creation"). Each contract is identified by an Ethereum address, which is derived from the contract-creation transaction as a function of the originating account and nonce. The Ethereum address of a contract can be used in a transaction as the recipient, sending funds to the contract or calling one of the contract's functions. Note that, unlike with EOAs, there are no keys associated with an account created for a new smart contract. As the contract creator, you don't get any special privileges at the protocol level (although you can explicitly code them into the smart contract). You certainly don't receive the private key for the contract account, which in fact does not exist—we can say that smart contract accounts own themselves.
 
-Transactions are *atomic*, regardless of how many contracts they call or what those contracts do when called. Transactions execute in their entirety, with any changes in the global state (contracts, accounts, etc.) recorded only if all execution terminates successfully. *Successful termination* means that the program executed without an error and reached the end of execution. If execution fails due to an error, all of its effects (changes in state) are “rolled back” as if the transaction never ran. A failed transaction is still recorded as having been attempted, and the ether spent on gas for the execution is deducted from the originating account, but it otherwise has no effects on contract or account state.
+通常、スマートコントラクトはSolidityのような高級言語で書かれます。しかし、これを実行するには、EVMで実行される低レベルのバイトコードにコンパイルする必要があります。コンパイルされると、特別なコントラクト作成トランザクションを使用してイーサリアムプラットフォームにデプロイされます。このトランザクションは、特別なコントラクト作成アドレス、つまり`0x0`に送信されることによって識別されます（「特別なトランザクション：コントラクト作成」を参照）。各コントラクトは、発信アカウントとナンスの関数としてコントラクト作成トランザクションから導出された、イーサリアムアドレスによって識別されます。コントラクトのイーサリアムアドレスは、トランザクションの受信者としてコントラクトへの資金の送信やコントラクトの関数の呼び出しに使用できます。EOAとは異なり、新しいスマートコントラクトのために作成されたアカウントに関連付けられた鍵はありません。コントラクトの作成者であっても、プロトコルレベルで特権を取得することはありません（スマートコントラクトに特権を明示的にコードとして書き込むことはできます）。コントラクトアカウントの秘密鍵を受け取ることはありません──それは存在しないのです。スマートコントラクトアカウントは自分自身を所有していると言えます。
 
-As previously mentioned, a contract’s code cannot be changed once it is deployed. Historically, a contract could be deleted, removing its code and internal state (storage) from its address and leaving a blank account. After such a deletion, any transactions sent to that address would not result in code execution because no code would remain. This deletion was accomplished using an EVM opcode called `SELFDESTRUCT`, which provided a gas refund, incentivizing the release of network resources by deleting stored state. However, the `SELFDESTRUCT` operation was deprecated by [EIP-6780](https://oreil.ly/5LcZo) in 2023 due to the significant changes it requires to an account’s state, particularly the removal of all code and storage. With the upcoming upgrades in the Ethereum roadmap, this operation will no longer be feasible.
+Importantly, contracts *only run if they are called by a transaction*. All smart contracts in Ethereum are executed, ultimately, because of a transaction initiated from an EOA. A contract can call another contract that can call another contract, and so on, but the first contract in such a chain of execution will always have been called by a transaction from an EOA. Contracts never run "on their own" or "in the background." Contracts effectively lie dormant until a transaction triggers execution, either directly or indirectly as part of a chain of contract calls. It is also worth noting that smart contracts are not executed "in parallel" in any sense—the Ethereum world computer can be considered to be a single-threaded machine.
+
+重要なのは、コントラクトは「トランザクションによって呼び出された場合にのみ」実行されるという点です。イーサリアムのすべてのスマートコントラクトは、最終的にはEOAから開始されたトランザクションによって実行されます。コントラクトは別のコントラクトを呼び出すことができ、その別のコントラクトはさらに別のコントラクトを呼び出すことができ、この連鎖が続きます。しかし、このような一連の実行における最初のコントラクトは、常にEOAからのトランザクションによって呼び出されます。コントラクトが「自分自身で」または「バックグラウンドで」実行されることはありません。トランザクションが一連のコントラクトコールの一部として、直接的であれ間接的であれ、実行をトリガーするまで、コントラクトは事実上休止状態となります。スマートコントラクトはいかなる意味でも「並行して」実行されないことにも留意してください──イーサリアムワールドコンピュータは、シングルスレッドマシンとみなすことができます。
+
+Transactions are *atomic*, regardless of how many contracts they call or what those contracts do when called. Transactions execute in their entirety, with any changes in the global state (contracts, accounts, etc.) recorded only if all execution terminates successfully. *Successful termination* means that the program executed without an error and reached the end of execution. If execution fails due to an error, all of its effects (changes in state) are "rolled back" as if the transaction never ran. A failed transaction is still recorded as having been attempted, and the ether spent on gas for the execution is deducted from the originating account, but it otherwise has no effects on contract or account state.
+
+トランザクションは、呼び出すコントラクトの数や呼び出されたときのコントラクトの動作に関係なく、アトミックです。すべての実行が正常に終了した場合にのみ、グローバルな状態（コントラクト、アカウントなど）の変更が記録され、トランザクションが全体として実行されたことになります。ここでいう「正常な終了」とは、プログラムがエラーなしで実行され、実行の終わりに達したことを意味します。エラーが原因で実行が失敗した場合、そのすべての影響（状態の変更）は、トランザクションが実行されなかったかのように「ロールバック」されます。実行に失敗したトランザクションは試行されたものとして記録され、実行のためにガスとして費やされたイーサは発信元アカウントから差し引かれますが、それ以外はコントラクトまたはアカウントの状態に影響を与えません。
+
+As previously mentioned, a contract's code cannot be changed once it is deployed. Historically, a contract could be deleted, removing its code and internal state (storage) from its address and leaving a blank account. After such a deletion, any transactions sent to that address would not result in code execution because no code would remain. This deletion was accomplished using an EVM opcode called `SELFDESTRUCT`, which provided a gas refund, incentivizing the release of network resources by deleting stored state. However, the `SELFDESTRUCT` operation was deprecated by [EIP-6780](https://oreil.ly/5LcZo) in 2023 due to the significant changes it requires to an account's state, particularly the removal of all code and storage. With the upcoming upgrades in the Ethereum roadmap, this operation will no longer be feasible.
+
+前述のように、コントラクトのコードは一度デプロイされると変更できません。歴史的には、コントラクトを「削除」して、コードとその内部状態（ストレージ）をアドレスから取り除き、空白のアカウントとして残すことが可能でした。削除後、そのアドレスに送信されたトランザクションによってコードが実行されることはありません。なぜなら、実行するコードがなくなっているからです。この削除は`SELFDESTRUCT`というEVMオペコードを使用して行われ、保存された状態を削除することでネットワークリソースの解放にインセンティブを与えるガスの払い戻しが提供されていました。しかし、`SELFDESTRUCT`オペレーションは、アカウントの状態に対する大きな変更──特にすべてのコードとストレージの削除──を伴うため、2023年に[EIP-6780](https://oreil.ly/5LcZo)によって非推奨となりました。イーサリアムロードマップにおける今後のアップグレードにより、このオペレーションは実行不可能になる予定です。
 
 ## Introduction to Ethereum High-Level Languages
 
-The EVM is a virtual machine that runs a special form of code called *EVM bytecode*, analogous to your computer’s CPU, which runs machine code such as x86_64. We will examine the operation and language of the EVM in much more detail in Chapter 14. In this section, we will look at how smart contracts are written to run on the EVM.
+## イーサリアム高級言語の紹介
+
+The EVM is a virtual machine that runs a special form of code called *EVM bytecode*, analogous to your computer's CPU, which runs machine code such as x86_64. We will examine the operation and language of the EVM in much more detail in Chapter 14. In this section, we will look at how smart contracts are written to run on the EVM.
+
+EVMは、EVMバイトコードと呼ばれる特別な形式のコードを実行する仮想マシンです。これはx86_64などのマシンコードを実行するコンピュータのCPUに似ています。EVMの操作と言語については、14章で詳しく説明します。この節では、EVMで実行するためのスマートコントラクトの書き方について説明します。
 
 While it is possible to program smart contracts directly in bytecode, EVM bytecode is rather unwieldy and very difficult for programmers to read and understand. Instead, most Ethereum developers use a high-level language to write programs and a compiler to convert them into bytecode.
 
+スマートコントラクトをバイトコードで直接プログラムすることは可能ですが、EVMバイトコードはかなり扱いにくく、プログラマーが読んで理解するのは非常に困難です。その代わりに、ほとんどのイーサリアム開発者はプログラムを書くために高級言語を使い、それらをバイトコードに変換するためのコンパイラを使います。
+
 Although any high-level language could be adapted to write smart contracts, adapting an arbitrary language to be compilable to EVM bytecode is quite a cumbersome exercise and would in general lead to some amount of confusion. Smart contracts operate in a highly constrained and minimalistic execution environment (the EVM). In addition, a special set of EVM-specific system variables and functions needs to be available. As such, it is easier to build a smart contract language from scratch than it is to make a general-purpose language suitable for writing smart contracts. As a result, a number of special-purpose languages have emerged for programming smart contracts. Ethereum has several such languages, together with the compilers needed to produce EVM-executable bytecode.
 
-In general, programming languages can be classified into two broad programming paradigms: *declarative* and *imperative*, also known as *functional* and *procedural*, respectively. In declarative programming, we write functions that express the *logic* of a program but not its *flow*. Declarative programming is used to create programs where there are no *side effects*, meaning that there are no changes to state outside of a function. Declarative programming languages include Haskell and SQL. Imperative programming, by contrast, is where a programmer writes a set of procedures that combine the logic and flow of a program. Imperative programming languages include C++ and Java. Some languages are “hybrid,” meaning that they encourage declarative programming but can also be used to express an imperative programming paradigm. Such hybrids include Lisp, JavaScript, and Python. In general, any imperative language can be used to write in a declarative paradigm, but it often results in inelegant code. By comparison, pure declarative languages cannot be used to write in an imperative paradigm. In purely declarative languages, there are no “variables.”
+どんな高級言語でもスマートコントラクトを書くために使えるかもしれませんが、任意の言語をEVMバイトコードにコンパイルできるように適応させるのは非常に面倒な作業であり、通常はある程度の混乱を招くことになります。スマートコントラクトは、非常に制約された最小限の実行環境（EVM）で機能します。さらに、EVM固有のシステム変数と関数の特別なセットが利用可能でなければなりません。そのため、汎用言語をスマートコントラクトの作成に適したものにするよりも、最初からスマートコントラクト言語を構築するほうが簡単です。その結果、スマートコントラクトを書くために、特定の目的のための言語が数多く登場しました。イーサリアムには、EVMで実行可能なバイトコードを生成するために必要なコンパイラとともに、いくつかの開発言語があります。
 
-While imperative programming is more commonly used by programmers, it can be very difficult to write programs that execute exactly as expected. The ability of any part of the program to change the state of any other makes it difficult to reason about a program’s execution and introduces many opportunities for bugs. Declarative programming, by comparison, makes it easier to understand how a program will behave: since it has no side effects, any part of a program can be understood in isolation.
+In general, programming languages can be classified into two broad programming paradigms: *declarative* and *imperative*, also known as *functional* and *procedural*, respectively. In declarative programming, we write functions that express the *logic* of a program but not its *flow*. Declarative programming is used to create programs where there are no *side effects*, meaning that there are no changes to state outside of a function. Declarative programming languages include Haskell and SQL. Imperative programming, by contrast, is where a programmer writes a set of procedures that combine the logic and flow of a program. Imperative programming languages include C++ and Java. Some languages are "hybrid," meaning that they encourage declarative programming but can also be used to express an imperative programming paradigm. Such hybrids include Lisp, JavaScript, and Python. In general, any imperative language can be used to write in a declarative paradigm, but it often results in inelegant code. By comparison, pure declarative languages cannot be used to write in an imperative paradigm. In purely declarative languages, there are no "variables."
+
+一般に、プログラミング言語は、宣言型（declarative）と命令型（imperative）の2つのプログラミングパラダイムに分類できます。それぞれ、関数型（functional）と手続き型（procedural）とも呼ばれています。宣言型プログラミングでは、プログラムのロジック（logic）を表現する関数を書く一方、プログラムのフロー（flow）を表現する関数は書きません。宣言型プログラミングは副作用（side effect）がないプログラム、つまり関数の外側の状態変化のないプログラムを作成するために使用されます。宣言型プログラミング言語にはHaskellやSQLが含まれます。これとは対照的に、命令型プログラミングでは、プログラマーがプログラムのロジックとフローを組み合わせた一連のプロシージャを作成します。命令型プログラミング言語には、C++とJavaがあります。一部の言語は「ハイブリッド」で、宣言型プログラミングを奨励するものの、命令型プログラミングのパラダイムを表現するためにも使用できます。このようなハイブリッドには、Lisp、JavaScript、Pythonなどが含まれます。一般に、宣言型のパラダイムを書くためにどんな命令型言語でも使えますが、それはしばしばエレガントではないコードになります。一方、純粋な宣言型言語を使用して、命令型パラダイムを書くことはできません。純粋な宣言型の言語には「変数」がないためです。
+
+While imperative programming is more commonly used by programmers, it can be very difficult to write programs that execute exactly as expected. The ability of any part of the program to change the state of any other makes it difficult to reason about a program's execution and introduces many opportunities for bugs. Declarative programming, by comparison, makes it easier to understand how a program will behave: since it has no side effects, any part of a program can be understood in isolation.
+
+命令型プログラミングはプログラマーによってより広く使用されていますが、完全に期待どおりに実行するプログラムを書くことは非常に困難です。プログラム内のあらゆる部分がプログラム内の状態を変更できるため、プログラムが正しく実行されているかどうか判断を難しくし、バグが発生する可能性を高めます。これに対して宣言型プログラミングでは、副作用がなくプログラムのどの部分でも単独で理解できるため、プログラムの動作が理解しやすくなっています。
 
 In smart contracts, bugs literally cost money. As a result, it is critically important to write smart contracts without unintended effects. To do that, you must be able to clearly reason about the expected behavior of the program. So declarative languages play a much bigger role in smart contracts than they do in general-purpose software. Nevertheless, as you will see, the most widely used language for smart contracts (Solidity) is imperative. Programmers, like most humans, resist change!
 
+スマートコントラクトでは、バグは文字どおり資産に関わってきます。つまり、意図しない影響がないようにスマートコントラクトを作成することが極めて重要です。そのためにも、開発者はプログラムの動作について明確に推論できなければなりません。したがって宣言型言語は、汎用ソフトウェアにおいてよりもスマートコントラクトにおいてはるかに大きな役割を持ちます。それにもかかわらず、見てわかるとおり、最も広く使われているスマートコントラクト用言語（Solidity）は命令型です。プログラマーも人の常として、変化には抵抗するものです。
+
 Currently supported high-level programming languages for smart contracts include the following (ordered by popularity):
+
+スマートコントラクト向けに現在サポートされている高級プログラミング言語は次のとおりです（人気順に挙げています）。
+
+**Solidity**
 
 **Solidity**
 
 A procedural (imperative) programming language with a syntax similar to JavaScript, C++, or Java. The most popular and frequently used language for Ethereum smart contracts.
 
+JavaScript、C++、またはJavaに似た構文を持つ手続き型（命令型）プログラミング言語。イーサリアムのスマートコントラクト開発において、最もよく使用されている言語です。
+
+**Yul**
+
 **Yul**
 
 An intermediate language used in standalone mode or inline within Solidity, which is ideal for high-level optimizations across platforms. Beginners should start with Solidity or Vyper before exploring Yul, as it requires advanced knowledge of smart contract security and the EVM.
+
+スタンドアロンモードまたはSolidity内のインラインで使用される中間言語で、プラットフォーム間の高レベルな最適化に適しています。スマートコントラクトのセキュリティとEVMに関する高度な知識が必要なため、初心者はYulを学ぶ前にSolidityまたはVyperから始めるべきです。
+
+**Vyper**
 
 **Vyper**
 
 A contract-oriented programming language with Python-like syntax that prioritizes user safety and encourages clear coding practices via language design and efficient execution.
 
+Pythonのような構文を持つコントラクト指向プログラミング言語で、ユーザーの安全性を優先し、言語設計と効率的な実行を通じて明確なコーディングプラクティスを奨励しています。
+
 **Huff**
 
-A low-level programming language primarily used by developers who require highly efficient and minimalistic contract code, allowing for advanced optimizations beyond what higher-level languages like Solidity offer. Like Yul, it’s not suggested for beginners.
+**Huff**
+
+A low-level programming language primarily used by developers who require highly efficient and minimalistic contract code, allowing for advanced optimizations beyond what higher-level languages like Solidity offer. Like Yul, it's not suggested for beginners.
+
+高効率で最小限のコントラクトコードを必要とする開発者が主に使用する低レベルプログラミング言語で、Solidityのような高級言語では実現できない高度な最適化が可能です。Yulと同様に、初心者には推奨されません。
+
+**Fe**
 
 **Fe**
 
 A statically typed smart contract language for the EVM, inspired by Python and Rust. It aims to be easy to learn, even for developers who are new to Ethereum, with its development still in the early stages since its alpha release in January 2021.
 
+PythonとRustにインスパイアされた、EVM向けの静的型付けスマートコントラクト言語です。イーサリアムが初めての開発者でも学びやすいことを目指しており、2021年1月のアルファリリース以来、まだ開発の初期段階にあります。
+
 Other languages were developed in the past but are not maintained anymore, such as LLL, Serpent, and Bamboo.
+
+過去に開発されたものの、現在はメンテナンスされていない言語もあります。LLL、Serpent、Bambooなどがその例です。
 
 As you can see, there are many languages to choose from. However, of all of these, Solidity is by far the most popular, to the point of being the de facto high-level language of Ethereum and even other EVM-like blockchains.
 
+このように、選択できる言語はたくさんあります。しかし、これらのなかでもSolidityが圧倒的に人気があり、事実上イーサリアム、さらには他のEVM互換ブロックチェーンの高級言語となっています。
+
 ## Building a Smart Contract with Solidity
+
+## Solidityでのスマートコントラクトの作成
 
 Solidity was created by Gavin Wood (coauthor of the first edition of this book) as a language explicitly for writing smart contracts with features to directly support execution in the decentralized environment of the Ethereum world computer. The resulting attributes are quite general, and so it has ended up being used for coding smart contracts on several other blockchain platforms. It was developed by Christian Reitwiessner and then by Alex Beregszaszi, Liana Husikyan, Yoichi Hirai, and several former Ethereum core contributors. Solidity is now developed and maintained as an independent project on [GitHub](https://oreil.ly/ik9kH).
 
-The main “product” of the Solidity project is the Solidity compiler, solc, which converts programs written in the Solidity language to EVM bytecode. The project also manages the important ABI standard for Ethereum smart contracts, which we will explore in detail in this chapter. Each version of the Solidity compiler corresponds to and compiles a specific version of the Solidity language.
+Solidityはスマートコントラクトを明示的に記述するための言語で、イーサリアムワールドコンピュータの分散環境での実行を直接にサポートする機能を備えています。ギャヴィン・ウッド（本書初版の共著者）によって作られました。結果として得られる特性が非常に一般的であるため、他のいくつかのブロックチェーンプラットフォームでスマートコントラクトをコーディングするために使用されることになりました。クリスチャン・ライトウィーズナー、その後アレックス・ベリックスサシィ、リアーナ・フシキヤン、平井洋一、また何人かの元イーサリアムのコアコントリビュータによって開発されました。Solidityは現在[GitHub](https://oreil.ly/ik9kH)上の独立したプロジェクトとして開発、維持されています。
+
+The main "product" of the Solidity project is the Solidity compiler, solc, which converts programs written in the Solidity language to EVM bytecode. The project also manages the important ABI standard for Ethereum smart contracts, which we will explore in detail in this chapter. Each version of the Solidity compiler corresponds to and compiles a specific version of the Solidity language.
+
+Solidityプロジェクトの主な「プロダクト」は、Solidity言語で書かれたプログラムをEVMバイトコードに変換するSolidityコンパイラであるsolcです。このプロジェクトは、イーサリアムスマートコントラクトの重要なABI規格も管理しています。ABIについては、この章で詳しく説明します。Solidityコンパイラの各バージョンは、Solidity言語の特定バージョンに対応し、それをコンパイルします。
 
 To get started, we will download a binary executable of the Solidity compiler. Then, we will develop and compile a simple contract, following on from the example we started with in Chapter 2.
 
+はじめに、Solidityコンパイラのバイナリ実行ファイルをダウンロードします。その後、2章で始めた例から続けて、簡単なコントラクトを作成してコンパイルします。
+
 ### Selecting a Version of Solidity
 
-Solidity follows a versioning model called [*semantic versioning*](https://semver.org), which specifies version numbers structured as three numbers separated by dots: MAJOR.MINOR.PATCH. The “major” number is incremented for major and backward-incompatible changes, the “minor” number is incremented when backward-compatible features are added in between major releases, and the “patch” number is incremented for backward-compatible bug fixes.
+### Solidityのバージョンの選択
 
-At the time of writing, Solidity is at version 0.8.26. The rules for major version 0, which is for initial development of a project, are different: anything may change at any time. In practice, Solidity treats the “minor” number as if it were the major version and the “patch” number as if it were the minor version. Therefore, in 0.8.26, 8 is considered to be the major version and 26 the minor version. As you saw in Chapter 2, your Solidity programs can contain a pragma directive that specifies the minimum and maximum versions of Solidity that it is compatible with and can be used to compile your contract. Since Solidity is rapidly evolving, it is often better to install the latest release.
+Solidity follows a versioning model called [*semantic versioning*](https://semver.org), which specifies version numbers structured as three numbers separated by dots: MAJOR.MINOR.PATCH. The "major" number is incremented for major and backward-incompatible changes, the "minor" number is incremented when backward-compatible features are added in between major releases, and the "patch" number is incremented for backward-compatible bug fixes.
+
+Solidityは[セマンティックバージョニング](https://semver.org)と呼ばれるバージョニングモデルに従います。これはドット（.）で区切られた3つの数字（メジャー.マイナー.パッチ）として構造化されたバージョン番号を指定します。「メジャー」番号は、メジャーリリースと後方互換性のない変更があると増え、「マイナー」番号はメジャーリリース間で後方互換性のある機能が追加されると増え、「パッチ」番号は後方互換性のあるバグ修正に対して増えます。
+
+At the time of writing, Solidity is at version 0.8.26. The rules for major version 0, which is for initial development of a project, are different: anything may change at any time. In practice, Solidity treats the "minor" number as if it were the major version and the "patch" number as if it were the minor version. Therefore, in 0.8.26, 8 is considered to be the major version and 26 the minor version. As you saw in Chapter 2, your Solidity programs can contain a pragma directive that specifies the minimum and maximum versions of Solidity that it is compatible with and can be used to compile your contract. Since Solidity is rapidly evolving, it is often better to install the latest release.
+
+本書執筆時点でのSolidityのバージョンは0.8.26です。プロジェクトの初期開発のためのメジャーバージョン0のルールは異なり、いつでも何でも変更される可能性があります。実際には、Solidityは「マイナー」番号をメジャーバージョンであるかのように扱い、「パッチ」番号をマイナーバージョンであるかのように扱います。したがって、0.8.26では8がメジャーバージョン、26がマイナーバージョンとみなされます。2章で見たように、Solidityプログラムは、互換性のあるSolidityの最小と最大バージョンを指定するプラグマ命令を含めることができ、コントラクトをコンパイルするのに使用することができます。Solidityは急速に進化しているので、最新のリリースをインストールすることを推奨します。
+
+> **Note**
+>
+> Another consequence of the rapid evolution of Solidity is the pace at which documentation gets outdated. Right now, we're working with Solidity version 0.8.26, and everything in this book is based on that version. While this book will always give you a solid foundation for learning Solidity, future versions might change some syntax and functionality. So, whenever you have questions or run into something new, it's a good idea to check the [official Solidity documentation](https://oreil.ly/LzV7L) to stay current.
 
 > **注記**
 >
-> Another consequence of the rapid evolution of Solidity is the pace at which documentation gets outdated. Right now, we’re working with Solidity version 0.8.26, and everything in this book is based on that version. While this book will always give you a solid foundation for learning Solidity, future versions might change some syntax and functionality. So, whenever you have questions or run into something new, it’s a good idea to check the [official Solidity documentation](https://oreil.ly/LzV7L) to stay current.
+> Solidityの急速な進化がもたらすもう1つの結果は、ドキュメントが陳腐化するペースの速さです。現在、本書ではSolidityバージョン0.8.26を使用しており、本書の内容はすべてこのバージョンに基づいています。本書はSolidityを学ぶための確かな基礎を常に提供しますが、将来のバージョンでは構文や機能が変更される可能性があります。そのため、疑問があったり新しいことに遭遇した場合は、[Solidityの公式ドキュメント](https://oreil.ly/LzV7L)を確認して最新の情報を得ることをお勧めします。
 
 ### Downloading and Installing Solidity
 
+### ダウンロードとインストール
+
 There are a number of methods you can use to download and install Solidity, depending on your operating system and requirements: either as a binary release or by compiling from source code. You can find detailed and updated instructions in the [Solidity documentation](https://oreil.ly/JW--z).
 
-Here’s how to install the latest binary release of Solidity on an Ubuntu/Debian operating system, using the apt package manager:
+Solidityのダウンロードおよびインストールを行い、使えるようにする方法はいくつかあります。バイナリリリースを利用する方法もありますし、ソースコードからコンパイルする方法もあります。詳細で最新の手順は、[Solidityのドキュメント](https://oreil.ly/JW--z)を参照してください。
+
+Here's how to install the latest binary release of Solidity on an Ubuntu/Debian operating system, using the apt package manager:
+
+以下が、aptパッケージマネージャを使って、Solidityの最新のバイナリリリースをUbuntu/Debianオペレーティングシステムにインストールする方法です。
 
 ```bash
 $ sudo add-apt-repository ppa:ethereum/ethereum
@@ -114,6 +222,8 @@ $ sudo apt install solc
 
 Once you have solc installed, check the version by running:
 
+solcをインストールしたら、次のコマンドを実行してバージョンを確認してください。
+
 ```bash
 $ solc --version
 solc, the solidity compiler commandline interface
@@ -122,43 +232,67 @@ Version: 0.8.26+commit.8a97fa7a.Linux.g++
 
 ### Development Environment
 
-While it’s entirely possible to develop Solidity smart contracts using a simple text editor, leveraging a development framework like [Hardhat](https://hardhat.org) or [Foundry](https://oreil.ly/-7Qvy) can significantly enhance your efficiency and effectiveness as a developer. These frameworks offer a comprehensive suite of tools that simplify and improve the development process. For example, they provide robust testing environments, allowing you to write and run unit tests to validate your contracts’ behavior, and they offer forking capabilities to create local instances of the mainnet for realistic testing scenarios. With advanced debugging and tracing capabilities, you can easily step through your code execution and quickly identify and resolve issues, saving time and reducing errors. Additionally, these frameworks support scripting and deployment automation, plug-in ecosystems that extend functionality, and seamless network management across different environments. Integrating these capabilities into your workflow ensures a higher level of code quality and security, which is difficult to achieve with a simple text editor.
+### 開発環境
 
-Beyond frameworks, adopting a modern IDE like VS Code further enhances productivity. VS Code offers a wide array of extensions for Solidity, including syntax highlighting, which makes your code easier to read; advanced commenting and bookmarking tools to help organize and navigate complex projects; and visual analysis tools that provide insights into your code’s structure and potential issues. There are also web-based development environments, such as [Remix IDE](https://oreil.ly/Fz0jJ).
+While it's entirely possible to develop Solidity smart contracts using a simple text editor, leveraging a development framework like [Hardhat](https://hardhat.org) or [Foundry](https://oreil.ly/-7Qvy) can significantly enhance your efficiency and effectiveness as a developer. These frameworks offer a comprehensive suite of tools that simplify and improve the development process. For example, they provide robust testing environments, allowing you to write and run unit tests to validate your contracts' behavior, and they offer forking capabilities to create local instances of the mainnet for realistic testing scenarios. With advanced debugging and tracing capabilities, you can easily step through your code execution and quickly identify and resolve issues, saving time and reducing errors. Additionally, these frameworks support scripting and deployment automation, plug-in ecosystems that extend functionality, and seamless network management across different environments. Integrating these capabilities into your workflow ensures a higher level of code quality and security, which is difficult to achieve with a simple text editor.
+
+シンプルなテキストエディタを使ってSolidityスマートコントラクトを開発することは十分に可能ですが、[Hardhat](https://hardhat.org)や[Foundry](https://oreil.ly/-7Qvy)のような開発フレームワークを活用することで、開発者としての効率と生産性を大幅に向上させることができます。これらのフレームワークは、開発プロセスを簡素化し改善するための包括的なツール群を提供します。たとえば、堅牢なテスト環境を提供し、コントラクトの動作を検証するためのユニットテストの作成と実行が可能です。また、リアルなテストシナリオのためにメインネットのローカルインスタンスを作成するフォーク機能も備えています。高度なデバッグおよびトレース機能により、コードの実行をステップ実行し、問題を迅速に特定して解決でき、時間の節約とエラーの削減につながります。さらに、これらのフレームワークはスクリプティングとデプロイの自動化、機能を拡張するプラグインエコシステム、異なる環境間のシームレスなネットワーク管理をサポートしています。これらの機能をワークフローに統合することで、シンプルなテキストエディタでは達成が難しい、より高いレベルのコード品質とセキュリティが確保されます。
+
+Beyond frameworks, adopting a modern IDE like VS Code further enhances productivity. VS Code offers a wide array of extensions for Solidity, including syntax highlighting, which makes your code easier to read; advanced commenting and bookmarking tools to help organize and navigate complex projects; and visual analysis tools that provide insights into your code's structure and potential issues. There are also web-based development environments, such as [Remix IDE](https://oreil.ly/Fz0jJ).
+
+フレームワーク以外にも、VS CodeのようなモダンなIDEを採用することで、生産性をさらに向上させることができます。VS CodeはSolidity向けの幅広い拡張機能を提供しており、コードを読みやすくするシンタックスハイライト、複雑なプロジェクトの整理とナビゲーションを支援する高度なコメントやブックマークツール、コードの構造や潜在的な問題に関する洞察を提供するビジュアル分析ツールなどがあります。[Remix IDE](https://oreil.ly/Fz0jJ)などのWebベースの開発環境もあります。
 
 Together, these tools not only improve code quality but also accelerate the development process, allowing us to build and deploy smart contracts more quickly and securely.
 
+これらのツールを組み合わせることで、コード品質が向上するだけでなく、開発プロセスが加速され、スマートコントラクトをより迅速かつ安全に構築してデプロイすることが可能になります。
+
 ### Writing a Simple Solidity Program
+
+### シンプルなSolidityプログラムを書く
 
 In Chapter 2, we wrote our first Solidity program. When we first built the `Faucet` contract, we used the Remix IDE to compile and deploy the contract. In this section, we will revisit, improve, and embellish `Faucet`.
 
+2章では、最初のSolidityプログラムを書きました。最初に`Faucet`コントラクトを作成したときは、Remix IDEを使用してそのコントラクトをコンパイルおよびデプロイしました。この節では、`Faucet`を見直し、改良し、装飾します。
+
 Our first attempt looked like Example 7-1.
 
+最初のファウセットコントラクトは、例7-1のようなものでした。
+
 **Example 7-1. Faucet.sol: a Solidity contract implementing a faucet**
+
+**例7-1 Faucet.sol：ファウセットを実装するSolidityコントラクト**
 
 ```solidity
 // SPDX-License-Identifier: GPL-3.0
 // Our first contract is a faucet!
 contract Faucet {
-    // Give out ether to anyone who asks
-    function withdraw(uint _withdrawAmount, address payable _to) public {
-        // Limit withdrawal amount
-        require(_withdrawAmount <= 100000000000000000);
-        // Send the amount to the address that requested it
-        _to.transfer(_withdrawAmount);
-    }
-    // Accept any incoming amount
-    receive() external payable {}
+    // Give out ether to anyone who asks
+    function withdraw(uint _withdrawAmount, address payable _to) public {
+        // Limit withdrawal amount
+        require(_withdrawAmount <= 100000000000000000);
+        // Send the amount to the address that requested it
+        _to.transfer(_withdrawAmount);
+    }
+    // Accept any incoming amount
+    receive() external payable {}
 }
 ```
 
 As we saw in Chapter 2, the SPDX license identifier in the comment indicates that the smart contract is licensed under GPL-3.0, informing users and developers of their legal rights and obligations for using and distributing the code.
 
+2章で見たように、コメント内のSPDXライセンス識別子は、スマートコントラクトがGPL-3.0の下でライセンスされていることを示しており、コードの使用と配布に関する法的権利と義務をユーザーと開発者に通知します。
+
 ### Compiling with the Solidity Compiler (solc)
+
+### Solidityコンパイラ（solc）を使ってコンパイルする
 
 Now, we will use the Solidity compiler on the command line to compile our contract directly. The Solidity compiler solc offers a variety of options, which you can see by passing the `--help` argument.
 
+それでは、コマンドラインでSolidityコンパイラを使用して、コントラクトを直接コンパイルします。Solidityコンパイラsolcはさまざまなオプションを提供しています。それらは`--help`引数を指定すれば確認できます。
+
 We use the `--bin` and `--optimize` arguments of solc to produce an optimized binary of our example contract:
+
+solcの`--bin`引数と`--optimize`引数を使用して、例に挙げたコントラクトの最適化されたバイナリを生成します。
 
 ```bash
 $ solc --optimize --bin Faucet.sol
@@ -175,15 +309,27 @@ Binary:
 
 The result that solc produces is a hex-serialized binary that can be submitted to the Ethereum blockchain.
 
+solcが生成する結果は16進数にシリアライズされたバイナリで、イーサリアムブロックチェーンに送信することができます。
+
 ## The Ethereum Contract ABI
+
+## イーサリアムコントラクトABI
 
 In computer software, an *application binary interface* is an interface between two program modules—often between the operating system and user programs. An ABI defines how data structures and functions are accessed in *machine code*; this is not to be confused with an API, which defines this access in high-level, often human-readable formats as *source code*. The ABI is thus the primary way of encoding and decoding data into and out of machine code.
 
+コンピュータソフトウェアにおいて、アプリケーションバイナリインターフェイス（ABI）とは、2つのプログラムモジュール間の──しばしば、オペレーティングシステムとユーザープログラムの間の──インターフェイスです。ABIは、機械語（machine code）においてデータ構造と関数がどのようにアクセスされるかを定義します。これをAPIと混同しないでください。APIは高レベルで、しばしばソースコード（source code）として人間が読める形式で、データ構造と関数へのアクセスを定義します。したがって、ABIはデータを機械語へとエンコードあるいは機械語からデコードするための主要な方法です。
+
 In Ethereum, the ABI is used to encode contract calls for the EVM and to read data out of transactions. The purpose of an ABI is to define the functions in the contract that can be invoked and describe how each function will accept arguments and return its result.
 
-A contract’s ABI is specified as a JSON array of function descriptions (see “Functions”) and events (see “Events”). A function description is a JSON object with fields `type`, `name`, `inputs`, `outputs`, `constant`, and `payable`. An event description object has fields `type`, `name`, `inputs`, and `anonymous`.
+イーサリアムでは、ABIを使用してEVMのコントラクト呼び出しをエンコードし、トランザクションからデータを読み取ります。ABIの目的は、呼び出される関数をコントラクトに定義し、各関数が引数を受け入れてその結果を返す方法を記述することです。
+
+A contract's ABI is specified as a JSON array of function descriptions (see "Functions") and events (see "Events"). A function description is a JSON object with fields `type`, `name`, `inputs`, `outputs`, `constant`, and `payable`. An event description object has fields `type`, `name`, `inputs`, and `anonymous`.
+
+コントラクトのABIは、関数の説明（「関数」を参照）およびイベント（「イベント」を参照）のJSON配列として指定されています。関数の説明は、`type`、`name`、`inputs`、`outputs`、`constant`、`payable`のフィールドを持つJSONオブジェクトです。イベント記述オブジェクトには、`type`、`name`、`inputs`、`anonymous`のフィールドがあります。
 
 We use the solc command-line Solidity compiler to produce the ABI for our *Faucet.sol* example contract:
+
+*Faucet.sol*サンプルコントラクトのABIを生成するには、solcコマンドラインSolidityコンパイラを使用します。
 
 ```bash
 $ solc --abi Faucet.sol
@@ -196,13 +342,23 @@ Contract JSON ABI
 
 As you can see, the compiler produces a JSON array describing the two functions that are defined by *Faucet.sol*. This JSON can be used by any application that wants to access the `Faucet` contract once it is deployed. Using the ABI, an application such as a wallet or DApp browser can construct transactions that call the functions in `Faucet` with the correct arguments and argument types. For example, a wallet would know that to call the function `withdraw`, it would have to provide a `uint256` argument named `withdrawAmount`. The wallet could prompt the user to provide that value, then create a transaction that encodes it and executes the `withdraw` function.
 
+コンパイラは、*Faucet.sol*によって定義されている2つの関数を記述するJSON配列を生成します。このJSONは、デプロイされた`Faucet`コントラクトにアクセスしたいどのアプリケーションでも使用できます。ABIを使用すると、ウォレットやDAppブラウザなどのアプリケーションは、正しい引数と引数タイプを使用して`Faucet`内の関数を呼び出すトランザクションを構築できます。たとえば、ウォレットが`withdraw`関数を呼び出すには、`withdrawAmount`という名前の`uint256`引数を指定する必要があることがわかります。ウォレットは、必要な値を入力するようにユーザーに促し、次にその値をエンコードして`withdraw`関数を実行するトランザクションを作成することができます。
+
 All that is needed for an application to interact with a contract is an ABI and the address where the contract has been deployed.
+
+アプリケーションがコントラクトと対話するために必要なものは、ABIとそのコントラクトがデプロイされているアドレスだけです。
 
 ## Selecting a Solidity Compiler and Language Version
 
+## Solidityコンパイラと言語バージョンの選択
+
 As we saw in the previous code, our `Faucet` contract compiles successfully with Solidity version 0.8.26. But what if we had used a different version of the Solidity compiler? The language is still in constant flux, and things may change in unexpected ways. Our contract is fairly simple, but what if our program used a feature that was added only in Solidity version 0.8.26 and we tried to compile it with 0.8.25?
 
-To resolve such issues, Solidity offers a compiler directive known as a *version pragma* that instructs the compiler that the program expects a specific compiler (and language) version. Let’s look at an example:
+前述のコードで見たように、`Faucet`コントラクトはSolidityバージョン0.8.26で正常にコンパイルされています。しかし、Solidityコンパイラの異なるバージョンを使いたいとしたら、どうでしょうか。言語はまだ流動的であり、仕様は予想外の形で変わるかもしれません。私たちのコントラクトはとてもシンプルですが、コントラクトのプログラムがSolidityバージョン0.8.26で追加された機能を使用しており、そのプログラムをバージョン0.8.25でコンパイルしようとするとどうなるでしょうか？
+
+To resolve such issues, Solidity offers a compiler directive known as a *version pragma* that instructs the compiler that the program expects a specific compiler (and language) version. Let's look at an example:
+
+このような問題を解決するために、Solidityはバージョンプラグマ（version pragma）と呼ばれるコンパイラ命令を提供しています。これは、プログラムが特定のコンパイラ（および言語）バージョンを期待することをコンパイラに指示します。例を見てみましょう。
 
 ```solidity
 pragma solidity 0.8.26;
@@ -210,385 +366,736 @@ pragma solidity 0.8.26;
 
 The Solidity compiler reads the version pragma and will produce an error if the compiler version is incompatible with the version pragma. In this case, our version pragma says that this program can be compiled by a Solidity compiler with version 0.8.26. Pragma directives are not compiled into EVM bytecode; they are compile-time directives used by the compiler only to check compatibility.
 
-> **注記**
+Solidityコンパイラはバージョンプラグマを読み込み、コンパイラのバージョンがバージョンプラグマと互換性がない場合はエラーを生成します。この場合、バージョンプラグマはこのプログラムがSolidityコンパイラのバージョン0.8.26でコンパイルできることを宣言しています。プラグマ命令はEVMバイトコードにコンパイルされません。互換性をチェックするために、コンパイラにのみ使用されるコンパイル時の命令です。
+
+> **Note**
 >
 > In the pragma directive, the symbol ^ states that we allow compilation with any *minor revision* equal to or above the specified one. For example, a pragma directive `pragma solidity ^0.7.1;` means that the contract can be compiled with a solc version of 0.7.1, 0.7.2, and 0.7.3 but not 0.8.0 (which is a major revision, not a minor revision).
 
-Let’s add a pragma directive to our `Faucet` contract. We will name the new file *Faucet2.sol*, to keep track of our changes as we proceed through these examples, starting in Example 7-2.
+> **注記**
+>
+> プラグマ命令において、^記号は、指定されたバージョン以上のマイナーリビジョン（minor revision）でのコンパイルを許可することを示しています。たとえば、`pragma solidity ^0.7.1;`というプラグマ命令は、solcのバージョン0.7.1、0.7.2、0.7.3でコンパイルできますが、0.8.0ではコンパイルできないことを意味します（これはマイナーリビジョンではなくメジャーリビジョンです）。
+
+Let's add a pragma directive to our `Faucet` contract. We will name the new file *Faucet2.sol*, to keep track of our changes as we proceed through these examples, starting in Example 7-2.
+
+ファウセットコントラクトにプラグマ命令を追加しましょう。新しいファイルに*Faucet2.sol*という名前を付けて、例7-2以降の例を見ながら変更を追跡します。
 
 **Example 7-2. Faucet2.sol: Adding the version pragma to Faucet**
+
+**例7-2 Faucet2.sol：バージョンプラグマをファウセットに追加する**
 
 ```solidity
 pragma solidity 0.8.26;
 // SPDX-License-Identifier: GPL-3.0
 // Our first contract is a faucet!
 contract Faucet {
-    // Give out ether to anyone who asks
-    function withdraw(uint _withdrawAmount, address payable _to) public {
-        // Limit withdrawal amount
-        require(_withdrawAmount <= 100000000000000000);
-        // Send the amount to the address that requested it
-        _to.transfer(_withdrawAmount);
-    }
-    // Accept any incoming amount
-    receive() external payable {}
+    // Give out ether to anyone who asks
+    function withdraw(uint _withdrawAmount, address payable _to) public {
+        // Limit withdrawal amount
+        require(_withdrawAmount <= 100000000000000000);
+        // Send the amount to the address that requested it
+        _to.transfer(_withdrawAmount);
+    }
+    // Accept any incoming amount
+    receive() external payable {}
 }
 ```
 
 Adding a version pragma is a best practice because it avoids problems with mismatched compiler and language versions. We will explore other best practices and continue to improve the `Faucet` contract throughout this chapter.
 
+バージョンプラグマを追加することは、コンパイラと言語のバージョンの不一致による問題を回避するため、ベストプラクティスです。この章では、他のベストプラクティスを検討し、`Faucet`コントラクトの改善を続けます。
+
 ## Programming with Solidity
 
-In this section, we will look at some of the capabilities of the Solidity language. As we mentioned in Chapter 2, our first contract example was very simple and also flawed in various ways. We’ll gradually improve it here while exploring how to use Solidity. This won’t be a comprehensive Solidity tutorial, however, as Solidity is quite complex and rapidly evolving. We’ll cover the basics and give you enough of a foundation to be able to explore the rest on your own.
+## Solidityを使ったプログラミング
+
+In this section, we will look at some of the capabilities of the Solidity language. As we mentioned in Chapter 2, our first contract example was very simple and also flawed in various ways. We'll gradually improve it here while exploring how to use Solidity. This won't be a comprehensive Solidity tutorial, however, as Solidity is quite complex and rapidly evolving. We'll cover the basics and give you enough of a foundation to be able to explore the rest on your own.
+
+この節では、Solidity言語の機能を見ていきます。2章で述べたように、最初のコントラクト例は非常に単純であり、さまざまな点で不備がありました。ここではSolidityの使い方を学びながら、徐々に改良していきます。しかしながら、Solidityは非常に複雑で急速に進化しているため、包括的なSolidityのチュートリアルにはなりません。ここでは基本をカバーし、自分で調べてゆけるようになるための十分な基礎を提供します。
 
 ### Data Types
 
-First, let’s look at some of the basic data types offered in Solidity:
+### データ型
+
+First, let's look at some of the basic data types offered in Solidity:
+
+まず、Solidityで提供されているいくつかの基本的なデータ型を見てみましょう。
 
 **Boolean (bool)**
 
+**ブーリアン型（bool）**
+
 Boolean value, `true` or `false`, with logical operators ! (not), && (and), || (or), == (equal), and != (not equal).
+
+論理演算子を使用したブール値、`true`または`false`です。論理演算子には、!（否定）、&&（論理積）、||（論理和）、==（等価演算子）、!=（非等価演算子）があります。
 
 **Integer (int, uint)**
 
+**整数型（int、uint）**
+
 Signed (`int`) and unsigned (`uint`) integers, declared in increments of 8 bits from `int8` to `uint256`. Without a size suffix, 256-bit quantities are used to match the word size of the EVM.
+
+符号付き（`int`）および符号なし（`uint`）の整数。`int8`から`uint256`までの8ビット刻みで宣言します。サイズのサフィックスがない場合は、EVMのワードサイズに合わせて256ビットの量が使用されます。
 
 **Fixed point (fixed, ufixed)**
 
+**固定小数点数型（fixed、ufixed）**
+
 Fixed-point numbers, declared with `(u)fixedMxN` where *M* is the size in bits (increments of 8 up to 256) and *N* is the number of decimals after the point (up to 18)—for example, `ufixed32x2`.
 
-> **注記**
+固定小数点数。`(u)fixedMxN`で宣言されます。ここで*M*はビット単位のサイズ（8から256までの8刻み）、*N*はそのポイント以降の小数の数（最大18）です。たとえば、`ufixed32x2`です。
+
+> **Note**
 >
 > Fixed-point numbers are not fully supported by Solidity yet. They can be declared but cannot be assigned to or from.
 
+> **注記**
+>
+> 固定小数点数はSolidityではまだ完全にはサポートされていません。宣言はできますが、値の代入や読み出しはできません。
+
 **Address**
+
+**アドレス型（address）**
 
 A 20-byte Ethereum address. The `address` object has many helpful member functions, the main ones being `balance` (returns the account balance) and `transfer` (transfers ether to the account).
 
+20バイトのイーサリアムアドレス。`address`オブジェクトには多くの便利なメンバー関数があります。主なものとしては、`balance`（口座残高を返す）と`transfer`（口座へのイーサ送金）があります。
+
 **Byte array (fixed)**
+
+**固定バイト配列型**
 
 Fixed-size arrays of bytes, declared with `bytes1` up to `bytes32`.
 
+`bytes1`から`bytes32`までで宣言された固定サイズのバイト配列です。
+
 **Byte array (dynamic)**
+
+**動的バイト配列型**
 
 Variable-sized arrays of bytes, declared with `bytes` or `string`.
 
+`bytes`または`string`で宣言された可変サイズのバイト配列です。
+
 **Enum**
 
-User-defined type for enumerating discrete values: `enum NAME {LABEL1, LABEL 2, ...}`. Enum’s underlying type is `uint8`; thus, it can have no more than 256 members and can be explicitly converted to all integer types.
+**列挙型（enum）**
+
+User-defined type for enumerating discrete values: `enum NAME {LABEL1, LABEL 2, ...}`. Enum's underlying type is `uint8`; thus, it can have no more than 256 members and can be explicitly converted to all integer types.
+
+離散値を列挙するためのユーザー定義型です。`enum NAME {LABEL1, LABEL2, ...}`のように指定します。列挙型の基底型は`uint8`であるため、メンバーは256個以下であり、すべての整数型に明示的に変換できます。
 
 **Arrays**
 
+**配列型（array）**
+
 An array of any type, either fixed or dynamic: `uint32[][5]` is a fixed-size array of five dynamic arrays of unsigned integers.
+
+固定または動的のいずれかのタイプの配列です。`uint32[][5]`は、符号なし整数の5つの動的配列の固定サイズ配列です。
 
 **Struct**
 
+**構造体型（struct）**
+
 User-defined data containers for grouping variables: `struct NAME {TYPE1 VARIABLE1; TYPE2 VARIABLE2; ...}`.
+
+変数をグループ化するためのユーザー定義データコンテナです。`struct NAME {TYPE1 VARIABLE1; TYPE2 VARIABLE2; ...}`のように指定します。
 
 **Mapping**
 
+**マッピング型（mapping）**
+
 Hash lookup tables for *key* ⇒ *value* pairs: `mapping(KEY_TYPE` `⇒` `VALUE_TYPE) NAME`.
+
+*キー* ⇒ *値*ペアのハッシュルックアップテーブルです。`mapping(KEY_TYPE ⇒ VALUE_TYPE) NAME`のように指定します。
 
 In addition to these data types, Solidity offers a variety of value literals that can be used to calculate different units:
 
+これらのデータ型に加えて、異なる単位を計算するために使用できる値リテラルもSolidityは提供しています。
+
 **Time units**
+
+**時間単位**
 
 The global variable `block.timestamp` represents the time, in seconds, when a block was published and added to the blockchain, counting from the Unix Epoch (January 1. 70). The units `seconds`, `minutes`, `hours`, and `days` can be used as suffixes, converting to multiples of the base unit `seconds`.
 
-> **注記**
+グローバル変数`block.timestamp`は、ブロックが公開されてブロックチェーンに追加された時刻を、Unixエポック（1970年1月1日）からの秒数で表します。`seconds`、`minutes`、`hours`、`days`の単位を、基本単位`seconds`の倍数に変換して、サフィックスとして使用できます。
+
+> **Note**
 >
 > Since a block can contain multiple transactions, all transactions within a block share the same `block.timestamp`, which reflects the time the block was published, not the exact moment each transaction was initiated.
 
+> **注記**
+>
+> 1つのブロックには複数のトランザクションを含めることができるため、ブロック内のすべてのトランザクションは同じ`block.timestamp`を共有します。これは各トランザクションが開始された正確な瞬間ではなく、ブロックが公開された時刻を反映しています。
+
 **Ether units**
+
+**イーサ単位**
 
 The units `wei` and `ether` can be used as suffixes, converting to multiples of the base unit `wei`. Previously, the denominations `finney` and `szabo` were also available, but they were dropped in Solidity version 0.7.0.
 
+`wei`と`ether`の単位を、基本単位`wei`の倍数に変換して、サフィックスとして使用できます。以前は`finney`と`szabo`の単位も利用可能でしたが、Solidityバージョン0.7.0で廃止されました。
+
 In our `Faucet` contract example, we used a `uint` (which is an alias for `uint256`) for the `withdrawAmount` variable. We also indirectly used an `address` variable, which we set with `msg.sender`. We will use more of these data types in our examples in the rest of this chapter.
 
-Let’s use one of the unit multipliers to improve the readability of our example contract. In the `withdraw` function, we limit the maximum withdrawal, expressing the limit in wei, the base unit of ether:
+ファウセットコントラクトの例では、`withdrawAmount`変数に`uint`（これは`uint256`のエイリアスです）を使用しました。`msg.sender`で設定した`address`変数も間接的に使用しました。この章の残りの部分では、これらのデータ型を例で使用します。
+
+Let's use one of the unit multipliers to improve the readability of our example contract. In the `withdraw` function, we limit the maximum withdrawal, expressing the limit in wei, the base unit of ether:
+
+サンプルコントラクトの読みやすさを向上させるために、単位乗数を使ってみましょう。`withdraw`関数では、最大引き出し量を制限し、イーサの基本単位であるweiで制限を表します。
 
 ```solidity
 require(withdrawAmount <= 100000000000000000);
 ```
 
-That’s not very easy to read. We can improve our code by using the unit multiplier `ether`, to express the value in ether instead of wei:
+That's not very easy to read. We can improve our code by using the unit multiplier `ether`, to express the value in ether instead of wei:
+
+これでは数字列が長くてわかりにくいので、weiの代わりにイーサで値を表現するために、単位乗数`ether`を使用してコードを改善します。
 
 ```solidity
 require(withdrawAmount <= 0.1 ether);
 ```
-
 ### Variables: Definition and Scope
+
+### 変数：定義とスコープ
 
 In Solidity, the syntax for defining variables and functions is similar to other statically typed languages: we assign a type, a name, and an optional value to each variable. For state variables, we can also specify their visibility. The default visibility is `internal`, meaning the variable is accessible only within the contract and its derived contracts. To make them accessible from other smart contracts, we need to use the `public` visibility.
 
+Solidityにおける変数や関数の定義構文は、他の静的型付け言語と似ています。各変数に型、名前、そしてオプションで値を割り当てます。状態変数（state variables）については、可視性（visibility）を指定することもできます。デフォルトの可視性は`internal`であり、その変数はコントラクト自身とその派生コントラクトからのみアクセス可能です。他のスマートコントラクトからアクセスできるようにするには、`public`の可視性を使用する必要があります。
+
 Solidity smart contracts feature three types of variable scopes:
+
+Solidityのスマートコントラクトには、3種類の変数スコープがあります。
 
 **State variables**
 
+**状態変数（State variables）**
+
 These store permanent data in the smart contract, known as *persistent state*, by recording values on the blockchain. State variables are defined within the smart contract but outside any function. Example: `uint public count;`
+
+スマートコントラクト内に永続的なデータを保存するもので、ブロックチェーン上に値を記録することにより*永続的な状態*（persistent state）として知られています。状態変数はスマートコントラクト内で定義されますが、関数の外側に置かれます。例：`uint public count;`
 
 **Local variables**
 
+**ローカル変数（Local variables）**
+
 These are temporary pieces of data used during computations that hold information for short periods. Local variables are not stored on the blockchain; they exist within functions and are not accessible outside their defined scope. Example: `uint count = 1;`
+
+計算処理中に使用される一時的なデータで、短期間だけ情報を保持します。ローカル変数はブロックチェーン上には保存されず、関数内に存在し、定義されたスコープの外からはアクセスできません。例：`uint count = 1;`
 
 **Global variables**
 
+**グローバル変数（Global variables）**
+
 These are automatically provided by Solidity and are available without explicit declaration or import. They offer information about the blockchain environment and include utility functions for use within the program. The predefined global variables are exhaustively listed in the following section.
+
+Solidityによって自動的に提供され、明示的な宣言やインポートなしに利用できます。ブロックチェーン環境に関する情報を提供し、プログラム内で使用するためのユーティリティ関数も含まれています。定義済みのグローバル変数は、次の項で網羅的に紹介します。
 
 As we briefly mentioned, state variables can be declared specifying their visibility. Solidity offers three different visibility levels: *public variables* generate automatic getter functions, allowing external contracts to read their values, although they cannot modify them; *internal variables* are accessible only within the contract and its derived contracts; and *private variables* are similar to internal variables but cannot be accessed even by derived contracts.
 
+先ほど簡単に触れたとおり、状態変数は可視性を指定して宣言できます。Solidityは3つの異なる可視性レベルを提供しています。*public変数*は自動的にgetter関数を生成し、外部のコントラクトがその値を読み取ることを可能にしますが、変更はできません。*internal変数*はコントラクト自身とその派生コントラクトからのみアクセス可能です。*private変数*はinternal変数と似ていますが、派生コントラクトからもアクセスできません。
+
 ### Predefined Global Variables and Functions
+
+### 定義済みのグローバル変数とグローバル関数
 
 When a contract is executed in the EVM, it has access to a small set of global objects. These include the `block`, `msg`, and `tx` objects. In addition, Solidity exposes a number of EVM opcodes as predefined functions. In this section we will examine the variables and functions you can access from within a smart contract in Solidity.
 
+EVMでコントラクトが実行されると、少数のグローバルオブジェクトへのアクセス権を持ちます。これらには`block`、`msg`、`tx`といったオブジェクトが含まれます。さらにSolidityは、いくつかのEVMオペコードを定義済み関数として公開しています。この項では、Solidityのスマートコントラクト内からアクセスできる変数と関数について調べます。
+
 #### Transaction/message call context
+
+#### トランザクション／メッセージコールコンテクスト
 
 The `msg` object is the transaction call (EOA originated) or message call (contract originated) that launched this contract execution. It contains a number of useful attributes:
 
+`msg`オブジェクトは、このコントラクトの実行を開始したトランザクションコール（EOAによる）またはメッセージコール（コントラクトによる）です。これには有用な属性が多数含まれます。
+
 **msg.sender**
 
-We’ve already used this one. It represents the address that initiated this contract call, not necessarily the originating EOA that sent the transaction. If our contract was called directly by an EOA transaction, then this is the address that signed the transaction, but otherwise, it will be a contract address.
+**msg.sender**
+
+We've already used this one. It represents the address that initiated this contract call, not necessarily the originating EOA that sent the transaction. If our contract was called directly by an EOA transaction, then this is the address that signed the transaction, but otherwise, it will be a contract address.
+
+本書ではすでに使っています。msg.senderは、このコントラクトコールを開始したアドレスを表します。これはトランザクションを送信した発信元のEOAとは限りません。コントラクトがEOAトランザクションによって直接呼び出された場合は、トランザクションに署名したアドレスになりますが、そうでなければコントラクトアドレスになります。
+
+**msg.value**
 
 **msg.value**
 
 The value of ether sent with this call (in wei).
 
+このコールで送信されたイーサの値（wei単位）です。
+
+**msg.data**
+
 **msg.data**
 
 The data payload of this call into our contract.
+
+コントラクトへのこのコールのデータペイロードです。
+
+**msg.sig**
 
 **msg.sig**
 
 The first four bytes of the data payload, which is the function selector.
 
-> **注記**
+データペイロードの最初の4バイトで、関数セレクタ（function selector）にあたります。
+
+> **Note**
 >
-> Whenever a contract calls another contract, the values of all the attributes of `msg` change to reflect the new caller’s information. The only exception to this is the `delegatecall` function, which runs the code of another contract or library within the original `msg` context.
+> Whenever a contract calls another contract, the values of all the attributes of `msg` change to reflect the new caller's information. The only exception to this is the `delegatecall` function, which runs the code of another contract or library within the original `msg` context.
+
+> **注意**
+>
+> あるコントラクトが別のコントラクトを呼び出すたびに、`msg`のすべての属性の値が新しい呼び出し元の情報を反映して変わります。唯一の例外はdelegatecall関数です。この関数は、元の`msg`コンテクスト内で別のコントラクトやライブラリのコードを実行します。
 
 #### Transaction context
 
+#### トランザクションコンテクスト
+
 The `tx` object provides a means of accessing transaction-related information:
+
+`tx`オブジェクトは、トランザクション関連の情報にアクセスする手段を提供します。
+
+**tx.gasprice**
 
 **tx.gasprice**
 
 The gas price in the calling transaction
 
+呼び出し元トランザクションのガス価格です。
+
+**tx.origin**
+
 **tx.origin**
 
 The address of the originating EOA for this transaction
 
+このトランザクションの発信元EOAのアドレスです。
+
 #### Block context
+
+#### ブロックコンテクスト
 
 The `block` object contains the following information about the current block:
 
+`block`オブジェクトには、現在のブロックに関する以下の情報が含まれています。
+
 **block.basefee**
 
-The current block’s base fee, a dynamically adjusted value representing the minimum gas fee required for a transaction to be included in the block.
+**block.basefee**
+
+The current block's base fee, a dynamically adjusted value representing the minimum gas fee required for a transaction to be included in the block.
+
+現在のブロックのベースフィー（base fee）です。ブロックにトランザクションが含まれるために必要な最低ガス料金を表す、動的に調整される値です。
 
 **block.blobbasefee**
 
-The dynamically adjusting base fee for blob transactions, which was introduced to handle large data efficiently as part of Ethereum’s scalability improvements with EIP-4844.
+**block.blobbasefee**
+
+The dynamically adjusting base fee for blob transactions, which was introduced to handle large data efficiently as part of Ethereum's scalability improvements with EIP-4844.
+
+blobトランザクションのための動的に調整されるベースフィーです。EIP-4844によるイーサリアムのスケーラビリティ改善の一環として、大規模データを効率的に処理するために導入されました。
+
+**block.chainid**
 
 **block.chainid**
 
 The unique identifier of the blockchain on which the block is currently being built.
 
+ブロックが現在構築されているブロックチェーンの一意の識別子です。
+
+**block.prevrandao**
+
 **block.prevrandao**
 
 A pseudorandom value derived from the randomness beacon of the previous block, provided by the beacon chain. This can be useful for smart contracts that require random numbers—only for nonsensitive operations, as it can be manipulated to some extent.
 
+ビーコンチェーンによって提供される、前のブロックのランダムネスビーコンから導出された擬似乱数値です。乱数を必要とするスマートコントラクトに有用ですが、ある程度操作される可能性があるため、機密性の低い操作にのみ使用すべきです。
+
 **block.coinbase**
 
-The address of the recipient of the current block’s fees and block reward.
+**block.coinbase**
+
+The address of the recipient of the current block's fees and block reward.
+
+現在のブロックの手数料とブロック報酬の受取人のアドレスです。
+
+**block.difficulty**
 
 **block.difficulty**
 
 The difficulty (PoW) of the current block for EVM versions before Paris (The Merge). For subsequent EVM versions adopting a PoS consensus model, it behaves as a deprecated alias of `block.prevrandao`.
 
+Paris（The Merge）以前のEVMバージョンにおける現在のブロックのディフィカルティ（PoW）です。PoSコンセンサスモデルを採用するそれ以降のEVMバージョンでは、`block.prevrandao`の非推奨エイリアスとして機能します。
+
+**block.gaslimit**
+
 **block.gaslimit**
 
 The maximum amount of gas that can be spent across all transactions included in the current block.
+
+現在のブロックに含まれるすべてのトランザクションで消費できる最大ガス量です。
+
+**block.number**
 
 **block.number**
 
 The current block number (blockchain height).
 
+現在のブロック番号（ブロックチェーンの高さ）です。
+
+**block.timestamp**
+
 **block.timestamp**
 
 The timestamp placed in the current block by the miner (number of seconds since the Unix epoch).
 
+マイナーによって現在のブロックに配置されたタイムスタンプ（Unixエポック以降の秒数）です。
+
 #### Address object
 
+#### アドレスオブジェクト
+
 Any address, either passed as an input or cast from a contract object, has a number of attributes and methods.
+
+入力として渡されるか、コントラクトオブジェクトからキャストされるかにかかわらず、すべてのアドレスには多くの属性とメソッドがあります。
+
+**address.balance**
 
 **address.balance**
 
 The balance of the address in wei. For example, the current contract balance is `address(this).balance`.
 
+アドレスの残高（wei単位）です。たとえば、現在のコントラクト残高は`address(this).balance`となります。
+
+**address.code**
+
 **address.code**
 
 The contract bytecode stored at the address. Returns an empty-bytes array for EOA addresses.
+
+そのアドレスに保存されているコントラクトバイトコードです。EOAアドレスの場合は空のバイト配列を返します。
+
+**address.codehash**
 
 **address.codehash**
 
 The Keccak-256 hash of the contract bytecode stored at the address.
 
+そのアドレスに保存されているコントラクトバイトコードのKeccak-256ハッシュです。
+
+**address.transfer(amount)**
+
 **address.transfer(amount)**
 
 Transfers the amount (in wei) to this address, throwing an exception on any error. We used this function in our `Faucet` example as a method on the `msg.sender` address, as `msg.sender.transfer`.
+
+このアドレスに金額（wei単位）を送金し、エラーが発生した場合は例外をスローします。`Faucet`の例では、`msg.sender`アドレスのメソッドとして`msg.sender.transfer`としてこの関数を使用しました。
+
+**address.send(amount)**
 
 **address.send(amount)**
 
 Similar to `transfer`, only instead of throwing an exception, it returns `false` on error. Be careful to always check the return value of `send`.
 
+`transfer`と同様ですが、例外をスローする代わりにエラー時に`false`を返します。`send`の戻り値を必ず確認してください。
+
+**address.call(payload)**
+
 **address.call(payload)**
 
 Low-level `CALL` function that can construct an arbitrary message call with a data payload. Returns `false` on error. Be careful: a recipient can (accidentally or maliciously) use up all your gas, causing your contract to halt with an OOG (out of gas) exception; always check the return value of `call`.
 
+データペイロードを使用して任意のメッセージコールを構築できる低レベルの`CALL`関数です。エラー時には`false`を返します。注意：受信者は（偶然にまたは悪意を持って）あなたのガスをすべて使い果たし、コントラクトをOOG（out of gas）例外で停止させる可能性があります。`call`の戻り値を必ず確認してください。
+
 **address.delegatecall(payload)**
 
-Low-level `DELEGATECALL` function, like `address(this).call(...)` but with this contract’s code replaced with that of `address`. Particularly useful for implementing the proxy pattern. Returns `false` on error. Warning: advanced use only!
+**address.delegatecall(payload)**
+
+Low-level `DELEGATECALL` function, like `address(this).call(...)` but with this contract's code replaced with that of `address`. Particularly useful for implementing the proxy pattern. Returns `false` on error. Warning: advanced use only!
+
+`address(this).call(...)`のような低レベルの`DELEGATECALL`関数ですが、このコントラクトのコードが`address`のコードに置き換えられます。プロキシパターン（proxy pattern）の実装に特に有用です。エラー時には`false`を返します。警告：上級者向けです。
+
+**address.staticcall(payload)**
 
 **address.staticcall(payload)**
 
 Low-level `STATICCALL` function, like `address(this).call(...)` but in read-only mode, meaning that the called function cannot modify any state or send ether. Returns `false` on error.
 
-> **注記**
+`address(this).call(...)`のような低レベルの`STATICCALL`関数ですが、読み取り専用モードで実行されるため、呼び出された関数は状態を変更したりイーサを送信したりすることはできません。エラー時には`false`を返します。
+
+> **Note**
 >
 > Both `address.send()` and `address.transfer()` forward a fixed amount of 2,300 units of gas, which might be insufficient to execute fallback logic. With EIP-7702 going live, their usage is discouraged in favor of the more flexible `address.call()`. More on this in Chapter 9.
 
+> **注意**
+>
+> `address.send()`と`address.transfer()`はいずれも固定量の2,300ガスユニットを転送しますが、これはフォールバック（fallback）ロジックを実行するには不十分な場合があります。EIP-7702の導入に伴い、より柔軟な`address.call()`の使用が推奨されています。詳しくは9章で説明します。
+
 #### Built-in functions
 
+#### 組み込み関数
+
 Other functions worth noting are:
+
+その他、知っておくべき関数は次のとおりです。
+
+**addmod, mulmod**
 
 **addmod, mulmod**
 
 For modulo addition and multiplication. For example, `addmod(x,y,k)` calculates (x + y) % k.
 
+モジュロ加算およびモジュロ乗算のための関数です。たとえば`addmod(x,y,k)`は(x + y) % kを計算します。
+
+**keccak256, sha256, ripemd160**
+
 **keccak256, sha256, ripemd160**
 
 Functions to calculate hashes with various standard hash algorithms.
+
+さまざまな標準ハッシュアルゴリズムでハッシュを計算するための関数です。
+
+**ecrecover**
 
 **ecrecover**
 
 Recovers the address used to sign a message from the signature.
 
+署名からメッセージの署名に使用されたアドレスを復元します。
+
 **selfdestruct(recipient_address)**
 
-Deprecated. Used to delete the current contract and send any remaining ether in the account to the recipient address. After EIP-6780, this happens only if the self-destruct instruction is invoked in the same transaction as creation. In all other cases, the funds will be moved, but the contract and its state won’t be cleared.
+**selfdestruct(recipient_address)**
+
+Deprecated. Used to delete the current contract and send any remaining ether in the account to the recipient address. After EIP-6780, this happens only if the self-destruct instruction is invoked in the same transaction as creation. In all other cases, the funds will be moved, but the contract and its state won't be cleared.
+
+非推奨です。現在のコントラクトを削除し、アカウントに残っているイーサを受信者アドレスに送信するために使用されていました。EIP-6780以降、セルフデストラクト命令がコントラクト作成と同じトランザクション内で呼び出された場合にのみ削除が行われます。それ以外の場合は、資金は移動されますが、コントラクトとその状態はクリアされません。
+
+**this**
 
 **this**
 
 The current contract, explicitly convertible to `Address` type to retrieve the address of the currently executing contract account: `address(this)`.
 
+現在のコントラクトです。`Address`型に明示的に変換して、現在実行中のコントラクトアカウントのアドレスを取得できます：`address(this)`。
+
+**super**
+
 **super**
 
 The contract that is one level higher in the inheritance hierarchy.
+
+継承（inheritance）階層において1つ上のレベルにあるコントラクトです。
+
+**gasleft**
 
 **gasleft**
 
 The amount of gas remaining for the current execution context.
 
+現在の実行コンテクストで残っているガスの量です。
+
+**blockhash(block_number)**
+
 **blockhash(block_number)**
 
 The hash of a given block identified by its block number; only available for the most recent 256 blocks.
+
+ブロック番号で指定されたブロックのハッシュです。直近の256ブロック分のみ利用可能です。
+
+**blobhash(index)**
 
 **blobhash(index)**
 
 The hash of the `index-th` blob associated with the current transaction.
 
+現在のトランザクションに関連付けられた`index`番目のblobのハッシュです。
+
 ### Contract Definition
 
-Solidity’s principal data type is `contract`; our `Faucet` example simply defines a `contract` object. Similar to any object in an object-oriented language, the *contract* is a container that includes data and methods.
+### コントラクトの定義
+
+Solidity's principal data type is `contract`; our `Faucet` example simply defines a `contract` object. Similar to any object in an object-oriented language, the *contract* is a container that includes data and methods.
+
+Solidityの主要なデータ型は`contract`です。`Faucet`の例は、単に`contract`オブジェクトを定義しています。オブジェクト指向言語の他のオブジェクトと同様に、*コントラクト*はデータとメソッドを含むコンテナです。
 
 Solidity offers two other object types that are similar to a contract:
 
+Solidityは、コントラクトに似た他の2つのオブジェクト型を提供しています。
+
 **interface**
 
-An interface definition is structured exactly like a contract, except none of the functions are defined—they are only declared. This type of declaration is often called a *stub*; it tells you the functions’ arguments and return types without any implementation. An interface specifies the “shape” of a contract; when inherited, each of the functions declared by the interface must be defined by the child.
+**インターフェイス（interface）**
+
+An interface definition is structured exactly like a contract, except none of the functions are defined—they are only declared. This type of declaration is often called a *stub*; it tells you the functions' arguments and return types without any implementation. An interface specifies the "shape" of a contract; when inherited, each of the functions declared by the interface must be defined by the child.
+
+インターフェイスの定義は、関数が定義されず宣言されているだけであることを除いて、コントラクトとまったく同じ構造です。このタイプの宣言はしばしば*スタブ*（stub）と呼ばれ、実装なしに関数の引数と戻り値の型を伝えます。インターフェイスはコントラクトの「形」を規定します。継承された場合、インターフェイスによって宣言された関数はすべて、子によって定義されなければなりません。
 
 **library**
 
-A library contract is one that is meant to be deployed only once and used by other contracts, using the `delegatecall` method (see “Address object”).
+**ライブラリ（library）**
+
+A library contract is one that is meant to be deployed only once and used by other contracts, using the `delegatecall` method (see "Address object").
+
+ライブラリコントラクトは、一度だけデプロイされ、`delegatecall`メソッドを使用して他のコントラクトによって使用されることを意図したものです（「アドレスオブジェクト」を参照）。
 
 ### Functions
 
+### 関数
+
 Within a contract, we define functions that can be called by an EOA transaction or another contract. In our `Faucet` example, we have two functions: `withdraw` and `receive`.
 
+コントラクト内では、EOAトランザクションまたは別のコントラクトによって呼び出すことができる関数を定義します。`Faucet`の例では、`withdraw`と`receive`の2つの関数があります。
+
 The syntax we use to declare a function in Solidity is as follows:
+
+Solidityで関数を宣言するのに使用する構文は以下のとおりです。
 
 ```solidity
 function FunctionName([parameters]) {public|private|internal|external} [virtual|override]
 [pure|view|payable] [modifiers] [returns (return types)]
 ```
 
-Let’s look at each of these components:
+Let's look at each of these components:
+
+これらの各コンポーネントを見ていきましょう。
+
+**FunctionName**
 
 **FunctionName**
 
 The name of the function, which is used to call the function in a transaction from an EOA, from another contract, or even from within the same contract.
 
+関数の名前です。EOAからのトランザクション内で、別のコントラクトから、あるいは同じコントラクト内からでも、関数を呼び出すために使用されます。
+
+**parameters**
+
 **parameters**
 
 Following the name, we specify the arguments that must be passed to the function, with their names and types. In our `Faucet` example, we defined `uint withdrawAmount` as the only argument to the `withdraw` function.
 
-The next set of keywords (`public`, `private`, `internal`, `external`) specify the function’s visibility:
+名前のあとに、関数に渡す必要がある引数とその名前と型を指定します。`Faucet`の例では、`withdraw`関数の唯一の引数として`uint withdrawAmount`を定義しました。
+
+The next set of keywords (`public`, `private`, `internal`, `external`) specify the function's visibility:
+
+次のキーワードのセット（`public`、`private`、`internal`、`external`）は、関数の可視性（visibility）を指定します。
+
+**public**
 
 **public**
 
 Public is the default; such functions can be called by other contracts or EOA transactions or from within the contract. In our `Faucet` example, both functions are defined as public.
 
+publicはデフォルトです。このような関数は、他のコントラクト、EOAのトランザクション、またはコントラクト内から呼び出すことができます。`Faucet`の例では、両方の関数がpublicとして定義されています。
+
+**private**
+
 **private**
 
 Private functions are like internal functions but cannot be called by derived contracts.
+
+private関数はinternal関数と似ていますが、派生コントラクトから呼び出すことはできません。
+
+**internal**
 
 **internal**
 
 Internal functions are only accessible from within the contract—they cannot be called by another contract or EOA transaction. They can be called by derived contracts (those that inherit this one).
 
+internal関数はコントラクト内からのみアクセスでき、他のコントラクトやEOAトランザクションから呼び出すことはできません。派生コントラクト（このコントラクトを継承したもの）から呼び出すことができます。
+
+**external**
+
 **external**
 
 External functions are like public functions except they cannot be called from within the contract unless explicitly prefixed with the keyword `this`.
 
+external関数はpublic関数と似ていますが、キーワード`this`を明示的に付けない限り、コントラクト内から呼び出すことはできません。
+
 Keep in mind that the terms *internal* and *private* are somewhat misleading. Any function or data inside a contract is always *visible* on the public blockchain, meaning that anyone can see the code or data. The keywords described here affect only how and when a function can be *called*.
 
-> **注記**
+*internal*と*private*という用語は、やや誤解を招く表現であることに注意してください。コントラクト内の関数やデータは、常にパブリックブロックチェーン上で*可視*であり、誰でもコードやデータを見ることができます。ここで説明しているキーワードは、関数を呼び出す方法とタイミングにのみ影響します。
+
+> **Note**
 >
 > Function visibility should not be confused with state variable visibility! They share keywords and semantics, but they are two different things. While state variable visibility is optional, function visibility must be explicitly defined.
 
+> **注意**
+>
+> 関数の可視性と状態変数の可視性を混同しないでください。両者はキーワードとセマンティクスを共有していますが、異なるものです。状態変数の可視性はオプションですが、関数の可視性は明示的に定義しなければなりません。
+
 The second set of keywords (`pure`, `view`, `payable`) affect the behavior of the function:
+
+2番目のキーワードのセット（`pure`、`view`、`payable`）は、関数の動作に影響を与えます。
+
+**pure**
 
 **pure**
 
 A pure function is one that neither reads nor writes any variables in storage. It can only operate on arguments and return data, without reference to any stored data or blockchain state. Pure functions are intended to encourage declarative-style programming without side effects or state.
 
+pure関数は、ストレージ内の変数を読み書きしません。保存されているデータやブロックチェーンの状態を参照せずに、引数に対してのみ操作し、データを返すことができます。pure関数は、副作用や状態なしに、宣言型プログラミングを促進することを目的としています。
+
+**view**
+
 **view**
 
 A function marked as a view promises not to modify any state. The compiler does not enforce the `view` modifier; it only produces a warning when it can be applied.
+
+viewとしてマークされた関数は、状態を変更しないことを約束します。コンパイラは`view`修飾子を強制せず、適用可能な場合に警告を生成するだけです。
+
+**payable**
 
 **payable**
 
 A payable function is one that can accept incoming payments. Functions not declared as `payable` will reject incoming payments. There are two exceptions, due to design decisions in the EVM: coinbase payments and `SELFDESTRUCT` inheritance will be paid even if the fallback function is not declared as `payable`, but this makes sense because code execution is not part of those payments anyway.
 
-Let’s now explore the behavior of two special functions, `receive` and `fallback`:
+payable関数は入金を受け入れることができます。`payable`として宣言されていない関数は入金を拒否します。EVMの設計上の決定により2つの例外があります。コインベース支払いと`SELFDESTRUCT`の継承は、フォールバック関数が`payable`として宣言されていなくても支払われますが、これらの支払いではコード実行が行われないため、理にかなっています。
+
+Let's now explore the behavior of two special functions, `receive` and `fallback`:
+
+次に、2つの特殊な関数、`receive`と`fallback`の動作を見てみましょう。
 
 **receive()**
 
-The `receive` function is what allows our contracts to receive ether. It is triggered when a contract receives a call with empty calldata, typically during plain ether transfers (such as those made using `.send()` or `.transfer()`). It is declared with `receive() external payable { ... }`, and while it can’t have any arguments or return a value, it can be virtual, can override, and can have modifiers.
+**receive()**
+
+The `receive` function is what allows our contracts to receive ether. It is triggered when a contract receives a call with empty calldata, typically during plain ether transfers (such as those made using `.send()` or `.transfer()`). It is declared with `receive() external payable { ... }`, and while it can't have any arguments or return a value, it can be virtual, can override, and can have modifiers.
+
+receive関数は、コントラクトがイーサを受け取ることを可能にするものです。コントラクトが空のcalldataでコールを受信したときにトリガーされ、通常は純粋なイーサ送金（`.send()`や`.transfer()`を使用したものなど）の際に発生します。`receive() external payable { ... }`として宣言され、引数を持つことも値を返すこともできませんが、virtualにすることができ、オーバーライド（override）でき、修飾子を持つことができます。
+
+**fallback()**
 
 **fallback()**
 
 The `fallback` function is executed when a contract is called with data that does not match any of the other function signatures. We can declare it using either `fallback() external [payable]` or `fallback(bytes calldata input) external [payable] returns (bytes memory output)`. If the `fallback` function includes the input parameter, it will contain the entire data sent to the contract (equivalent to `msg.data`). Similar to the `receive` function, the `fallback` function can be payable and virtual, can override, and can include modifiers. Nowadays, it is primarily used to implement the *proxy pattern:* a design pattern that enables smart contract upgradability.
 
-> **注記**
+フォールバック（fallback）関数は、コントラクトが他のどの関数シグネチャにも一致しないデータで呼び出されたときに実行されます。`fallback() external [payable]`または`fallback(bytes calldata input) external [payable] returns (bytes memory output)`のいずれかで宣言できます。fallback関数にinputパラメータが含まれている場合、コントラクトに送信されたデータ全体が格納されます（`msg.data`と同等）。receive関数と同様に、fallback関数はpayableやvirtualにすることができ、オーバーライドでき、修飾子を含めることができます。現在では、主に*プロキシパターン*（proxy pattern）の実装に使用されています。これはスマートコントラクトのアップグレード可能性を実現する設計パターンです。
+
+> **Note**
 >
 > If the contract lacks a `receive` function but has a payable `fallback` function, the `fallback` function will be executed during such transfers. If the contract has neither a `receive` function nor a payable `fallback` function, it cannot accept ether, and the transaction will revert with an exception.
 
+> **注意**
+>
+> コントラクトにreceive関数がなく、payableなfallback関数がある場合、そのような送金時にfallback関数が実行されます。コントラクトにreceive関数もpayableなfallback関数もない場合、イーサを受け取ることができず、トランザクションは例外で取り消されます。
+
 ### Contract Constructor
 
-There is a special function that is used only once. When a contract is created, it also runs the *constructor function*, if one exists, to initialize the state of the contract. The constructor is run in the same transaction as the contract creation. The constructor function is optional; you’ll notice that our `Faucet` example doesn’t have one.
+### コントラクトのコンストラクタ
+
+There is a special function that is used only once. When a contract is created, it also runs the *constructor function*, if one exists, to initialize the state of the contract. The constructor is run in the same transaction as the contract creation. The constructor function is optional; you'll notice that our `Faucet` example doesn't have one.
+
+一度だけ使用される特別な関数があります。コントラクトが作成されると、定義済みであれば*コンストラクタ関数*が実行され、コントラクトの状態が初期化されます。コンストラクタはコントラクト作成と同じトランザクションで実行されます。コンストラクタ関数はオプションです。`Faucet`の例ではコンストラクタを持っていないことに気づくでしょう。
 
 Constructors can be specified through the `constructor` keyword. It looks like this:
+
+コンストラクタは`constructor`キーワードで指定できます。以下のようになります。
 
 ```solidity
 pragma 0.8.26
@@ -596,20 +1103,30 @@ pragma 0.8.26
 contract MEContract {
  address owner;
  constructor () { // This is the constructor
-  owner = msg.sender;
+  owner = msg.sender;
  }
 }
 ```
 
-A contract’s life cycle starts with a creation transaction from an EOA or contract account. If there is a constructor, it is executed as part of contract creation to initialize the state of the contract as it is being created, and it is then discarded.
+A contract's life cycle starts with a creation transaction from an EOA or contract account. If there is a constructor, it is executed as part of contract creation to initialize the state of the contract as it is being created, and it is then discarded.
 
-> **注記**
+コントラクトのライフサイクルは、EOAまたはコントラクトアカウントからの作成トランザクションから始まります。コンストラクタがある場合は、コントラクト作成の一部として実行され、作成中のコントラクトの状態を初期化し、その後破棄されます。
+
+> **Note**
 >
-> Constructors can also be marked as payable. This is necessary if you want to send ETH along with the contract-creation transaction. If the constructor isn’t payable, any ETH sent during deployment will cause the transaction to revert.
+> Constructors can also be marked as payable. This is necessary if you want to send ETH along with the contract-creation transaction. If the constructor isn't payable, any ETH sent during deployment will cause the transaction to revert.
+
+> **注意**
+>
+> コンストラクタはpayableとしてマークすることもできます。これは、コントラクト作成トランザクションと一緒にETHを送信したい場合に必要です。コンストラクタがpayableでない場合、デプロイ時に送信されたETHはトランザクションを取り消します。
 
 ### Function Modifiers
 
-Solidity offers a special type of function called a *function modifier*. You apply modifiers to functions by adding the modifier name in the function declaration. Modifiers are most often used to create conditions that apply to many functions within a contract. We have an access control statement already, in our `destroy` function. Let’s create a function modifier that expresses that condition:
+### 関数修飾子
+
+Solidity offers a special type of function called a *function modifier*. You apply modifiers to functions by adding the modifier name in the function declaration. Modifiers are most often used to create conditions that apply to many functions within a contract. We have an access control statement already, in our `destroy` function. Let's create a function modifier that expresses that condition:
+
+Solidityは*関数修飾子*（function modifier）と呼ばれる特別な種類の関数を提供しています。関数宣言に修飾子の名前を追加することで、関数に修飾子を適用します。修飾子はコントラクト内の多くの関数に適用する条件を作成するために最もよく使われます。`destroy`関数にはすでにアクセス制御ステートメントがあります。この条件を表す関数修飾子を作成してみましょう。
 
 ```solidity
 modifier onlyOwner {
@@ -618,13 +1135,21 @@ modifier onlyOwner {
 }
 ```
 
-This function modifier, named `onlyOwner`, sets a condition on any function it modifies requiring that the address stored as the `owner` of the contract is the same as the address of the transaction’s `msg.sender`. This is the basic design pattern for access control, allowing only the owner of a contract to execute any function that has the `onlyOwner` modifier.
+This function modifier, named `onlyOwner`, sets a condition on any function it modifies requiring that the address stored as the `owner` of the contract is the same as the address of the transaction's `msg.sender`. This is the basic design pattern for access control, allowing only the owner of a contract to execute any function that has the `onlyOwner` modifier.
 
-You may have noticed that our function modifier has a peculiar syntactic “placeholder” in it: an underscore followed by a semicolon (`_;`). This placeholder is replaced by the code of the function that is being modified. Essentially, the modifier is “wrapped around” the modified function, placing its code in the location identified by the underscore character.
+`onlyOwner`という名前のこの関数修飾子は、修飾するすべての関数に条件を設定します。コントラクトの`owner`として格納されているアドレスが、トランザクションの`msg.sender`のアドレスと同じである必要があります。これはアクセス制御（access control）の基本的な設計パターンであり、コントラクトのオーナーだけが`onlyOwner`修飾子を持つ関数を実行できるようにします。
+
+You may have noticed that our function modifier has a peculiar syntactic "placeholder" in it: an underscore followed by a semicolon (`_;`). This placeholder is replaced by the code of the function that is being modified. Essentially, the modifier is "wrapped around" the modified function, placing its code in the location identified by the underscore character.
+
+関数修飾子に独特な構文上の「プレースホルダ」があることに気づいたかもしれません。アンダースコアに続いてセミコロン（`_;`）です。このプレースホルダは、修飾される関数のコードに置き換えられます。本質的に、修飾子は修飾された関数を「囲み」、アンダースコア文字で識別される場所にコードを配置します。
 
 To apply a modifier, you add its name to the function declaration. More than one modifier can be applied to a function; they are applied in the sequence they are declared, as a comma-separated list.
 
-Let’s define a `changeOwner` function to use the `onlyOwner` modifier:
+修飾子を適用するには、その名前を関数宣言に追加します。関数には複数の修飾子を適用でき、宣言された順序で、コンマ区切りのリストとして適用されます。
+
+Let's define a `changeOwner` function to use the `onlyOwner` modifier:
+
+`onlyOwner`修飾子を使用する`changeOwner`関数を定義してみましょう。
 
 ```solidity
 function changeOwner(address newOwner) public onlyOwner {
@@ -633,13 +1158,21 @@ function changeOwner(address newOwner) public onlyOwner {
 }
 ```
 
-The function modifier’s name (`onlyOwner`) is after the keyword `public` and tells us that the `changeOwner` function is modified by the `onlyOwner` modifier. Essentially, you can read this as “only the owner can set a new owner address.” In practice, the resulting code is equivalent to “wrapping” the code from `onlyOwner` around `changeOwner`.
+The function modifier's name (`onlyOwner`) is after the keyword `public` and tells us that the `changeOwner` function is modified by the `onlyOwner` modifier. Essentially, you can read this as "only the owner can set a new owner address." In practice, the resulting code is equivalent to "wrapping" the code from `onlyOwner` around `changeOwner`.
+
+関数修飾子の名前（`onlyOwner`）はキーワード`public`の後ろにあり、`changeOwner`関数が`onlyOwner`修飾子によって修飾されていることを示しています。これは「オーナーだけが新しいオーナーアドレスを設定できる」と読むことができます。実際には、結果のコードは`onlyOwner`のコードを`changeOwner`の周りに「ラップ」することと同等です。
 
 Function modifiers are an extremely useful tool because they allow us to write preconditions for functions and apply them consistently, making the code easier to read and, as a result, easier to audit for security. They are most often used for access control, but they are quite versatile and can be used for a variety of other purposes.
 
+関数修飾子は非常に便利なツールです。関数の前提条件を記述し、それらを一貫して適用することを可能にし、コードを読みやすくし、結果としてセキュリティの監査も容易にします。アクセス制御に最もよく使用されますが、非常に用途が広く、他のさまざまな目的に使用できます。
+
 ### Contract Inheritance
 
-Solidity’s `contract` object supports *inheritance*, which is a mechanism for extending a base contract with additional functionality. To use inheritance, specify a parent contract with the keyword `is`:
+### コントラクトの継承
+
+Solidity's `contract` object supports *inheritance*, which is a mechanism for extending a base contract with additional functionality. To use inheritance, specify a parent contract with the keyword `is`:
+
+Solidityの`contract`オブジェクトは*継承*（inheritance）をサポートしています。これは基本コントラクトを追加機能で拡張するための仕組みです。継承を使用するには、キーワード`is`で親コントラクトを指定します。
 
 ```solidity
 contract Child is Parent {
@@ -649,6 +1182,8 @@ contract Child is Parent {
 
 With this construct, the `Child` contract inherits all the methods, functionality, and variables of `Parent`. Solidity also supports multiple inheritance, which can be specified by comma-separated contract names after the keyword `is`:
 
+この構文では、`Child`コントラクトは`Parent`のすべてのメソッド、機能、変数を継承します。Solidityは多重継承（multiple inheritance）もサポートしており、キーワード`is`のあとにコンマ区切りでコントラクト名を指定できます。
+
 ```solidity
 contract Child is Parent1, Parent2 {
  ...
@@ -657,192 +1192,247 @@ contract Child is Parent1, Parent2 {
 
 We can call functions higher up in the inheritance chain by explicitly specifying the contract like `Parent1.functionName()` or by using `super.functionName()` if we want to call the function just one level above in the flattened inheritance hierarchy.
 
+継承チェーンの上位にある関数を呼び出すには、`Parent1.functionName()`のようにコントラクトを明示的に指定するか、フラット化された継承階層で1つ上のレベルの関数を呼び出したい場合は`super.functionName()`を使用します。
+
 Contract inheritance allows us to write our contracts in such a way as to achieve modularity, extensibility, and reuse. We start with contracts that are simple and implement the most generic capabilities, then extend them by inheriting those capabilities in more specialized contracts.
 
-In our `Faucet` contract, we introduced access control for an owner, assigned on construction. This capability is quite generic: many contracts will have it. We can define it as a generic contract, then use inheritance to extend it to the `Faucet` contract. To enrich the example, let’s add the pausable functionality together with the access control one.
+コントラクトの継承により、モジュール性、拡張性、再利用を実現できるようにコントラクトを記述できます。シンプルで最も一般的な機能を実装するコントラクトから始め、それらの機能をより専門的なコントラクトで継承して拡張していきます。
 
-We start by defining a base contract `Owned`, which has an `owner` variable, setting it in the contract’s constructor:
+In our `Faucet` contract, we introduced access control for an owner, assigned on construction. This capability is quite generic: many contracts will have it. We can define it as a generic contract, then use inheritance to extend it to the `Faucet` contract. To enrich the example, let's add the pausable functionality together with the access control one.
+
+`Faucet`コントラクトでは、構築時に割り当てられたオーナーのアクセス制御を導入しました。この機能は非常に一般的で、多くのコントラクトが備えています。これを汎用コントラクトとして定義し、継承を用いて`Faucet`コントラクトに拡張できます。例をより豊かにするために、アクセス制御とともに一時停止（pausable）機能を追加してみましょう。
+
+We start by defining a base contract `Owned`, which has an `owner` variable, setting it in the contract's constructor:
+
+まず、`owner`変数を持つ基本コントラクト`Owned`を定義し、コントラクトのコンストラクタで設定します。
 
 ```solidity
 contract Owned {
-    address owner;
-    // Contract constructor: set owner
-    constructor() {
-        owner = msg.sender;
-    }
-    // Access control modifier
-    modifier onlyOwner {
-        require(msg.sender == owner);
-        _;
-    }
+    address owner;
+    // Contract constructor: set owner
+    constructor() {
+        owner = msg.sender;
+    }
+    // Access control modifier
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
 }
 ```
 
 Next, we define a base contract `Pausable`, which inherits `Owned`:
 
+次に、`Owned`を継承する基本コントラクト`Pausable`を定義します。
+
 ```solidity
 contract Pausable is Owned {
-    bool paused;
-    // Status check modifier
-    modifier whenNotPaused {
-        require(paused == false);
-        _;
-    }
-    // Functions to pause/unpause user operations
-    function pause() public onlyOwner {
-        paused = true;
-    }
-    function unpause() public onlyOwner {
-        paused = false;
-    }
+    bool paused;
+    // Status check modifier
+    modifier whenNotPaused {
+        require(paused == false);
+        _;
+    }
+    // Functions to pause/unpause user operations
+    function pause() public onlyOwner {
+        paused = true;
+    }
+    function unpause() public onlyOwner {
+        paused = false;
+    }
 }
 ```
 
 As you can see, the `Pausable` contract can use the `onlyOwner` function modifier, defined in `Owned`. It indirectly also uses the `owner` address variable and the constructor defined in `Owned`. Inheritance makes each contract simpler and focused on its specific functionality, allowing us to manage the details in a modular way.
 
+ご覧のとおり、`Pausable`コントラクトは`Owned`に定義された`onlyOwner`関数修飾子を使用できます。また、`Owned`に定義された`owner`アドレス変数とコンストラクタも間接的に使用されます。継承により各コントラクトはよりシンプルになり、その特定の機能に集中できるため、詳細をモジュール方式で管理できます。
+
 Now we can further extend the `Owned` contract, inheriting its capabilities in `Faucet`:
+
+これで、`Owned`コントラクトをさらに拡張し、`Faucet`でその機能を継承できます。
 
 ```solidity
 contract Faucet is Pausable {
-    // Give out ether to anyone who asks
-    function withdraw(uint _withdrawAmount, address payable _to) public whenNotPaused {
-        // Limit withdrawal amount
-        require(_withdrawAmount <= 0.1 ether);
-        // Send the amount to the address that requested it
-        _to.transfer(_withdrawAmount);
-    }
-    // Accept any incoming amount
-    receive() external payable {}
+    // Give out ether to anyone who asks
+    function withdraw(uint _withdrawAmount, address payable _to) public whenNotPaused {
+        // Limit withdrawal amount
+        require(_withdrawAmount <= 0.1 ether);
+        // Send the amount to the address that requested it
+        _to.transfer(_withdrawAmount);
+    }
+    // Accept any incoming amount
+    receive() external payable {}
 }
 ```
 
 By inheriting `Pausable`, which in turn inherits `Owned`, the `Faucet` contract can now use the `whenNotPaused` modifier, whose output can be controlled by the owner defined through the `Owned` contract constructor. The functionality is the same as if those functions were within `Faucet`, but thanks to this modular architecture, we can reuse functions and modifiers in other contracts without writing them again. Code reuse and modularity make our code cleaner, easier to read, and easier to audit.
 
+`Pausable`を継承し、そしてその`Pausable`が`Owned`を継承しているため、`Faucet`コントラクトは`whenNotPaused`修飾子を使用できるようになりました。その出力は`Owned`コントラクトのコンストラクタで定義されたオーナーによって制御できます。機能はこれらの関数が`Faucet`の中にあったときと同じですが、このモジュラーアーキテクチャのおかげで、関数や修飾子を再び書くことなく他のコントラクトで再利用できます。コードの再利用とモジュール化により、コードがよりクリーンになり、読みやすくなり、監査も容易になります。
+
 Sometimes we might need to change some functionality of an inherited contract. Fortunately, Solidity comes with the right feature for us: function overriding. A function declared as `virtual` can be overridden by a contract higher in the inheritance chain, keeping the inheritance approach highly flexible.
 
-Let’s see an example. Suppose we want to make the pausable feature one way: once paused, the contract cannot be unpaused anymore. In order to do this, we need to mark the `unpause` function in the `Pausable` contract as `virtual` and redeclare the `unpause` function in the `Faucet` contract with the `override` attribute, defining the new desired behavior, which is to revert:
+継承したコントラクトの一部の機能を変更する必要がある場合もあります。幸い、Solidityにはそのための適切な機能があります。関数のオーバーライド（function overriding）です。virtualとして宣言された関数は、継承チェーンの上位にあるコントラクトによってオーバーライドでき、継承のアプローチを高い柔軟性で保ちます。
+
+Let's see an example. Suppose we want to make the pausable feature one way: once paused, the contract cannot be unpaused anymore. In order to do this, we need to mark the `unpause` function in the `Pausable` contract as `virtual` and redeclare the `unpause` function in the `Faucet` contract with the `override` attribute, defining the new desired behavior, which is to revert:
+
+例を見てみましょう。一時停止機能を一方向にしたい、つまり一度停止したらコントラクトを再開できないようにしたいとします。これを実現するには、`Pausable`コントラクトの`unpause`関数を`virtual`としてマークし、`Faucet`コントラクトで`override`属性を付けて`unpause`関数を再宣言し、revertする新しい動作を定義する必要があります。
 
 ```solidity
 contract Pausable is Owned {
-    bool paused;
-    // Status check modifier
-    modifier whenNotPaused {
-        require(paused == false);
-        _;
-    }
-    // Functions to pause/unpause user operations
-    function pause() public virtual onlyOwner {
-        paused = true;
-    }
-    function unpause() public virtual onlyOwner {
-        paused = false;
-    }
+    bool paused;
+    // Status check modifier
+    modifier whenNotPaused {
+        require(paused == false);
+        _;
+    }
+    // Functions to pause/unpause user operations
+    function pause() public virtual onlyOwner {
+        paused = true;
+    }
+    function unpause() public virtual onlyOwner {
+        paused = false;
+    }
 }
 contract Faucet is Pausable {
-    // Give out ether to anyone who asks
-    function withdraw(uint _withdrawAmount, address payable _to) public whenNotPaused {
-        // Limit withdrawal amount
-        require(_withdrawAmount <= 0.1 ether);
-        // Send the amount to the address that requested it
-        _to.transfer(_withdrawAmount);
-    }
-    function unpause() public view override onlyOwner {
-        revert("Disabled feature”);
-    }
-    // Accept any incoming amount
-    receive() external payable {}
+    // Give out ether to anyone who asks
+    function withdraw(uint _withdrawAmount, address payable _to) public whenNotPaused {
+        // Limit withdrawal amount
+        require(_withdrawAmount <= 0.1 ether);
+        // Send the amount to the address that requested it
+        _to.transfer(_withdrawAmount);
+    }
+    function unpause() public view override onlyOwner {
+        revert("Disabled feature");
+    }
+    // Accept any incoming amount
+    receive() external payable {}
 }
 ```
 
 As you can see, the `unpause()` function in `Faucet` has to be declared with the `override` keyword. In the `Pausable` contract, we marked both `pause` and `unpause` functions as virtual for consistency, while in our case we only needed to change `unpause`.
 
-> **注記**
+ご覧のとおり、`Faucet`の`unpause()`関数は`override`キーワードで宣言する必要があります。`Pausable`コントラクトでは、一貫性のために`pause`と`unpause`の両関数をvirtualとしてマークしましたが、実際に変更する必要があったのは`unpause`だけです。
+
+> **Note**
 >
-> When we override a function in Solidity, we can only make the visibility more accessible—specifically, we can change it from external to public but not the other way around. For mutability, we can tighten it up, like moving from nonpayable to view or pure (as we did with `unpause`) and from view to pure. But there’s one big exception: if a function is marked as payable, it has to stay that way—we can’t change it to anything else.
+> When we override a function in Solidity, we can only make the visibility more accessible—specifically, we can change it from external to public but not the other way around. For mutability, we can tighten it up, like moving from nonpayable to view or pure (as we did with `unpause`) and from view to pure. But there's one big exception: if a function is marked as payable, it has to stay that way—we can't change it to anything else.
+
+> **注意**
+>
+> Solidityで関数をオーバーライドする場合、可視性はよりアクセスしやすい方向にのみ変更できます。具体的には、externalからpublicに変更できますが、その逆はできません。ミュータビリティ（状態変更の可否）については、より厳しくすることができ、nonpayableからviewやpure（`unpause`で行ったように）へ、viewからpureへと変更できます。ただし1つ大きな例外があります。関数がpayableとしてマークされている場合、それを他のものに変更することはできません。
 
 ### Multiple Inheritance
 
-When we use multiple inheritance in Solidity, it relies on something called the C3 linearization algorithm to figure out the order in which contracts are inherited. This algorithm ensures that inheritance order is strict and predictable, which helps avoid issues like cyclic inheritance. In its simplest form, we can say that it figures out the order in which base contracts are checked when looking for a function, and this order goes from right to left. That means the contract on the right is considered the “most derived.” For example, in the contract declaration `contract C is A, B { }`, contract B is more derived than contract A.
+### 多重継承
 
-Now, besides using the C3 linearization, Solidity has additional safeguards in place. One key rule is that if multiple contracts have the same function, we have to explicitly state which contracts are being overridden. Let’s walk through an example:
+When we use multiple inheritance in Solidity, it relies on something called the C3 linearization algorithm to figure out the order in which contracts are inherited. This algorithm ensures that inheritance order is strict and predictable, which helps avoid issues like cyclic inheritance. In its simplest form, we can say that it figures out the order in which base contracts are checked when looking for a function, and this order goes from right to left. That means the contract on the right is considered the "most derived." For example, in the contract declaration `contract C is A, B { }`, contract B is more derived than contract A.
+
+Solidityで多重継承を使用する場合、コントラクトが継承される順序を決定するために、C3線形化（C3 linearization）アルゴリズムと呼ばれるものに依拠しています。このアルゴリズムは、継承順序が厳密で予測可能であることを保証し、循環継承のような問題を回避するのに役立ちます。最も単純に言えば、関数を探す際に基本コントラクトが確認される順序を決定し、その順序は右から左へ進みます。つまり右側のコントラクトが「最も派生した」ものとみなされます。たとえば、`contract C is A, B { }`というコントラクト宣言では、コントラクトBがコントラクトAよりも派生度が高くなります。
+
+Now, besides using the C3 linearization, Solidity has additional safeguards in place. One key rule is that if multiple contracts have the same function, we have to explicitly state which contracts are being overridden. Let's walk through an example:
+
+さて、C3線形化の使用に加えて、Solidityには追加の安全策があります。重要なルールの1つは、複数のコントラクトが同じ関数を持っている場合、どのコントラクトがオーバーライドされているかを明示的に示す必要があるということです。例を見てみましょう。
 
 ```solidity
 contract A {
-    function foo() public virtual returns(string memory){
-        return "A";
-    }
+    function foo() public virtual returns(string memory){
+        return "A";
+    }
 }
 contract B {
-    function foo() public virtual returns(string memory){
-        return "B";
-    }
+    function foo() public virtual returns(string memory){
+        return "B";
+    }
 }
 contract C is A, B {
 }
 ```
 
-At first glance, this looks like it should work fine because the C3 linearization should handle everything. But in reality, it won’t compile. Solidity will throw an error that says, “TypeError: Derived contract must override function `foo`. Two or more base classes define a function with the same name and parameter types.” To fix the issue we need to explicitly override the `foo()` function from both A and B like this:
+At first glance, this looks like it should work fine because the C3 linearization should handle everything. But in reality, it won't compile. Solidity will throw an error that says, "TypeError: Derived contract must override function `foo`. Two or more base classes define a function with the same name and parameter types." To fix the issue we need to explicitly override the `foo()` function from both A and B like this:
+
+一見すると、C3線形化がすべてを処理するのでうまくいきそうに見えます。しかし実際にはコンパイルされません。Solidityは「TypeError: Derived contract must override function `foo`. Two or more base classes define a function with the same name and parameter types.」というエラーをスローします。この問題を修正するには、AとBの両方から`foo()`関数を明示的にオーバーライドする必要があります。
 
 ```solidity
 contract C is A, B {
-    function foo() public override(A, B) returns(string memory){
-        return "C";
-    }
+    function foo() public override(A, B) returns(string memory){
+        return "C";
+    }
 }
 ```
 
-So even though Solidity uses C3 linearization, we don’t really need to worry about it for the most part while coding because Solidity forces us to handle function overrides explicitly.
+So even though Solidity uses C3 linearization, we don't really need to worry about it for the most part while coding because Solidity forces us to handle function overrides explicitly.
 
-However, one place where C3 linearization matters is when Solidity decides the order of constructor execution. The constructors follow the C3 linearized order, but here’s the twist: they’re executed in reverse. This makes sense if you think about it: the most derived contract’s constructor should run last because it might override things that earlier constructors set up. Let’s look at an example:
+したがって、SolidityがC3線形化を使用していても、コーディング中にそれについてあまり心配する必要はありません。Solidityは関数のオーバーライドを明示的に処理することを強制するからです。
+
+However, one place where C3 linearization matters is when Solidity decides the order of constructor execution. The constructors follow the C3 linearized order, but here's the twist: they're executed in reverse. This makes sense if you think about it: the most derived contract's constructor should run last because it might override things that earlier constructors set up. Let's look at an example:
+
+ただし、C3線形化が重要になる場面の1つは、Solidityがコンストラクタの実行順序を決定するときです。コンストラクタはC3線形化の順序に従いますが、ひねりがあります。逆順で実行されるのです。考えてみれば理にかなっています。最も派生したコントラクトのコンストラクタは最後に実行されるべきです。なぜなら、先に実行されたコンストラクタが設定したものをオーバーライドする可能性があるからです。例を見てみましょう。
 
 ```solidity
 contract Base{
-    uint x;
+    uint x;
 }
 contract Derived1 is Base{
-    constructor(){
-        x = 1;
-    }
+    constructor(){
+        x = 1;
+    }
 }
 contract Derived2 is Base{
-    constructor(){
-        x = 2;
-    }
+    constructor(){
+        x = 2;
+    }
 }
 contract Derived3 is Derived1, Derived2 {
-    uint public y;
-    constructor() Derived1() Derived2() {
-        y = x;
-    }
+    uint public y;
+    constructor() Derived1() Derived2() {
+        y = x;
+    }
 }
 ```
 
-In this case, the value of `y` will end up being 2, as expected, because `Derived2`’s constructor runs last and sets `x` to 2.
+In this case, the value of `y` will end up being 2, as expected, because `Derived2`'s constructor runs last and sets `x` to 2.
 
-Something important to keep in mind is that the order in which you provide constructor arguments doesn’t affect the execution order. For example, we can flip the constructor calls like this:
+この場合、`y`の値は期待どおり2になります。`Derived2`のコンストラクタが最後に実行され、`x`を2に設定するからです。
+
+Something important to keep in mind is that the order in which you provide constructor arguments doesn't affect the execution order. For example, we can flip the constructor calls like this:
+
+覚えておくべき重要な点は、コンストラクタ引数を提供する順序は実行順序に影響しないということです。たとえば、コンストラクタの呼び出しを次のように入れ替えることができます。
 
 ```solidity
 contract Derived3 is Derived1, Derived2 {
-    uint public y;
-    constructor() Derived2() Derived1() { // we switched the order here
-        y = x;
-    }
+    uint public y;
+    constructor() Derived2() Derived1() { // we switched the order here
+        y = x;
+    }
 }
 ```
 
 Even though we changed the order in the constructor, the result will still be the same. The value of `y` will be 2 because the constructor-execution order is determined by the C3 linearization, not the order we call the constructors in.
 
-A final heads-up: Solidity’s use of C3 linearization for multiple inheritance can make the `super` keyword behave in ways you might not expect. Sometimes, calling `super` might trigger a function from a sibling class instead of the direct parent. This can lead to some surprising results where a method gets called from a class you didn’t even list in the inheritance chain. It’s a bit of an edge case, so we won’t go too deep into it, but definitely keep this in mind when using the `super` keyword in contracts with complex inheritance setups.
+コンストラクタの順序を変更しても、結果は同じです。`y`の値は2になります。なぜなら、コンストラクタの実行順序はC3線形化によって決定され、コンストラクタを呼び出す順序によって決まるわけではないからです。
 
+A final heads-up: Solidity's use of C3 linearization for multiple inheritance can make the `super` keyword behave in ways you might not expect. Sometimes, calling `super` might trigger a function from a sibling class instead of the direct parent. This can lead to some surprising results where a method gets called from a class you didn't even list in the inheritance chain. It's a bit of an edge case, so we won't go too deep into it, but definitely keep this in mind when using the `super` keyword in contracts with complex inheritance setups.
+
+最後に注意点を1つ。Solidityが多重継承にC3線形化を使用していることにより、`super`キーワードが予想外の動作をすることがあります。`super`を呼び出すと、直接の親ではなく兄弟クラスの関数がトリガーされることがあります。これにより、継承チェーンにリストしていないクラスからメソッドが呼び出されるという意外な結果につながることがあります。これはやや特殊なケースなので深くは掘り下げませんが、複雑な継承構成を持つコントラクトで`super`キーワードを使用する際には、必ずこの点を念頭に置いてください。
 ### Error Handling
+
+### エラーハンドリング
 
 A contract call can terminate and return an error. Error handling in Solidity is handled by three functions: `assert`, `require`, and `revert`.
 
+コントラクトの呼び出しが終了し、エラーを返すことがあります。Solidityのエラーハンドリングは、`assert`、`require`、`revert`の3つの関数によって処理されます。
+
 When a contract terminates with an error, all the state changes (changes to variables, balances, etc.) are reverted, all the way up the chain of contract calls if more than one contract was called. This ensures that transactions are *atomic*, meaning they either complete successfully or have no effect on state and are reverted entirely.
 
-The `assert` and `require` functions operate in the same way, evaluating a condition and stopping execution with an error if the condition is false. By convention, `assert` is used when the outcome is expected to be true, meaning that we use `assert` to test internal conditions. By comparison, `require` is used when testing inputs (such as function arguments or transaction fields), setting our expectations for those conditions. It’s also worth noting that `assert` behaves differently from `require` when it fails: it consumes all remaining gas. That makes it more expensive when triggered, and it’s one reason why we typically reserve it for invariants that should never break.
+コントラクトがエラーで終了すると、複数のコントラクトが呼び出されていた場合、コントラクト呼び出しのチェーンの一番上まで、すべての状態変更（変数、残高などへの変更）が元に戻されます。これにより、トランザクションが*アトミック*であることが保証されます。つまり、トランザクションは正常に完了するか、状態に影響を与えずに完全に元に戻されるかのどちらかです。
 
-We’ve used `require` in our function modifier `onlyOwner` to test that the message sender is the owner of the contract:
+The `assert` and `require` functions operate in the same way, evaluating a condition and stopping execution with an error if the condition is false. By convention, `assert` is used when the outcome is expected to be true, meaning that we use `assert` to test internal conditions. By comparison, `require` is used when testing inputs (such as function arguments or transaction fields), setting our expectations for those conditions. It's also worth noting that `assert` behaves differently from `require` when it fails: it consumes all remaining gas. That makes it more expensive when triggered, and it's one reason why we typically reserve it for invariants that should never break.
+
+`assert`関数と`require`関数は同じように動作し、条件を評価して、条件が偽の場合にはエラーで実行を停止します。慣例により、結果が正しいと予想されるときに`assert`を使用します。つまり、`assert`は内部条件をテストするために使用されます。一方、`require`は入力（関数の引数やトランザクションフィールドなど）をテストするときに使用され、条件に対する期待値を設定します。`assert`が失敗した場合、`require`とは異なる動作をする点にも注目すべきです。`assert`は残りのガスをすべて消費します。そのため、発火した場合のコストが高くなり、これが、決して壊れてはならない不変条件のために`assert`を使うべきとされる理由の1つです。
+
+We've used `require` in our function modifier `onlyOwner` to test that the message sender is the owner of the contract:
+
+メッセージ送信者がコントラクトのオーナーであることをテストするために、関数修飾子`onlyOwner`で`require`を使用しました。
 
 ```solidity
 require(msg.sender == owner);
@@ -850,11 +1440,15 @@ require(msg.sender == owner);
 
 The `require` function acts as a *gate condition*, preventing execution of the rest of the function and producing an error if it is not satisfied. It can also include a helpful text message that can be used to show the reason for the error. The error message is recorded in the transaction log, and its adoption is suggested in order to improve the user experience by letting users know what the error is and how to fix it. So we can improve our code by adding an error message in our `require` function:
 
+`require`関数は*ゲート条件*（gate condition）として機能し、条件が満たされていない場合は残りの関数の実行を防ぎ、エラーを生成します。エラーの原因を示すのに役立つテキストメッセージを含めることもできます。エラーメッセージはトランザクションログに記録され、ユーザーにエラーの内容と修正方法を知らせてユーザー体験を向上させるために、採用が推奨されています。そこで、`require`関数にエラーメッセージを追加してコードを改善できます。
+
 ```solidity
 require(msg.sender == owner, "Only the contract owner can call this function");
 ```
 
 The `revert` function halts the execution of the contract and reverts any state changes. It can be used in two ways: either as a statement with a custom error passed directly without parentheses or as a function with parentheses that takes a string argument. The custom error would be much cheaper in terms of gas cost, while both the error string and the custom error are recorded in the transaction log:
+
+`revert`関数はコントラクトの実行を中止し、すべての状態変更を元に戻します。2つの方法で使用できます。カスタムエラーを括弧なしで直接渡すステートメントとして使用するか、文字列引数を取る括弧付きの関数として使用するかです。カスタムエラーのほうがガス費用の点ではるかに安価ですが、エラー文字列もカスタムエラーもどちらもトランザクションログに記録されます。
 
 ```solidity
 revert();
@@ -862,7 +1456,9 @@ revert("Error string");
 revert CustomError(arg1, arg2);
 ```
 
-Certain conditions in a contract will generate errors regardless of whether we explicitly check for them. For example, in our `Faucet` contract, we don’t check whether there is enough ether to satisfy a withdrawal request. That’s because the `transfer` function will fail with an error and revert the transaction if there is insufficient balance to make the transfer:
+Certain conditions in a contract will generate errors regardless of whether we explicitly check for them. For example, in our `Faucet` contract, we don't check whether there is enough ether to satisfy a withdrawal request. That's because the `transfer` function will fail with an error and revert the transaction if there is insufficient balance to make the transfer:
+
+コントラクト内の特定の条件は、明示的にチェックするかどうかにかかわらず、エラーを生成します。たとえば、ファウセットコントラクトでは、引き出しリクエストを満たすのに十分なイーサがあるかどうかを確認しません。これは、送金を行うのに十分な残高がない場合、`transfer`関数がエラーで失敗し、トランザクションを元に戻すためです。
 
 ```solidity
 payable(msg.sender).transfer(withdrawAmount);
@@ -870,45 +1466,69 @@ payable(msg.sender).transfer(withdrawAmount);
 
 However, it might be better to check explicitly and provide a clear error message on failure. We can do that by adding a `require` statement before the transfer:
 
+ただし、明示的にチェックし、失敗時に明確なエラーメッセージを提供するほうがよい場合もあります。送金の前に`require`ステートメントを追加することでそれを実現できます。
+
 ```solidity
 require(this.balance >= withdrawAmount,
  "Insufficient balance in faucet for withdrawal request");
 payable(msg.sender).transfer(withdrawAmount);
 ```
 
-Additional error-checking code like this will increase gas consumption slightly, but it offers better error reporting than if omitted. While minimizing gas consumption used to be a mandatory activity due to high costs on Ethereum mainnet, the introduction of EIP-4844 has significantly reduced that cost, making gas consumption less of a pressing issue today. However, it’s still important to strike the right balance between gas efficiency and thorough error checking.
+Additional error-checking code like this will increase gas consumption slightly, but it offers better error reporting than if omitted. While minimizing gas consumption used to be a mandatory activity due to high costs on Ethereum mainnet, the introduction of EIP-4844 has significantly reduced that cost, making gas consumption less of a pressing issue today. However, it's still important to strike the right balance between gas efficiency and thorough error checking.
 
-Solidity gives us even more control over error handling through the try/catch functionality. This is a very handy feature that lets us handle errors more gracefully when we’re calling external contracts. Instead of our entire transaction failing and reverting when something goes wrong, we can catch the error and decide what to do next. When we use try/catch, we basically wrap the external call in a `try` block. If the call is successful, the code inside the `try` block executes as normal. But if something goes wrong—like the called contract running out of gas, hitting a `require` statement, or throwing an exception—the code jumps to the `catch` block, where we can handle the error.
+このような追加のエラーチェックコードは、ガス消費量をわずかに増加させますが、省略した場合よりもエラー報告が向上します。かつてはイーサリアムメインネットのコストが高かったため、ガス消費量の最小化は必須の作業でしたが、EIP-4844の導入によりそのコストは大幅に低下し、今日ではガス消費量はそれほど切迫した問題ではなくなりました。ただし、ガス効率と徹底的なエラーチェックの間で適切なバランスを取ることは依然として重要です。
 
-Here’s a simple example:
+Solidity gives us even more control over error handling through the try/catch functionality. This is a very handy feature that lets us handle errors more gracefully when we're calling external contracts. Instead of our entire transaction failing and reverting when something goes wrong, we can catch the error and decide what to do next. When we use try/catch, we basically wrap the external call in a `try` block. If the call is successful, the code inside the `try` block executes as normal. But if something goes wrong—like the called contract running out of gas, hitting a `require` statement, or throwing an exception—the code jumps to the `catch` block, where we can handle the error.
+
+Solidityはtry/catch機能により、エラーハンドリングにさらに多くの制御を提供します。これは、外部コントラクトを呼び出す際にエラーをより適切に処理できる非常に便利な機能です。何か問題が発生したときにトランザクション全体が失敗してリバートされるのではなく、エラーをキャッチして次に何をすべきかを決定できます。try/catchを使用する場合、基本的に外部呼び出しを`try`ブロックでラップします。呼び出しが成功すれば、`try`ブロック内のコードが通常どおり実行されます。しかし、呼び出し先のコントラクトでガス不足が発生したり、`require`ステートメントに引っかかったり、例外がスローされたりすると、コードは`catch`ブロックにジャンプし、そこでエラーを処理できます。
+
+Here's a simple example:
+
+簡単な例を示します。
 
 ```solidity
 function sampleExternalCall(address target, uint amount) public {
-    try ITargetContract(target).someFunction(amount) {
-        // This runs if the call is successful
-        emit Success("Call succeeded!");
-    } catch {
-        // This runs if the call fails
-        emit Error("Call failed!");
-    }
+    try ITargetContract(target).someFunction(amount) {
+        // This runs if the call is successful
+        emit Success("Call succeeded!");
+    } catch {
+        // This runs if the call fails
+        emit Error("Call failed!");
+    }
 }
 ```
 
 We can catch errors in different ways depending on the type of error. The basic `catch` block catches all errors, but we can also catch specific errors. For instance, we can catch errors that return an error string using `catch Error(string memory reason)`, or we can handle low-level errors that return no data with `catch (bytes memory lowLevelData)`. Additionally, we can catch more serious panic errors, such as overflows or division by zero, using `catch Panic(uint errorCode)`.
 
-Try/catch works only with external calls. It doesn’t help with internal function calls within the same contract. If a function in the same contract fails, it will still revert as usual, and we can’t catch that with try/catch.
+エラーの種類に応じて、さまざまな方法でエラーをキャッチできます。基本的な`catch`ブロックはすべてのエラーをキャッチしますが、特定のエラーをキャッチすることもできます。たとえば、`catch Error(string memory reason)`を使用してエラー文字列を返すエラーをキャッチしたり、`catch (bytes memory lowLevelData)`でデータを返さない低レベルのエラーを処理したりできます。さらに、`catch Panic(uint errorCode)`を使用して、オーバーフローやゼロ除算などのより深刻なパニックエラーをキャッチすることもできます。
+
+Try/catch works only with external calls. It doesn't help with internal function calls within the same contract. If a function in the same contract fails, it will still revert as usual, and we can't catch that with try/catch.
+
+try/catchは外部呼び出しでのみ機能します。同じコントラクト内の内部関数呼び出しには対応していません。同じコントラクト内の関数が失敗した場合、通常どおりリバートされ、try/catchでキャッチすることはできません。
 
 ### Events
 
+### イベント
+
 When a transaction completes (successfully or not), it produces a transaction receipt. The transaction receipt contains log entries that provide information about the actions that occurred during the execution of the transaction. *Events* are the Solidity high-level objects that are used to construct these logs.
 
-Events are especially useful for light clients and DApp services, which can “watch” for specific events and report them to the user interface or make a change in the state of the application to reflect an event in an underlying contract.
+トランザクションが（成功したかどうかによらず）完了すると、トランザクションレシートが生成されます。トランザクションレシートには、トランザクションの実行中に発生したアクションに関する情報を提供するログエントリが含まれています。*イベント*は、これらのログを構築するために使用されるSolidityの高レベルオブジェクトです。
+
+Events are especially useful for light clients and DApp services, which can "watch" for specific events and report them to the user interface or make a change in the state of the application to reflect an event in an underlying contract.
+
+イベントは、ライトクライアントやDAppサービスで特に有用です。ライトクライアントやDAppサービスは、特定のイベントを「監視」してユーザーインターフェイスに報告したり、基盤となるコントラクトのイベントを反映させるためにアプリケーションの状態を変更したりできます。
 
 Event objects take arguments that are serialized and recorded in the transaction logs, in the blockchain. You can supply the keyword `indexed` before an argument to make the value part of an indexed table (hash table) that can be searched or filtered by an application.
 
+イベントオブジェクトは、シリアライズされた引数を取り、ブロックチェーン内のトランザクションログに記録されます。引数の前にindexedキーワードを置くことで、インデックス付きテーブル（ハッシュテーブル）の一部にすることができ、アプリケーションで検索やフィルタリングが可能になります。
+
 #### Adding events
 
-We have not added any events in our `Faucet` example so far, so let’s do that. We will add two events: one to log any withdrawals and one to log any deposits. We will call these events `Withdrawal` and `Deposit`, respectively. First, we define the events in the `Faucet` contract:
+#### イベントの追加
+
+We have not added any events in our `Faucet` example so far, so let's do that. We will add two events: one to log any withdrawals and one to log any deposits. We will call these events `Withdrawal` and `Deposit`, respectively. First, we define the events in the `Faucet` contract:
+
+ファウセットの例ではこれまでイベントを追加していないため、ここで追加しましょう。引き出しを記録するためのイベントと、入金を記録するためのイベントの2つを追加します。これらのイベントをそれぞれ`Withdrawal`と`Deposit`と呼びます。まず、`Faucet`コントラクト内でイベントを定義します。
 
 ```solidity
 contract Faucet is Pausable {
@@ -918,9 +1538,13 @@ contract Faucet is Pausable {
 }
 ```
 
-We’ve chosen to make the addresses `indexed`, to allow searching and filtering in any user interface built to access our `Faucet`.
+We've chosen to make the addresses `indexed`, to allow searching and filtering in any user interface built to access our `Faucet`.
+
+ファウセットにアクセスするために構築されたユーザーインターフェイスで検索やフィルタリングができるように、アドレスをindexedにしました。
 
 Next, we use the `emit` keyword to incorporate the event data in the transaction logs:
+
+次に、emitキーワードを使用して、トランザクションログにイベントデータを埋め込みます。
 
 ```solidity
 // Give out ether to anyone who asks
@@ -937,84 +1561,106 @@ receive() external payable {
 
 The resulting *Faucet.sol* contract looks like Example 7-3.
 
+結果として、*Faucet.sol*コントラクトは例7-3のようになります。
+
 **Example 7-3. Faucet.sol: Revised Faucet contract, with events**
+
+**例7-3. Faucet.sol：修正されたイベント付きのファウセットコントラクト**
 
 ```solidity
 // Version of Solidity compiler this program was written for
 pragma solidity 0.8.26;
 // SPDX-License-Identifier: GPL-3.0
 contract Owned {
-    address owner;
-    // Contract constructor: set owner
-    constructor() {
-        owner = msg.sender;
-    }
-    // Access control modifier
-    modifier onlyOwner {
-        require(msg.sender == owner);
-        _;
-    }
+    address owner;
+    // Contract constructor: set owner
+    constructor() {
+        owner = msg.sender;
+    }
+    // Access control modifier
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
 }
 contract Pausable is Owned {
-    event Paused();
-    event Unpaused();
-    bool paused;
-    // Status check modifier
-    modifier whenNotPaused {
-        require(paused == false);
-        _;
-    }
-    // Functions to pause/unpause user operations
-    function pause() public onlyOwner {
-        paused = true;
-        emit Paused();
-    }
-    function unpause() public onlyOwner {
-        paused = false;
-        emit Unpaused();
-    }
+    event Paused();
+    event Unpaused();
+    bool paused;
+    // Status check modifier
+    modifier whenNotPaused {
+        require(paused == false);
+        _;
+    }
+    // Functions to pause/unpause user operations
+    function pause() public onlyOwner {
+        paused = true;
+        emit Paused();
+    }
+    function unpause() public onlyOwner {
+        paused = false;
+        emit Unpaused();
+    }
 }
 contract Faucet is Pausable {
-    event Withdrawal(address indexed to, uint amount);
-    event Deposit(address indexed from, uint amount);
-    // Give out ether to anyone who asks
-    function withdraw(uint withdrawAmount) public whenNotPaused {
-        // Limit withdrawal amount
-        require(withdrawAmount <= 0.1 ether);
-        // Send the amount to the address that requested it
-        payable(msg.sender).transfer(withdrawAmount);
-        emit Withdrawal(msg.sender, withdrawAmount);
-    }
-    // Accept any incoming amount
-    receive() external payable {
-        emit Deposit(msg.sender, msg.value);
-    }
+    event Withdrawal(address indexed to, uint amount);
+    event Deposit(address indexed from, uint amount);
+    // Give out ether to anyone who asks
+    function withdraw(uint withdrawAmount) public whenNotPaused {
+        // Limit withdrawal amount
+        require(withdrawAmount <= 0.1 ether);
+        // Send the amount to the address that requested it
+        payable(msg.sender).transfer(withdrawAmount);
+        emit Withdrawal(msg.sender, withdrawAmount);
+    }
+    // Accept any incoming amount
+    receive() external payable {
+        emit Deposit(msg.sender, msg.value);
+    }
 }
 ```
 
 #### Catching events
 
-Let’s walk through how we can catch on-chain events with some code. Specifically, we’ll write a script to monitor USDT token transfers on the Ethereum mainnet. To do this, we need a Web3 library, and while web3.js was the first to become popular, ethers.js has overtaken it in recent years. As developers, we prefer ethers.js, so that’s what we’ll use here.
+#### イベントを捕捉する
 
-First, let’s set up our project. Start by creating a new project folder, then install the ethers library by running:
+Let's walk through how we can catch on-chain events with some code. Specifically, we'll write a script to monitor USDT token transfers on the Ethereum mainnet. To do this, we need a Web3 library, and while web3.js was the first to become popular, ethers.js has overtaken it in recent years. As developers, we prefer ethers.js, so that's what we'll use here.
+
+コードを使ってオンチェーンイベントをどのように捕捉できるか見ていきましょう。具体的には、イーサリアムメインネット上のUSDTトークン転送を監視するスクリプトを書きます。これを行うにはWeb3ライブラリが必要です。web3.jsが最初に普及しましたが、近年ではethers.jsがそれを追い越しています。開発者としては、ethers.jsを好むので、ここではそれを使用します。
+
+First, let's set up our project. Start by creating a new project folder, then install the ethers library by running:
+
+まず、プロジェクトをセットアップしましょう。新しいプロジェクトフォルダを作成し、次のコマンドを実行してethersライブラリをインストールします。
 
 ```bash
 npm i ethers
 ```
 
-Next, we need the USDT contract’s ABI. You can grab it from [Etherscan](https://oreil.ly/LoWH4), right below the contract source code (see Figure 7-1), and save it in your project folder.
+Next, we need the USDT contract's ABI. You can grab it from [Etherscan](https://oreil.ly/LoWH4), right below the contract source code (see Figure 7-1), and save it in your project folder.
 
-![Etherscan’s USDT ABI section](images/ch7/maet_0701.png)
+次に、USDTコントラクトのABIが必要です。[Etherscan](https://oreil.ly/LoWH4)のコントラクトソースコードのすぐ下から取得し（図7-1を参照）、プロジェクトフォルダに保存します。
 
-**Figure 7-1.** Etherscan’s USDT ABI section
+![Etherscan's USDT ABI section](images/ch1/maet_0701.png)
 
-Now, let’s talk about how we’ll connect to the Ethereum network. We need a WebSocket provider because we’re listening for events, which requires a continuous connection. You can choose between paid providers (which are more reliable and faster) or free, public ones you can find on websites like [ChainList](https://chainlist.org). For our example, a public one will do just fine, even though they might be rate limited.
+**Figure 7-1.** Etherscan's USDT ABI section
 
-> **注記**
+**図7-1.** EtherscanのUSDT ABIセクション
+
+Now, let's talk about how we'll connect to the Ethereum network. We need a WebSocket provider because we're listening for events, which requires a continuous connection. You can choose between paid providers (which are more reliable and faster) or free, public ones you can find on websites like [ChainList](https://chainlist.org). For our example, a public one will do just fine, even though they might be rate limited.
+
+次に、イーサリアムネットワークへの接続方法について説明します。イベントをリッスンするには、継続的な接続が必要なため、WebSocketプロバイダーが必要です。有料のプロバイダー（より信頼性が高く高速）か、[ChainList](https://chainlist.org)のようなウェブサイトで見つけられる無料のパブリックプロバイダーのどちらかを選ぶことができます。この例では、レート制限がかかる可能性はありますが、パブリックなもので十分です。
+
+> **Note**
 >
 > To listen for events, we need a WebSocket, not an RPC endpoint. RPC endpoints are great for single requests like calling a function or fetching data, but for catching events, a WebSocket connection is what allows us to keep an open line of communication between our client and the server.
 
-Now, let’s dive into the code:
+> **注記**
+>
+> イベントをリッスンするには、RPCエンドポイントではなくWebSocketが必要です。RPCエンドポイントは関数の呼び出しやデータの取得といった単発のリクエストには適していますが、イベントを捕捉するには、クライアントとサーバー間の通信回線を開いたまま維持できるWebSocket接続が必要です。
+
+Now, let's dive into the code:
+
+それでは、コードを見ていきましょう。
 
 ```javascript
 const ethers = require("ethers");
@@ -1024,314 +1670,450 @@ const wssProviderURL = "wss://ethereum-rpc.publicnode.com"; // a public websocke
 const wssProvider = new ethers.providers.WebSocketProvider(wssProviderURL);
 const usdtContract = new ethers.Contract(usdtAddress, ABI, wssProvider);
 async function getTransfer(){
-    usdtContract.on("Transfer", (from, to, value, event)=>{
-        let transferEvent ={
-            from: from,
-            to: to,
-            value: value,
-            eventData: event,
-        }
-        console.log(JSON.stringify(transferEvent, null, 2))
-    })
+    usdtContract.on("Transfer", (from, to, value, event)=>{
+        let transferEvent ={
+            from: from,
+            to: to,
+            value: value,
+            eventData: event,
+        }
+        console.log(JSON.stringify(transferEvent, null, 2))
+    })
 }
 getTransfer()
 ```
 
 After we declare the USDT address and the WebSocket provider URL, the script kicks off by creating a new WebSocketProvider instance using the ethers library. This provider connects us to the Ethereum network via the WebSocket URL we specified. Next, we use the `ethers.Contract` class to create an instance of the USDT smart contract. We pass in the USDT address, the ABI, and our WebSocket provider.
 
-Now we get to the heart of the script. We set up an event listener on the contract instance to catch `Transfer` events emitted by the USDT contract. Whenever a `Transfer` event occurs, this listener triggers a callback function that receives four parameters related to the transfer. Inside the callback, we take the transfer details, wrap them up in an object, and then format this object as a JSON string. Finally, we print that JSON string to the console using `console.log` so that we can see exactly what’s happening with each transfer in real time.
+USDTアドレスとWebSocketプロバイダーURLを宣言した後、スクリプトはethersライブラリを使用して新しいWebSocketProviderインスタンスを作成するところから始まります。このプロバイダーは、指定したWebSocket URLを通じてイーサリアムネットワークに接続します。次に、`ethers.Contract`クラスを使用してUSDTスマートコントラクトのインスタンスを作成します。USDTアドレス、ABI、およびWebSocketプロバイダーを渡します。
 
-Here’s a sample output of our script:
+Now we get to the heart of the script. We set up an event listener on the contract instance to catch `Transfer` events emitted by the USDT contract. Whenever a `Transfer` event occurs, this listener triggers a callback function that receives four parameters related to the transfer. Inside the callback, we take the transfer details, wrap them up in an object, and then format this object as a JSON string. Finally, we print that JSON string to the console using `console.log` so that we can see exactly what's happening with each transfer in real time.
+
+ここからがスクリプトの核心部分です。USDTコントラクトが発行する`Transfer`イベントを捕捉するために、コントラクトインスタンスにイベントリスナーを設定します。`Transfer`イベントが発生するたびに、このリスナーは転送に関連する4つのパラメータを受け取るコールバック関数をトリガーします。コールバック内では、転送の詳細を取得してオブジェクトにまとめ、そのオブジェクトをJSON文字列としてフォーマットします。最後に、`console.log`を使ってそのJSON文字列をコンソールに出力し、各転送で何が起こっているかをリアルタイムで正確に確認できるようにします。
+
+Here's a sample output of our script:
+
+スクリプトの出力例は次のとおりです。
 
 ```json
 {
-  "from": "0xc169e35abb35f8e712eCF9F6d9465C96962CA383",
-  "to": "0x7E73F680243A93a9D98C5Ce4b349451805fc37ca",
-  "value": {
-    "type": "BigNumber",
-    "hex": "0x55b27b90"
-  },
-  "eventData": {
-    "blockNumber": 20687220,
-    "blockHash": "0xa5c3c518d7246e516e076ef8d43c387dcb54d06702e9e059c583ce28a7a271b8",
-    "transactionIndex": 166,
-    "removed": false,
-    "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-    "data": "0x0000000000000000000000000000000000000000000000000000000055b27b90",
-    "topics": [
-      "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
-      "0x000000000000000000000000c169e35abb35f8e712ecf9f6d9465c96962ca383",
-      "0x0000000000000000000000007e73f680243a93a9d98c5ce4b349451805fc37ca"
-    ],
-    "transactionHash":
-      "0xb527a5a18f10ed9b65dda7a914715a0b0bbfd6db053d8f6b35805ad49a588cfd",
-    "logIndex": 300,
-    "event": "Transfer",
-    "eventSignature": "Transfer(address,address,uint256)",
-    "args": [
-      "0xc169e35abb35f8e712eCF9F6d9465C96962CA383",
-      "0x7E73F680243A93a9D98C5Ce4b349451805fc37ca",
-      {
-        "type": "BigNumber",
-        "hex": "0x55b27b90"
-      }
-    ]
-  }
+  "from": "0xc169e35abb35f8e712eCF9F6d9465C96962CA383",
+  "to": "0x7E73F680243A93a9D98C5Ce4b349451805fc37ca",
+  "value": {
+    "type": "BigNumber",
+    "hex": "0x55b27b90"
+  },
+  "eventData": {
+    "blockNumber": 20687220,
+    "blockHash": "0xa5c3c518d7246e516e076ef8d43c387dcb54d06702e9e059c583ce28a7a271b8",
+    "transactionIndex": 166,
+    "removed": false,
+    "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    "data": "0x0000000000000000000000000000000000000000000000000000000055b27b90",
+    "topics": [
+      "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+      "0x000000000000000000000000c169e35abb35f8e712ecf9f6d9465c96962ca383",
+      "0x0000000000000000000000007e73f680243a93a9d98c5ce4b349451805fc37ca"
+    ],
+    "transactionHash":
+      "0xb527a5a18f10ed9b65dda7a914715a0b0bbfd6db053d8f6b35805ad49a588cfd",
+    "logIndex": 300,
+    "event": "Transfer",
+    "eventSignature": "Transfer(address,address,uint256)",
+    "args": [
+      "0xc169e35abb35f8e712eCF9F6d9465C96962CA383",
+      "0x7E73F680243A93a9D98C5Ce4b349451805fc37ca",
+      {
+        "type": "BigNumber",
+        "hex": "0x55b27b90"
+      }
+    ]
+  }
 }
 ```
 
-Events like these are incredibly useful, not just for off-chain communication but also for debugging. When you’re developing, you can find these events in the transaction receipt under the “logs” entry, which can be a lifesaver when things aren’t working as expected.
+Events like these are incredibly useful, not just for off-chain communication but also for debugging. When you're developing, you can find these events in the transaction receipt under the "logs" entry, which can be a lifesaver when things aren't working as expected.
+
+このようなイベントは、オフチェーンの通信だけでなく、デバッグにも非常に役立ちます。開発中には、トランザクションレシートの「logs」エントリでこれらのイベントを確認でき、期待どおりに動作しないときに問題解決の手がかりとなります。
 
 ### Calling Other Contracts
 
-Calling other contracts from within your contract is a very useful but potentially dangerous operation. We’ll examine the various ways you can achieve this and evaluate the risks of each method. In short, the risks arise from the fact that you may not know much about a contract you are calling into or one that is calling into your contract. When writing smart contracts, you must keep in mind that while you may mostly expect to be dealing with EOAs, there is nothing to stop arbitrarily complex and perhaps malign contracts from calling into and being called by your code.
+### 他のコントラクトの呼び出し
+
+Calling other contracts from within your contract is a very useful but potentially dangerous operation. We'll examine the various ways you can achieve this and evaluate the risks of each method. In short, the risks arise from the fact that you may not know much about a contract you are calling into or one that is calling into your contract. When writing smart contracts, you must keep in mind that while you may mostly expect to be dealing with EOAs, there is nothing to stop arbitrarily complex and perhaps malign contracts from calling into and being called by your code.
+
+自身のコントラクトから他のコントラクトを呼び出すのは非常に便利ですが、潜在的に危険な操作です。この操作を実現するさまざまな方法を検討し、各方法のリスクを評価します。端的に言えば、リスクは、自分が呼び出しているコントラクトや、自分のコントラクトを呼び出しているコントラクトについてよく知らないことから生じます。スマートコントラクトを書くときは、主にEOAを扱うことを想定していたとしても、任意の複雑で悪意のあるコントラクトが自分のコードを呼び出したり、自分のコードから呼び出されたりすることを止められないということを心に留めておかなければなりません。
 
 #### Creating a new instance
 
-The safest way to call another contract is if you create that other contract yourself. That way, you are certain of its interfaces and behavior. To do this, you can simply instantiate it using the keyword `new`, as in other object-oriented languages. In Solidity, the keyword `new` will create the contract on the blockchain and return an object that you can use to reference it. Let’s say you want to create and call a `Faucet` contract from within another contract called `Token`:
+#### 新しいインスタンスを作成する
+
+The safest way to call another contract is if you create that other contract yourself. That way, you are certain of its interfaces and behavior. To do this, you can simply instantiate it using the keyword `new`, as in other object-oriented languages. In Solidity, the keyword `new` will create the contract on the blockchain and return an object that you can use to reference it. Let's say you want to create and call a `Faucet` contract from within another contract called `Token`:
+
+別のコントラクトを呼び出す最も安全な方法は、そのコントラクトを自分で作成することです。そうすれば、そのインターフェイスと振る舞いを確実に把握できます。これを行うには、他のオブジェクト指向言語と同様に、キーワード`new`を使って簡単にインスタンス化できます。Solidityでは、`new`キーワードがブロックチェーン上にコントラクトを作成し、それを参照するために使用できるオブジェクトを返します。`Token`という別のコントラクト内から`Faucet`コントラクトを作成して呼び出したい場合を考えてみましょう。
 
 ```solidity
 contract Token is Pausable {
-    Faucet _faucet;
-    constructor() {
-        _faucet = new Faucet();
-    }
+    Faucet _faucet;
+    constructor() {
+        _faucet = new Faucet();
+    }
 }
 ```
 
 This mechanism for contract construction ensures that you know the exact type of the contract and its interface. The contract `Faucet` must be defined within the scope of `Token`, which you can do with an `import` statement if the definition is in another file:
 
+このコントラクト構築メカニズムは、コントラクトの正確な型とそのインターフェイスを確実に知っていることを保証します。`Faucet`コントラクトは`Token`のスコープ内で定義する必要があり、定義が別のファイルにある場合は`import`ステートメントで実行できます。
+
 ```solidity
 import "Faucet.sol";
 contract Token is Pausable {
-    Faucet _faucet;
-    constructor() {
-        _faucet = new Faucet();
-    }
+    Faucet _faucet;
+    constructor() {
+        _faucet = new Faucet();
+    }
 }
 ```
 
-You can optionally specify the value of ether transfer on creation and pass arguments to the new contract’s constructor:
+You can optionally specify the value of ether transfer on creation and pass arguments to the new contract's constructor:
+
+必要に応じて、作成時に送金するイーサの値を指定し、新しいコントラクトのコンストラクタに引数を渡すこともできます。
 
 ```solidity
 import "Faucet.sol";
 contract Token is Pausable {
-    Faucet _faucet;
-    constructor() {
-        _faucet = new Faucet{value: 0.5 ether}();
-    }
+    Faucet _faucet;
+    constructor() {
+        _faucet = new Faucet{value: 0.5 ether}();
+    }
 }
 ```
 
 Note that this would require the `Faucet` constructor to be payable!
 
+この場合、`Faucet`のコンストラクタがpayableである必要があることに注意してください。
+
 You can also then call the `Faucet` functions. In this example, we call the `changeOwner` function of `Faucet` from within the `changeOwner` function of `Token`:
+
+`Faucet`の関数を呼び出すこともできます。以下の例では、`Token`の`changeOwner`関数内から`Faucet`の`changeOwner`関数を呼び出しています。
 
 ```solidity
 import "Faucet.sol";
 contract Token is Pausable {
-    Faucet _faucet;
-    constructor() {
-         _faucet = new Faucet{value: 0.5 ether}();
-    }
-    function changeOwner(address newOwner) onlyOwner {
-        _faucet.changeOwner(newOwner);
-    }
+    Faucet _faucet;
+    constructor() {
+         _faucet = new Faucet{value: 0.5 ether}();
+    }
+    function changeOwner(address newOwner) onlyOwner {
+        _faucet.changeOwner(newOwner);
+    }
 }
 ```
 
-It’s important to understand that while you are the owner of the `Token` contract, the `Token` contract itself owns the new `Faucet` contract, not you! As we saw earlier in this chapter, during an external call the `msg.sender` will change; in our case, in the `Faucet` execution context, it will be the `Token` address.
+It's important to understand that while you are the owner of the `Token` contract, the `Token` contract itself owns the new `Faucet` contract, not you! As we saw earlier in this chapter, during an external call the `msg.sender` will change; in our case, in the `Faucet` execution context, it will be the `Token` address.
+
+重要な点として、あなたが`Token`コントラクトのオーナーであっても、新しい`Faucet`コントラクトを所有するのは`Token`コントラクト自体であり、あなたではありません。本章で前述したように、外部呼び出し中は`msg.sender`が変わります。この場合、`Faucet`の実行コンテクストでは`msg.sender`は`Token`のアドレスになります。
 
 #### Addressing an existing instance
 
-Another way you can call a contract is by casting the address of an existing instance of the contract. With this method, you apply a known interface to an existing instance. It is therefore critically important that you know, for sure, that the instance you are addressing is in fact of the type you assume. Let’s look at an example:
+#### 既存のインスタンスへのアドレスキャスト
+
+Another way you can call a contract is by casting the address of an existing instance of the contract. With this method, you apply a known interface to an existing instance. It is therefore critically important that you know, for sure, that the instance you are addressing is in fact of the type you assume. Let's look at an example:
+
+コントラクトを呼び出すもう1つの方法は、コントラクトの既存インスタンスのアドレスをキャストすることです。この方法では、既存のインスタンスに既知のインターフェイスを適用します。したがって、アドレス指定しているインスタンスが実際に想定している型であることを確実に知っていることが極めて重要です。例を見てみましょう。
 
 ```solidity
 import "Faucet.sol";
 contract Token is Pausable {
-    Faucet _faucet;
-    constructor(address _f) {
-        _faucet = Faucet(_f);
-        _faucet.withdraw(0.1 ether)
-    }
+    Faucet _faucet;
+    constructor(address _f) {
+        _faucet = Faucet(_f);
+        _faucet.withdraw(0.1 ether)
+    }
 }
 ```
 
-Here, we take an address provided as an argument to the constructor, `_f`, and we cast it to a `Faucet` object. This is much riskier than the previous mechanism because we don’t know for sure whether that address actually is a `Faucet` object. When we call `withdraw`, we are assuming that it accepts the same arguments and executes the same code as our `Faucet` declaration, but we can’t be sure. For all we know, the `withdraw` function at this address could execute something completely different from what we expect, even if it is named the same. Using addresses passed as input and casting them into specific objects is therefore much more dangerous than creating the contract yourself.
+Here, we take an address provided as an argument to the constructor, `_f`, and we cast it to a `Faucet` object. This is much riskier than the previous mechanism because we don't know for sure whether that address actually is a `Faucet` object. When we call `withdraw`, we are assuming that it accepts the same arguments and executes the same code as our `Faucet` declaration, but we can't be sure. For all we know, the `withdraw` function at this address could execute something completely different from what we expect, even if it is named the same. Using addresses passed as input and casting them into specific objects is therefore much more dangerous than creating the contract yourself.
+
+ここでは、コンストラクタへの引数として提供されたアドレス`_f`を受け取り、`Faucet`オブジェクトにキャストしています。このアドレスが実際に`Faucet`オブジェクトであるかどうかは確実にはわからないため、前述の方法よりもはるかに危険です。`withdraw`を呼び出すとき、`Faucet`の宣言と同じ引数を受け入れて同じコードを実行すると想定していますが、確実ではありません。このアドレスの`withdraw`関数は、同じ名前であっても、期待するものとはまったく異なることを実行するかもしれません。したがって、入力として渡されたアドレスを特定のオブジェクトにキャストするのは、コントラクトを自分で作成するよりもはるかに危険です。
 
 #### Raw call, delegatecall, and staticcall
 
-Solidity offers some even more “low-level” functions for calling other contracts. These correspond directly to EVM opcodes of the same name and allow us to construct a contract-to-contract call manually. As such, they represent the most flexible *and* the most dangerous mechanisms for calling other contracts. They return two values: `bool success` indicating whether the operation was successful and `bytes memory data` containing the return data.
+#### 低レベル呼び出し（raw call）、delegatecall、staticcall
 
-Here’s the same example using a `call` method:
+Solidity offers some even more "low-level" functions for calling other contracts. These correspond directly to EVM opcodes of the same name and allow us to construct a contract-to-contract call manually. As such, they represent the most flexible *and* the most dangerous mechanisms for calling other contracts. They return two values: `bool success` indicating whether the operation was successful and `bytes memory data` containing the return data.
+
+Solidityは、他のコントラクトを呼び出すためのさらに「低レベル」な関数を提供しています。これらは同じ名前のEVMオペコードに直接対応しており、コントラクト間の呼び出しを手動で構築できます。そのため、他のコントラクトを呼び出すための最も柔軟で*かつ*最も危険なメカニズムです。これらは2つの値を返します。操作が成功したかどうかを示す`bool success`と、戻りデータを含む`bytes memory data`です。
+
+Here's the same example using a `call` method:
+
+`call`メソッドを使用した同じ例を示します。
 
 ```solidity
 contract Token is Pausable {
-    constructor(address _faucet) {
-        _faucet.call(abi.encodeWithSignature("withdraw(uint256)", 0.1 ether));
-    }
+    constructor(address _faucet) {
+        _faucet.call(abi.encodeWithSignature("withdraw(uint256)", 0.1 ether));
+    }
 }
 ```
 
-As you can see, this type of `call` is a *blind* call into a function, very much like constructing a raw transaction, only from within a contract’s context. The `call` function will return `false` if there is a problem, so you can evaluate the return value for error handling:
+As you can see, this type of `call` is a *blind* call into a function, very much like constructing a raw transaction, only from within a contract's context. The `call` function will return `false` if there is a problem, so you can evaluate the return value for error handling:
+
+ご覧のとおり、この種の`call`は関数への*ブラインド*呼び出しであり、生のトランザクションを構築するのと非常に似ていますが、コントラクトのコンテクスト内から行われます。`call`関数は問題がある場合に`false`を返すので、エラーハンドリングのために戻り値を評価できます。
 
 ```solidity
 contract Token2 is Pausable {
-    constructor(address _faucet) {
-        (bool res, ) = _faucet.call(
-            abi.encodeWithSignature("withdraw(uint256)", 0.1 ether)
-        );
-        if (!res) {
-            revert("Withdrawal from faucet failed");
-        }
-    }
+    constructor(address _faucet) {
+        (bool res, ) = _faucet.call(
+            abi.encodeWithSignature("withdraw(uint256)", 0.1 ether)
+        );
+        if (!res) {
+            revert("Withdrawal from faucet failed");
+        }
+    }
 }
 ```
 
-Variants of `call` are `staticcall` and `delegatecall`. As mentioned in the section “Address object”, `staticcall` invokes a function on another contract in a way that guarantees no state changes. This means that the called function cannot modify any state variables, interact with the blockchain’s state, or send ether.
+Variants of `call` are `staticcall` and `delegatecall`. As mentioned in the section "Address object", `staticcall` invokes a function on another contract in a way that guarantees no state changes. This means that the called function cannot modify any state variables, interact with the blockchain's state, or send ether.
+
+`call`の変種として`staticcall`と`delegatecall`があります。「アドレスオブジェクト」のセクションで述べたように、`staticcall`は状態変更が発生しないことを保証する方法で別のコントラクトの関数を呼び出します。つまり、呼び出された関数は状態変数の変更、ブロックチェーンの状態との対話、またはイーサの送信ができません。
 
 A `delegatecall` is different from a `call` in that the `msg` context does not change. For example, whereas a `call` changes the value of `msg.sender` to be the calling contract, a `delegatecall` keeps the same `msg.sender` as in the calling contract. Essentially, `delegatecall` runs the code of another contract inside the context of the execution of the current contract. It is most often used to invoke code from a library. It also allows you to draw on the pattern of using library functions stored elsewhere but have that code work with the storage data of your contract; a clear example of this is the proxy pattern. The `delegatecall` should be used with great caution. It can have some unexpected effects, especially if the contract you call was not designed as a library.
 
-Let’s use an example contract to demonstrate the various call semantics used by `call` and `delegatecall` for calling libraries and contracts. In Example 7-4, we use an event to log the details of each call and see how the calling context changes depending on the call type.
+`delegatecall`は`msg`コンテクストが変わらないという点で`call`とは異なります。たとえば、`call`では`msg.sender`の値が呼び出し元のコントラクトに変更されるのに対し、`delegatecall`は呼び出し元のコントラクトと同じ`msg.sender`を保持します。基本的に`delegatecall`は、現在のコントラクトの実行コンテクスト内で別のコントラクトのコードを実行します。ライブラリからコードを呼び出すために最もよく使われます。また、別の場所に保存されているライブラリ関数を使用しながら、そのコードを自分のコントラクトのストレージデータと連携させるパターンも可能にします。これの明確な例がプロキシパターンです。`delegatecall`は細心の注意を払って使用すべきです。特に呼び出し先のコントラクトがライブラリとして設計されていない場合、予期しない影響が生じる可能性があります。
+
+Let's use an example contract to demonstrate the various call semantics used by `call` and `delegatecall` for calling libraries and contracts. In Example 7-4, we use an event to log the details of each call and see how the calling context changes depending on the call type.
+
+`call`と`delegatecall`がライブラリとコントラクトを呼び出すために使用するさまざまな呼び出しセマンティクスを示すために、例を使って説明しましょう。例7-4では、イベントを使用して各呼び出しの詳細をログに記録し、呼び出しの種類に応じて呼び出しコンテクストがどのように変化するかを確認します。
 
 **Example 7-4. CallExamples.sol: An example of different call semantics**
+
+**例7-4. CallExamples.sol：さまざまな呼び出しセマンティクスの例**
 
 ```solidity
 pragma solidity 0.8.26;
 contract CalledContract {
-    event callEvent(address sender, address origin, address from);
-    function calledFunction() public {
-        emit callEvent(msg.sender, tx.origin, address(this));
-    }
+    event callEvent(address sender, address origin, address from);
+    function calledFunction() public {
+        emit callEvent(msg.sender, tx.origin, address(this));
+    }
 }
 library CalledLibrary {
-    event callEvent(address sender, address origin, address from);
-    function calledFunction() public {
-        emit callEvent(msg.sender, tx.origin, address(this));
-    }
+    event callEvent(address sender, address origin, address from);
+    function calledFunction() public {
+        emit callEvent(msg.sender, tx.origin, address(this));
+    }
 }
 contract Caller {
-    function makeCalls(CalledContract _calledContract) public {
-        // Calling CalledContract and CalledLibrary directly
-        _calledContract.calledFunction();
-        CalledLibrary.calledFunction();
-        // Low-level calls using the address object for CalledContract
-        (bool res, ) = address(_calledContract).
-            call(abi.encodeWithSignature("calledFunction()"));
-        require(res);
-        (res, ) = address(_calledContract).
-            delegatecall(abi.encodeWithSignature("calledFunction()"));
-        require(res);
-    }
+    function makeCalls(CalledContract _calledContract) public {
+        // Calling CalledContract and CalledLibrary directly
+        _calledContract.calledFunction();
+        CalledLibrary.calledFunction();
+        // Low-level calls using the address object for CalledContract
+        (bool res, ) = address(_calledContract).
+            call(abi.encodeWithSignature("calledFunction()"));
+        require(res);
+        (res, ) = address(_calledContract).
+            delegatecall(abi.encodeWithSignature("calledFunction()"));
+        require(res);
+    }
 }
 ```
 
 As you can see in this example, our main contract is `Caller`, which calls a library `CalledLibrary` and a contract `CalledContract`. Both the called library and the contract have identical `calledFunction` functions, which emit an event `calledEvent`. The event `calledEvent` logs three pieces of data: `msg.sender`, `tx.origin`, and `this`. Each time `calledFunction` is called, it may have a different execution context (with different values for potentially all the context variables), depending on whether it is called directly or through `delegatecall`.
 
+この例からわかるように、主なコントラクトは`Caller`であり、ライブラリ`CalledLibrary`とコントラクト`CalledContract`を呼び出します。呼び出されるライブラリとコントラクトの両方に、`calledEvent`というイベントを発行する同一の`calledFunction`関数があります。`calledEvent`イベントは、`msg.sender`、`tx.origin`、`this`の3つのデータをログに記録します。`calledFunction`が呼び出されるたびに、直接呼び出されるか`delegatecall`を通じて呼び出されるかに応じて、異なる実行コンテクスト（潜在的にすべてのコンテクスト変数に対して異なる値）が設定されます。
+
 In `Caller`, we first call the contract and library directly by invoking `calledFunction` in each. Then, we explicitly use the low-level functions `call` and `delegatecall` to call `CalledContract.calledFunction`. This way, we can see how the various calling mechanisms behave.
 
-Let’s deploy the contracts, run the `makeCalls` function, and capture the events. For clarity, we will replace the address with their labels (e.g., `CALLER_CONTRACT_ADDRESS`).
+`Caller`では、最初にそれぞれの`calledFunction`を呼び出して、コントラクトとライブラリを直接呼び出します。次に、低レベル関数`call`と`delegatecall`を明示的に使用して`CalledContract.calledFunction`を呼び出します。これにより、さまざまな呼び出しメカニズムがどのように動作するかを確認できます。
 
-We called the `makeCalls` function and passed the address of `CalledContract`, then caught the four events emitted by each of the different calls. Let’s look at the `makeCalls` function and walk through each step.
+Let's deploy the contracts, run the `makeCalls` function, and capture the events. For clarity, we will replace the address with their labels (e.g., `CALLER_CONTRACT_ADDRESS`).
+
+コントラクトをデプロイし、`makeCalls`関数を実行して、イベントを捕捉しましょう。わかりやすくするために、アドレスをラベル（例：`CALLER_CONTRACT_ADDRESS`）に置き換えます。
+
+We called the `makeCalls` function and passed the address of `CalledContract`, then caught the four events emitted by each of the different calls. Let's look at the `makeCalls` function and walk through each step.
+
+`makeCalls`関数を呼び出して`CalledContract`のアドレスを渡した後、それぞれの異なる呼び出しによって発行された4つのイベントを捕捉しました。`makeCalls`関数の各ステップを見ていきましょう。
 
 The first call is:
+
+最初の呼び出しは次のとおりです。
 
 ```solidity
 _calledContract.calledFunction();
 ```
 
-Here, we’re calling `CalledContract.calledFunction` directly using the high-level ABI for `calledFunction`. The arguments of the event emitted are:
+Here, we're calling `CalledContract.calledFunction` directly using the high-level ABI for `calledFunction`. The arguments of the event emitted are:
+
+ここでは、`calledFunction`の高レベルABIを使用して、`CalledContract.calledFunction`を直接呼び出しています。発行されたイベントの引数は次のとおりです。
 
 ```json
 {
-    sender: 'CALLER_CONTRACT_ADDRESS',
-    origin: 'EOA_ADDRESS',
-    from: 'CALLED_CONTRACT_ADDRESS'
+    sender: 'CALLER_CONTRACT_ADDRESS',
+    origin: 'EOA_ADDRESS',
+    from: 'CALLED_CONTRACT_ADDRESS'
 }
 ```
 
 As you can see, `msg.sender` is the address of the `Caller` contract. The `tx.origin` is the address of our account, `web3.eth.accounts[0]`, that sent the transaction to `Caller`. The event was emitted by `CalledContract`, as we can see from the last argument in the event.
 
+ご覧のとおり、`msg.sender`は`Caller`コントラクトのアドレスです。`tx.origin`はトランザクションを`Caller`に送信した自分のアカウント`web3.eth.accounts[0]`のアドレスです。イベントの最後の引数からわかるように、イベントは`CalledContract`によって発行されました。
+
 The next call in `makeCalls` is to the library:
+
+`makeCalls`の次の呼び出しはライブラリへのものです。
 
 ```solidity
 CalledLibrary.calledFunction();
 ```
 
-It looks identical to how we called the contract but behaves very differently. Let’s look at the second event emitted:
+It looks identical to how we called the contract but behaves very differently. Let's look at the second event emitted:
+
+コントラクトを呼び出した方法と見た目は同じですが、振る舞いは大きく異なります。発行された2番目のイベントを見てみましょう。
 
 ```json
 {
-    sender: 'EOA_ADDRESS',
-    origin: 'EOA_ADDRESS',
-    from: 'CALLER_CONTRACT_ADDRESS'
+    sender: 'EOA_ADDRESS',
+    origin: 'EOA_ADDRESS',
+    from: 'CALLER_CONTRACT_ADDRESS'
 }
 ```
 
-This time, the `msg.sender` is not the address of `Caller`. Instead, it is the address of our account and is the same as the transaction origin. That’s because when you call a library, the call is always `delegatecall` and runs within the context of the caller. So, when the `CalledLibrary` code was running, it inherited the execution context of `Caller` as if its code were running inside `Caller`. The variable `this` (shown as `from` in the event emitted) is the address of `Caller`, even though it is accessed from within `CalledLibrary`.
+This time, the `msg.sender` is not the address of `Caller`. Instead, it is the address of our account and is the same as the transaction origin. That's because when you call a library, the call is always `delegatecall` and runs within the context of the caller. So, when the `CalledLibrary` code was running, it inherited the execution context of `Caller` as if its code were running inside `Caller`. The variable `this` (shown as `from` in the event emitted) is the address of `Caller`, even though it is accessed from within `CalledLibrary`.
+
+今回、`msg.sender`は`Caller`のアドレスではありません。代わりに自分のアカウントのアドレスであり、トランザクションのoriginと同じです。その理由は、ライブラリを呼び出すとき、呼び出しは常に`delegatecall`であり、呼び出し元のコンテクスト内で実行されるからです。つまり、`CalledLibrary`のコードが実行されているとき、そのコードが`Caller`の内部で実行されているかのように、`Caller`の実行コンテクストを継承します。変数`this`（発行されたイベントで`from`として表示）は、`CalledLibrary`内からアクセスされた場合でも`Caller`のアドレスです。
 
 The next two calls, using the low-level `call` and `delegatecall`, verify our expectations, emitting events that mirror what we just saw.
 
+次の2つの呼び出しでは、低レベルの`call`と`delegatecall`を使用して、ここまでの想定が正しいことを確認し、先ほど見た内容を反映したイベントを発行します。
+
 ## Gas Considerations
+
+## ガスに関する検討事項
 
 Gas, described in more detail in Chapter 14, is an incredibly important consideration in smart contract programming. Gas is a resource constraining the maximum amount of computation that Ethereum will allow a transaction to consume. If the gas limit is exceeded during computation, the following series of events occurs:
 
-- An “out of gas” exception is thrown.
+第14章でより詳細に説明しますが、ガスはスマートコントラクトプログラミングにおいて非常に重要な検討事項です。ガスは、イーサリアムがトランザクションに許容する最大計算量を制限するリソースです。計算中にガスリミットを超えると、以下の一連の事象が発生します。
+
+- An "out of gas" exception is thrown.
 - The state of the contract prior to execution is restored (reverted).
 - All ether used to pay for the gas is taken as a transaction fee; it is *not* refunded.
 
+- 「ガス不足」（out of gas）例外がスローされる。
+- 実行前のコントラクトの状態が復元（リバート）される。
+- ガスの支払いに使用されたすべてのイーサがトランザクション手数料として徴収され、*返金されない*。
+
 ### Best Practices
 
-Because gas is paid by the user who initiates the transaction, users are discouraged from calling functions that have a high gas cost. It is thus in the programmer’s best interest to minimize the gas cost of a contract’s functions. To this end, there are certain practices that are recommended when constructing smart contracts so as to minimize the gas cost of a function call:
+### ベストプラクティス
+
+Because gas is paid by the user who initiates the transaction, users are discouraged from calling functions that have a high gas cost. It is thus in the programmer's best interest to minimize the gas cost of a contract's functions. To this end, there are certain practices that are recommended when constructing smart contracts so as to minimize the gas cost of a function call:
+
+ガスはトランザクションを開始するユーザーによって支払われるため、ユーザーはガス費用の高い関数の呼び出しを避けるようになります。したがって、コントラクトの関数のガス費用を最小限に抑えることは、プログラマーにとって最大の関心事となります。この目的のため、関数呼び出しのガス費用を最小限に抑えるべく、スマートコントラクトの構築時に推奨されるプラクティスがあります。
 
 **Avoid dynamically sized arrays**
 
+**動的サイズの配列を避ける**
+
 Any loop through a dynamically sized array where a function performs operations on each element or searches for a particular element introduces the risk of using too much gas. Indeed, the contract may run out of gas before finding the desired result or before acting on every element, thus wasting time and ether without giving any result at all.
+
+関数が各要素に対して操作を実行したり、特定の要素を検索したりする動的サイズの配列のループは、ガスを使いすぎるリスクを伴います。実際、コントラクトは期待される結果を見つける前、あるいはすべての要素に対して処理を行う前にガスを使い果たしてしまう可能性があり、結果を何も得られないまま時間とイーサを浪費することになります。
 
 **Avoid calls to other contracts**
 
+**他のコントラクトへの呼び出しを避ける**
+
 Calling other contracts, especially when the gas cost of their functions is not known, introduces the risk of running out of gas. Avoid using libraries that are not well tested and broadly used. The less scrutiny a library has received from other programmers, the greater the risk of using it.
+
+他のコントラクトを呼び出すことは、特にその関数のガス費用がわからない場合、ガス不足になるリスクを伴います。十分にテストされていない、あるいは広く使用されていないライブラリの使用を避けてください。他のプログラマーからの検証が少ないライブラリほど、使用するリスクは高くなります。
 
 **Avoid redundant storage access**
 
-Accessing storage variables, whether for reading or writing, costs a lot more gas than working with memory variables. So whenever we can, it’s better to avoid using storage directly. For example, if we need to read a storage variable several times during some calculations, it’s a good idea to first copy its value into a memory variable. This way, we can repeatedly access the cheaper memory variable instead of hitting the storage every time, saving on gas costs.
+**冗長なストレージアクセスを避ける**
+
+Accessing storage variables, whether for reading or writing, costs a lot more gas than working with memory variables. So whenever we can, it's better to avoid using storage directly. For example, if we need to read a storage variable several times during some calculations, it's a good idea to first copy its value into a memory variable. This way, we can repeatedly access the cheaper memory variable instead of hitting the storage every time, saving on gas costs.
+
+ストレージ変数へのアクセスは、読み取りであれ書き込みであれ、メモリ変数の操作よりもはるかに多くのガスを消費します。そのため、可能な限りストレージへの直接アクセスを避けるのがよいでしょう。たとえば、計算中にストレージ変数を何度も読み取る必要がある場合、まずその値をメモリ変数にコピーしておくのがよい方法です。こうすることで、毎回ストレージにアクセスする代わりに、より安価なメモリ変数に繰り返しアクセスでき、ガス費用を節約できます。
+
+> **Note**
+>
+> To put this in context, Solidity uses several places to keep data: storage, which is persistent and expensive; memory, which is temporary and cheaper during execution; calldata, which is a read-only area used mainly for external function inputs; and the stack, which is used for very short-lived values and is the cheapest to access. Choosing the right one depends on how the data is used, whether it needs to persist, whether it's mutable, and whether it's passed from outside. We'll dive deeper into these distinctions in Chapter 14, but it's helpful to start thinking early about how they affect performance and cost.
 
 > **注記**
 >
-> To put this in context, Solidity uses several places to keep data: storage, which is persistent and expensive; memory, which is temporary and cheaper during execution; calldata, which is a read-only area used mainly for external function inputs; and the stack, which is used for very short-lived values and is the cheapest to access. Choosing the right one depends on how the data is used, whether it needs to persist, whether it’s mutable, and whether it’s passed from outside. We’ll dive deeper into these distinctions in Chapter 14, but it’s helpful to start thinking early about how they affect performance and cost.
+> これを理解するために補足すると、Solidityはデータを保持するための場所をいくつか使い分けています。storage（永続的で高価）、memory（実行中は一時的でより安価）、calldata（主に外部関数の入力に使用される読み取り専用領域）、そしてstack（非常に短命な値に使用され、アクセスコストが最も安い）です。適切な場所の選択は、データの使用方法、永続化の必要性、変更可能かどうか、外部から渡されるかどうかによって決まります。これらの違いについては第14章で詳しく掘り下げますが、パフォーマンスとコストへの影響について早い段階から考えておくと役立ちます。
 
 ### Estimating Gas Cost
 
+### ガス費用の見積もり
+
 When Ethereum first launched, estimating gas costs was a bit like trying to guess the winning bid at an auction. It was similar to how Bitcoin handles transaction fees: we would set our own gas price, and miners would prioritize transactions with the highest bids. This meant that during busy times, we often had to offer more just to make sure our transactions went through quickly. It worked, but it also meant gas prices could be all over the place—sometimes sky-high when the network was congested.
 
-Then in 2021 came EIP-1559, which changed the game. Instead of us having to guess the right gas price, Ethereum introduced a base fee that adjusts automatically based on network activity. This makes gas fees way more predictable. Plus, we can still add a tip (called a *priority fee*) to speed things up if we’re in a hurry. Now estimating gas costs is more straightforward, and we’re less likely to overpay just to get our transaction processed.
+イーサリアムが最初にローンチされたとき、ガス費用の見積もりはオークションの落札価格を推測するようなものでした。ビットコインがトランザクション手数料を処理する方法と似ていて、自分でガス価格を設定し、マイナーが最も高い入札のトランザクションを優先していました。これは、混雑時にはトランザクションを迅速に処理してもらうために、しばしばより多くの費用を提示しなければならないことを意味していました。機能していましたが、ネットワークが混雑しているときにはガス価格が非常に高騰するなど、価格が不安定になることも意味していました。
 
-Let’s explore in detail how we can estimate the gas cost of our transaction. First, every transaction has two main components for gas costs: the base fee and the priority fee:
+Then in 2021 came EIP-1559, which changed the game. Instead of us having to guess the right gas price, Ethereum introduced a base fee that adjusts automatically based on network activity. This makes gas fees way more predictable. Plus, we can still add a tip (called a *priority fee*) to speed things up if we're in a hurry. Now estimating gas costs is more straightforward, and we're less likely to overpay just to get our transaction processed.
+
+そして2021年にEIP-1559が導入され、状況は一変しました。適切なガス価格を推測する代わりに、イーサリアムはネットワークの活動状況に基づいて自動的に調整されるベースフィーを導入しました。これにより、ガス手数料はより予測可能になりました。さらに、急いでいる場合にはチップ（*優先手数料*と呼ばれる）を追加して処理を速めることもできます。現在ではガス費用の見積もりがより簡単になり、トランザクションを処理してもらうためだけに過剰に支払うことも少なくなりました。
+
+Let's explore in detail how we can estimate the gas cost of our transaction. First, every transaction has two main components for gas costs: the base fee and the priority fee:
+
+トランザクションのガス費用をどのように見積もれるか、詳しく見ていきましょう。まず、すべてのトランザクションには、ガス費用に関する2つの主要な要素があります。ベースフィーと優先手数料です。
 
 **Base fee**
 
+**ベースフィー**
+
 This is the minimum amount of gas we need to pay for our transaction to be included in a block. The base fee is automatically determined by the network and adjusts dynamically based on how busy the network is. If blocks are full, the base fee goes up; if blocks are underused, it goes down.
+
+これは、トランザクションをブロックに含めてもらうために支払う必要のある最低限のガス量です。ベースフィーはネットワークによって自動的に決定され、ネットワークの混雑度に基づいて動的に調整されます。ブロックが満杯のときはベースフィーが上がり、ブロックの利用が少ないときは下がります。
 
 **Priority fee (tip)**
 
-This is an extra fee we add to incentivize miners (or validators in the PoS context) to prioritize our transaction. It’s like a tip we give to get our transaction processed faster. We can set this fee ourselves, but wallet applications will suggest appropriate values according to the desired speed of transaction inclusion.
+**優先手数料（チップ）**
+
+This is an extra fee we add to incentivize miners (or validators in the PoS context) to prioritize our transaction. It's like a tip we give to get our transaction processed faster. We can set this fee ourselves, but wallet applications will suggest appropriate values according to the desired speed of transaction inclusion.
+
+これは、マイナー（またはPoSにおけるバリデーター）にトランザクションの優先処理を促すために追加する手数料です。トランザクションをより速く処理してもらうためのチップのようなものです。この手数料は自分で設定できますが、ウォレットアプリケーションがトランザクションの取り込み速度の希望に応じて適切な値を提案してくれます。
 
 Now, the total gas cost of our transaction is calculated by multiplying the gas used (which depends on the complexity of our transaction) by the effective gas price. The effective gas price is the sum of the base fee and the priority fee.
 
+トランザクションの合計ガス費用は、使用されたガス量（トランザクションの複雑さに依存）に実効ガス価格を掛けて算出されます。実効ガス価格は、ベースフィーと優先手数料の合計です。
+
 So to estimate our gas cost, we follow these steps:
 
-1. Look at the current base fee, which we can find using gas-tracking tools like [Etherscan Gas Tracker](https://oreil.ly/ZIqcq) or through Web3 libraries (e.g., [ethers’`maxFeePerGas()`](https://oreil.ly/YuBC0)).
-2. Choose a priority fee (or tip) depending on how fast we want our transaction to go through. If we’re in a rush, we can bump up the tip. Gas-tracking tools can help us figure out the right tip amount based on current network conditions and how quickly we need things to happen.
-3. Multiply the total gas price (base fee + tip) by the estimated gas usage. If we’re developers, we can calculate this estimated gas usage using Web3 libraries (e.g., [ethers’`estimateGas()`](https://oreil.ly/sfqZP)). But if we’re just regular users, no worries—any wallet app will handle this for us automatically when we send out a transaction.
+ガス費用を見積もるには、以下の手順に従います。
+
+1. Look at the current base fee, which we can find using gas-tracking tools like [Etherscan Gas Tracker](https://oreil.ly/ZIqcq) or through Web3 libraries (e.g., [ethers'`maxFeePerGas()`](https://oreil.ly/YuBC0)).
+
+1. 現在のベースフィーを確認します。これは、[Etherscan Gas Tracker](https://oreil.ly/ZIqcq)などのガス追跡ツールや、Web3ライブラリ（例：[ethersの`maxFeePerGas()`](https://oreil.ly/YuBC0)）を使って確認できます。
+
+2. Choose a priority fee (or tip) depending on how fast we want our transaction to go through. If we're in a rush, we can bump up the tip. Gas-tracking tools can help us figure out the right tip amount based on current network conditions and how quickly we need things to happen.
+
+2. トランザクションの処理速度に応じて、優先手数料（チップ）を選択します。急いでいる場合はチップを上げることができます。ガス追跡ツールは、現在のネットワーク状況と処理の緊急度に基づいて適切なチップ額を判断するのに役立ちます。
+
+3. Multiply the total gas price (base fee + tip) by the estimated gas usage. If we're developers, we can calculate this estimated gas usage using Web3 libraries (e.g., [ethers'`estimateGas()`](https://oreil.ly/sfqZP)). But if we're just regular users, no worries—any wallet app will handle this for us automatically when we send out a transaction.
+
+3. 合計ガス価格（ベースフィー + チップ）に推定ガス使用量を掛けます。開発者であれば、Web3ライブラリ（例：[ethersの`estimateGas()`](https://oreil.ly/sfqZP)）を使って推定ガス使用量を計算できます。一般ユーザーの場合は心配いりません。トランザクションを送信する際にウォレットアプリが自動的に処理してくれます。
 
 For example, if the base fee is 20 gwei, we set a tip of 2 gwei, and our transaction uses 50,000 gas, our estimated gas cost would be:
 
+たとえば、ベースフィーが20 gwei、チップを2 gweiに設定し、トランザクションが50,000ガスを使用する場合、推定ガス費用は次のようになります。
+
 (20 gwei + 2 gwei) × 50,000 = 1,100,000 gwei
 
-So, that’s 1.1 million gwei, or 0.0011 ETH.
+So, that's 1.1 million gwei, or 0.0011 ETH.
+
+つまり、110万gwei、すなわち0.0011 ETHとなります。
 
 It is recommended that you evaluate the gas cost of functions as part of your development workflow to avoid any surprises when deploying contracts to the mainnet.
 
+コントラクトをメインネットにデプロイするときに驚かないように、開発ワークフローの一部として関数のガス費用を評価することが推奨されます。
+
 ## Conclusion
 
+## まとめ
+
 In this chapter, we started working with smart contracts in detail and explored the Solidity contract programming language. We took a simple example contract, *Faucet.sol*, and gradually improved it and made it more complex, using it to explore various aspects of the Solidity language. In Chapter 8, we will work with Vyper, another contract-oriented programming language. We will compare Vyper to Solidity, showing some of the differences in the design of these two languages and deepening our understanding of smart contract programming.
+
+本章では、スマートコントラクトを詳細に扱い始め、コントラクトプログラミング言語であるSolidityを探求しました。簡単なコントラクトの例である*Faucet.sol*を取り上げ、それを徐々に改良してより複雑にしながら、Solidity言語のさまざまな側面を学んできました。第8章では、もう1つのコントラクト指向プログラミング言語であるVyperを扱います。VyperとSolidityを比較し、2つの言語の設計上の違いを示しながら、スマートコントラクトプログラミングの理解を深めていきます。
