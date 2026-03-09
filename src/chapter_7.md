@@ -636,11 +636,7 @@ function changeOwner(address newOwner) public onlyOwner {
 
 関数修飾子は非常に便利なツールです。関数の前提条件を記述し、それらを一貫して適用することを可能にし、コードを読みやすくし、結果としてセキュリティの監査も容易にします。アクセス制御に最もよく使用されますが、非常に用途が広く、他のさまざまな目的に使用できます。
 
-### Contract Inheritance
-
 ### コントラクトの継承
-
-Solidity's `contract` object supports *inheritance*, which is a mechanism for extending a base contract with additional functionality. To use inheritance, specify a parent contract with the keyword `is`:
 
 Solidityの`contract`オブジェクトは*継承*（inheritance）をサポートしています。これは基本コントラクトを追加機能で拡張するための仕組みです。継承を使用するには、キーワード`is`で親コントラクトを指定します。
 
@@ -650,8 +646,6 @@ contract Child is Parent {
 }
 ```
 
-With this construct, the `Child` contract inherits all the methods, functionality, and variables of `Parent`. Solidity also supports multiple inheritance, which can be specified by comma-separated contract names after the keyword `is`:
-
 この構文では、`Child`コントラクトは`Parent`のすべてのメソッド、機能、変数を継承します。Solidityは多重継承（multiple inheritance）もサポートしており、キーワード`is`のあとにコンマ区切りでコントラクト名を指定できます。
 
 ```solidity
@@ -660,21 +654,13 @@ contract Child is Parent1, Parent2 {
 }
 ```
 
-We can call functions higher up in the inheritance chain by explicitly specifying the contract like `Parent1.functionName()` or by using `super.functionName()` if we want to call the function just one level above in the flattened inheritance hierarchy.
-
 継承チェーンの上位にある関数を呼び出すには、`Parent1.functionName()`のようにコントラクトを明示的に指定するか、フラット化された継承階層で1つ上のレベルの関数を呼び出したい場合は`super.functionName()`を使用します。
 
-Contract inheritance allows us to write our contracts in such a way as to achieve modularity, extensibility, and reuse. We start with contracts that are simple and implement the most generic capabilities, then extend them by inheriting those capabilities in more specialized contracts.
+コントラクトの継承機能により、モジュール性と拡張性を備え、再利用を実現できるような方法でコントラクトを記述できます。シンプルで最も一般的な機能を実装するコントラクトから始め、それらの機能をより専門的なコントラクトで継承して拡張していきます。
 
-コントラクトの継承により、モジュール性、拡張性、再利用を実現できるようにコントラクトを記述できます。シンプルで最も一般的な機能を実装するコントラクトから始め、それらの機能をより専門的なコントラクトで継承して拡張していきます。
+`Faucet`コントラクトでは、構築時に割り当てられたオーナーのアクセス制御を導入しました。この機能は非常に一般的で、多くのコントラクトが備えています。これを汎用コントラクトとして定義し、継承を用いて`Faucet`コントラクトに拡張できます。例をより充実させるために、アクセス制御とともに一時停止（pausable）機能を追加してみましょう。
 
-In our `Faucet` contract, we introduced access control for an owner, assigned on construction. This capability is quite generic: many contracts will have it. We can define it as a generic contract, then use inheritance to extend it to the `Faucet` contract. To enrich the example, let's add the pausable functionality together with the access control one.
-
-`Faucet`コントラクトでは、構築時に割り当てられたオーナーのアクセス制御を導入しました。この機能は非常に一般的で、多くのコントラクトが備えています。これを汎用コントラクトとして定義し、継承を用いて`Faucet`コントラクトに拡張できます。例をより豊かにするために、アクセス制御とともに一時停止（pausable）機能を追加してみましょう。
-
-We start by defining a base contract `Owned`, which has an `owner` variable, setting it in the contract's constructor:
-
-まず、`owner`変数を持つ基本コントラクト`Owned`を定義し、コントラクトのコンストラクタで設定します。
+まず、基本コントラクト`Owned`を定義します。`Owned`は`owner`変数を持ち、コンストラクタでその値を設定します。
 
 ```solidity
 contract Owned {
@@ -690,8 +676,6 @@ contract Owned {
     }
 }
 ```
-
-Next, we define a base contract `Pausable`, which inherits `Owned`:
 
 次に、`Owned`を継承する基本コントラクト`Pausable`を定義します。
 
@@ -713,11 +697,7 @@ contract Pausable is Owned {
 }
 ```
 
-As you can see, the `Pausable` contract can use the `onlyOwner` function modifier, defined in `Owned`. It indirectly also uses the `owner` address variable and the constructor defined in `Owned`. Inheritance makes each contract simpler and focused on its specific functionality, allowing us to manage the details in a modular way.
-
 ご覧のとおり、`Pausable`コントラクトは`Owned`に定義された`onlyOwner`関数修飾子を使用できます。また、`Owned`に定義された`owner`アドレス変数とコンストラクタも間接的に使用されます。継承により各コントラクトはよりシンプルになり、その特定の機能に集中できるため、詳細をモジュール方式で管理できます。
-
-Now we can further extend the `Owned` contract, inheriting its capabilities in `Faucet`:
 
 これで、`Owned`コントラクトをさらに拡張し、`Faucet`でその機能を継承できます。
 
@@ -735,15 +715,9 @@ contract Faucet is Pausable {
 }
 ```
 
-By inheriting `Pausable`, which in turn inherits `Owned`, the `Faucet` contract can now use the `whenNotPaused` modifier, whose output can be controlled by the owner defined through the `Owned` contract constructor. The functionality is the same as if those functions were within `Faucet`, but thanks to this modular architecture, we can reuse functions and modifiers in other contracts without writing them again. Code reuse and modularity make our code cleaner, easier to read, and easier to audit.
-
 `Pausable`を継承し、そしてその`Pausable`が`Owned`を継承しているため、`Faucet`コントラクトは`whenNotPaused`修飾子を使用できるようになりました。その出力は`Owned`コントラクトのコンストラクタで定義されたオーナーによって制御できます。機能はこれらの関数が`Faucet`の中にあったときと同じですが、このモジュラーアーキテクチャのおかげで、関数や修飾子を再び書くことなく他のコントラクトで再利用できます。コードの再利用とモジュール化により、コードがよりクリーンになり、読みやすくなり、監査も容易になります。
 
-Sometimes we might need to change some functionality of an inherited contract. Fortunately, Solidity comes with the right feature for us: function overriding. A function declared as `virtual` can be overridden by a contract higher in the inheritance chain, keeping the inheritance approach highly flexible.
-
-継承したコントラクトの一部の機能を変更する必要がある場合もあります。幸い、Solidityにはそのための適切な機能があります。関数のオーバーライド（function overriding）です。virtualとして宣言された関数は、継承チェーンの上位にあるコントラクトによってオーバーライドでき、継承のアプローチを高い柔軟性で保ちます。
-
-Let's see an example. Suppose we want to make the pausable feature one way: once paused, the contract cannot be unpaused anymore. In order to do this, we need to mark the `unpause` function in the `Pausable` contract as `virtual` and redeclare the `unpause` function in the `Faucet` contract with the `override` attribute, defining the new desired behavior, which is to revert:
+継承したコントラクトの機能を一部変更したい場合もあるでしょう。幸い、Solidityにはそのための適切な機能があります。関数のオーバーライド（function overriding）です。virtualとして宣言された関数は、継承チェーンの上位にあるコントラクトによってオーバーライドでき、継承のアプローチを高い柔軟性で保ちます。
 
 例を見てみましょう。一時停止機能を一方向にしたい、つまり一度停止したらコントラクトを再開できないようにしたいとします。これを実現するには、`Pausable`コントラクトの`unpause`関数を`virtual`としてマークし、`Faucet`コントラクトで`override`属性を付けて`unpause`関数を再宣言し、revertする新しい動作を定義する必要があります。
 
@@ -779,15 +753,9 @@ contract Faucet is Pausable {
 }
 ```
 
-As you can see, the `unpause()` function in `Faucet` has to be declared with the `override` keyword. In the `Pausable` contract, we marked both `pause` and `unpause` functions as virtual for consistency, while in our case we only needed to change `unpause`.
-
 ご覧のとおり、`Faucet`の`unpause()`関数は`override`キーワードで宣言する必要があります。`Pausable`コントラクトでは、一貫性のために`pause`と`unpause`の両関数をvirtualとしてマークしましたが、実際に変更する必要があったのは`unpause`だけです。
 
-> **Note**
->
-> When we override a function in Solidity, we can only make the visibility more accessible—specifically, we can change it from external to public but not the other way around. For mutability, we can tighten it up, like moving from nonpayable to view or pure (as we did with `unpause`) and from view to pure. But there's one big exception: if a function is marked as payable, it has to stay that way—we can't change it to anything else.
-
-> **注意**
+> **注記**
 >
 > Solidityで関数をオーバーライドする場合、可視性はよりアクセスしやすい方向にのみ変更できます。具体的には、externalからpublicに変更できますが、その逆はできません。ミュータビリティ（状態変更の可否）については、より厳しくすることができ、nonpayableからviewやpure（`unpause`で行ったように）へ、viewからpureへと変更できます。ただし1つ大きな例外があります。関数がpayableとしてマークされている場合、それを他のものに変更することはできません。
 
