@@ -1157,15 +1157,9 @@ contract Token is Pausable {
 
 ここでは、コンストラクタへの引数として提供されたアドレス`_f`を受け取り、`Faucet`オブジェクトにキャストしています。このアドレスが実際に`Faucet`オブジェクトであるかどうかは確実にはわからないため、前述の方法よりもはるかに危険です。`withdraw`を呼び出すとき、`Faucet`の宣言と同じ引数を受け入れて同じコードを実行すると想定していますが、確実ではありません。このアドレスの`withdraw`関数は、同じ名前であっても、期待とはまったく異なる動作をするかもしれません。したがって、入力として渡されたアドレスを特定のオブジェクトにキャストするのは、コントラクトを自分で作成するよりもはるかに危険です。
 
-#### Raw call, delegatecall, and staticcall
+#### 低レベル呼び出し：call、delegatecall、staticcall
 
-#### 低レベル呼び出し（raw call）、delegatecall、staticcall
-
-Solidity offers some even more "low-level" functions for calling other contracts. These correspond directly to EVM opcodes of the same name and allow us to construct a contract-to-contract call manually. As such, they represent the most flexible *and* the most dangerous mechanisms for calling other contracts. They return two values: `bool success` indicating whether the operation was successful and `bytes memory data` containing the return data.
-
-Solidityは、他のコントラクトを呼び出すためのさらに「低レベル」な関数を提供しています。これらは同じ名前のEVMオペコードに直接対応しており、コントラクト間の呼び出しを手動で構築できます。そのため、他のコントラクトを呼び出すための最も柔軟で*かつ*最も危険なメカニズムです。これらは2つの値を返します。操作が成功したかどうかを示す`bool success`と、戻りデータを含む`bytes memory data`です。
-
-Here's the same example using a `call` method:
+Solidityは、他のコントラクトを呼び出すためのさらに「低レベル」な関数を提供しています。これらは同じ名前のEVMオペコードに直接対応しており、コントラクト間の呼び出しを手動で構築できます。そのため、他のコントラクトを呼び出すための最も柔軟で、*かつ*最も危険なメカニズムです。これらは2つの値を返します。操作が成功したかどうかを示す`bool success`と、戻りデータを含む`bytes memory data`です。
 
 `call`メソッドを使用した同じ例を示します。
 
@@ -1176,8 +1170,6 @@ contract Token is Pausable {
     }
 }
 ```
-
-As you can see, this type of `call` is a *blind* call into a function, very much like constructing a raw transaction, only from within a contract's context. The `call` function will return `false` if there is a problem, so you can evaluate the return value for error handling:
 
 ご覧のとおり、この種の`call`は関数への*ブラインド*呼び出しであり、生のトランザクションを構築するのと非常に似ていますが、コントラクトのコンテクスト内から行われます。`call`関数は問題がある場合に`false`を返すので、エラーハンドリングのために戻り値を評価できます。
 
@@ -1194,19 +1186,11 @@ contract Token2 is Pausable {
 }
 ```
 
-Variants of `call` are `staticcall` and `delegatecall`. As mentioned in the section "Address object", `staticcall` invokes a function on another contract in a way that guarantees no state changes. This means that the called function cannot modify any state variables, interact with the blockchain's state, or send ether.
-
 `call`の変種として`staticcall`と`delegatecall`があります。「アドレスオブジェクト」のセクションで述べたように、`staticcall`は状態変更が発生しないことを保証する方法で別のコントラクトの関数を呼び出します。つまり、呼び出された関数は状態変数の変更、ブロックチェーンの状態との対話、またはイーサの送信ができません。
-
-A `delegatecall` is different from a `call` in that the `msg` context does not change. For example, whereas a `call` changes the value of `msg.sender` to be the calling contract, a `delegatecall` keeps the same `msg.sender` as in the calling contract. Essentially, `delegatecall` runs the code of another contract inside the context of the execution of the current contract. It is most often used to invoke code from a library. It also allows you to draw on the pattern of using library functions stored elsewhere but have that code work with the storage data of your contract; a clear example of this is the proxy pattern. The `delegatecall` should be used with great caution. It can have some unexpected effects, especially if the contract you call was not designed as a library.
 
 `delegatecall`は`msg`コンテクストが変わらないという点で`call`とは異なります。たとえば、`call`では`msg.sender`の値が呼び出し元のコントラクトに変更されるのに対し、`delegatecall`は呼び出し元のコントラクトと同じ`msg.sender`を保持します。基本的に`delegatecall`は、現在のコントラクトの実行コンテクスト内で別のコントラクトのコードを実行します。ライブラリからコードを呼び出すために最もよく使われます。また、別の場所に保存されているライブラリ関数を使用しながら、そのコードを自分のコントラクトのストレージデータと連携させるパターンも可能にします。これの明確な例がプロキシパターンです。`delegatecall`は細心の注意を払って使用すべきです。特に呼び出し先のコントラクトがライブラリとして設計されていない場合、予期しない影響が生じる可能性があります。
 
-Let's use an example contract to demonstrate the various call semantics used by `call` and `delegatecall` for calling libraries and contracts. In Example 7-4, we use an event to log the details of each call and see how the calling context changes depending on the call type.
-
-`call`と`delegatecall`がライブラリとコントラクトを呼び出すために使用するさまざまな呼び出しセマンティクスを示すために、例を使って説明しましょう。例7-4では、イベントを使用して各呼び出しの詳細をログに記録し、呼び出しの種類に応じて呼び出しコンテクストがどのように変化するかを確認します。
-
-**Example 7-4. CallExamples.sol: An example of different call semantics**
+`call`と`delegatecall`がライブラリやコントラクトを呼び出す際のさまざまな呼び出しセマンティクスを、例を使って説明しましょう。例7-4では、イベントを使用して各呼び出しの詳細をログに記録し、呼び出しの種類に応じて呼び出しコンテクストがどのように変化するかを確認します。
 
 **例7-4. CallExamples.sol：さまざまな呼び出しセマンティクスの例**
 
@@ -1240,31 +1224,19 @@ contract Caller {
 }
 ```
 
-As you can see in this example, our main contract is `Caller`, which calls a library `CalledLibrary` and a contract `CalledContract`. Both the called library and the contract have identical `calledFunction` functions, which emit an event `calledEvent`. The event `calledEvent` logs three pieces of data: `msg.sender`, `tx.origin`, and `this`. Each time `calledFunction` is called, it may have a different execution context (with different values for potentially all the context variables), depending on whether it is called directly or through `delegatecall`.
-
-この例からわかるように、主なコントラクトは`Caller`であり、ライブラリ`CalledLibrary`とコントラクト`CalledContract`を呼び出します。呼び出されるライブラリとコントラクトの両方に、`calledEvent`というイベントを発行する同一の`calledFunction`関数があります。`calledEvent`イベントは、`msg.sender`、`tx.origin`、`this`の3つのデータをログに記録します。`calledFunction`が呼び出されるたびに、直接呼び出されるか`delegatecall`を通じて呼び出されるかに応じて、異なる実行コンテクスト（潜在的にすべてのコンテクスト変数に対して異なる値）が設定されます。
-
-In `Caller`, we first call the contract and library directly by invoking `calledFunction` in each. Then, we explicitly use the low-level functions `call` and `delegatecall` to call `CalledContract.calledFunction`. This way, we can see how the various calling mechanisms behave.
+この例からわかるように、主なコントラクトは`Caller`であり、ライブラリ`CalledLibrary`とコントラクト`CalledContract`を呼び出します。呼び出されるライブラリとコントラクトの両方に、`calledEvent`というイベントを発行する同一の`calledFunction`関数があります。`calledEvent`イベントは、`msg.sender`、`tx.origin`、`this`の3つのデータをログに記録します。`calledFunction`が呼び出されるたびに、直接呼び出されるか`delegatecall`を通じて呼び出されるかに応じて、異なる実行コンテクスト（すべてのコンテクスト変数が異なる値を持つ可能性があります）が設定されます。
 
 `Caller`では、最初にそれぞれの`calledFunction`を呼び出して、コントラクトとライブラリを直接呼び出します。次に、低レベル関数`call`と`delegatecall`を明示的に使用して`CalledContract.calledFunction`を呼び出します。これにより、さまざまな呼び出しメカニズムがどのように動作するかを確認できます。
 
-Let's deploy the contracts, run the `makeCalls` function, and capture the events. For clarity, we will replace the address with their labels (e.g., `CALLER_CONTRACT_ADDRESS`).
-
-コントラクトをデプロイし、`makeCalls`関数を実行して、イベントを捕捉しましょう。わかりやすくするために、アドレスをラベル（例：`CALLER_CONTRACT_ADDRESS`）に置き換えます。
-
-We called the `makeCalls` function and passed the address of `CalledContract`, then caught the four events emitted by each of the different calls. Let's look at the `makeCalls` function and walk through each step.
+コントラクトをデプロイし、`makeCalls`関数を実行して、イベントを捕捉しましょう。わかりやすくするために、出力されるアドレスをラベル（例：`CALLER_CONTRACT_ADDRESS`）に置き換えます。
 
 `makeCalls`関数を呼び出して`CalledContract`のアドレスを渡した後、それぞれの異なる呼び出しによって発行された4つのイベントを捕捉しました。`makeCalls`関数の各ステップを見ていきましょう。
-
-The first call is:
 
 最初の呼び出しは次のとおりです。
 
 ```solidity
 _calledContract.calledFunction();
 ```
-
-Here, we're calling `CalledContract.calledFunction` directly using the high-level ABI for `calledFunction`. The arguments of the event emitted are:
 
 ここでは、`calledFunction`の高レベルABIを使用して、`CalledContract.calledFunction`を直接呼び出しています。発行されたイベントの引数は次のとおりです。
 
@@ -1276,11 +1248,7 @@ Here, we're calling `CalledContract.calledFunction` directly using the high-leve
 }
 ```
 
-As you can see, `msg.sender` is the address of the `Caller` contract. The `tx.origin` is the address of our account, `web3.eth.accounts[0]`, that sent the transaction to `Caller`. The event was emitted by `CalledContract`, as we can see from the last argument in the event.
-
 ご覧のとおり、`msg.sender`は`Caller`コントラクトのアドレスです。`tx.origin`はトランザクションを`Caller`に送信した自分のアカウント`web3.eth.accounts[0]`のアドレスです。イベントの最後の引数からわかるように、イベントは`CalledContract`によって発行されました。
-
-The next call in `makeCalls` is to the library:
 
 `makeCalls`の次の呼び出しはライブラリへのものです。
 
@@ -1288,9 +1256,7 @@ The next call in `makeCalls` is to the library:
 CalledLibrary.calledFunction();
 ```
 
-It looks identical to how we called the contract but behaves very differently. Let's look at the second event emitted:
-
-コントラクトを呼び出した方法と見た目は同じですが、振る舞いは大きく異なります。発行された2番目のイベントを見てみましょう。
+私たちがコントラクトを呼び出した方法と同じに見えますが、非常に異なった振る舞いをします。発行された2番目のイベントを見てみましょう。
 
 ```json
 {
@@ -1300,13 +1266,9 @@ It looks identical to how we called the contract but behaves very differently. L
 }
 ```
 
-This time, the `msg.sender` is not the address of `Caller`. Instead, it is the address of our account and is the same as the transaction origin. That's because when you call a library, the call is always `delegatecall` and runs within the context of the caller. So, when the `CalledLibrary` code was running, it inherited the execution context of `Caller` as if its code were running inside `Caller`. The variable `this` (shown as `from` in the event emitted) is the address of `Caller`, even though it is accessed from within `CalledLibrary`.
-
 今回、`msg.sender`は`Caller`のアドレスではありません。代わりに自分のアカウントのアドレスであり、トランザクションのoriginと同じです。その理由は、ライブラリを呼び出すとき、呼び出しは常に`delegatecall`であり、呼び出し元のコンテクスト内で実行されるからです。つまり、`CalledLibrary`のコードが実行されているとき、そのコードが`Caller`の内部で実行されているかのように、`Caller`の実行コンテクストを継承します。変数`this`（発行されたイベントで`from`として表示）は、`CalledLibrary`内からアクセスされた場合でも`Caller`のアドレスです。
 
-The next two calls, using the low-level `call` and `delegatecall`, verify our expectations, emitting events that mirror what we just saw.
-
-次の2つの呼び出しでは、低レベルの`call`と`delegatecall`を使用して、ここまでの想定が正しいことを確認し、先ほど見た内容を反映したイベントを発行します。
+次の2つの呼び出しでは、低レベル関数の`call`と`delegatecall`を用いて、先ほど見たものと同じイベントが発行されることで、私たちの想定が正しいことを確認します。
 
 ## Gas Considerations
 
