@@ -583,15 +583,9 @@ receive関数は、コントラクトがイーサを受け取ることを可能�
 >
 > コントラクトにreceive関数がなく、payableなfallback関数がある場合、そのような送金時にfallback関数が実行されます。コントラクトにreceive関数もpayableなfallback関数もない場合、イーサを受け取ることができず、トランザクションは例外でリバートされます。
 
-### Contract Constructor
-
 ### コントラクトのコンストラクタ
 
-There is a special function that is used only once. When a contract is created, it also runs the *constructor function*, if one exists, to initialize the state of the contract. The constructor is run in the same transaction as the contract creation. The constructor function is optional; you'll notice that our `Faucet` example doesn't have one.
-
 一度だけ使用される特別な関数があります。コントラクトが作成されると、定義済みであれば*コンストラクタ関数*が実行され、コントラクトの状態が初期化されます。コンストラクタはコントラクト作成と同じトランザクションで実行されます。コンストラクタ関数はオプションです。`Faucet`の例ではコンストラクタを持っていないことに気づくでしょう。
-
-Constructors can be specified through the `constructor` keyword. It looks like this:
 
 コンストラクタは`constructor`キーワードで指定できます。以下のようになります。
 
@@ -606,23 +600,13 @@ contract MEContract {
 }
 ```
 
-A contract's life cycle starts with a creation transaction from an EOA or contract account. If there is a constructor, it is executed as part of contract creation to initialize the state of the contract as it is being created, and it is then discarded.
+コントラクトのライフサイクルは、EOAまたはコントラクトアカウントによる作成トランザクションから始まります。コンストラクタがある場合は、コントラクト作成の一部として実行され、作成中のコントラクトの状態を初期化します。コンストラクタは実行後、コントラクトのコードから取り除かれます。
 
-コントラクトのライフサイクルは、EOAまたはコントラクトアカウントからの作成トランザクションから始まります。コンストラクタがある場合は、コントラクト作成の一部として実行され、作成中のコントラクトの状態を初期化し、その後破棄されます。
-
-> **Note**
->
-> Constructors can also be marked as payable. This is necessary if you want to send ETH along with the contract-creation transaction. If the constructor isn't payable, any ETH sent during deployment will cause the transaction to revert.
-
-> **注意**
+> **注記**
 >
 > コンストラクタはpayableとしてマークすることもできます。これは、コントラクト作成トランザクションと一緒にETHを送信したい場合に必要です。コンストラクタがpayableでない場合、デプロイ時に送信されたETHはトランザクションをリバートさせます。
 
-### Function Modifiers
-
 ### 関数修飾子
-
-Solidity offers a special type of function called a *function modifier*. You apply modifiers to functions by adding the modifier name in the function declaration. Modifiers are most often used to create conditions that apply to many functions within a contract. We have an access control statement already, in our `destroy` function. Let's create a function modifier that expresses that condition:
 
 Solidityは*関数修飾子*（function modifier）と呼ばれる特別な種類の関数を提供しています。関数宣言に修飾子の名前を追加することで、関数に修飾子を適用します。修飾子はコントラクト内の多くの関数に適用する条件を作成するために最もよく使われます。`destroy`関数にはすでにアクセス制御ステートメントがあります。この条件を表す関数修飾子を作成してみましょう。
 
@@ -633,19 +617,11 @@ modifier onlyOwner {
 }
 ```
 
-This function modifier, named `onlyOwner`, sets a condition on any function it modifies requiring that the address stored as the `owner` of the contract is the same as the address of the transaction's `msg.sender`. This is the basic design pattern for access control, allowing only the owner of a contract to execute any function that has the `onlyOwner` modifier.
-
 `onlyOwner`という名前のこの関数修飾子は、修飾するすべての関数に条件を設定します。コントラクトの`owner`として格納されているアドレスが、トランザクションの`msg.sender`のアドレスと同じである必要があります。これはアクセス制御（access control）の基本的な設計パターンであり、コントラクトのオーナーだけが`onlyOwner`修飾子を持つ関数を実行できるようにします。
-
-You may have noticed that our function modifier has a peculiar syntactic "placeholder" in it: an underscore followed by a semicolon (`_;`). This placeholder is replaced by the code of the function that is being modified. Essentially, the modifier is "wrapped around" the modified function, placing its code in the location identified by the underscore character.
 
 関数修飾子に独特な構文上の「プレースホルダ」があることに気づいたかもしれません。アンダースコアに続いてセミコロン（`_;`）です。このプレースホルダは、修飾される関数のコードに置き換えられます。本質的に、修飾子は修飾された関数を「囲み」、アンダースコア文字で識別される場所にコードを配置します。
 
-To apply a modifier, you add its name to the function declaration. More than one modifier can be applied to a function; they are applied in the sequence they are declared, as a comma-separated list.
-
-修飾子を適用するには、その名前を関数宣言に追加します。関数には複数の修飾子を適用でき、宣言された順序で、コンマ区切りのリストとして適用されます。
-
-Let's define a `changeOwner` function to use the `onlyOwner` modifier:
+関数修飾子を適用するには、その名前を関数宣言に追加します。関数には複数の修飾子を適用できます。それらは宣言された順序で、コンマ区切りのリストとして適用されます。
 
 `onlyOwner`修飾子を使用する`changeOwner`関数を定義してみましょう。
 
@@ -656,11 +632,7 @@ function changeOwner(address newOwner) public onlyOwner {
 }
 ```
 
-The function modifier's name (`onlyOwner`) is after the keyword `public` and tells us that the `changeOwner` function is modified by the `onlyOwner` modifier. Essentially, you can read this as "only the owner can set a new owner address." In practice, the resulting code is equivalent to "wrapping" the code from `onlyOwner` around `changeOwner`.
-
 関数修飾子の名前（`onlyOwner`）はキーワード`public`の後ろにあり、`changeOwner`関数が`onlyOwner`修飾子によって修飾されていることを示しています。これは「オーナーだけが新しいオーナーアドレスを設定できる」と読むことができます。実際には、結果のコードは`onlyOwner`のコードを`changeOwner`の周りに「ラップ」することと同等です。
-
-Function modifiers are an extremely useful tool because they allow us to write preconditions for functions and apply them consistently, making the code easier to read and, as a result, easier to audit for security. They are most often used for access control, but they are quite versatile and can be used for a variety of other purposes.
 
 関数修飾子は非常に便利なツールです。関数の前提条件を記述し、それらを一貫して適用することを可能にし、コードを読みやすくし、結果としてセキュリティの監査も容易にします。アクセス制御に最もよく使用されますが、非常に用途が広く、他のさまざまな目的に使用できます。
 
