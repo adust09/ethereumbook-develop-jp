@@ -759,15 +759,9 @@ contract Faucet is Pausable {
 >
 > Solidityで関数をオーバーライドする場合、可視性はよりアクセスしやすい方向にのみ変更できます。具体的には、externalからpublicに変更できますが、その逆はできません。ミュータビリティ（状態変更の可否）については、より厳しくすることができ、nonpayableからviewやpure（`unpause`で行ったように）へ、viewからpureへと変更できます。ただし1つ大きな例外があります。関数がpayableとしてマークされている場合、それを他のものに変更することはできません。
 
-### Multiple Inheritance
-
 ### 多重継承
 
-When we use multiple inheritance in Solidity, it relies on something called the C3 linearization algorithm to figure out the order in which contracts are inherited. This algorithm ensures that inheritance order is strict and predictable, which helps avoid issues like cyclic inheritance. In its simplest form, we can say that it figures out the order in which base contracts are checked when looking for a function, and this order goes from right to left. That means the contract on the right is considered the "most derived." For example, in the contract declaration `contract C is A, B { }`, contract B is more derived than contract A.
-
-Solidityで多重継承を使用する場合、コントラクトが継承される順序を決定するために、C3線形化（C3 linearization）アルゴリズムと呼ばれるものに依拠しています。このアルゴリズムは、継承順序が厳密で予測可能であることを保証し、循環継承のような問題を回避するのに役立ちます。最も単純に言えば、関数を探す際に基本コントラクトが確認される順序を決定し、その順序は右から左へ進みます。つまり右側のコントラクトが「最も派生した」ものとみなされます。たとえば、`contract C is A, B { }`というコントラクト宣言では、コントラクトBがコントラクトAよりも派生度が高くなります。
-
-Now, besides using the C3 linearization, Solidity has additional safeguards in place. One key rule is that if multiple contracts have the same function, we have to explicitly state which contracts are being overridden. Let's walk through an example:
+Solidityで多重継承を使用する場合、コントラクトが継承される順序を決定するために、C3線形化（C3 linearization）アルゴリズムと呼ばれるものに依拠しています。このアルゴリズムは、継承順序が厳密で予測可能であることを保証し、循環継承のような問題を回避するのに役立ちます。簡単に言うと、このアルゴリズムは関数を探す際に基本コントラクトを確認する順序を決定します。この順序は右から左へ進みます。つまり右側のコントラクトが「最も派生した」ものとみなされます。たとえば、`contract C is A, B { }`というコントラクト宣言では、コントラクトBがコントラクトAよりも派生度が高くなります。
 
 さて、C3線形化の使用に加えて、Solidityには追加の安全策があります。重要なルールの1つは、複数のコントラクトが同じ関数を持っている場合、どのコントラクトがオーバーライドされているかを明示的に示す必要があるということです。例を見てみましょう。
 
@@ -786,8 +780,6 @@ contract C is A, B {
 }
 ```
 
-At first glance, this looks like it should work fine because the C3 linearization should handle everything. But in reality, it won't compile. Solidity will throw an error that says, "TypeError: Derived contract must override function `foo`. Two or more base classes define a function with the same name and parameter types." To fix the issue we need to explicitly override the `foo()` function from both A and B like this:
-
 一見すると、C3線形化がすべてを処理するのでうまくいきそうに見えます。しかし実際にはコンパイルされません。Solidityは「TypeError: Derived contract must override function `foo`. Two or more base classes define a function with the same name and parameter types.」というエラーをスローします。この問題を修正するには、AとBの両方から`foo()`関数を明示的にオーバーライドする必要があります。
 
 ```solidity
@@ -798,13 +790,9 @@ contract C is A, B {
 }
 ```
 
-So even though Solidity uses C3 linearization, we don't really need to worry about it for the most part while coding because Solidity forces us to handle function overrides explicitly.
-
 したがって、SolidityがC3線形化を使用していても、コーディング中にそれについてあまり心配する必要はありません。Solidityは関数のオーバーライドを明示的に処理することを強制するからです。
 
-However, one place where C3 linearization matters is when Solidity decides the order of constructor execution. The constructors follow the C3 linearized order, but here's the twist: they're executed in reverse. This makes sense if you think about it: the most derived contract's constructor should run last because it might override things that earlier constructors set up. Let's look at an example:
-
-ただし、C3線形化が重要になる場面の1つは、Solidityがコンストラクタの実行順序を決定するときです。コンストラクタはC3線形化の順序に従いますが、ひねりがあります。逆順で実行されるのです。考えてみれば理にかなっています。最も派生したコントラクトのコンストラクタは最後に実行されるべきです。なぜなら、先に実行されたコンストラクタが設定したものをオーバーライドする可能性があるからです。例を見てみましょう。
+ただし、C3線形化が重要になる場面の1つは、Solidityがコンストラクタの実行順序を決定するときです。コンストラクタはC3線形化の順序に従いますが、意外なことに逆順で実行されます。考えてみれば理にかなっています。最も派生したコントラクトのコンストラクタは最後に実行されるべきです。なぜなら、先に実行されたコンストラクタが設定したものをオーバーライドする可能性があるからです。例を見てみましょう。
 
 ```solidity
 contract Base{
@@ -828,11 +816,7 @@ contract Derived3 is Derived1, Derived2 {
 }
 ```
 
-In this case, the value of `y` will end up being 2, as expected, because `Derived2`'s constructor runs last and sets `x` to 2.
-
 この場合、`y`の値は期待どおり2になります。`Derived2`のコンストラクタが最後に実行され、`x`を2に設定するからです。
-
-Something important to keep in mind is that the order in which you provide constructor arguments doesn't affect the execution order. For example, we can flip the constructor calls like this:
 
 覚えておくべき重要な点は、コンストラクタ引数を提供する順序は実行順序に影響しないということです。たとえば、コンストラクタの呼び出しを次のように入れ替えることができます。
 
@@ -845,11 +829,7 @@ contract Derived3 is Derived1, Derived2 {
 }
 ```
 
-Even though we changed the order in the constructor, the result will still be the same. The value of `y` will be 2 because the constructor-execution order is determined by the C3 linearization, not the order we call the constructors in.
-
 コンストラクタの順序を変更しても、結果は同じです。`y`の値は2になります。なぜなら、コンストラクタの実行順序はC3線形化によって決定され、コンストラクタを呼び出す順序によって決まるわけではないからです。
-
-A final heads-up: Solidity's use of C3 linearization for multiple inheritance can make the `super` keyword behave in ways you might not expect. Sometimes, calling `super` might trigger a function from a sibling class instead of the direct parent. This can lead to some surprising results where a method gets called from a class you didn't even list in the inheritance chain. It's a bit of an edge case, so we won't go too deep into it, but definitely keep this in mind when using the `super` keyword in contracts with complex inheritance setups.
 
 最後に注意点を1つ。Solidityが多重継承にC3線形化を使用していることにより、`super`キーワードが予想外の動作をすることがあります。`super`を呼び出すと、直接の親ではなく兄弟クラスの関数がトリガーされることがあります。これにより、継承チェーンにリストしていないクラスからメソッドが呼び出されるという意外な結果につながることがあります。これはやや特殊なケースなので深くは掘り下げませんが、複雑な継承構成を持つコントラクトで`super`キーワードを使用する際には、必ずこの点を念頭に置いてください。
 ### Error Handling
