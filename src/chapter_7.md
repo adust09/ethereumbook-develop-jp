@@ -832,23 +832,13 @@ contract Derived3 is Derived1, Derived2 {
 コンストラクタの順序を変更しても、結果は同じです。`y`の値は2になります。なぜなら、コンストラクタの実行順序はC3線形化によって決定され、コンストラクタを呼び出す順序によって決まるわけではないからです。
 
 最後に注意点を1つ。Solidityが多重継承にC3線形化を使用していることにより、`super`キーワードが予想外の動作をすることがあります。`super`を呼び出すと、直接の親ではなく兄弟クラスの関数がトリガーされることがあります。これにより、継承チェーンにリストしていないクラスからメソッドが呼び出されるという意外な結果につながることがあります。これはやや特殊なケースなので深くは掘り下げませんが、複雑な継承構成を持つコントラクトで`super`キーワードを使用する際には、必ずこの点を念頭に置いてください。
-### Error Handling
-
 ### エラーハンドリング
-
-A contract call can terminate and return an error. Error handling in Solidity is handled by three functions: `assert`, `require`, and `revert`.
 
 コントラクトの呼び出しが終了し、エラーを返すことがあります。Solidityのエラーハンドリングは、`assert`、`require`、`revert`の3つの関数によって処理されます。
 
-When a contract terminates with an error, all the state changes (changes to variables, balances, etc.) are reverted, all the way up the chain of contract calls if more than one contract was called. This ensures that transactions are *atomic*, meaning they either complete successfully or have no effect on state and are reverted entirely.
-
 コントラクトがエラーで終了すると、複数のコントラクトが呼び出されていた場合、コントラクト呼び出しのチェーンの一番上まで、すべての状態変更（変数、残高などへの変更）が元に戻されます。これにより、トランザクションが*アトミック*であることが保証されます。つまり、トランザクションは正常に完了するか、状態に影響を与えずに完全に元に戻されるかのどちらかです。
 
-The `assert` and `require` functions operate in the same way, evaluating a condition and stopping execution with an error if the condition is false. By convention, `assert` is used when the outcome is expected to be true, meaning that we use `assert` to test internal conditions. By comparison, `require` is used when testing inputs (such as function arguments or transaction fields), setting our expectations for those conditions. It's also worth noting that `assert` behaves differently from `require` when it fails: it consumes all remaining gas. That makes it more expensive when triggered, and it's one reason why we typically reserve it for invariants that should never break.
-
 `assert`関数と`require`関数は同じように動作し、条件を評価して、条件が偽の場合にはエラーで実行を停止します。慣例により、結果が正しいと予想されるときに`assert`を使用します。つまり、`assert`は内部条件をテストするために使用されます。一方、`require`は入力（関数の引数やトランザクションフィールドなど）をテストするときに使用され、条件に対する期待値を設定します。`assert`が失敗した場合、`require`とは異なる動作をする点にも注目すべきです。`assert`は残りのガスをすべて消費します。そのため、発火した場合のコストが高くなり、これが、決して壊れてはならない不変条件のために`assert`を使うべきとされる理由の1つです。
-
-We've used `require` in our function modifier `onlyOwner` to test that the message sender is the owner of the contract:
 
 メッセージ送信者がコントラクトのオーナーであることをテストするために、関数修飾子`onlyOwner`で`require`を使用しました。
 
@@ -856,15 +846,11 @@ We've used `require` in our function modifier `onlyOwner` to test that the messa
 require(msg.sender == owner);
 ```
 
-The `require` function acts as a *gate condition*, preventing execution of the rest of the function and producing an error if it is not satisfied. It can also include a helpful text message that can be used to show the reason for the error. The error message is recorded in the transaction log, and its adoption is suggested in order to improve the user experience by letting users know what the error is and how to fix it. So we can improve our code by adding an error message in our `require` function:
-
 `require`関数は*ゲート条件*（gate condition）として機能し、条件が満たされていない場合は残りの関数の実行を防ぎ、エラーを生成します。エラーの原因を示すのに役立つテキストメッセージを含めることもできます。エラーメッセージはトランザクションログに記録され、ユーザーにエラーの内容と修正方法を知らせてユーザー体験を向上させるために、採用が推奨されています。そこで、`require`関数にエラーメッセージを追加してコードを改善できます。
 
 ```solidity
 require(msg.sender == owner, "Only the contract owner can call this function");
 ```
-
-The `revert` function halts the execution of the contract and reverts any state changes. It can be used in two ways: either as a statement with a custom error passed directly without parentheses or as a function with parentheses that takes a string argument. The custom error would be much cheaper in terms of gas cost, while both the error string and the custom error are recorded in the transaction log:
 
 `revert`関数はコントラクトの実行を中止し、すべての状態変更を元に戻します。2つの方法で使用できます。カスタムエラーを括弧なしで直接渡すステートメントとして使用するか、文字列引数を取る括弧付きの関数として使用するかです。カスタムエラーのほうがガス費用の点ではるかに安価ですが、エラー文字列もカスタムエラーもどちらもトランザクションログに記録されます。
 
@@ -874,15 +860,11 @@ revert("Error string");
 revert CustomError(arg1, arg2);
 ```
 
-Certain conditions in a contract will generate errors regardless of whether we explicitly check for them. For example, in our `Faucet` contract, we don't check whether there is enough ether to satisfy a withdrawal request. That's because the `transfer` function will fail with an error and revert the transaction if there is insufficient balance to make the transfer:
-
-コントラクト内の特定の条件は、明示的にチェックするかどうかにかかわらず、エラーを生成します。たとえば、ファウセットコントラクトでは、引き出しリクエストを満たすのに十分なイーサがあるかどうかを確認しません。これは、送金を行うのに十分な残高がない場合、`transfer`関数がエラーで失敗し、トランザクションを元に戻すためです。
+コントラクト内の特定の条件は、明示的にチェックしなくても自動的にエラーを発生させます。たとえば、ファウセットコントラクトでは、引き出しリクエストを満たすのに十分なイーサがあるかどうかを確認しません。これは、送金を行うのに十分な残高がない場合、`transfer`関数がエラーで失敗し、トランザクションを元に戻すためです。
 
 ```solidity
 payable(msg.sender).transfer(withdrawAmount);
 ```
-
-However, it might be better to check explicitly and provide a clear error message on failure. We can do that by adding a `require` statement before the transfer:
 
 ただし、明示的にチェックし、失敗時に明確なエラーメッセージを提供するほうがよい場合もあります。送金の前に`require`ステートメントを追加することでそれを実現できます。
 
@@ -892,15 +874,9 @@ require(this.balance >= withdrawAmount,
 payable(msg.sender).transfer(withdrawAmount);
 ```
 
-Additional error-checking code like this will increase gas consumption slightly, but it offers better error reporting than if omitted. While minimizing gas consumption used to be a mandatory activity due to high costs on Ethereum mainnet, the introduction of EIP-4844 has significantly reduced that cost, making gas consumption less of a pressing issue today. However, it's still important to strike the right balance between gas efficiency and thorough error checking.
-
-このような追加のエラーチェックコードは、ガス消費量をわずかに増加させますが、省略した場合よりもエラー報告が向上します。かつてはイーサリアムメインネットのコストが高かったため、ガス消費量の最小化は必須の作業でしたが、EIP-4844の導入によりそのコストは大幅に低下し、今日ではガス消費量はそれほど切迫した問題ではなくなりました。ただし、ガス効率と徹底的なエラーチェックの間で適切なバランスを取ることは依然として重要です。
-
-Solidity gives us even more control over error handling through the try/catch functionality. This is a very handy feature that lets us handle errors more gracefully when we're calling external contracts. Instead of our entire transaction failing and reverting when something goes wrong, we can catch the error and decide what to do next. When we use try/catch, we basically wrap the external call in a `try` block. If the call is successful, the code inside the `try` block executes as normal. But if something goes wrong—like the called contract running out of gas, hitting a `require` statement, or throwing an exception—the code jumps to the `catch` block, where we can handle the error.
+このような追加のエラーチェックコードは、ガス消費量をわずかに増加させますが、省略した場合よりもわかりやすいエラーメッセージを提供できます。かつてはイーサリアムメインネットのコストが高かったため、ガス消費をできるだけ抑えることが必須でしたが、EIP-4844の導入によりそのコストは大幅に低下し、今日ではガス消費量はそれほど切迫した問題ではなくなりました。ただし、ガス効率と徹底的なエラーチェックの間で適切なバランスを取ることは依然として重要です。
 
 Solidityはtry/catch機能により、エラーハンドリングにさらに多くの制御を提供します。これは、外部コントラクトを呼び出す際にエラーをより適切に処理できる非常に便利な機能です。何か問題が発生したときにトランザクション全体が失敗してリバートされるのではなく、エラーをキャッチして次に何をすべきかを決定できます。try/catchを使用する場合、基本的に外部呼び出しを`try`ブロックでラップします。呼び出しが成功すれば、`try`ブロック内のコードが通常どおり実行されます。しかし、呼び出し先のコントラクトでガス不足が発生したり、`require`ステートメントに引っかかったり、例外がスローされたりすると、コードは`catch`ブロックにジャンプし、そこでエラーを処理できます。
-
-Here's a simple example:
 
 簡単な例を示します。
 
@@ -916,11 +892,7 @@ function sampleExternalCall(address target, uint amount) public {
 }
 ```
 
-We can catch errors in different ways depending on the type of error. The basic `catch` block catches all errors, but we can also catch specific errors. For instance, we can catch errors that return an error string using `catch Error(string memory reason)`, or we can handle low-level errors that return no data with `catch (bytes memory lowLevelData)`. Additionally, we can catch more serious panic errors, such as overflows or division by zero, using `catch Panic(uint errorCode)`.
-
 エラーの種類に応じて、さまざまな方法でエラーをキャッチできます。基本的な`catch`ブロックはすべてのエラーをキャッチしますが、特定のエラーをキャッチすることもできます。たとえば、`catch Error(string memory reason)`を使用してエラー文字列を返すエラーをキャッチしたり、`catch (bytes memory lowLevelData)`でデータを返さない低レベルのエラーを処理したりできます。さらに、`catch Panic(uint errorCode)`を使用して、オーバーフローやゼロ除算などのより深刻なパニックエラーをキャッチすることもできます。
-
-Try/catch works only with external calls. It doesn't help with internal function calls within the same contract. If a function in the same contract fails, it will still revert as usual, and we can't catch that with try/catch.
 
 try/catchは外部呼び出しでのみ機能します。同じコントラクト内の内部関数呼び出しには対応していません。同じコントラクト内の関数が失敗した場合、通常どおりリバートされ、try/catchでキャッチすることはできません。
 
