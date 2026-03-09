@@ -990,15 +990,9 @@ contract Faucet is Pausable {
 }
 ```
 
-#### Catching events
-
 #### イベントを捕捉する
 
-Let's walk through how we can catch on-chain events with some code. Specifically, we'll write a script to monitor USDT token transfers on the Ethereum mainnet. To do this, we need a Web3 library, and while web3.js was the first to become popular, ethers.js has overtaken it in recent years. As developers, we prefer ethers.js, so that's what we'll use here.
-
-コードを使ってオンチェーンイベントをどのように捕捉できるか見ていきましょう。具体的には、イーサリアムメインネット上のUSDTトークン転送を監視するスクリプトを書きます。これを行うにはWeb3ライブラリが必要です。web3.jsが最初に普及しましたが、近年ではethers.jsがそれを追い越しています。開発者としては、ethers.jsを好むので、ここではそれを使用します。
-
-First, let's set up our project. Start by creating a new project folder, then install the ethers library by running:
+コードを使ってオンチェーンイベントをどのように捕捉できるか見ていきましょう。具体的には、イーサリアムメインネット上のUSDTトークン転送を監視するスクリプトを書きます。これを行うにはWeb3ライブラリが必要です。web3.jsが最初に普及しましたが、近年ではethers.jsがそれを追い越しています。開発者にはethers.jsが好まれているため、ここでもそれを使用します。
 
 まず、プロジェクトをセットアップしましょう。新しいプロジェクトフォルダを作成し、次のコマンドを実行してethersライブラリをインストールします。
 
@@ -1006,29 +1000,17 @@ First, let's set up our project. Start by creating a new project folder, then in
 npm i ethers
 ```
 
-Next, we need the USDT contract's ABI. You can grab it from [Etherscan](https://oreil.ly/LoWH4), right below the contract source code (see Figure 7-1), and save it in your project folder.
-
 次に、USDTコントラクトのABIが必要です。[Etherscan](https://oreil.ly/LoWH4)のコントラクトソースコードのすぐ下から取得し（図7-1を参照）、プロジェクトフォルダに保存します。
 
 ![Etherscan's USDT ABI section](images/ch1/maet_0701.png)
 
-**Figure 7-1.** Etherscan's USDT ABI section
-
 **図7-1.** EtherscanのUSDT ABIセクション
 
-Now, let's talk about how we'll connect to the Ethereum network. We need a WebSocket provider because we're listening for events, which requires a continuous connection. You can choose between paid providers (which are more reliable and faster) or free, public ones you can find on websites like [ChainList](https://chainlist.org). For our example, a public one will do just fine, even though they might be rate limited.
-
-次に、イーサリアムネットワークへの接続方法について説明します。イベントをリッスンするには、継続的な接続が必要なため、WebSocketプロバイダーが必要です。有料のプロバイダー（より信頼性が高く高速）か、[ChainList](https://chainlist.org)のようなウェブサイトで見つけられる無料のパブリックプロバイダーのどちらかを選ぶことができます。この例では、レート制限がかかる可能性はありますが、パブリックなもので十分です。
-
-> **Note**
->
-> To listen for events, we need a WebSocket, not an RPC endpoint. RPC endpoints are great for single requests like calling a function or fetching data, but for catching events, a WebSocket connection is what allows us to keep an open line of communication between our client and the server.
+次に、イーサリアムネットワークへの接続方法について説明します。イベントをリッスンするには、継続的な接続が必要なため、WebSocketプロバイダーが必要です。有料のプロバイダー（より信頼性が高く高速）か、[ChainList](https://chainlist.org)のようなウェブサイトで見つけられる無料のパブリックプロバイダーのどちらかを選ぶことができます。レート制限がかかる可能性はありますが、この例ではパブリックなもので十分です。
 
 > **注記**
 >
 > イベントをリッスンするには、RPCエンドポイントではなくWebSocketが必要です。RPCエンドポイントは関数の呼び出しやデータの取得といった単発のリクエストには適していますが、イベントを捕捉するには、クライアントとサーバー間の通信回線を開いたまま維持できるWebSocket接続が必要です。
-
-Now, let's dive into the code:
 
 それでは、コードを見ていきましょう。
 
@@ -1053,15 +1035,9 @@ async function getTransfer(){
 getTransfer()
 ```
 
-After we declare the USDT address and the WebSocket provider URL, the script kicks off by creating a new WebSocketProvider instance using the ethers library. This provider connects us to the Ethereum network via the WebSocket URL we specified. Next, we use the `ethers.Contract` class to create an instance of the USDT smart contract. We pass in the USDT address, the ABI, and our WebSocket provider.
-
 USDTアドレスとWebSocketプロバイダーURLを宣言した後、スクリプトはethersライブラリを使用して新しいWebSocketProviderインスタンスを作成するところから始まります。このプロバイダーは、指定したWebSocket URLを通じてイーサリアムネットワークに接続します。次に、`ethers.Contract`クラスを使用してUSDTスマートコントラクトのインスタンスを作成します。USDTアドレス、ABI、およびWebSocketプロバイダーを渡します。
 
-Now we get to the heart of the script. We set up an event listener on the contract instance to catch `Transfer` events emitted by the USDT contract. Whenever a `Transfer` event occurs, this listener triggers a callback function that receives four parameters related to the transfer. Inside the callback, we take the transfer details, wrap them up in an object, and then format this object as a JSON string. Finally, we print that JSON string to the console using `console.log` so that we can see exactly what's happening with each transfer in real time.
-
-ここからがスクリプトの核心部分です。USDTコントラクトが発行する`Transfer`イベントを捕捉するために、コントラクトインスタンスにイベントリスナーを設定します。`Transfer`イベントが発生するたびに、このリスナーは転送に関連する4つのパラメータを受け取るコールバック関数をトリガーします。コールバック内では、転送の詳細を取得してオブジェクトにまとめ、そのオブジェクトをJSON文字列としてフォーマットします。最後に、`console.log`を使ってそのJSON文字列をコンソールに出力し、各転送で何が起こっているかをリアルタイムで正確に確認できるようにします。
-
-Here's a sample output of our script:
+ここからがスクリプトの核心部分です。USDTコントラクトが発行する`Transfer`イベントを捕捉するために、コントラクトインスタンスにイベントリスナーを設定します。`Transfer`イベントが発生するたびに、このリスナーは転送（Transfer）に関連する4つのパラメータを受け取るコールバック関数をトリガーします。コールバック内では、転送の詳細を取得してオブジェクトにまとめ、そのオブジェクトをJSON文字列としてフォーマットします。最後に、`console.log`を使ってそのJSON文字列をコンソールに出力し、各転送で何が起こっているかをリアルタイムで正確に確認できるようにします。
 
 スクリプトの出力例は次のとおりです。
 
@@ -1101,8 +1077,6 @@ Here's a sample output of our script:
   }
 }
 ```
-
-Events like these are incredibly useful, not just for off-chain communication but also for debugging. When you're developing, you can find these events in the transaction receipt under the "logs" entry, which can be a lifesaver when things aren't working as expected.
 
 このようなイベントは、オフチェーンの通信だけでなく、デバッグにも非常に役立ちます。開発中には、トランザクションレシートの「logs」エントリでこれらのイベントを確認でき、期待どおりに動作しないときに問題解決の手がかりとなります。
 
