@@ -1332,10 +1332,6 @@ CalledLibrary.calledFunction();
 
 コントラクトをメインネットにデプロイするときに驚かないように、開発ワークフローに関数のガス費用の評価を組み込んでおきましょう。
 
-## Conclusion
-
 ## まとめ
 
-In this chapter, we started working with smart contracts in detail and explored the Solidity contract programming language. We took a simple example contract, *Faucet.sol*, and gradually improved it and made it more complex, using it to explore various aspects of the Solidity language. In Chapter 8, we will work with Vyper, another contract-oriented programming language. We will compare Vyper to Solidity, showing some of the differences in the design of these two languages and deepening our understanding of smart contract programming.
-
-本章では、スマートコントラクトを詳細に扱い始め、コントラクトプログラミング言語であるSolidityを探求しました。簡単なコントラクトの例である*Faucet.sol*を取り上げ、それを徐々に改良してより複雑にしながら、Solidity言語のさまざまな側面を学んできました。第8章では、もう1つのコントラクト指向プログラミング言語であるVyperを扱います。VyperとSolidityを比較し、2つの言語の設計上の違いを示しながら、スマートコントラクトプログラミングの理解を深めていきます。
+本章では、スマートコントラクトについて詳しく学び、コントラクトプログラミング言語であるSolidityについて解説しました。簡単なコントラクトの例である*Faucet.sol*を取り上げ、それを徐々に改良してより複雑にしながら、Solidity言語のさまざまな側面を学んできました。第8章では、もう1つのコントラクト指向プログラミング言語であるVyperを扱います。VyperとSolidityを比較し、2つの言語の設計上の違いを示しながら、スマートコントラクトプログラミングの理解を深めていきます。
