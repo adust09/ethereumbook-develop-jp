@@ -896,27 +896,15 @@ function sampleExternalCall(address target, uint amount) public {
 
 try/catchは外部呼び出しでのみ機能します。同じコントラクト内の内部関数呼び出しには対応していません。同じコントラクト内の関数が失敗した場合、通常どおりリバートされ、try/catchでキャッチすることはできません。
 
-### Events
-
 ### イベント
-
-When a transaction completes (successfully or not), it produces a transaction receipt. The transaction receipt contains log entries that provide information about the actions that occurred during the execution of the transaction. *Events* are the Solidity high-level objects that are used to construct these logs.
 
 トランザクションが（成功したかどうかによらず）完了すると、トランザクションレシートが生成されます。トランザクションレシートには、トランザクションの実行中に発生したアクションに関する情報を提供するログエントリが含まれています。*イベント*は、これらのログを構築するために使用されるSolidityの高レベルオブジェクトです。
 
-Events are especially useful for light clients and DApp services, which can "watch" for specific events and report them to the user interface or make a change in the state of the application to reflect an event in an underlying contract.
-
 イベントは、ライトクライアントやDAppサービスで特に有用です。ライトクライアントやDAppサービスは、特定のイベントを「監視」してユーザーインターフェイスに報告したり、基盤となるコントラクトのイベントを反映させるためにアプリケーションの状態を変更したりできます。
-
-Event objects take arguments that are serialized and recorded in the transaction logs, in the blockchain. You can supply the keyword `indexed` before an argument to make the value part of an indexed table (hash table) that can be searched or filtered by an application.
 
 イベントオブジェクトは、シリアライズされた引数を取り、ブロックチェーン内のトランザクションログに記録されます。引数の前にindexedキーワードを置くことで、インデックス付きテーブル（ハッシュテーブル）の一部にすることができ、アプリケーションで検索やフィルタリングが可能になります。
 
-#### Adding events
-
 #### イベントの追加
-
-We have not added any events in our `Faucet` example so far, so let's do that. We will add two events: one to log any withdrawals and one to log any deposits. We will call these events `Withdrawal` and `Deposit`, respectively. First, we define the events in the `Faucet` contract:
 
 ファウセットの例ではこれまでイベントを追加していないため、ここで追加しましょう。引き出しを記録するためのイベントと、入金を記録するためのイベントの2つを追加します。これらのイベントをそれぞれ`Withdrawal`と`Deposit`と呼びます。まず、`Faucet`コントラクト内でイベントを定義します。
 
@@ -928,11 +916,7 @@ contract Faucet is Pausable {
 }
 ```
 
-We've chosen to make the addresses `indexed`, to allow searching and filtering in any user interface built to access our `Faucet`.
-
 ファウセットにアクセスするために構築されたユーザーインターフェイスで検索やフィルタリングができるように、アドレスをindexedにしました。
-
-Next, we use the `emit` keyword to incorporate the event data in the transaction logs:
 
 次に、emitキーワードを使用して、トランザクションログにイベントデータを埋め込みます。
 
@@ -949,11 +933,7 @@ receive() external payable {
 }
 ```
 
-The resulting *Faucet.sol* contract looks like Example 7-3.
-
 結果として、*Faucet.sol*コントラクトは例7-3のようになります。
-
-**Example 7-3. Faucet.sol: Revised Faucet contract, with events**
 
 **例7-3. Faucet.sol：修正されたイベント付きのファウセットコントラクト**
 
