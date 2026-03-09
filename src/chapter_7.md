@@ -496,174 +496,92 @@ Paris（The Merge）以前のEVMバージョンにおける現在のブロック
 
 現在のトランザクションに関連付けられた`index`番目のblobのハッシュです。
 
-### Contract Definition
-
 ### コントラクトの定義
-
-Solidity's principal data type is `contract`; our `Faucet` example simply defines a `contract` object. Similar to any object in an object-oriented language, the *contract* is a container that includes data and methods.
 
 Solidityの主要なデータ型は`contract`です。`Faucet`の例は、単に`contract`オブジェクトを定義しています。オブジェクト指向言語の他のオブジェクトと同様に、*コントラクト*はデータとメソッドを含むコンテナです。
 
-Solidity offers two other object types that are similar to a contract:
-
-Solidityは、コントラクトに似た他の2つのオブジェクト型を提供しています。
-
-**interface**
+Solidityは、コントラクトに似た他の2つのオブジェクト型を提供します。
 
 **インターフェイス（interface）**
 
-An interface definition is structured exactly like a contract, except none of the functions are defined—they are only declared. This type of declaration is often called a *stub*; it tells you the functions' arguments and return types without any implementation. An interface specifies the "shape" of a contract; when inherited, each of the functions declared by the interface must be defined by the child.
-
 インターフェイスの定義は、関数が定義されず宣言されているだけであることを除いて、コントラクトとまったく同じ構造です。このタイプの宣言はしばしば*スタブ*（stub）と呼ばれ、実装なしに関数の引数と戻り値の型を伝えます。インターフェイスはコントラクトの「形」を規定します。継承された場合、インターフェイスによって宣言された関数はすべて、子によって定義されなければなりません。
-
-**library**
 
 **ライブラリ（library）**
 
-A library contract is one that is meant to be deployed only once and used by other contracts, using the `delegatecall` method (see "Address object").
-
 ライブラリコントラクトは、一度だけデプロイされ、`delegatecall`メソッドを使用して他のコントラクトによって使用されることを意図したものです（「アドレスオブジェクト」を参照）。
-
-### Functions
 
 ### 関数
 
-Within a contract, we define functions that can be called by an EOA transaction or another contract. In our `Faucet` example, we have two functions: `withdraw` and `receive`.
-
 コントラクト内では、EOAトランザクションまたは別のコントラクトによって呼び出すことができる関数を定義します。`Faucet`の例では、`withdraw`と`receive`の2つの関数があります。
 
-The syntax we use to declare a function in Solidity is as follows:
-
-Solidityで関数を宣言するのに使用する構文は以下のとおりです。
+Solidityで関数を宣言するのに使う構文は以下のとおりです。
 
 ```solidity
 function FunctionName([parameters]) {public|private|internal|external} [virtual|override]
 [pure|view|payable] [modifiers] [returns (return types)]
 ```
 
-Let's look at each of these components:
-
-これらの各コンポーネントを見ていきましょう。
+これらの各コンポーネントを見てみましょう。
 
 **FunctionName**
 
-**FunctionName**
-
-The name of the function, which is used to call the function in a transaction from an EOA, from another contract, or even from within the same contract.
-
-関数の名前です。EOAからのトランザクション内で、別のコントラクトから、あるいは同じコントラクト内からでも、関数を呼び出すために使用されます。
+関数の名前です。EOAからのトランザクション内で、もしくは別のコントラクトから、あるいは同じコントラクト内からでも、関数を呼び出すために使用されます。
 
 **parameters**
-
-**parameters**
-
-Following the name, we specify the arguments that must be passed to the function, with their names and types. In our `Faucet` example, we defined `uint withdrawAmount` as the only argument to the `withdraw` function.
 
 名前のあとに、関数に渡す必要がある引数とその名前と型を指定します。`Faucet`の例では、`withdraw`関数の唯一の引数として`uint withdrawAmount`を定義しました。
-
-The next set of keywords (`public`, `private`, `internal`, `external`) specify the function's visibility:
 
 次のキーワードのセット（`public`、`private`、`internal`、`external`）は、関数の可視性（visibility）を指定します。
 
 **public**
 
-**public**
-
-Public is the default; such functions can be called by other contracts or EOA transactions or from within the contract. In our `Faucet` example, both functions are defined as public.
-
 publicはデフォルトです。このような関数は、他のコントラクト、EOAのトランザクション、またはコントラクト内から呼び出すことができます。`Faucet`の例では、両方の関数がpublicとして定義されています。
 
 **private**
-
-**private**
-
-Private functions are like internal functions but cannot be called by derived contracts.
 
 private関数はinternal関数と似ていますが、派生コントラクトから呼び出すことはできません。
 
 **internal**
 
-**internal**
-
-Internal functions are only accessible from within the contract—they cannot be called by another contract or EOA transaction. They can be called by derived contracts (those that inherit this one).
-
 internal関数はコントラクト内からのみアクセスでき、他のコントラクトやEOAトランザクションから呼び出すことはできません。派生コントラクト（このコントラクトを継承したもの）から呼び出すことができます。
 
 **external**
 
-**external**
-
-External functions are like public functions except they cannot be called from within the contract unless explicitly prefixed with the keyword `this`.
-
 external関数はpublic関数と似ていますが、キーワード`this`を明示的に付けない限り、コントラクト内から呼び出すことはできません。
-
-Keep in mind that the terms *internal* and *private* are somewhat misleading. Any function or data inside a contract is always *visible* on the public blockchain, meaning that anyone can see the code or data. The keywords described here affect only how and when a function can be *called*.
 
 *internal*と*private*という用語は、やや誤解を招く表現であることに注意してください。コントラクト内の関数やデータは、常にパブリックブロックチェーン上で*可視*であり、誰でもコードやデータを見ることができます。ここで説明しているキーワードは、関数を呼び出す方法とタイミングにのみ影響します。
 
-> **Note**
->
-> Function visibility should not be confused with state variable visibility! They share keywords and semantics, but they are two different things. While state variable visibility is optional, function visibility must be explicitly defined.
-
-> **注意**
+> **注記**
 >
 > 関数の可視性と状態変数の可視性を混同しないでください。両者はキーワードとセマンティクスを共有していますが、異なるものです。状態変数の可視性はオプションですが、関数の可視性は明示的に定義しなければなりません。
-
-The second set of keywords (`pure`, `view`, `payable`) affect the behavior of the function:
 
 2番目のキーワードのセット（`pure`、`view`、`payable`）は、関数の動作に影響を与えます。
 
 **pure**
 
-**pure**
-
-A pure function is one that neither reads nor writes any variables in storage. It can only operate on arguments and return data, without reference to any stored data or blockchain state. Pure functions are intended to encourage declarative-style programming without side effects or state.
-
 pure関数は、ストレージ内の変数を読み書きしません。保存されているデータやブロックチェーンの状態を参照せずに、引数に対してのみ操作し、データを返すことができます。pure関数は、副作用や状態なしに、宣言型プログラミングを促進することを目的としています。
 
 **view**
-
-**view**
-
-A function marked as a view promises not to modify any state. The compiler does not enforce the `view` modifier; it only produces a warning when it can be applied.
 
 viewとしてマークされた関数は、状態を変更しないことを約束します。コンパイラは`view`修飾子を強制せず、適用可能な場合に警告を生成するだけです。
 
 **payable**
 
-**payable**
-
-A payable function is one that can accept incoming payments. Functions not declared as `payable` will reject incoming payments. There are two exceptions, due to design decisions in the EVM: coinbase payments and `SELFDESTRUCT` inheritance will be paid even if the fallback function is not declared as `payable`, but this makes sense because code execution is not part of those payments anyway.
-
-payable関数は入金を受け入れることができます。`payable`として宣言されていない関数は入金を拒否します。EVMの設計上の決定により2つの例外があります。コインベース支払いと`SELFDESTRUCT`の継承は、フォールバック関数が`payable`として宣言されていなくても支払われますが、これらの支払いではコード実行が行われないため、理にかなっています。
-
-Let's now explore the behavior of two special functions, `receive` and `fallback`:
+payable関数は入金を受け入れることができます。`payable`として宣言されていない関数は入金を拒否します。EVMの仕様により2つの例外があります。コインベース支払いと`SELFDESTRUCT`の継承は、フォールバック関数が`payable`として宣言されていなくても支払われますが、これらの支払いではコード実行が行われないため、理にかなっています。
 
 次に、2つの特殊な関数、`receive`と`fallback`の動作を見てみましょう。
 
 **receive()**
 
-**receive()**
-
-The `receive` function is what allows our contracts to receive ether. It is triggered when a contract receives a call with empty calldata, typically during plain ether transfers (such as those made using `.send()` or `.transfer()`). It is declared with `receive() external payable { ... }`, and while it can't have any arguments or return a value, it can be virtual, can override, and can have modifiers.
-
 receive関数は、コントラクトがイーサを受け取ることを可能にするものです。コントラクトが空のcalldataでコールを受信したときにトリガーされ、通常は純粋なイーサ送金（`.send()`や`.transfer()`を使用したものなど）の際に発生します。`receive() external payable { ... }`として宣言され、引数を持つことも値を返すこともできませんが、virtualにすることができ、オーバーライド（override）でき、修飾子を持つことができます。
 
 **fallback()**
 
-**fallback()**
-
-The `fallback` function is executed when a contract is called with data that does not match any of the other function signatures. We can declare it using either `fallback() external [payable]` or `fallback(bytes calldata input) external [payable] returns (bytes memory output)`. If the `fallback` function includes the input parameter, it will contain the entire data sent to the contract (equivalent to `msg.data`). Similar to the `receive` function, the `fallback` function can be payable and virtual, can override, and can include modifiers. Nowadays, it is primarily used to implement the *proxy pattern:* a design pattern that enables smart contract upgradability.
-
 フォールバック（fallback）関数は、コントラクトが他のどの関数シグネチャにも一致しないデータで呼び出されたときに実行されます。`fallback() external [payable]`または`fallback(bytes calldata input) external [payable] returns (bytes memory output)`のいずれかで宣言できます。fallback関数にinputパラメータが含まれている場合、コントラクトに送信されたデータ全体が格納されます（`msg.data`と同等）。receive関数と同様に、fallback関数はpayableやvirtualにすることができ、オーバーライドでき、修飾子を含めることができます。現在では、主に*プロキシパターン*（proxy pattern）の実装に使用されています。これはスマートコントラクトのアップグレード可能性を実現する設計パターンです。
 
-> **Note**
+> **注記**
 >
-> If the contract lacks a `receive` function but has a payable `fallback` function, the `fallback` function will be executed during such transfers. If the contract has neither a `receive` function nor a payable `fallback` function, it cannot accept ether, and the transaction will revert with an exception.
-
-> **注意**
->
-> コントラクトにreceive関数がなく、payableなfallback関数がある場合、そのような送金時にfallback関数が実行されます。コントラクトにreceive関数もpayableなfallback関数もない場合、イーサを受け取ることができず、トランザクションは例外で取り消されます。
+> コントラクトにreceive関数がなく、payableなfallback関数がある場合、そのような送金時にfallback関数が実行されます。コントラクトにreceive関数もpayableなfallback関数もない場合、イーサを受け取ることができず、トランザクションは例外でリバートされます。
 
 ### Contract Constructor
 
@@ -698,7 +616,7 @@ A contract's life cycle starts with a creation transaction from an EOA or contra
 
 > **注意**
 >
-> コンストラクタはpayableとしてマークすることもできます。これは、コントラクト作成トランザクションと一緒にETHを送信したい場合に必要です。コンストラクタがpayableでない場合、デプロイ時に送信されたETHはトランザクションを取り消します。
+> コンストラクタはpayableとしてマークすることもできます。これは、コントラクト作成トランザクションと一緒にETHを送信したい場合に必要です。コンストラクタがpayableでない場合、デプロイ時に送信されたETHはトランザクションをリバートさせます。
 
 ### Function Modifiers
 
