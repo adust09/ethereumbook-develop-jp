@@ -1270,57 +1270,29 @@ CalledLibrary.calledFunction();
 
 次の2つの呼び出しでは、低レベル関数の`call`と`delegatecall`を用いて、先ほど見たものと同じイベントが発行されることで、私たちの想定が正しいことを確認します。
 
-## Gas Considerations
-
 ## ガスに関する検討事項
 
-Gas, described in more detail in Chapter 14, is an incredibly important consideration in smart contract programming. Gas is a resource constraining the maximum amount of computation that Ethereum will allow a transaction to consume. If the gas limit is exceeded during computation, the following series of events occurs:
-
-第14章でより詳細に説明しますが、ガスはスマートコントラクトプログラミングにおいて非常に重要な検討事項です。ガスは、イーサリアムがトランザクションに許容する最大計算量を制限するリソースです。計算中にガスリミットを超えると、以下の一連の事象が発生します。
-
-- An "out of gas" exception is thrown.
-- The state of the contract prior to execution is restored (reverted).
-- All ether used to pay for the gas is taken as a transaction fee; it is *not* refunded.
+第14章でより詳細に説明しますが、ガスはスマートコントラクトプログラミングにおいて慎重に考慮すべき重要な要素です。ガスは、イーサリアムにおいてトランザクションが消費する計算量の上限を定めるリソースです。計算中にガスリミットを超えると、以下の一連の事象が発生します。
 
 - 「ガス不足」（out of gas）例外がスローされる。
 - 実行前のコントラクトの状態が復元（リバート）される。
 - ガスの支払いに使用されたすべてのイーサがトランザクション手数料として徴収され、*返金されない*。
 
-### Best Practices
-
 ### ベストプラクティス
 
-Because gas is paid by the user who initiates the transaction, users are discouraged from calling functions that have a high gas cost. It is thus in the programmer's best interest to minimize the gas cost of a contract's functions. To this end, there are certain practices that are recommended when constructing smart contracts so as to minimize the gas cost of a function call:
-
-ガスはトランザクションを開始するユーザーによって支払われるため、ユーザーはガス費用の高い関数の呼び出しを避けるようになります。したがって、コントラクトの関数のガス費用を最小限に抑えることは、プログラマーにとって最大の関心事となります。この目的のため、関数呼び出しのガス費用を最小限に抑えるべく、スマートコントラクトの構築時に推奨されるプラクティスがあります。
-
-**Avoid dynamically sized arrays**
+ガスはトランザクションを開始したユーザーによって支払われるため、ユーザーはガス費用の高い関数の呼び出しを避けるべきです。このように、コントラクトの関数にかかるガス費用を最小限に抑えることは、プログラマーにとって最も望ましいことです。この目的達成のため、スマートコントラクトを作成する際に推奨されるプラクティスがあります。
 
 **動的サイズの配列を避ける**
 
-Any loop through a dynamically sized array where a function performs operations on each element or searches for a particular element introduces the risk of using too much gas. Indeed, the contract may run out of gas before finding the desired result or before acting on every element, thus wasting time and ether without giving any result at all.
-
-関数が各要素に対して操作を実行したり、特定の要素を検索したりする動的サイズの配列のループは、ガスを使いすぎるリスクを伴います。実際、コントラクトは期待される結果を見つける前、あるいはすべての要素に対して処理を行う前にガスを使い果たしてしまう可能性があり、結果を何も得られないまま時間とイーサを浪費することになります。
-
-**Avoid calls to other contracts**
+関数が各要素に対して操作を実行したり、特定の要素を検索したりする動的なサイズの配列のループは、ガスを使用し過ぎる危険性があります。実際、コントラクトは期待される結果を得る前に、あるいはすべての要素を遂行する前に、ガスを使い果たしてしまうかもしれません。このような場合、何も結果を得ることなく、時間とイーサを浪費することになります。
 
 **他のコントラクトへの呼び出しを避ける**
 
-Calling other contracts, especially when the gas cost of their functions is not known, introduces the risk of running out of gas. Avoid using libraries that are not well tested and broadly used. The less scrutiny a library has received from other programmers, the greater the risk of using it.
-
-他のコントラクトを呼び出すことは、特にその関数のガス費用がわからない場合、ガス不足になるリスクを伴います。十分にテストされていない、あるいは広く使用されていないライブラリの使用を避けてください。他のプログラマーからの検証が少ないライブラリほど、使用するリスクは高くなります。
-
-**Avoid redundant storage access**
+他のコントラクトを呼び出すことは、特にその関数のガス費用がわからない場合、ガス不足になるリスクを伴います。十分にテストされていて、広く使用されているライブラリを使用するようにしてください。他のプログラマーからのテスト量が少なければ少ないほど、そのライブラリを使用するリスクは高くなります。
 
 **冗長なストレージアクセスを避ける**
 
-Accessing storage variables, whether for reading or writing, costs a lot more gas than working with memory variables. So whenever we can, it's better to avoid using storage directly. For example, if we need to read a storage variable several times during some calculations, it's a good idea to first copy its value into a memory variable. This way, we can repeatedly access the cheaper memory variable instead of hitting the storage every time, saving on gas costs.
-
 ストレージ変数へのアクセスは、読み取りであれ書き込みであれ、メモリ変数の操作よりもはるかに多くのガスを消費します。そのため、可能な限りストレージへの直接アクセスを避けるのがよいでしょう。たとえば、計算中にストレージ変数を何度も読み取る必要がある場合、まずその値をメモリ変数にコピーしておくのがよい方法です。こうすることで、毎回ストレージにアクセスする代わりに、より安価なメモリ変数に繰り返しアクセスでき、ガス費用を節約できます。
-
-> **Note**
->
-> To put this in context, Solidity uses several places to keep data: storage, which is persistent and expensive; memory, which is temporary and cheaper during execution; calldata, which is a read-only area used mainly for external function inputs; and the stack, which is used for very short-lived values and is the cheapest to access. Choosing the right one depends on how the data is used, whether it needs to persist, whether it's mutable, and whether it's passed from outside. We'll dive deeper into these distinctions in Chapter 14, but it's helpful to start thinking early about how they affect performance and cost.
 
 > **注記**
 >
