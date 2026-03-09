@@ -1080,19 +1080,11 @@ USDTアドレスとWebSocketプロバイダーURLを宣言した後、スクリ�
 
 このようなイベントは、オフチェーンの通信だけでなく、デバッグにも非常に役立ちます。開発中には、トランザクションレシートの「logs」エントリでこれらのイベントを確認でき、期待どおりに動作しないときに問題解決の手がかりとなります。
 
-### Calling Other Contracts
-
 ### 他のコントラクトの呼び出し
 
-Calling other contracts from within your contract is a very useful but potentially dangerous operation. We'll examine the various ways you can achieve this and evaluate the risks of each method. In short, the risks arise from the fact that you may not know much about a contract you are calling into or one that is calling into your contract. When writing smart contracts, you must keep in mind that while you may mostly expect to be dealing with EOAs, there is nothing to stop arbitrarily complex and perhaps malign contracts from calling into and being called by your code.
-
-自身のコントラクトから他のコントラクトを呼び出すのは非常に便利ですが、潜在的に危険な操作です。この操作を実現するさまざまな方法を検討し、各方法のリスクを評価します。端的に言えば、リスクは、自分が呼び出しているコントラクトや、自分のコントラクトを呼び出しているコントラクトについてよく知らないことから生じます。スマートコントラクトを書くときは、主にEOAを扱うことを想定していたとしても、任意の複雑で悪意のあるコントラクトが自分のコードを呼び出したり、自分のコードから呼び出されたりすることを止められないということを心に留めておかなければなりません。
-
-#### Creating a new instance
+自身のコントラクトから他のコントラクトを呼び出すのは非常に便利ですが、潜在的に危険な操作です。この操作を実現するさまざまな方法を検討し、各方法のリスクを評価します。端的に言えば、リスクは自分が呼び出しているコントラクトや、自分のコントラクトを呼び出しているコントラクトについてよく知らないことから生じます。スマートコントラクトを書くときは、相手が主にEOAであると想定していたとしても、任意の複雑で悪意のあるコントラクトが自分のコードを呼び出したり、自分のコードから呼び出されたりすることを止められないということを心に留めておかなければなりません。
 
 #### 新しいインスタンスを作成する
-
-The safest way to call another contract is if you create that other contract yourself. That way, you are certain of its interfaces and behavior. To do this, you can simply instantiate it using the keyword `new`, as in other object-oriented languages. In Solidity, the keyword `new` will create the contract on the blockchain and return an object that you can use to reference it. Let's say you want to create and call a `Faucet` contract from within another contract called `Token`:
 
 別のコントラクトを呼び出す最も安全な方法は、そのコントラクトを自分で作成することです。そうすれば、そのインターフェイスと振る舞いを確実に把握できます。これを行うには、他のオブジェクト指向言語と同様に、キーワード`new`を使って簡単にインスタンス化できます。Solidityでは、`new`キーワードがブロックチェーン上にコントラクトを作成し、それを参照するために使用できるオブジェクトを返します。`Token`という別のコントラクト内から`Faucet`コントラクトを作成して呼び出したい場合を考えてみましょう。
 
@@ -1105,9 +1097,7 @@ contract Token is Pausable {
 }
 ```
 
-This mechanism for contract construction ensures that you know the exact type of the contract and its interface. The contract `Faucet` must be defined within the scope of `Token`, which you can do with an `import` statement if the definition is in another file:
-
-このコントラクト構築メカニズムは、コントラクトの正確な型とそのインターフェイスを確実に知っていることを保証します。`Faucet`コントラクトは`Token`のスコープ内で定義する必要があり、定義が別のファイルにある場合は`import`ステートメントで実行できます。
+このコントラクト構築メカニズムは、コントラクトの正確な型とそのインターフェイスを確実に知っていることを保証します。`Faucet`コントラクトは`Token`のスコープ内で定義する必要があり、定義が別のファイルにある場合は`import`ステートメントで取り込めます。
 
 ```solidity
 import "Faucet.sol";
@@ -1119,9 +1109,7 @@ contract Token is Pausable {
 }
 ```
 
-You can optionally specify the value of ether transfer on creation and pass arguments to the new contract's constructor:
-
-必要に応じて、作成時に送金するイーサの値を指定し、新しいコントラクトのコンストラクタに引数を渡すこともできます。
+必要に応じて、コントラクト作成時にイーサの送金額を指定したり、コンストラクタに引数を渡すこともできます。
 
 ```solidity
 import "Faucet.sol";
@@ -1133,11 +1121,7 @@ contract Token is Pausable {
 }
 ```
 
-Note that this would require the `Faucet` constructor to be payable!
-
 この場合、`Faucet`のコンストラクタがpayableである必要があることに注意してください。
-
-You can also then call the `Faucet` functions. In this example, we call the `changeOwner` function of `Faucet` from within the `changeOwner` function of `Token`:
 
 `Faucet`の関数を呼び出すこともできます。以下の例では、`Token`の`changeOwner`関数内から`Faucet`の`changeOwner`関数を呼び出しています。
 
@@ -1154,15 +1138,9 @@ contract Token is Pausable {
 }
 ```
 
-It's important to understand that while you are the owner of the `Token` contract, the `Token` contract itself owns the new `Faucet` contract, not you! As we saw earlier in this chapter, during an external call the `msg.sender` will change; in our case, in the `Faucet` execution context, it will be the `Token` address.
-
 重要な点として、あなたが`Token`コントラクトのオーナーであっても、新しい`Faucet`コントラクトを所有するのは`Token`コントラクト自体であり、あなたではありません。本章で前述したように、外部呼び出し中は`msg.sender`が変わります。この場合、`Faucet`の実行コンテクストでは`msg.sender`は`Token`のアドレスになります。
 
-#### Addressing an existing instance
-
 #### 既存のインスタンスへのアドレスキャスト
-
-Another way you can call a contract is by casting the address of an existing instance of the contract. With this method, you apply a known interface to an existing instance. It is therefore critically important that you know, for sure, that the instance you are addressing is in fact of the type you assume. Let's look at an example:
 
 コントラクトを呼び出すもう1つの方法は、コントラクトの既存インスタンスのアドレスをキャストすることです。この方法では、既存のインスタンスに既知のインターフェイスを適用します。したがって、アドレス指定しているインスタンスが実際に想定している型であることを確実に知っていることが極めて重要です。例を見てみましょう。
 
@@ -1177,9 +1155,7 @@ contract Token is Pausable {
 }
 ```
 
-Here, we take an address provided as an argument to the constructor, `_f`, and we cast it to a `Faucet` object. This is much riskier than the previous mechanism because we don't know for sure whether that address actually is a `Faucet` object. When we call `withdraw`, we are assuming that it accepts the same arguments and executes the same code as our `Faucet` declaration, but we can't be sure. For all we know, the `withdraw` function at this address could execute something completely different from what we expect, even if it is named the same. Using addresses passed as input and casting them into specific objects is therefore much more dangerous than creating the contract yourself.
-
-ここでは、コンストラクタへの引数として提供されたアドレス`_f`を受け取り、`Faucet`オブジェクトにキャストしています。このアドレスが実際に`Faucet`オブジェクトであるかどうかは確実にはわからないため、前述の方法よりもはるかに危険です。`withdraw`を呼び出すとき、`Faucet`の宣言と同じ引数を受け入れて同じコードを実行すると想定していますが、確実ではありません。このアドレスの`withdraw`関数は、同じ名前であっても、期待するものとはまったく異なることを実行するかもしれません。したがって、入力として渡されたアドレスを特定のオブジェクトにキャストするのは、コントラクトを自分で作成するよりもはるかに危険です。
+ここでは、コンストラクタへの引数として提供されたアドレス`_f`を受け取り、`Faucet`オブジェクトにキャストしています。このアドレスが実際に`Faucet`オブジェクトであるかどうかは確実にはわからないため、前述の方法よりもはるかに危険です。`withdraw`を呼び出すとき、`Faucet`の宣言と同じ引数を受け入れて同じコードを実行すると想定していますが、確実ではありません。このアドレスの`withdraw`関数は、同じ名前であっても、期待とはまったく異なる動作をするかもしれません。したがって、入力として渡されたアドレスを特定のオブジェクトにキャストするのは、コントラクトを自分で作成するよりもはるかに危険です。
 
 #### Raw call, delegatecall, and staticcall
 
