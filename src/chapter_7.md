@@ -1298,71 +1298,39 @@ CalledLibrary.calledFunction();
 >
 > これを理解するために補足すると、Solidityはデータを保持するための場所をいくつか使い分けています。storage（永続的で高価）、memory（実行中は一時的でより安価）、calldata（主に外部関数の入力に使用される読み取り専用領域）、そしてstack（非常に短命な値に使用され、アクセスコストが最も安い）です。適切な場所の選択は、データの使用方法、永続化の必要性、変更可能かどうか、外部から渡されるかどうかによって決まります。これらの違いについては第14章で詳しく掘り下げますが、パフォーマンスとコストへの影響について早い段階から考えておくと役立ちます。
 
-### Estimating Gas Cost
-
 ### ガス費用の見積もり
 
-When Ethereum first launched, estimating gas costs was a bit like trying to guess the winning bid at an auction. It was similar to how Bitcoin handles transaction fees: we would set our own gas price, and miners would prioritize transactions with the highest bids. This meant that during busy times, we often had to offer more just to make sure our transactions went through quickly. It worked, but it also meant gas prices could be all over the place—sometimes sky-high when the network was congested.
-
-イーサリアムが最初にローンチされたとき、ガス費用の見積もりはオークションの落札価格を推測するようなものでした。ビットコインがトランザクション手数料を処理する方法と似ていて、自分でガス価格を設定し、マイナーが最も高い入札のトランザクションを優先していました。これは、混雑時にはトランザクションを迅速に処理してもらうために、しばしばより多くの費用を提示しなければならないことを意味していました。機能していましたが、ネットワークが混雑しているときにはガス価格が非常に高騰するなど、価格が不安定になることも意味していました。
-
-Then in 2021 came EIP-1559, which changed the game. Instead of us having to guess the right gas price, Ethereum introduced a base fee that adjusts automatically based on network activity. This makes gas fees way more predictable. Plus, we can still add a tip (called a *priority fee*) to speed things up if we're in a hurry. Now estimating gas costs is more straightforward, and we're less likely to overpay just to get our transaction processed.
+イーサリアムが最初にローンチされたとき、ガス費用の見積もりはオークションの落札価格を推測するようなものでした。ビットコインがトランザクション手数料を処理する方法と似ていて、自分でガス価格を設定し、マイナーが最も高い入札のトランザクションを優先していました。これは、混雑時にはトランザクションを迅速に処理してもらうために、しばしばより多くの費用を提示しなければならないことを意味していました。この仕組み自体は機能していましたが、ネットワークが混雑しているときにはガス価格が非常に高騰するなど、価格が不安定になりがちでした。
 
 そして2021年にEIP-1559が導入され、状況は一変しました。適切なガス価格を推測する代わりに、イーサリアムはネットワークの活動状況に基づいて自動的に調整されるベースフィーを導入しました。これにより、ガス手数料はより予測可能になりました。さらに、急いでいる場合にはチップ（*優先手数料*と呼ばれる）を追加して処理を速めることもできます。現在ではガス費用の見積もりがより簡単になり、トランザクションを処理してもらうためだけに過剰に支払うことも少なくなりました。
 
-Let's explore in detail how we can estimate the gas cost of our transaction. First, every transaction has two main components for gas costs: the base fee and the priority fee:
-
-トランザクションのガス費用をどのように見積もれるか、詳しく見ていきましょう。まず、すべてのトランザクションには、ガス費用に関する2つの主要な要素があります。ベースフィーと優先手数料です。
-
-**Base fee**
+トランザクションのガス費用をどのように見積もれるか、詳しく見ていきましょう。まず、すべてのトランザクションには、ガス費用に関する2つの主要な要素があります。ベースフィーと優先手数料（priority fee）です。
 
 **ベースフィー**
 
-This is the minimum amount of gas we need to pay for our transaction to be included in a block. The base fee is automatically determined by the network and adjusts dynamically based on how busy the network is. If blocks are full, the base fee goes up; if blocks are underused, it goes down.
-
 これは、トランザクションをブロックに含めてもらうために支払う必要のある最低限のガス量です。ベースフィーはネットワークによって自動的に決定され、ネットワークの混雑度に基づいて動的に調整されます。ブロックが満杯のときはベースフィーが上がり、ブロックの利用が少ないときは下がります。
-
-**Priority fee (tip)**
 
 **優先手数料（チップ）**
 
-This is an extra fee we add to incentivize miners (or validators in the PoS context) to prioritize our transaction. It's like a tip we give to get our transaction processed faster. We can set this fee ourselves, but wallet applications will suggest appropriate values according to the desired speed of transaction inclusion.
-
 これは、マイナー（またはPoSにおけるバリデーター）にトランザクションの優先処理を促すために追加する手数料です。トランザクションをより速く処理してもらうためのチップのようなものです。この手数料は自分で設定できますが、ウォレットアプリケーションがトランザクションの取り込み速度の希望に応じて適切な値を提案してくれます。
-
-Now, the total gas cost of our transaction is calculated by multiplying the gas used (which depends on the complexity of our transaction) by the effective gas price. The effective gas price is the sum of the base fee and the priority fee.
 
 トランザクションの合計ガス費用は、使用されたガス量（トランザクションの複雑さに依存）に実効ガス価格を掛けて算出されます。実効ガス価格は、ベースフィーと優先手数料の合計です。
 
-So to estimate our gas cost, we follow these steps:
-
 ガス費用を見積もるには、以下の手順に従います。
-
-1. Look at the current base fee, which we can find using gas-tracking tools like [Etherscan Gas Tracker](https://oreil.ly/ZIqcq) or through Web3 libraries (e.g., [ethers'`maxFeePerGas()`](https://oreil.ly/YuBC0)).
 
 1. 現在のベースフィーを確認します。これは、[Etherscan Gas Tracker](https://oreil.ly/ZIqcq)などのガス追跡ツールや、Web3ライブラリ（例：[ethersの`maxFeePerGas()`](https://oreil.ly/YuBC0)）を使って確認できます。
 
-2. Choose a priority fee (or tip) depending on how fast we want our transaction to go through. If we're in a rush, we can bump up the tip. Gas-tracking tools can help us figure out the right tip amount based on current network conditions and how quickly we need things to happen.
-
-2. トランザクションの処理速度に応じて、優先手数料（チップ）を選択します。急いでいる場合はチップを上げることができます。ガス追跡ツールは、現在のネットワーク状況と処理の緊急度に基づいて適切なチップ額を判断するのに役立ちます。
-
-3. Multiply the total gas price (base fee + tip) by the estimated gas usage. If we're developers, we can calculate this estimated gas usage using Web3 libraries (e.g., [ethers'`estimateGas()`](https://oreil.ly/sfqZP)). But if we're just regular users, no worries—any wallet app will handle this for us automatically when we send out a transaction.
+2. トランザクションの処理速度に応じて、優先手数料（チップ）を選択します。急いでいる場合はチップを増やすことができます。ガス追跡ツールは、現在のネットワーク状況と処理の緊急度に基づいて適切なチップ額を判断するのに役立ちます。
 
 3. 合計ガス価格（ベースフィー + チップ）に推定ガス使用量を掛けます。開発者であれば、Web3ライブラリ（例：[ethersの`estimateGas()`](https://oreil.ly/sfqZP)）を使って推定ガス使用量を計算できます。一般ユーザーの場合は心配いりません。トランザクションを送信する際にウォレットアプリが自動的に処理してくれます。
-
-For example, if the base fee is 20 gwei, we set a tip of 2 gwei, and our transaction uses 50,000 gas, our estimated gas cost would be:
 
 たとえば、ベースフィーが20 gwei、チップを2 gweiに設定し、トランザクションが50,000ガスを使用する場合、推定ガス費用は次のようになります。
 
 (20 gwei + 2 gwei) × 50,000 = 1,100,000 gwei
 
-So, that's 1.1 million gwei, or 0.0011 ETH.
-
 つまり、110万gwei、すなわち0.0011 ETHとなります。
 
-It is recommended that you evaluate the gas cost of functions as part of your development workflow to avoid any surprises when deploying contracts to the mainnet.
-
-コントラクトをメインネットにデプロイするときに驚かないように、開発ワークフローの一部として関数のガス費用を評価することが推奨されます。
+コントラクトをメインネットにデプロイするときに驚かないように、開発ワークフローに関数のガス費用の評価を組み込んでおきましょう。
 
 ## Conclusion
 
