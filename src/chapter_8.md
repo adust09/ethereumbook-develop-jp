@@ -161,24 +161,13 @@ back_to_small: uint8 = convert(large_value, uint8)   # 境界チェック付き�
 
 　Vyperはデコレータのロジックを明示的に実装しています。たとえば`@payable`と`@view`の両方を持つ関数があると、Vyperのコンパイルは失敗します。バリューを転送する関数は定義上、状態を更新するため`@view`にはなりえません。Vyperの関数には`@external`か`@internal`のどちらかを付ける必要があります（両方は不可です）。
 
-## Function and Variable Ordering
-
 ## 関数と変数の順序
 
+　Vyperのスコープと宣言はC99のスコープ規則に従っており、想像以上の柔軟性があります。Vyperのコントラクトは依然として単一ファイル内に収める必要がありますが（モジュールシステムを使用しない場合）、以前のバージョンにあった厳密な順序制約は、モジュールスコープの宣言では緩和されています。
 
-Vyper's approach to scoping and declarations follows C99 scoping rules, which provide more flexibility than you might initially expect. While Vyper contracts must still be contained within a single file (unless you are using the module system), the strict ordering requirements that were present in earlier versions have been relaxed for module-scope declarations.
+　モジュールスコープ（関数本体の外側）で宣言された変数や関数は、正式な宣言よりも前であってもコントラクト全体から参照できます。多くの現代的なプログラミング言語における前方宣言と同様に、状態変数の参照や関数の呼び出しを、ファイル内での記述位置より前に行えます。
 
-　Vyperのスコーピングと宣言に対するアプローチはC99のスコーピング規則に従っており、最初に思うよりも柔軟性があります。Vyperのコントラクトは依然として単一のファイル内に収める必要がありますが（モジュールシステムを使用しない場合）、以前のバージョンに存在した厳密な順序の要件は、モジュールスコープの宣言に関しては緩和されています。
-
-
-Variables and functions that are declared at the module scope (outside of any function body) are visible throughout the entire contract, even before their formal declaration. This means you can reference state variables and call functions before they appear in the file, similar to how many modern programming languages handle forward declarations.
-
-　モジュールスコープ（関数本体の外側）で宣言された変数や関数は、正式な宣言よりも前であっても、コントラクト全体から参照できます。つまり、多くの現代的なプログラミング言語が前方宣言を扱うのと同様に、状態変数の参照や関数の呼び出しを、それらがファイルに記述される前に行うことができます。
-
-
-Here's a practical example showing how scoping works in modern Vyper:
-
-　現代のVyperにおけるスコーピングの動作を示す実用的な例を見てみましょう。
+　現代のVyperにおけるスコープの動作を示す例を見てみましょう。
 
 ```
 # この関数は下で宣言される状態変数を参照できる
@@ -193,10 +182,7 @@ def check_if_positive() -> bool:
 stored_data: public(uint256)
 ```
 
-
-However, within function scope, Vyper still maintains strict ordering rules. Local variables must be declared before use, and you cannot shadow the names of constants, immutable variables, or other module-level declarations with local variables. This scoping approach strikes a balance between Python's flexibility and the needs of smart contract development, where clear visibility of state variables and function relationships is important for security auditing.
-
-　ただし、関数スコープ内では、Vyperは依然として厳密な順序規則を維持しています。ローカル変数は使用する前に宣言する必要があり、定数やイミュータブル変数、その他のモジュールレベルの宣言の名前をローカル変数でシャドーイングすることはできません。このスコーピングのアプローチは、Pythonの柔軟性と、状態変数や関数の関係の明確な可視性がセキュリティ監査にとって重要であるスマートコントラクト開発のニーズとのバランスを取っています。
+　ただし関数スコープ内では、Vyperは依然として厳密な順序規則を維持しています。ローカル変数は使用前に宣言する必要があり、定数やイミュータブル変数などモジュールレベルの宣言名をローカル変数でシャドーイングすることはできません。このアプローチはPythonの柔軟性と、状態変数や関数の関係が明確に見えることがセキュリティ監査上重要であるスマートコントラクト開発のニーズとのバランスを取っています。
 
 ## Compilation
 
