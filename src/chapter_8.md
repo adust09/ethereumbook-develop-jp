@@ -101,22 +101,11 @@ function f(uint256 _in, bytes32 _key) public pure returns (uint256 out) {
 
 　最初の関数（名称は`f`）はuint256型の入力引数を1つ受け取ります。2つ目の関数（こちらの名称も`f`）は2つの引数を受け取り、1つはuint256型、もう1つはbytes32型です。異なる引数を取る同名の関数が複数定義されている状況は混乱を招くため、Vyperは関数のオーバーロードをサポートしていません。
 
-### Variable Typecasting
-
 ### 変数の型キャスト
 
+　Vyperは型変換に対してSolidityとは大きく異なるアプローチを取っており、利便性よりも明示的で安全な型の扱いを優先しています。すべての型変換は組み込みの`convert()`関数で明示的に行う必要があり、データ型がいつどのように変更されるかを開発者が常に把握できます。
 
-Vyper takes a very different approach to type conversion compared to Solidity, prioritizing explicit and safe type handling over convenience. The language requires all type conversions to be made explicitly using the built-in `convert()` function, which ensures that developers are always aware of when and how data types are being modified.
-
-　Vyperは型変換に対してSolidityとは大きく異なるアプローチを取っており、利便性よりも明示的で安全な型の扱いを優先しています。Vyperではすべての型変換を組み込みの`convert()`関数を使って明示的に行う必要があり、データ型がいつどのように変更されるかを開発者が常に意識できるようになっています。
-
-
-We can think of type conversions in two categories: those that might lose information and those that don't. Vyper's `convert()` function handles both cases, but always with explicit bounds checking to prevent unexpected behavior. For example, when converting from a larger integer type to a smaller one, Vyper will revert the transaction if the value doesn't fit within the bounds of the target type.
-
-　型変換は、情報が失われる可能性のあるものと失われないものの2つのカテゴリに分けて考えることができます。Vyperの`convert()`関数はどちらの場合も扱えますが、予期しない動作を防ぐために常に明示的な境界チェックを行います。たとえば、大きな整数型から小さな整数型に変換する場合、値が変換先の型の範囲に収まらなければ、Vyperはトランザクションをリバートします。
-
-
-The syntax for type conversion in Vyper is straightforward:
+　型変換は、情報が失われる可能性のあるものと失われないものの2つに分けられます。Vyperの`convert()`関数はどちらも扱えますが、予期しない動作を防ぐために常に明示的な境界チェックを行います。たとえば、大きな整数型から小さな整数型に変換する場合、値が変換先の型の範囲に収まらなければトランザクションをリバートします。
 
 　Vyperにおける型変換の構文はシンプルです。
 
@@ -127,10 +116,7 @@ large_value: uint256 = convert(small_value, uint256)  # 安全なアップキャ
 back_to_small: uint8 = convert(large_value, uint8)   # 境界チェック付きダウンキャスト
 ```
 
-
-This explicit approach means that while Vyper code may be more verbose than Solidity when dealing with type conversions, it's also much safer. There's no possibility of accidentally truncating values or having unexpected overflow behavior because every conversion must be intentional and explicit. The `convert()` function will revert the transaction if the conversion would result in data loss or if the input value is outside the valid range for the target type.
-
-　この明示的なアプローチにより、型変換の場面ではVyperのコードはSolidityよりも冗長になりますが、はるかに安全です。すべての変換が意図的かつ明示的でなければならないため、値の切り捨てや予期しないオーバーフロー動作が誤って発生する余地はありません。`convert()`関数は、変換によってデータが失われる場合や、入力値が変換先の型の有効範囲外である場合にトランザクションをリバートします。
+　この明示的なアプローチにより、型変換の場面ではVyperのコードはSolidityよりも冗長になりますが、はるかに安全です。すべての変換が意図的かつ明示的でなければならないため、値の切り捨てや予期しないオーバーフローが誤って発生する余地はありません。`convert()`関数は、変換でデータが失われる場合や入力値が変換先の型の有効範囲外である場合にトランザクションをリバートします。
 
 ## Decorators
 
