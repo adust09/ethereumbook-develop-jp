@@ -184,12 +184,7 @@ stored_data: public(uint256)
 
 　ただし関数スコープ内では、Vyperは依然として厳密な順序規則を維持しています。ローカル変数は使用前に宣言する必要があり、定数やイミュータブル変数などモジュールレベルの宣言名をローカル変数でシャドーイングすることはできません。このアプローチはPythonの柔軟性と、状態変数や関数の関係が明確に見えることがセキュリティ監査上重要であるスマートコントラクト開発のニーズとのバランスを取っています。
 
-## Compilation
-
 ## コンパイル
-
-
-The easiest way to experiment with Vyper is to use the [Remix online compiler](https://remix.ethereum.org), which allows you to write and then compile your smart contracts using only your web browser (you will need to activate the vyper-remix plug-in in the plug-in manager).
 
 　Vyperを試す最も簡単な方法は、[Remixオンラインコンパイラ](https://remix.ethereum.org)を使うことです。Webブラウザだけを用いてスマートコントラクトを作成し、コンパイルできます（プラグインマネージャでvyper-remixプラグインを有効化する必要があります）。
 
@@ -199,8 +194,6 @@ The easiest way to experiment with Vyper is to use the [Remix online compiler](h
 > `from vyper.interfaces import ERC20` `token: ERC20`
 
 
-You can also compile a contract using the command line. Each Vyper contract is saved in a file with the *.vy* extension. Once Vyper is installed, you can compile a contract by running the following command:
-
 　コマンドラインからコントラクトをコンパイルすることもできます。Vyperのコントラクトはそれぞれ *.vy* 拡張子のファイルに保存されます。Vyperをインストールすれば、次のコマンドでコントラクトをコンパイルできます。
 
 ```bash
@@ -208,16 +201,12 @@ vyper ~/hello_world.vy
 ```
 
 
-The compiler offers extensive output options. To get the human-readable ABI description in JSON format, use:
-
-　コンパイラは豊富な出力オプションを提供しています。人間が読みやすいJSON形式のABI記述を取得するには、次のコマンドを使用します。
+　コンパイラは豊富な出力オプションを備えています。人間が読みやすいJSON形式のABI記述を取得するには、次のコマンドを使用します。
 
 ```bash
 vyper -f abi ~/hello_world.vy
 ```
 
-
-For development and testing, you'll likely want additional outputs like bytecode, opcodes, or interface files. The compiler supports numerous output formats:
 
 　開発やテストでは、バイトコード、オペコード、インターフェースファイルなどの追加出力が必要になることもあるでしょう。コンパイラは多数の出力フォーマットをサポートしています。
 
@@ -226,14 +215,10 @@ vyper -f abi,bytecode,interface,source_map ~/hello_world.vy
 ```
 
 
-Modern Vyper also includes advanced optimization modes. You can optimize for gas efficiency with `--optimize gas` (the default) or for smaller contract sizes with `--optimize codesize`. The newer, experimental Venom IR pipeline can be enabled with `--experimental-codegen` for even better optimizations.
-
-　現代のVyperには高度な最適化モードも含まれています。`--optimize gas`（デフォルト）でガス効率を最適化するか、`--optimize codesize`でコントラクトサイズを小さくすることができます。新しい実験的なVenom IRパイプラインは`--experimental-codegen`で有効化でき、さらに優れた最適化が可能です。
+　現代のVyperには高度な最適化モードも含まれています。`--optimize gas`（デフォルト）でガス効率の最適化、`--optimize codesize`でコントラクトサイズの最小化が可能です。新しい実験的なVenom IRパイプラインは`--experimental-codegen`で有効化でき、さらに優れた最適化を実現します。
 
 
-While Remix and the command-line compiler are excellent for learning and experimentation, developers working on larger projects typically need comprehensive development frameworks. [ApeWorx](https://oreil.ly/AJRSa) (formerly Ape) provides excellent Vyper support with features like automated testing, deployment scripting, and integration with various networks. [Foundry](https://oreil.ly/CWIKj), while primarily focused on Solidity, also supports Vyper development and offers powerful testing and simulation capabilities. These frameworks provide the kind of mature development environment that professional smart contract developers need for building complex applications.
-
-　Remixやコマンドラインコンパイラは学習や実験に最適ですが、大規模なプロジェクトに取り組む開発者は通常、包括的な開発フレームワークを必要とします。[ApeWorx](https://oreil.ly/AJRSa)（旧Ape）は、自動テスト、デプロイスクリプティング、さまざまなネットワークとの統合といった機能を備え、Vyperを優れたかたちでサポートしています。[Foundry](https://oreil.ly/CWIKj)は主にSolidity向けですが、Vyperの開発もサポートしており、強力なテストおよびシミュレーション機能を提供しています。これらのフレームワークは、複雑なアプリケーションを構築するプロフェッショナルなスマートコントラクト開発者に必要な、成熟した開発環境を提供します。
+　Remixやコマンドラインコンパイラは学習や実験に最適ですが、大規模なプロジェクトでは包括的な開発フレームワークが必要になります。[ApeWorx](https://oreil.ly/AJRSa)（旧Ape）は自動テストやデプロイスクリプティング、さまざまなネットワークとの統合といった機能を備え、Vyperを手厚くサポートしています。[Foundry](https://oreil.ly/CWIKj)は主にSolidity向けですがVyperの開発もサポートしており、強力なテストやシミュレーション機能を提供しています。これらのフレームワークは、複雑なアプリケーションを構築するプロフェッショナルなスマートコントラクト開発者に必要な成熟した開発環境を提供します。
 
 ## Protecting Against Overflow Errors at the Compiler Level
 
