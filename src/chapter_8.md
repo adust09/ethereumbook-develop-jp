@@ -72,21 +72,11 @@ function a()
 
 　Vyperでは修飾子が完全に廃止されています。Vyperの推奨は次のとおりです。修飾子でアサーションのみを行いたい場合は、インラインのチェックとアサートを関数の一部として使用します。スマートコントラクトの状態を変更する場合も同様に、変更を関数内に明示します。こうすれば、読み手は関数の動作を理解するために修飾子のコードを頭の中で（あるいは手動で）「包む」必要がなくなり、可監査性と可読性が向上します。
 
-### Class Inheritance
-
 ### クラスの継承
 
-
-Inheritance allows programmers to harness the power of prewritten code by acquiring preexisting functionality, properties, and behaviors from existing software libraries. Inheritance is powerful and promotes the reuse of code. Solidity supports multiple inheritance as well as polymorphism, but while these are key features of object-oriented programming, Vyper does not support them. Vyper maintains that the implementation of inheritance requires coders and auditors to jump between multiple files in order to understand what the program is doing. Vyper also takes the view that multiple inheritance can make code too complicated to understand—a view tacitly admitted by the [Solidity documentation](https://oreil.ly/bkGwS), which gives an example of how multiple inheritance can be problematic.
-
-　プログラマーは継承を使って、既存のソフトウェアライブラリからあらかじめ用意された機能、性質、振る舞いを獲得し、すでに書かれたコードを活用できるようになります。継承は強力で、コードの再利用を促進します。Solidityはオブジェクト指向プログラミングの重要な機能であるポリモーフィズム（多態性）と多重継承をサポートしていますが、Vyperはどちらもサポートしていません。Vyperの考え方では、継承を実装するにはコードの作成者や監査者が複数のファイル間を行き来して、プログラムが何を行っているかを理解する必要があります。さらに、多重継承はコードを理解不可能なほど複雑にする可能性があるとVyperは考えています。これは[Solidityのドキュメント](https://oreil.ly/bkGwS)でも暗黙のうちに認められており、多重継承がどのように問題になりうるかの例が示されています。
-
-### Inline Assembly
+　プログラマーは継承を使って、既存のソフトウェアライブラリからあらかじめ用意された機能や性質、振る舞いを獲得し、すでに書かれたコードを活用できます。継承は強力で、コードの再利用を促進します。Solidityはオブジェクト指向プログラミングの重要な機能であるポリモーフィズム（多態性）と多重継承をサポートしていますが、Vyperはどちらもサポートしていません。Vyperの考え方では、継承を実装するにはコードの作成者や監査者が複数のファイル間を行き来して、プログラムの動作を理解する必要があります。また、多重継承はコードを理解不可能なほど複雑にする可能性があるとVyperは考えています。これは[Solidityのドキュメント](https://oreil.ly/bkGwS)でも暗に認められており、多重継承がどのように問題になりうるかの例が示されています。
 
 ### インラインアセンブリ
-
-
-Inline assembly gives developers low-level access to the EVM, allowing Solidity programs to perform operations by directly accessing EVM instructions. For example, the following assembly code adds 3 to memory location `0x80`:
 
 　インラインアセンブリを用いると、開発者はEVMへの低レベルなアクセスが可能になり、SolidityのプログラムからEVMの命令に直接アクセスして操作を実行できます。たとえば、次のアセンブリコードはメモリ番地`0x80`に3を加算します。
 
@@ -94,17 +84,9 @@ Inline assembly gives developers low-level access to the EVM, allowing Solidity 
 3 0x80 mload add 0x80 mstore
 ```
 
-
-This would prevent the ability to search for a variable name to locate all occurrences where the variable is read or modified. Vyper considers the loss of readability to be too high a price to pay for the extra power and thus does not support inline assembly.
-
-　インラインアセンブリを使用すると、変数名を検索してその変数が読み書きされるすべての箇所を特定することができなくなります。Vyperは可読性の低下が追加的な機能に対して払う代償として大きすぎると判断しており、インラインアセンブリをサポートしていません。
-
-### Function Overloading
+　インラインアセンブリを使用すると、変数名を検索してその変数が読み書きされるすべての箇所を特定できなくなります。Vyperは追加的な機能と引き換えに可読性を犠牲にするのは代償が大きすぎると判断し、インラインアセンブリをサポートしていません。
 
 ### 関数のオーバーロード
-
-
-Function overloading allows developers to write multiple functions of the same name. Which function is used on a given occasion depends on the types of the arguments supplied. Take the following two functions, for example:
 
 　関数のオーバーロードを用いると、開発者は同じ名前の関数を複数書くことができます。どの関数が使われるかは、その時々で渡される引数の型に依存します。例として、次の2つの関数を見てみましょう。
 
@@ -116,9 +98,6 @@ function f(uint256 _in, bytes32 _key) public pure returns (uint256 out) {
  out = 2;
 }
 ```
-
-
-The first function (named `f`) accepts an input argument of type `uint256`; the second function (also named `f`) accepts two arguments, one of type `uint256` and one of type `bytes32`. Having multiple function definitions with the same name taking different arguments can be confusing, so Vyper does not support function overloading.
 
 　最初の関数（名称は`f`）はuint256型の入力引数を1つ受け取ります。2つ目の関数（こちらの名称も`f`）は2つの引数を受け取り、1つはuint256型、もう1つはbytes32型です。異なる引数を取る同名の関数が複数定義されている状況は混乱を招くため、Vyperは関数のオーバーロードをサポートしていません。
 
