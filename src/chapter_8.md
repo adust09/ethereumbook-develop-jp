@@ -1,25 +1,12 @@
-# Chapter 8. Smart Contracts and Vyper
-
 # 第8章　スマートコントラクトとVyper
 
+　Vyperは、EVM向けに設計された確立されたコントラクト指向プログラミング言語であり、開発者がわかりやすいコードを書けるようにすることで、優れた監査性の提供を目指しています。実際、Vyperの原則の1つは、誤解を招くようなコードを開発者が事実上書けないようにすることです。
 
-Vyper is a well-established contract-oriented programming language for the EVM that strives to provide superior auditability by making it easier for developers to produce intelligible code. In fact, one of the principles of Vyper is to make it virtually impossible for developers to write misleading code.
-
-　Vyperは、EVM向けに設計された確立されたコントラクト指向のプログラミング言語であり、開発者がわかりやすいコードを書けるようにすることで、優れた監査性の提供を目指しています。実際、Vyperの原則の1つは、誤解を招くようなコードを開発者が事実上書けないようにすることです。
-
-
-In this chapter, we will look at common problems with smart contracts, introduce the Vyper contract programming language, and compare it to Solidity, demonstrating the differences.
-
-　本章では、スマートコントラクトに関するよくある問題を検討し、Vyperというコントラクトプログラミング言語を紹介したうえで、Solidityと比較してその違いを説明します。
-
-## Vulnerabilities and Vyper
+　本章では、スマートコントラクトに関するよくある問題を検討し、Vyperコントラクト プログラミング言語を紹介したうえで、Solidityと比較してその違いを説明します。
 
 ## 脆弱性とVyper
 
-
-In 2023 alone, almost $2 billion were stolen because of smart contract vulnerabilities in the Ethereum ecosystem. Vulnerabilities are introduced into smart contracts via code. It can be strongly argued that these and other vulnerabilities are not introduced intentionally, but regardless, undesirable smart contract code evidently results in the unexpected loss of funds for Ethereum users, and this is not ideal. Vyper is designed to make it easier to write secure code or, equally, to make it more difficult to accidentally write misleading or vulnerable code.
-
-　2023年だけで、イーサリアムエコシステムにおけるスマートコントラクトの脆弱性により、約20億ドルが盗まれました。脆弱性はコードを通じてスマートコントラクトに持ち込まれます。こうした脆弱性は意図的に導入されたものではないと強く主張できますが、いずれにせよ、望ましくないスマートコントラクトのコードがイーサリアムユーザの予期しない資金喪失を招いていることは明らかであり、理想的な状況ではありません。Vyperは安全なコードをより簡単に書けるよう、あるいは同様に、誤解を招くコードや脆弱性のあるコードを誤って書いてしまうことがより難しくなるよう設計されています。
+　2023年だけで、イーサリアム エコシステムにおけるスマートコントラクトの脆弱性により、約20億ドルが盗まれました。スマートコントラクトの脆弱性は、コードに起因します。こうした脆弱性が意図的なものとは考えにくいですが、いずれにせよ、望ましくないスマートコントラクトのコードがイーサリアム ユーザの予期しない資金喪失を招いていることは明らかであり、理想的な状況ではありません。Vyperは安全なコードをより簡単に書けるよう、また誤解を招くコードや脆弱なコードを誤って書いてしまうことがより難しくなるよう設計されています。
 
 ## Comparison to Solidity
 
