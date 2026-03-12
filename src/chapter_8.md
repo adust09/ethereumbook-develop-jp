@@ -8,26 +8,13 @@
 
 　2023年だけで、イーサリアム エコシステムにおけるスマートコントラクトの脆弱性により、約20億ドルが盗まれました。スマートコントラクトの脆弱性は、コードに起因します。こうした脆弱性が意図的なものとは考えにくいですが、いずれにせよ、望ましくないスマートコントラクトのコードがイーサリアム ユーザの予期しない資金喪失を招いていることは明らかであり、理想的な状況ではありません。Vyperは安全なコードをより簡単に書けるよう、また誤解を招くコードや脆弱なコードを誤って書いてしまうことがより難しくなるよう設計されています。
 
-## Comparison to Solidity
-
 ## Solidityとの比較
 
+　Vyperが安全でないコードを書きにくくする方法の1つは、Solidityのいくつかの機能を意図的に除外することです。この設計上の選択は、セキュリティ最優先の原則と、Pythonの明確さやシンプルさから着想を得たVyperのルーツを反映しています。Vyperでのスマートコントラクト開発を検討する場合、Vyperにどの機能がなく、なぜないのかを理解することが重要です。この節では除外された機能を詳しく調べ、その理由を見ていきます。
 
-One of the ways in which Vyper tries to make unsafe code harder to write is by deliberately omitting some of Solidity's features. This design choice reflects Vyper's roots in security-first principles and its inspiration from Python's clarity and simplicity. It is important for those who are considering developing smart contracts in Vyper to understand what features Vyper does not have and why. In this section, we will explore those features and provide justification for why they have been omitted.
-
-　Vyperが安全でないコードを書きにくくする方法の1つは、Solidityのいくつかの機能を意図的に除外することです。この設計上の選択は、セキュリティ最優先の原則と、Pythonの明確さやシンプルさから着想を得たVyperのルーツを反映しています。Vyperでのスマートコントラクト開発を検討する場合、Vyperがどの機能を持っていないか、そしてなぜ持っていないかを理解することが重要です。この節では、除外された機能について詳しく調べ、除外の理由を見ていきます。
-
-
-Despite stripping down the feature set to reduce ambiguity, Vyper has evolved to meet the practical needs of developers and auditors. For example, the original philosophy of keeping contracts in a single file helped maximize auditability, but it eventually became a bottleneck as protocols grew larger and more complex. To address this, modern Vyper introduced a sophisticated module system that allows developers to split contracts into multiple files while maintaining strict control over state access and code reuse. This module system follows composition principles rather than traditional inheritance, striking a better balance between structure and readability. Vyper has found a growing role in high-assurance use cases such as decentralized finance (DeFi) protocols and staking systems, where developers place a strong emphasis on clarity and ease of auditing.
-
-　曖昧さを減らすために機能セットを削減しているにもかかわらず、Vyperは開発者や監査者の実際のニーズに応えるように進化してきました。たとえば、コントラクトを単一のファイルに収めるという当初の方針は監査性の最大化に役立ちましたが、プロトコルが大規模かつ複雑になるにつれてボトルネックとなりました。この問題に対処するため、現代のVyperでは洗練されたモジュールシステムが導入され、状態へのアクセスやコードの再利用に対する厳密な制御を維持しつつ、コントラクトを複数のファイルに分割できるようになりました。このモジュールシステムは従来の継承ではなくコンポジションの原則に従っており、構造と可読性のバランスをうまく取っています。Vyperは、分散型金融（DeFi）プロトコルやステーキングシステムなど、明確さと監査の容易さを重視する高信頼性のユースケースにおいて、ますます重要な役割を果たすようになっています。
-
-### Modifiers
+　機能セットを削減して曖昧さを減らす一方で、Vyperは開発者や監査者の実際のニーズに応えるよう進化してきました。たとえば、コントラクトを単一ファイルに収めるという当初の方針は監査性の最大化に役立ちましたが、プロトコルが大規模かつ複雑になるにつれてボトルネックとなりました。この問題に対処するため、現代のVyperでは洗練されたモジュールシステムが導入されています。状態へのアクセスやコード再利用に対する厳密な制御を維持しつつ、コントラクトを複数のファイルに分割できるようになりました。このモジュールシステムは従来の継承ではなくコンポジションの原則に従い、構造と可読性のバランスをうまく取っています。DeFiプロトコルやステーキングシステムなど高い信頼性が求められる分野では、コードの明確さと監査のしやすさからVyperの採用が広がっています。
 
 ### 修飾子
-
-
-As we saw in Chapter 7, in Solidity you can write a function using modifiers. For example, the following function, `changeOwner`, will run the code in a modifier called `onlyBy` as part of its execution:
 
 　7章で見たように、Solidityでは修飾子を用いた関数を書くことができます。たとえば、次に示す`changeOwner`関数は、`onlyBy`と呼ばれる修飾子のコードを処理の一部として実行します。
 
@@ -40,10 +27,7 @@ function changeOwner(address _newOwner)
 }
 ```
 
-
-This modifier enforces a rule in relation to ownership. As you can see, this particular modifier acts as a mechanism to perform a precheck on behalf of the `changeOwner` function:
-
-　この修飾子は、所有権に関連するルールを強制します。以下に示すとおり、この修飾子は`changeOwner`関数に代わって事前チェックを実行する仕組みとして機能します。
+　この修飾子は所有権に関するルールを強制します。以下に示すとおり、`changeOwner`関数に代わって事前チェックを実行する仕組みです。
 
 ```solidity
 modifier onlyBy(address _account)
@@ -53,13 +37,7 @@ modifier onlyBy(address _account)
 }
 ```
 
-
-But modifiers are not just there to perform checks, as shown here. In fact, as modifiers, they can significantly change a smart contract's environment, in the context of the calling function. Put simply, modifiers are *pervasive*.
-
-　しかし修飾子は、ここに示したようなチェックを実行するためだけに存在するわけではありません。実際、修飾子は呼び出し元の関数の文脈において、スマートコントラクトの環境を大きく変化させることができます。端的にいえば、修飾子の影響範囲は*広範*です。
-
-
-Let's look at another Solidity-style example:
+　しかし修飾子は、ここに示したようなチェックを実行するためだけに存在するわけではありません。実際、修飾子は呼び出し元の関数の実行中に、スマートコントラクトの環境を大きく変化させることができます。端的にいえば、修飾子の影響範囲は*広範*です。
 
 　別のSolidityの例を見てみましょう。
 
@@ -88,20 +66,11 @@ function a()
 }
 ```
 
+　開発者は自身のコードが呼び出す他のコードを常にチェックすべきです。ただし、時間的制約がある場合や疲労で集中力が低下している場合など、特定の状況下ではコードのある1行を見落とすこともありえます。関数呼び出しの階層構造を頭の中で追いかけながら、スマートコントラクトの変数の状態を記憶しつつ巨大なファイル内を探索しなければならない場合は、なおさらです。
 
-On the one hand, developers should always check any other code that their own code is calling. However, it is possible that in certain situations (such as when there are time constraints or exhaustion results in lack of concentration), a developer may overlook a single line of code. This is even more likely if the developer has to jump around inside a large file while mentally keeping track of the function call hierarchy and committing the state of smart contract variables to memory.
+　先に挙げた例をもう少し詳しく見てみましょう。開発者が`a`という公開関数を書いているとします。この開発者はコントラクトに触れるのが初めてで、他の誰かが書いた修飾子を利用しようとしています。一見すると`stageTimeConfirmation`修飾子は、呼び出し元の関数に関連してコントラクトの経過時間をチェックしているだけのように見えます。しかし実際には、この修飾子は`nextStage`というもう1つの関数を呼び出しており、開発者はそれに気づか*ない*かもしれません。この単純化されたシナリオでは、公開関数`a`を呼び出すだけでスマートコントラクトの`stage`変数が`SafeStage`から`DangerStage`に変わります。
 
-　開発者は、自身のコードが呼び出している他のコードを常にチェックすべきです。しかし、特定の状況下（たとえば時間的制約がある場合や、疲労により集中力が欠如している場合など）では、コードのある1行を見落とすこともありえます。頭の中で関数呼び出しの階層構造を追いかけながら、スマートコントラクトの変数の状態を記憶しつつ、巨大なファイルの内部を探索しなければならない場合は、なおさらです。
-
-
-Let's look at the preceding example in a bit more depth. Imagine that a developer is writing a public function called `a`. The developer is new to this contract and is utilizing a modifier written by someone else. At a glance, it appears that the `stageTimeConfirmation` modifier is simply performing some checks regarding the age of the contract in relation to the calling function. What the developer may *not* realize is that the modifier is also calling another function, `nextStage`. In this simplistic demonstration scenario, simply calling the public function `a` results in the smart contract's `stage` variable moving from `SafeStage` to `DangerStage`.
-
-　先に挙げた例を、もう少し詳しく見てみましょう。開発者が`a`という公開関数を書いているとします。この開発者はコントラクトに触れるのが初めてで、他の誰かによって書かれた修飾子を利用しようとしています。一見すると、`stageTimeConfirmation`修飾子は呼び出し元の関数に関連して、コントラクトの経過時間についてチェックを行っているだけのように見えます。しかし、この修飾子が`nextStage`というもう1つの関数を呼び出していることに、開発者は気づか*ない*かもしれません。この単純化されたシナリオでは、公開関数`a`を呼び出すだけで、スマートコントラクトの`stage`変数が`SafeStage`から`DangerStage`に変わるという結果を生みます。
-
-
-Vyper has done away with modifiers altogether. The recommendations from Vyper are as follows: if you are only performing assertions with modifiers, then simply use inline checks and asserts as part of the function; if you are modifying smart contract state and so forth, again make these changes explicitly part of the function. Doing this improves auditability and readability since the reader doesn't have to mentally (or manually) "wrap" the modifier code around the function to see what it does.
-
-　Vyperでは修飾子が完全に廃止されています。Vyperの推奨は次のとおりです。修飾子でアサーションのみを行いたい場合は、単にインラインのチェックとアサートを関数の一部として使用します。スマートコントラクトの状態を変更する場合も同様に、変更を関数の一部として明示します。こうすることで、読み手は関数が実際に何を行っているかを理解するために、頭の中で（あるいは手動で）修飾子のコードを「包む」必要がなくなり、可監査性と可読性が向上します。
+　Vyperでは修飾子が完全に廃止されています。Vyperの推奨は次のとおりです。修飾子でアサーションのみを行いたい場合は、インラインのチェックとアサートを関数の一部として使用します。スマートコントラクトの状態を変更する場合も同様に、変更を関数内に明示します。こうすれば、読み手は関数の動作を理解するために修飾子のコードを頭の中で（あるいは手動で）「包む」必要がなくなり、可監査性と可読性が向上します。
 
 ### Class Inheritance
 
