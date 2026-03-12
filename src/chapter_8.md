@@ -118,79 +118,48 @@ back_to_small: uint8 = convert(large_value, uint8)   # 境界チェック付き�
 
 　この明示的なアプローチにより、型変換の場面ではVyperのコードはSolidityよりも冗長になりますが、はるかに安全です。すべての変換が意図的かつ明示的でなければならないため、値の切り捨てや予期しないオーバーフローが誤って発生する余地はありません。`convert()`関数は、変換でデータが失われる場合や入力値が変換先の型の有効範囲外である場合にトランザクションをリバートします。
 
-## Decorators
-
 ## デコレータ
-
-
-The following decorators may be used at the start of each function:
 
 　関数の開始部に、次に挙げるデコレータを使うことができます。
 
 **@internal**
 
-
-The `@internal` decorator makes the function inaccessible from outside the contract. This is the default function visibility, and as such, it is optional.
-
-`@internal`デコレータは、関数をコントラクトの外側からアクセス不可能にする。これはデフォルトの関数可視性であるため、省略可能である。
+`@internal`デコレータは、関数をコントラクトの外部からアクセス不可にする。これはデフォルトの関数可視性であるため、省略可能である。
 
 **@external**
 
-
-The `@external` decorator makes the function both visible and executable publicly. For example, even the Ethereum wallet will display such functions when viewing the contract.
-
-`@external`デコレータは、関数を外部から見えるようにし、公開的に実行可能にする。たとえば、イーサリアムウォレットもコントラクトを参照するときにこれらの関数を表示する。
+`@external`デコレータは、関数を外部から可視かつ実行可能にする。たとえば、イーサリアムウォレットもコントラクトを参照するときにこれらの関数を表示する。
 
 **@view**
-
-
-Functions with the `@view` decorator are not allowed to change state variables. In fact, the compiler will reject the entire program (with an appropriate error) if the function tries to change a state variable.
 
 `@view`デコレータを付けた関数は状態変数を変更できない。実際、このデコレータが付いた関数が状態変数を更新しようとすると、コンパイラはプログラム全体を（適切なエラーで）拒否する。
 
 **@pure**
 
-
-Functions with the `@pure` decorator are not allowed to read any blockchain state or make a call to nonpure methods or to other contracts.
-
-`@pure`デコレータを付けた関数は、ブロックチェーンの状態を読み取ったり、pureでないメソッドや他のコントラクトを呼び出したりすることができない。
+`@pure`デコレータを付けた関数は、ブロックチェーンの状態を読み取ったり、pureでないメソッドや他のコントラクトを呼び出したりできない。
 
 **@payable**
-
-
-Only functions with the `@payable` decorator are allowed to transfer value.
 
 `@payable`デコレータを持つ関数のみがバリューを転送できる。
 
 **@deploy**
 
-
-The `@deploy` decorator is used to mark the constructor function of a contract. This function runs exactly once when the contract is deployed to the blockchain, typically for setting up initial state variables and configuration. In Vyper, only the `__init__()` function can be marked with `@deploy`, and this decorator is required if you want to include constructor logic in your contract.
-
-`@deploy`デコレータは、コントラクトのコンストラクタ関数をマークするために使用される。この関数はコントラクトがブロックチェーンにデプロイされるときに1度だけ実行され、通常は初期状態変数や設定のセットアップに用いられる。Vyperでは`__init__()`関数のみに`@deploy`を付けることができ、コントラクトにコンストラクタロジックを含める場合はこのデコレータが必須である。
+`@deploy`デコレータは、コントラクトのコンストラクタ関数を示す。この関数はコントラクトがブロックチェーンにデプロイされるときに1度だけ実行され、通常は初期状態変数や設定のセットアップに用いられる。Vyperでは`__init__()`関数のみに`@deploy`を付けることができ、コントラクトにコンストラクタロジックを含める場合はこのデコレータが必須である。
 
 **@raw_return**
 
-
-Functions with the `@raw_return` decorator return raw bytes without applying ABI encoding. This decorator is particularly useful in proxy contracts and helper contracts where you need to forward the exact output of another contract call without wrapping it in another layer of encoding. However, there are important limitations: this decorator can be used only on `@external` functions. It cannot be used in interface definitions, and when calling such functions from other contracts, you should use `raw_call` instead of interface calls since the return data may not be ABI encoded.
-
-`@raw_return`デコレータを付けた関数は、ABIエンコーディングを適用せずに生のバイト列を返す。このデコレータは、別のコントラクト呼び出しの出力をエンコーディングの追加層で包むことなくそのまま転送する必要があるプロキシコントラクトやヘルパーコントラクトにおいて特に有用である。ただし、重要な制限がある。このデコレータは`@external`関数にのみ使用でき、インターフェース定義では使用できない。また、他のコントラクトからこのような関数を呼び出す場合は、戻り値がABIエンコードされていない可能性があるため、インターフェース呼び出しではなく`raw_call`を使用する必要がある。
+`@raw_return`デコレータを付けた関数は、ABIエンコーディングを適用せずに生のバイト列を返す。別のコントラクト呼び出しの出力を追加のエンコーディングなしにそのまま転送する必要があるプロキシコントラクトやヘルパーコントラクトで特に有用である。ただし重要な制限があり、`@external`関数にのみ使用でき、インターフェース定義では使用できない。他のコントラクトからこの関数を呼び出す場合は、戻り値がABIエンコードされていない可能性があるため、インターフェース呼び出しではなく`raw_call`を使用する。
 
 **@nonreentrant**
 
-
-The `@nonreentrant` decorator places a lock on a function, preventing reentrant calls to any function covered by the decorator. The reentrancy lock ensures that such functions cannot be entered again until they have finished executing. This decorator is used to prevent reentrancy attacks, where an external contract might call back into the protected functions, potentially causing unexpected behavior or contract exploits. Vyper also supports a pragma for nonreentrancy by default, making all external functions nonreentrant unless explicitly overridden. For example, if contract A uses this decorator for reentrancy protection and makes an external call to contract B, any attempt by contract B to call back into a protected function on contract A will cause the transaction to revert.
-
-`@nonreentrant`デコレータは関数にロックをかけ、そのデコレータが適用されたすべての関数に対するリエントラント呼び出しを防止する。リエントランシーロックにより、対象の関数は実行が完了するまで再度呼び出すことができない。このデコレータは、外部コントラクトが保護された関数にコールバックし、予期しない動作やコントラクトの悪用を引き起こす可能性があるリエントランシー攻撃を防ぐために使用される。Vyperはデフォルトでリエントランシー防止のプラグマもサポートしており、明示的にオーバーライドしない限り、すべての外部関数がリエントラント不可となる。たとえば、コントラクトAがリエントランシー保護のためにこのデコレータを使用し、コントラクトBに外部呼び出しを行った場合、コントラクトBがコントラクトAの保護された関数にコールバックしようとすると、トランザクションはリバートされる。
+`@nonreentrant`デコレータは関数にロックをかけ、対象の関数が実行完了するまで再度呼び出せないようにする。外部コントラクトが保護された関数にコールバックして予期しない動作や悪用を引き起こすリエントランシー攻撃を防ぐために使用される。Vyperはデフォルトでリエントランシー防止のプラグマもサポートしており、明示的にオーバーライドしない限りすべての外部関数がリエントラント不可となる。たとえば、コントラクトAがこのデコレータを使用してコントラクトBに外部呼び出しを行った場合、コントラクトBがコントラクトAの保護された関数にコールバックしようとするとトランザクションはリバートされる。
 
 > **注記**
 >
-> Vyperバージョン0.2.15、0.2.16、および0.3.0のnonreentrant機能には、2023年半ばに発見され、Curveプロトコルへの攻撃に悪用された重大なバグが含まれていた。リエントランシーの脆弱性については9章で詳しく取り上げる。
+> Vyperバージョン0.2.15、0.2.16、0.3.0のnonreentrant機能には、2023年半ばに発見されCurveプロトコルへの攻撃に悪用された重大なバグが含まれていた。リエントランシーの脆弱性については9章で詳しく取り上げる。
 
 
-Vyper implements the logic of decorators explicitly. For example, the Vyper compilation process will fail if a function has both a `@payable` decorator and a `@view` decorator. This makes sense because a function that transfers value has by definition updated the state so cannot be `@view`. Each Vyper function must be decorated with either `@external` or `@internal` (but not both!).
-
-　Vyperはデコレータのロジックを明示的に実装しています。たとえば、ある関数が`@payable`デコレータと`@view`デコレータの両方を持っている場合、Vyperのコンパイルは失敗します。バリューを転送する関数はその定義上、状態を更新するため、`@view`にはなりえません。Vyperの関数には`@external`もしくは`@internal`のどちらかのデコレータを付ける必要があります（ただし両方は不可です）。
+　Vyperはデコレータのロジックを明示的に実装しています。たとえば`@payable`と`@view`の両方を持つ関数があると、Vyperのコンパイルは失敗します。バリューを転送する関数は定義上、状態を更新するため`@view`にはなりえません。Vyperの関数には`@external`か`@internal`のどちらかを付ける必要があります（両方は不可です）。
 
 ## Function and Variable Ordering
 
