@@ -220,24 +220,13 @@ vyper -f abi,bytecode,interface,source_map ~/hello_world.vy
 
 　Remixやコマンドラインコンパイラは学習や実験に最適ですが、大規模なプロジェクトでは包括的な開発フレームワークが必要になります。[ApeWorx](https://oreil.ly/AJRSa)（旧Ape）は自動テストやデプロイスクリプティング、さまざまなネットワークとの統合といった機能を備え、Vyperを手厚くサポートしています。[Foundry](https://oreil.ly/CWIKj)は主にSolidity向けですがVyperの開発もサポートしており、強力なテストやシミュレーション機能を提供しています。これらのフレームワークは、複雑なアプリケーションを構築するプロフェッショナルなスマートコントラクト開発者に必要な成熟した開発環境を提供します。
 
-## Protecting Against Overflow Errors at the Compiler Level
-
 ## コンパイラレベルでのオーバーフローエラーに対する保護
 
+　ソフトウェアにおけるオーバーフローエラーは、実際の価値を扱う場合に破滅的な結果をもたらすことがあります。たとえば、[2018年4月中旬のあるトランザクション](https://oreil.ly/zOy06)は、57,896,044,618,658,100,000,000,000,000,000,000,000,000,000,000,000,000,000,000を超えるBECトークンの不正な移転を示しています。このトランザクションは、Beauty ChainのERC-20トークンコントラクト（*BecToken.sol*）における整数オーバーフローが原因でした。
 
-Overflow errors in software can be catastrophic when dealing with real value. For example, one [transaction from mid-April 2018](https://oreil.ly/zOy06) shows the malicious transfer of more than 57,896,044,618,658,100,000,000,000,000,000,000,000,000, 000,000,000,000,000,000 BEC tokens. This transaction was the result of an integer-overflow issue in Beauty Chain's ERC-20 token contract (*BecToken.sol*).
+　Vyperのコア機能の1つは、スマートコントラクト開発を歴史的に悩ませてきたオーバーフローエラーのリスクを軽減する組み込みのオーバーフロー保護です。Vyperのオーバーフロー保護は包括的で、整数演算の例外ケースを処理するSafeMath相当の保護を含んでいます。加算や減算、乗算、除算などの操作はデフォルトで安全であり、オーバーフローやアンダーフローが発生すると例外がスローされます。加えて、定数リテラルの読み込みや関数への値の受け渡し、変数への代入のたびにクランプ（値の範囲チェック）を使って値の制限を強制します。
 
-　ソフトウェアにおけるオーバーフローエラーは、実際の価値を扱う場合に破滅的な結果をもたらすことがあります。たとえば、[2018年4月中旬のあるトランザクション](https://oreil.ly/zOy06)は、57,896,044,618,658,100,000,000,000,000,000,000,000,000,000,000,000,000,000,000を超えるBECトークンの不正な移転を示しています。このトランザクションは、Beauty ChainのERC-20トークンコントラクト（*BecToken.sol*）における整数オーバーフロー問題の結果でした。
-
-
-One of the core features of Vyper has always been its built-in overflow protection, which mitigates the risk of the overflow errors that have historically plagued smart contract development. Vyper's approach to overflow protection is comprehensive: it includes SafeMath-equivalent protection that handles the necessary exception cases for integer arithmetic, ensuring that operations like addition, subtraction, multiplication, and division are safe by default and throwing exceptions when an overflow or underflow occurs. Additionally, Vyper uses clamps to enforce value limits whenever a literal constant is loaded, a value is passed to a function, or a variable is assigned.
-
-　Vyperのコア機能の1つは、スマートコントラクト開発を歴史的に悩ませてきたオーバーフローエラーのリスクを軽減する、組み込みのオーバーフロー保護です。Vyperのオーバーフロー保護へのアプローチは包括的であり、整数演算に関する例外ケースを処理するSafeMath相当の保護を含んでいます。これにより、加算、減算、乗算、除算などの操作がデフォルトで安全であることが保証され、オーバーフローやアンダーフローが発生した場合は例外がスローされます。さらに、Vyperは定数リテラルが読み込まれたり、関数に値が渡されたり、変数に値が割り当てられるたびに、クランプを使って値の制限を強制します。
-
-
-It's worth noting that recent versions of Solidity (0.8.0 and later) have also integrated native overflow checks at the compiler level, similar to what Vyper has provided from the beginning. This means that arithmetic operations in modern Solidity now automatically include overflow checks, significantly reducing the risk of overflow errors without requiring additional libraries like SafeMath. While this change has brought Solidity closer to Vyper's safety-first approach, Vyper's implementation remains more comprehensive, including the clamp operations and more consistent bounds checking throughout the language. The key difference is philosophical: Vyper was designed from the ground up with overflow protection as a core principle, while Solidity added it as an enhancement to address historical vulnerabilities. This difference in approach reflects Vyper's broader commitment to making unsafe code harder to write by default.
-
-　注目すべきは、Solidityの最近のバージョン（0.8.0以降）でも、Vyperが当初から提供してきたものと同様のネイティブなオーバーフローチェックがコンパイラレベルで統合されていることです。これにより、現代のSolidityでは算術演算にオーバーフローチェックが自動的に含まれるようになり、SafeMathのような追加ライブラリを必要とせずにオーバーフローエラーのリスクが大幅に低減されています。この変更によりSolidityはVyperのセキュリティ最優先のアプローチに近づきましたが、Vyperの実装はクランプ操作や言語全体にわたるより一貫した境界チェックを含め、依然としてより包括的です。根本的な違いは思想にあります。Vyperはオーバーフロー保護をコア原則として最初から設計されたのに対し、Solidityは歴史的な脆弱性に対処するための拡張として追加しました。このアプローチの違いは、安全でないコードをデフォルトで書きにくくするというVyperのより広い取り組みを反映しています。
+　Solidityの最近のバージョン（0.8.0以降）でも、Vyperが当初から提供してきたものと同様のネイティブなオーバーフローチェックがコンパイラレベルで統合されています。これにより現代のSolidityでは算術演算にオーバーフローチェックが自動的に含まれ、SafeMathのような追加ライブラリなしでオーバーフローエラーのリスクが大幅に低減されました。この変更でSolidityはVyperのセキュリティ最優先のアプローチに近づきましたが、Vyperの実装はクランプ操作や言語全体にわたるより一貫した境界チェックを含め、依然としてより包括的です。根本的な違いは思想にあります。Vyperはオーバーフロー保護をコア原則として最初から設計されたのに対し、Solidityは歴史的な脆弱性への対処として後から追加しました。このアプローチの違いは、安全でないコードをデフォルトで書きにくくするというVyperの設計思想を反映しています。
 
 ## Reading and Writing Data
 
