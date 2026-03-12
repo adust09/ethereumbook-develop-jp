@@ -228,35 +228,18 @@ vyper -f abi,bytecode,interface,source_map ~/hello_world.vy
 
 　Solidityの最近のバージョン（0.8.0以降）でも、Vyperが当初から提供してきたものと同様のネイティブなオーバーフローチェックがコンパイラレベルで統合されています。これにより現代のSolidityでは算術演算にオーバーフローチェックが自動的に含まれ、SafeMathのような追加ライブラリなしでオーバーフローエラーのリスクが大幅に低減されました。この変更でSolidityはVyperのセキュリティ最優先のアプローチに近づきましたが、Vyperの実装はクランプ操作や言語全体にわたるより一貫した境界チェックを含め、依然としてより包括的です。根本的な違いは思想にあります。Vyperはオーバーフロー保護をコア原則として最初から設計されたのに対し、Solidityは歴史的な脆弱性への対処として後から追加しました。このアプローチの違いは、安全でないコードをデフォルトで書きにくくするというVyperの設計思想を反映しています。
 
-## Reading and Writing Data
-
 ## データの読み書き
 
-
-Even though it is costly to store, read, and modify data, these storage operations are a necessary component of most smart contracts. Smart contracts can write data to two places:
-
-　データの保存、読み込み、修正にはコストがかかりますが、これらのストレージ操作はほとんどのスマートコントラクトに必要な要素です。スマートコントラクトは、2つの場所にデータを書き込むことができます。
-
-**Global state**
+　ストレージへのデータの保存、読み込み、修正にはコストがかかりますが、ほとんどのスマートコントラクトに必要な操作です。スマートコントラクトは、2つの場所にデータを書き込むことができます。
 
 **グローバル状態**
 
-
-The state variables in a given smart contract are stored in Ethereum's global state trie; a smart contract can only store, read, and modify data in relation to that particular contract's address (i.e., smart contracts cannot directly read or write to other smart contracts).
-
 特定のスマートコントラクトの状態変数は、イーサリアムのグローバルな状態トライ木に記録されている。スマートコントラクトは、その特定のコントラクトアドレスに関連するデータのみを保存、読み取り、修正できる（つまり、スマートコントラクトは他のスマートコントラクトに対して直接読み書きできない）。
-
-**Logs**
 
 **ログ**
 
-
-A smart contract can write to Ethereum's chain data through log events. In Vyper, the syntax for declaring and using events is clean and straightforward, aligning with Vyper's focus on code clarity.
-
 スマートコントラクトは、ログイベントを通じてイーサリアムのチェーンデータに書き込むことができる。Vyperでは、イベントの宣言と使用の構文がクリーンかつわかりやすく、コードの明確さを重視するVyperの方針に沿っている。
 
-
-Event declarations in Vyper look similar to struct declarations. For example, the declaration of an event called `MyLog` is written as:
 
 　Vyperのイベント宣言は構造体の宣言に似ています。たとえば、`MyLog`というイベントの宣言は次のように記述します。
 
@@ -268,21 +251,15 @@ event MyLog:
 ```
 
 
-You can have up to four indexed arguments (these become searchable topics) and any number of nonindexed arguments that become part of the event data. Indexed arguments are useful for filtering and searching events, while nonindexed arguments can contain larger amounts of data.
-
-　インデックス付き引数は最大4つまで持つことができ（これらは検索可能なトピックとなります）、インデックスなしの引数はイベントデータの一部となり、個数に制限はありません。インデックス付き引数はイベントのフィルタリングや検索に有用であり、インデックスなしの引数はより大量のデータを含むことができます。
+　インデックス付き引数は最大4つまで持てます（検索可能なトピックとなります）。インデックスなしの引数はイベントデータの一部となり、個数に制限はありません。インデックス付き引数はイベントのフィルタリングや検索に有用で、インデックスなしの引数はより大量のデータを含められます。
 
 
-The execution of the log event uses the `log` statement with straightforward syntax:
-
-　ログイベントの実行には、`log`文をわかりやすい構文で使用します。
+　ログイベントの発行には`log`文を使用します。
 
 ```
 log MyLog(msg.sender, 42, b"Hello, Vyper!")
 ```
 
-
-You can also create events with no arguments using the `pass` statement:
 
 　`pass`文を使って引数なしのイベントを作成することもできます。
 
@@ -293,25 +270,14 @@ log SimpleEvent()
 ```
 
 
-While smart contracts can write to Ethereum's chain data through log events, they are unable to read the on-chain log events they've created. However, one of the advantages of writing to Ethereum's chain data via log events is that logs can be discovered and read on the public chain by light clients. For example, the `logsBloom` value in a published block can indicate whether or not a log event is present. Once the existence of log events has been established, the log data can be obtained from a given transaction receipt.
-
-　スマートコントラクトはログイベントを通じてイーサリアムのチェーンデータに書き込むことができますが、自身が作成したオンチェーンのログイベントを読み込むことはできません。それにもかかわらず、ログイベントを通じてイーサリアムのチェーンデータに書き込むことの利点の1つは、軽量クライアントによってパブリックチェーン上でログが検出され、読み込まれることです。たとえば、公開されたブロックの`logsBloom`の値は、ログイベントが存在するかどうかを示しています。ログイベントの存在が確認されれば、与えられたトランザクションレシートからログデータを取得できます。
-
-## Conclusion
+　スマートコントラクトはログイベントを通じてイーサリアムのチェーンデータに書き込めますが、自身が作成したオンチェーンのログイベントを読み込むことはできません。とはいえ、ログイベントでチェーンデータに書き込む利点の1つは、軽量クライアントがパブリックチェーン上でログを検出し読み取れることです。たとえば、公開されたブロックの`logsBloom`の値からログイベントの有無を判定できます。ログイベントの存在が確認されれば、該当するトランザクションレシートからログデータを取得できます。
 
 ## まとめ
-
-
-Vyper is a powerful and fascinating contract-oriented programming language. Its design is biased toward "correctness," prioritizing security and simplicity. This approach may allow programmers to write better smart contracts and avoid certain pitfalls that can cause serious vulnerabilities to arise.
 
 　Vyperは、強力で興味深いコントラクト指向のプログラミング言語です。その設計はセキュリティとシンプルさを優先し、「正確さ」に偏っています。このアプローチにより、プログラマーはより良いスマートコントラクトを作成し、深刻な脆弱性を引き起こす落とし穴を避けることができるでしょう。
 
 
-However, it's important to recognize that everything has trade-offs. While Vyper's stringent design principles enhance security and code clarity, they also limit some of the flexibility that developers may find in other languages. Additionally, Vyper is not as widely used or as developed as Solidity, which means fewer resources, libraries, and tools are available for developers. This can pose challenges for those who are looking to find community support, prebuilt solutions, and comprehensive documentation.
+　ただし、すべてのものにはトレードオフがあります。Vyperの厳格な設計原則はセキュリティとコードの明確さを高めますが、他の言語にある柔軟性を犠牲にしています。また、VyperはSolidityほど広く使われておらず開発も進んでいないため、利用できるリソースやライブラリ、ツールが少ないのが現状です。コミュニティのサポートや既製のソリューション、充実したドキュメントを求める開発者にとっては課題となりえます。
 
-　しかし、すべてにはトレードオフがあることを認識することが重要です。Vyperの厳格な設計原則はセキュリティとコードの明確さを向上させますが、他の言語で利用できる柔軟性の一部を制限することにもなります。さらに、VyperはSolidityほど広く使われておらず、開発も進んでいないため、開発者が利用できるリソース、ライブラリ、ツールが少ないのが現状です。コミュニティのサポート、既製のソリューション、包括的なドキュメントを求める開発者にとっては、課題となりえます。
-
-
-Next, we will look at smart contract security in more detail. Some of the nuances of Vyper design may become more apparent once you read about all the possible security problems that can arise in smart contracts.
 
 　次章では、スマートコントラクトのセキュリティをより詳細に検討します。スマートコントラクトで発生しうるあらゆるセキュリティ上の問題について読めば、Vyperの設計上のいくつかの重要なポイントがより明確になるでしょう。
