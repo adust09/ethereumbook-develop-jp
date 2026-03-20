@@ -18,7 +18,7 @@
 | Blockchain | ブロックチェーン |
 | Bytecode | バイトコード |
 | Byzantium fork | ビザンチウム フォーク |
-| computer science | コンピューター サイエンス |
+| computer science | コンピューターサイエンス |
 | computation engine | 計算処理エンジン |
 | Consensus | コンセンサス |
 | Consensus rules | コンセンサス ルール |
@@ -124,7 +124,7 @@
 | Whisper | Whisper |
 | Zero address | ゼロ アドレス |
 | peer-to-peer network | ピア ツー ピア |
-| the world computer | ワールド コンピューター |
+| the world computer | ワールドコンピューター |
 | spending condition | 使用条件 |
 | public blockchain | パブリック ブロックチェーン |
 | journal | ジャーナル |
