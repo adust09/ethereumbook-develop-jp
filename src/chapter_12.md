@@ -180,11 +180,11 @@ contract MyWhitelistNFT is ERC721, Ownable {
 
 　イーサリアム上でDAppをゼロから構築するチュートリアルはオンラインに数多くありますが、[Speedrun Ethereum](https://oreil.ly/Onygc)を強くお勧めします。素早く学んですぐに構築を始めるには最も効果的な方法です。イーサリアム上でのDApp構築の知識を深めるために、Speedrun Ethereumのすべてのチャレンジを完了し、[BuidlGuidlコミュニティ](https://buidlguidl.com)に参加することをお勧めします。
 
-　このセクションでは、非常に基本的な分散型アプリケーション、いわば「Hello World」DAppを構築します。事前の経験は不要で、必要なのはコンピュータとインターネット接続だけです。
+　このセクションでは、非常に基本的な分散型アプリケーション、いわば「Hello World」DAppを構築します。事前の経験は不要で、必要なのはコンピューターとインターネット接続だけです。
 
 ### インストール要件
 
-　このチュートリアルに従うには、コンピュータに[node.js](http://node.js)と[yarn](https://oreil.ly/dq_hw)のインストールが必要です。公式ウェブサイトからダウンロードしてインストールしてください。開発環境を素早く作成できる便利なツール[Scaffold-ETH 2](https://scaffoldeth.io)を使用します。
+　このチュートリアルに従うには、コンピューターに[node.js](http://node.js)と[yarn](https://oreil.ly/dq_hw)のインストールが必要です。公式ウェブサイトからダウンロードしてインストールしてください。開発環境を素早く作成できる便利なツール[Scaffold-ETH 2](https://scaffoldeth.io)を使用します。
 
 ### DAppの作成
 
