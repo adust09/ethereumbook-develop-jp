@@ -103,7 +103,7 @@
 | Serpent | サーペント |
 | SHA | SHA |
 | Singleton | シングルトン |
-| Smart contract | スマート コントラクト |
+| Smart contract | スマートコントラクト |
 | Solidity | Solidity |
 | Solidity inline assembly | Solidityインラインアセンブリ |
 | Spurious Dragon | スプリアス ドラゴン |
