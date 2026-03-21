@@ -400,7 +400,7 @@ Type "accept" to accept this terms and conditions [accept/decline]: (default: de
 
 　以上で完了です。実行クライアントとコンセンサスクライアントの両方がターミナルに大量のデータをログ出力し始めるはずです。
 
-実行クライアント：
+実行クライアント
 
 ```bash
 INFO [06-08|18:08:49.039] Forkchoice requested sync to new head    number=20,048,206 hash=8df21a..4afb49 finalized=unknown
@@ -410,7 +410,7 @@ INFO [06-08|18:09:00.508] Syncing beacon headers                   downloaded=37
 INFO [06-08|18:09:01.637] Forkchoice requested sync to new head    number=20,048,207 hash=d99dab..0293c9 finalized=unknown
 ```
 
-コンセンサスクライアント：
+コンセンサスクライアント
 
 ```bash
 [2024-06-08 18:09:24]  INFO blockchain: Called new payload with optimistic block payloadBlockHash=0xd44520a09a7a slot=9253245
@@ -540,7 +540,7 @@ $ lighthouse bn \
 
 　以上で完了です。実行クライアントとコンセンサスクライアントの両方がターミナルに大量のデータをログ出力し始めるはずです。
 
-実行クライアント：
+実行クライアント
 
 ```bash
 2024-06-08T17:03:03.355648Z  INFO Received headers total=10000 from_block=18458372 to_block=18448373
@@ -549,7 +549,7 @@ $ lighthouse bn \
 2024-06-08T17:03:04.913377Z  INFO Received headers total=10000 from_block=18428372 to_block=18418373
 ```
 
-コンセンサスクライアント：
+コンセンサスクライアント
 
 ```bash
 Jun 08 17:03:24.929 INFO New block received                      root: 0xa49c057026cea3190df38548d49963e271ebdc4d6f93d2301adc4034d6563113, slot: 9253515
