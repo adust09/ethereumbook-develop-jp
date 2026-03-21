@@ -1221,11 +1221,7 @@ EOFは、デプロイ時に一度だけ検証を行う、EVM用の拡張可能�
 
 ### 機能の追加と廃止
 
-Adding or deprecating an opcode or a specific feature is not as easy as it may seem. While it is true that different opcodes have been added, such as `BLOBHASH`, `BLOBBASEFEE`, `BASEFEE`, and so on, this is always complicated because of the unstructured and not validated EVM's bytecode.
-
 　オペコードや特定の機能を追加・廃止することは、見た目ほど簡単ではありません。`BLOBHASH`、`BLOBBASEFEE`、`BASEFEE`など様々なオペコードが追加されてきたのは事実ですが、EVMのバイトコードが構造化されておらず検証もされていないため、常に複雑な作業になります。
-
-Have a look at the following example, which contains an invalid opcode, specifically `0x0C`. Suppose this is a real contract deployed on Ethereum mainnet:
 
 　以下の例を見てみましょう。無効なオペコード`0x0C`を含んでいます。これがイーサリアムメインネットにデプロイされた実際のコントラクトだと仮定します：
 
@@ -1244,11 +1240,7 @@ Have a look at the following example, which contains an invalid opcode, specific
 [09]            NOT-EXISTING
 ```
 
-If you try to execute this small bytecode inside an EVM, you will see that when the execution gets to the not-existing opcode, it fails.
-
 　この小さなバイトコードをEVM内で実行すると、存在しないオペコードに到達した時点で失敗します。
-
-Let's say a future upgrade adds a new opcode, the `MAX` opcode, that takes two items from the stack and returns the one containing the bigger value. The byte assigned to it is `0x0C`. Consider again the previous bytecode (remember, we're assuming it's a real contract deployed on mainnet):
 
 　将来のアップグレードで新しいオペコード`MAX`が追加され、スタックから2つのアイテムを取り出して大きい方の値を返すとします。割り当てられるバイトは`0x0C`です。先ほどのバイトコードをもう一度考えてみましょう（メインネットにデプロイされた実際のコントラクトと仮定しています）：
 
@@ -1261,29 +1253,15 @@ Let's say a future upgrade adds a new opcode, the `MAX` opcode, that takes two i
 [09]            MAX
 ```
 
-Now this bytecode has a completely different outcome. In fact, it doesn't fail anymore and returns successfully. This could create problems if there were contracts relying on the assumption that this contract always failed due to a (previously) not-existing opcode.
-
-　このバイトコードの結果はまったく異なるものになります。失敗せずに正常にリターンするようになるのです。（以前は）存在しないオペコードのためにこのコントラクトが常に失敗するという前提に依存していたコントラクトがあれば、問題が発生する可能性があります。
-
-Deprecating a feature is even harder since you cannot rely on a versioning system of the EVM. So if you remove an opcode or change how it works, old contracts that were using it could break, and there is nothing apart from manual intervention (by creating a new contract) that can fix it.
+　このバイトコードの結果はまったく異なるものになります。失敗せずに正常にリターンするようになるのです。（以前は）存在しないオペコードのためにこのコントラクトが常に失敗するという前提に依存していたコントラクトがあれば、問題が発生するでしょう。
 
 　機能の廃止はさらに困難です。EVMにはバージョニングシステムがないためです。オペコードを削除したり動作を変更したりすると、そのオペコードを使用していた古いコントラクトが壊れる可能性があり、新しいコントラクトを作成するという手動の介入以外に修正方法はありません。
 
-When [EIP-2929](https://oreil.ly/_9kTv) was introduced to change the gas metering of state-access opcodes, some contracts broke because they were hard-coding the amount of gas to use or to expect. The solution to make them work again was to introduce *access lists*, where you can preload some accounts and storage slots that you know will be touched by the transaction and lower gas costs.
-
 　[EIP-2929](https://oreil.ly/_9kTv)がステートアクセスオペコードのガス計量を変更するために導入された際、使用するガス量や期待するガス量をハードコーディングしていた一部のコントラクトが壊れました。それらを再び動作させるための解決策が*アクセスリスト*の導入でした。アクセスリストでは、トランザクションによってアクセスされることが分かっているアカウントやストレージスロットを事前にロードしてガスコストを低減できます。
 
-Other important aspects of legacy EVM that make upgrades harder are *code introspection* and *gas observability*. Gas observability is possible thanks to opcodes such as `GAS` or even all the `*CALL` opcodes that take gas as input, while code introspection is achievable because of opcodes such as `CODESIZE`, `CODECOPY`, `EXTCODESIZE`, `EXTCODECOPY`, and `EXTCODEHASH`.
-
-　レガシーEVMのアップグレードを困難にする他の重要な側面として、*コードイントロスペクション*と*ガスオブザーバビリティ*があります。ガスオブザーバビリティは`GAS`やガスを入力として取るすべての`*CALL`オペコードによって実現され、コードイントロスペクションは`CODESIZE`、`CODECOPY`、`EXTCODESIZE`、`EXTCODECOPY`、`EXTCODEHASH`などのオペコードによって実現されます。
-
-The problem lies in the fact that if the EVM is able to access the remaining gas at a certain point of the execution, the logic of a smart contract can be made dependent on that. And if in the future, there is a change regarding gas metering of some opcodes (which is something not so rare to observe), there could be problems for all smart contracts that were relying on the old gas metering. The same applies for code introspection.
+　レガシーEVMのアップグレードを困難にする他の重要な側面として、*コードイントロスペクション*（コードの自己参照）と*ガスオブザーバビリティ*（ガス残量の参照）があります。ガスオブザーバビリティは`GAS`やガスを入力として取るすべての`*CALL`オペコードを通じて行うことができ、コードイントロスペクションは`CODESIZE`、`CODECOPY`、`EXTCODESIZE`、`EXTCODECOPY`、`EXTCODEHASH`などのオペコードを通じて行うことができます。
 
 　問題は、EVMが実行の特定の時点で残りのガスにアクセスできる場合、スマートコントラクトのロジックをそのガス量に依存させることができる点にあります。将来、一部のオペコードのガス計量に変更が加えられた場合（これはそれほど珍しいことではありません）、古いガス計量に依存していたすべてのスマートコントラクトに問題が生じる可能性があります。コードイントロスペクションについても同様です。
-
-> **Note**
->
-> Without code introspection, it's possible for future versions of EOF to completely change the underlying virtual machine to something like Cairo VM or Wasm or any other by automatically transforming all contracts' code into the new VM's code with the same functionality.
 
 > **注記**
 >
