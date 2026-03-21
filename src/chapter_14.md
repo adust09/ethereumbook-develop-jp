@@ -51,19 +51,9 @@ CairoやMoveのような一部のプラットフォームは、スマートコ�
 
 　仮想マシンのパフォーマンスを向上させるこれらの取り組みは、イーサリアムの外部だけで行われているわけではないことを言わなければなりません。実際、多くのチームが並列化やEVMバイトコードからネイティブマシンコードへの*事前コンパイル(ahead-of-time)*（AOT）や*実行時コンパイル(just-in-time)*（JIT）などのクールな機能を追加することで、EVMの現在の制限を打破しようと取り組んでいます。
 
-## The EVM Instruction Set (Bytecode Operations)
-
 ## EVM命令セット（バイトコード演算）
 
-The EVM instruction set offers most of the operations you might expect, including:
-
 EVM命令セットでは、次のような多くの操作が用意されています。
-
-- Arithmetic and bitwise logic operations
-- Execution context inquiries
-- Stack, memory, and storage access
-- Control flow operations
-- Logging, calling, and other operators
 
 - 算術演算とビット単位の論理演算
 - 実行コンテクストに関する問い合わせ
