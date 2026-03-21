@@ -17,11 +17,7 @@ EVMは*スタックベースアーキテクチャ*を持っており、一時的
 
 　また、実行中に利用可能な環境変数とデータのセットも存在します。それらの詳細に関しては、章の後半で詳しく説明します。
 
-![EVM architecture and execution context](images/ch14/maet_1401.png)
-
 ![EVMアーキテクチャと実行コンテクスト](images/ch14/maet_1401.png)
-
-Figure 14-1. EVM architecture and execution context
 
 図14-1. EVMアーキテクチャと実行コンテクスト
 
@@ -188,17 +184,6 @@ RETURNDATACOPY // 直前の呼び出しからのデータ出力をメモリに�
 ### ブロックに関連する操作
 
 現在のブロックの情報にアクセスするオペコードには以下が含まれます：
-
-```
-BLOCKHASH  //Get the hash of one of the 256 most recently completed
-           //blocks
-COINBASE   //Get the block's beneficiary address for the block reward
-TIMESTAMP  //Get the block's timestamp
-NUMBER     //Get the block's number
-PREVRANDAO //Get the previous block's RANDAO mix. This opcode replaces the
-           //DIFFICULTY one since The Merge hard fork.
-GASLIMIT   //Get the block's gas limit
-```
 
 ```
 BLOCKHASH      // 最近生成が完了した256のブロックの内の 1つのハッシュを取得する
@@ -482,7 +467,6 @@ MLOADはスタックから1つの要素を取り出し、オフセットとし�
 
 図14-20. STOP後のEVM
 
-> **ヒント**
 > **ヒント**
 >
 > 前の例ではオペコードPUSH0を使用しました。すべてのEVM互換ブロックチェーンがこのオペコードをサポートしているわけではないため、クロスチェーンコントラクトをデプロイする際には注意してください。[EVM Diff](https://www.evmdiff.com)は、EVM互換チェーン間のこうした微妙な違いを確認できる便利なウェブサイトです。
