@@ -15,8 +15,6 @@ EVMは*スタックベースアーキテクチャ*を持っており、一時的
 - 単一のトランザクションの処理中にのみ保持する（イーサリアムのステートの一部ではない）一時ストレージ
 - メモリと同様にゼロに初期化されたイーサリアムの状態の一部である永続ストレージ
 
-There is also a set of environment variables and data that is available during execution. We will go through these in more detail later in this chapter.
-
 　また、実行中に利用可能な環境変数とデータのセットも存在します。それらの詳細に関しては、章の後半で詳しく説明します。
 
 ![EVM architecture and execution context](images/ch14/maet_1401.png)
