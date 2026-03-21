@@ -92,7 +92,7 @@ transaction = tx_type || tx_payload
 
 ![Block gas limit evolution over time](images/ch6/maet_0601.png)
 
-**図6-1** ブロックガスリミットの推移
+**図6-1.** ブロックガスリミットの推移
 
 　ベースフィーはブロックを作成するバリデータ（またはマイナー）には渡されず、直ちにバーン（焼却）され、ETHの総供給量が減少します。新たに*プライオリティフィー*（優先手数料）が導入されました。プライオリティフィーは、バリデータ（またはマイナー）がトランザクションを次のブロックに含めるよう動機付けるためのチップと考えることができます。
 
@@ -192,7 +192,7 @@ blobに関連する各KZGコミットメントのバージョン付きハッシ�
 
 ![EIP-7702 delegation designator](images/ch6/maet_0602.png)
 
-**図6-2** EIP-7702のデリゲーションメカニズム
+**図6-2.** EIP-7702のデリゲーションメカニズム
 
 ## トランザクションナンス
 
@@ -273,7 +273,7 @@ $ cast balance 0x7e41354AfE84800680ceB104c5Fc99eCB98A25f0 --rpc-url https://ethe
 
 ![Google Cloud Web3 faucet interface](images/ch6/maet_0603.png)
 
-**図6-3** Google Cloud Web3ファウセット
+**図6-3.** Google Cloud Web3ファウセット
 
 　残高が変更され、0ではなくなっていることを確認できます。
 
