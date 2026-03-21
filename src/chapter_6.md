@@ -538,8 +538,8 @@ function withdraw(uint256 _withdrawAmount, address payable _to) public {
 
 　関数のプロトタイプは、関数名を含む文字列として定義され、関数名のあとに各引数のデータ型が括弧で囲まれ、コンマで区切られます。ここでの関数名は`withdraw`であり、2つの引数を取ります。
 
-- `_withdrawAmount`は`uint256`型である
-- `_to`は`address`型である
+- `uint256`型の`_withdrawAmount`
+- `address`型の`_to`
 
 　したがって`withdraw`のプロトタイプは次のようになります。
 
