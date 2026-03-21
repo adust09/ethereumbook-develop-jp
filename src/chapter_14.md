@@ -1167,16 +1167,12 @@ EOFは、デプロイ時に一度だけ検証を行う、EVM用の拡張可能�
 
 　無効な宛先にジャンプしないようにするために、実行時の検証が必要です。有効なジャンプ先は、プッシュデータには含まれない`JUMPDEST`命令のみです。これは非常に重要な点です。レガシーEVMではコードとデータが明確に区別されていません。そのためバイトコード内でバイト`0x5b`（`JUMPDEST`オペコード）に出会った場合、コントラクト全体を解析しなければ、それが本物の`JUMPDEST`オペコードなのかプッシュデータの一部なのかを確実に判断できません。
 
-Take a look at the following example showing this subtle difference:
-
-　この微妙な違いを示す次の例を見てみましょう：
+この微妙な違いを示す次の例を見てみましょう：
 
 ```
 …6009566006016101015b6001…
 …6009566006016201015b6001…
 ```
-
-These two bytecodes look almost identical; in fact, they differ only by one bit. But that's enough to make a huge difference in the outcome. The first bytecode is the same as the one shown in the previous example. The second looks like this in human-readable format:
 
 　この2つのバイトコードはほぼ同一に見えます。実際、異なるのは1ビットだけです。しかしそれだけで結果に大きな違いが生じます。最初のバイトコードは前の例と同じです。2番目のバイトコードは人間が読める形式では以下のようになります：
 
@@ -1189,17 +1185,11 @@ These two bytecodes look almost identical; in fact, they differ only by one bit.
 [0a]            PUSH1            01
 ```
 
-If you try to execute this second code, it will fail due to an invalid jump destination. It may look a bit weird because at offset `0x09`, there's still the `0x5b` byte, which represents the `JUMPDEST` opcode. The problem here relies on the fact that, in this case, the `0x5b` byte is part of the push data, so it could not be considered a valid jump destination. This is why the execution fails at that point.
+　この2番目のコードを実行しようとすると、無効なジャンプ先のために失敗します。オフセット`0x09`にはまだ`0x5b`バイト（`JUMPDEST`オペコード）があるため少し奇妙に感じるかもしれません。問題はこの場合、`0x5b`バイトがプッシュデータの一部であるため、有効なジャンプ先とは見なされないことにあります。そのため実行はこの位置で失敗します。
 
-　この2番目のコードを実行しようとすると、無効なジャンプ先のために失敗します。オフセット`0x09`にはまだ`0x5b`バイト（`JUMPDEST`オペコード）があるため少し奇妙に見えるかもしれません。問題はこの場合、`0x5b`バイトがプッシュデータの一部であるため、有効なジャンプ先とは見なされないことにあります。このため実行がその時点で失敗します。
+　JUMPDEST解析とは、どのジャンプ先が有効でどれが無効かを把握するためにコントラクトを解析するプロセスです。EVMがコントラクトを実行する際に無効なジャンプ先を検出してパニックできるようにするためのものです。
 
-Jumpdest analysis is the process of analyzing a contract in order to know which jump destinations are valid and which are not so that when the EVM is executing the contract, it is able to detect an invalid jump destination and panic.
-
-　JUMPDEST解析は、どのジャンプ先が有効でどれが無効かを把握するためにコントラクトを解析するプロセスです。EVMがコントラクトを実行する際に無効なジャンプ先を検出してパニックできるようにするためのものです。
-
-Let's say you're sending a transaction that interacts with Contract A. When the EVM loads it, it immediately performs jumpdest analysis to save the map of valid jump destinations and then starts with the real execution of the transaction:
-
-　コントラクトAとインタラクションするトランザクションを送信するとします。EVMはコントラクトAをロードすると、まずJUMPDEST解析を実行して有効なジャンプ先のマップを保存し、その後トランザクションの実際の実行を開始します：
+　コントラクトAとやり取りするトランザクションを送信するとします。EVMはコントラクトAをロードすると、まずJUMPDEST解析を実行して有効なジャンプ先のマップを保存し、その後トランザクションの実行を開始します：
 
 ```
 …6009566006016101015b60016015566006016201015b6001…
@@ -1222,8 +1212,6 @@ Let's say you're sending a transaction that interacts with Contract A. When the 
 [12]            PUSH3            01015b
 [16]            PUSH1            01
 ```
-
-The EVM skims through all the bytecode and creates a map where each `0x5b` byte is marked as a valid or invalid jump destination, as you can see in Figure 14-26.
 
 　EVMはすべてのバイトコードを走査し、各`0x5b`バイトが有効なジャンプ先か無効なジャンプ先かをマークしたマップを作成します。図14-26に示します。
 
