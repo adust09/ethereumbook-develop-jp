@@ -1137,21 +1137,13 @@ EOFは、デプロイ時に一度だけ検証を行う、EVM用の拡張可能�
 [09]            NOT-EXISTING
 ```
 
-Opcode `0C` doesn't exist, and when the EVM gets to that point, it will panic and early return. Notice how the second byte in the previous bytecode is also `0C`, but the EVM doesn't fail there. The difference is that while the last `0C` byte is interpreted as an opcode and fails because it's not valid, the other one is interpreted as push data since it's the immediate value of the first `PUSH1` opcode.
-
-　オペコード`0C`は存在せず、EVMがこの地点に到達するとパニックして即座にリターンします。前のバイトコードの2番目のバイトも`0C`ですが、EVMはそこでは失敗しません。最後の`0C`バイトはオペコードとして解釈され無効なため失敗しますが、もう一方は最初の`PUSH1`オペコードの即値であるプッシュデータとして解釈されるためです。
-
-One key part of this runtime check is the *jumpdest analysis*. Every client needs to do it at runtime every time a contract is executed. Let's spend some time understanding this jumpdest analysis and why it is needed in legacy EVM.
+　オペコード`0C`は存在せず、EVMがこの地点に到達するとパニック（異常終了）を引き起こし処理を中断します。2番目のバイトも`0C`ですが、EVMはここでは失敗しません。最後の`0C`バイトはオペコードとして解釈され無効なため失敗しますが、2番目の`0C`は最初の`PUSH1`オペコードのプッシュデータとして解釈されるためです。
 
 　この実行時チェックの重要な部分が*JUMPDEST解析*です。すべてのクライアントはコントラクトが実行されるたびに実行時にJUMPDEST解析を行う必要があります。このJUMPDEST解析とは何か、なぜレガシーEVMで必要なのかを理解しましょう。
 
-> **Tip**
->
-> To not have to perform jumpdest analysis at runtime every time a contract is called, some Ethereum node implementations save a jumpdest map for every contract. This map is created at contract deployment and saved inside the node's database.
-
 > **ヒント**
 >
-> コントラクトが呼び出されるたびに実行時にJUMPDEST解析を行わなくて済むように、一部のイーサリアムノード実装ではすべてのコントラクトについてJUMPDESTマップを保存している。このマップはコントラクトのデプロイ時に作成され、ノードのデータベースに保存される。
+> コントラクトが呼び出されるたびにJUMPDEST解析を行わなくて済むように、一部のイーサリアムノード実装ではすべてのコントラクトについてJUMPDESTマップを保存している。このマップはコントラクトのデプロイ時に作成され、ノードのデータベースに保存される。
 
 Legacy EVM has dynamic jumps (`JUMP` and `JUMPI` opcodes) only to manage the control flow of the bytecode. This is very handy because you can change the normal flow of operations with just two opcodes. The cons are that dynamic jumps are very expensive and require a deep validation at runtime, even though most of the time, there is no need for the jump to be dynamic. In fact, very often the value to jump to is pushed to the stack immediately before the `JUMP` opcode itself. Here is a small example:
 
