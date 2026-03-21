@@ -1145,15 +1145,13 @@ EOFは、デプロイ時に一度だけ検証を行う、EVM用の拡張可能�
 >
 > コントラクトが呼び出されるたびにJUMPDEST解析を行わなくて済むように、一部のイーサリアムノード実装ではすべてのコントラクトについてJUMPDESTマップを保存している。このマップはコントラクトのデプロイ時に作成され、ノードのデータベースに保存される。
 
-Legacy EVM has dynamic jumps (`JUMP` and `JUMPI` opcodes) only to manage the control flow of the bytecode. This is very handy because you can change the normal flow of operations with just two opcodes. The cons are that dynamic jumps are very expensive and require a deep validation at runtime, even though most of the time, there is no need for the jump to be dynamic. In fact, very often the value to jump to is pushed to the stack immediately before the `JUMP` opcode itself. Here is a small example:
-
-　レガシーEVMはバイトコードの制御フローを管理するために動的ジャンプ（`JUMP`と`JUMPI`オペコード）のみを使用します。わずか2つのオペコードで操作の通常のフローを変更できるため非常に便利です。しかし動的ジャンプは非常にコストが高く、実行時に深い検証が必要になります。ほとんどの場合、ジャンプが動的である必要はありません。実際、ジャンプ先の値は`JUMP`オペコード自体の直前にスタックにプッシュされることが多いです。以下は簡単な例です：
+　レガシーEVMはバイトコードの制御フローを管理するために動的ジャンプ（`JUMP`と`JUMPI`オペコード）のみを使用します。たった2つのオペコードで実行フローを制御できるため非常に便利です。しかし動的ジャンプは非常にコストが高く、実行時に深い検証が必要になります。しかし実際のコードでは、ジャンプ先は`JUMP`オペコードの直前に`PUSH`で固定値としてスタックに積まれることが多く、動的にジャンプ先を決める必要がないケースがほとんどです。以下は簡単な例です：
 
 ```
 …6009566006016101015b6001…
 ```
 
-　人間が読める形式のオペコードに変換すると以下のようになります：
+人間が読める形式のオペコードに変換すると以下のようになります：
 
 ```
 [00]            PUSH1            09
@@ -1165,13 +1163,9 @@ Legacy EVM has dynamic jumps (`JUMP` and `JUMPI` opcodes) only to manage the con
 [0a]            PUSH1            01
 ```
 
-As you can see, the jump destination—that is, the offset `0x09` to jump to—is just pushed onto the stack through a `PUSH1` opcode immediately before the `JUMP` opcode. The EVM pushes `0x09` onto the stack, then executes the `JUMP` opcode that takes as input the previously pushed `0x09` and moves the execution to the instruction at that offset. At `0x09`, a `JUMPDEST` opcode is found, so it's considered a valid jump destination, and the execution can go on correctly.
+　ジャンプ先のオフセット`0x09`は、`JUMP`オペコードの直前に`PUSH1`オペコードによってスタックにプッシュされています。EVMは`0x09`をスタックにプッシュし、次に`JUMP`オペコードを実行して先ほどプッシュされた`0x09`を入力として取り、そのオフセットの命令に実行を移動します。`0x09`には`JUMPDEST`オペコードがあるため有効なジャンプ先と見なされ、実行が正しく続行されます。
 
-　ジャンプ先、つまりジャンプするオフセット`0x09`は、`JUMP`オペコードの直前に`PUSH1`オペコードによってスタックにプッシュされています。EVMは`0x09`をスタックにプッシュし、次に`JUMP`オペコードを実行して先ほどプッシュされた`0x09`を入力として取り、そのオフセットの命令に実行を移動します。`0x09`には`JUMPDEST`オペコードがあるため有効なジャンプ先と見なされ、実行が正しく続行されます。
-
-Runtime validation is required in order to not jump to invalid destinations. Valid destinations are only `JUMPDEST` instructions that are not part of push data. This is very important to understand: legacy EVM doesn't have a proper separation between code and data. So whenever you meet the byte `0x5b`—the `JUMPDEST` opcode—in some bytecode, you cannot be completely sure if that's a real `JUMPDEST` opcode or it's part of push data without analyzing the contract as a whole.
-
-　無効な宛先にジャンプしないようにするために、実行時の検証が必要です。有効な宛先はプッシュデータの一部ではない`JUMPDEST`命令のみです。これは非常に重要な点です。レガシーEVMにはコードとデータの適切な分離がありません。そのためバイトコード内でバイト`0x5b`（`JUMPDEST`オペコード）に出会った場合、コントラクト全体を解析しなければ、それが本物の`JUMPDEST`オペコードなのかプッシュデータの一部なのかを確実に判断できません。
+　無効な宛先にジャンプしないようにするために、実行時の検証が必要です。有効なジャンプ先は、プッシュデータには含まれない`JUMPDEST`命令のみです。これは非常に重要な点です。レガシーEVMではコードとデータが明確に区別されていません。そのためバイトコード内でバイト`0x5b`（`JUMPDEST`オペコード）に出会った場合、コントラクト全体を解析しなければ、それが本物の`JUMPDEST`オペコードなのかプッシュデータの一部なのかを確実に判断できません。
 
 Take a look at the following example showing this subtle difference:
 
@@ -1211,7 +1205,7 @@ Let's say you're sending a transaction that interacts with Contract A. When the 
 …6009566006016101015b60016015566006016201015b6001…
 ```
 
-　人間が読める形式では以下のようになります：
+人間が読める形式では以下のようになります：
 
 ```
 [00]            PUSH1            09
@@ -1247,7 +1241,7 @@ The EVM skims through all the bytecode and creates a map where each `0x5b` byte 
 600C600052602060000C
 ```
 
-　人間が読める形式では以下のようになります：
+人間が読める形式では以下のようになります：
 
 ```
 [00]            PUSH1            0C
@@ -1347,7 +1341,7 @@ Error: Stack too deep. Try compiling with `--via-ir` (cli) or the equivalent `vi
 EF00010100040200010008030001003004002000008000045F5FD1005FEC0000EF00010100040200010004030001001404000000008000025F5FEE00EF00010100040200010001040000000080000000000102030405060708090a0b0c0d0e0f10111213141516171819101a1b1c1d1e
 ```
 
-　人間が読める形式に変換すると以下のようになります：
+人間が読める形式に変換すると以下のようになります：
 
 ```
 Magic bytes                      EF00
