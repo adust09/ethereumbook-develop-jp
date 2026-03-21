@@ -1118,6 +1118,350 @@ EOFは、デプロイ時に一度だけ検証を行う、EVM用の拡張可能�
 >
 > 本書の最終改訂時点（2025年6月）では、EOFアップグレードはイーサリアムコミュニティ内での合意が不十分なため、無期限に延期されています。実装に関する明確なタイムラインは現在なく、最終的に採用されない可能性もあります。それでもなお、EOFがEVMとイーサリアムエコシステム全体にどのような影響を与えうるかを理解するうえで、このセクションには価値があると考えています。
 
+### Jumpdest Analysis
+
+Legacy EVM doesn't validate the bytecode published on chain at creation time. On the one hand, this may look good because it lets you post whatever contract you want: you can deploy bytecode containing non-existent opcodes or add code that is never touched or truncated in the middle of a `PUSH` operation without giving the next immediate value that it must have in order to execute correctly. This actually adds lots of inefficiencies. In fact, the EVM has to check everything at runtime, which adds complexity and slows the overall performance. Here is an example of a non-existent opcode included inside an EVM bytecode:
+
+```
+600C600052602060000C
+```
+
+Here is the bytecode translated into human-readable opcodes:
+
+```
+[00]            PUSH1            0C
+[02]            PUSH1            00
+[04]            MSTORE
+[05]            PUSH1            20
+[07]            PUSH1            00
+[09]            NOT-EXISTING
+```
+
+Opcode `0C` doesn't exist, and when the EVM gets to that point, it will panic and early return. Notice how the second byte in the previous bytecode is also `0C`, but the EVM doesn't fail there. The difference is that while the last `0C` byte is interpreted as an opcode and fails because it's not valid, the other one is interpreted as push data since it's the immediate value of the first `PUSH1` opcode.
+
+One key part of this runtime check is the *jumpdest analysis*. Every client needs to do it at runtime every time a contract is executed. Let's spend some time understanding this jumpdest analysis and why it is needed in legacy EVM.
+
+> **Tip**
+>
+> To not have to perform jumpdest analysis at runtime every time a contract is called, some Ethereum node implementations save a jumpdest map for every contract. This map is created at contract deployment and saved inside the node's database.
+
+Legacy EVM has dynamic jumps (`JUMP` and `JUMPI` opcodes) only to manage the control flow of the bytecode. This is very handy because you can change the normal flow of operations with just two opcodes. The cons are that dynamic jumps are very expensive and require a deep validation at runtime, even though most of the time, there is no need for the jump to be dynamic. In fact, very often the value to jump to is pushed to the stack immediately before the `JUMP` opcode itself. Here is a small example:
+
+```
+…6009566006016101015b6001…
+```
+
+And translated into human-readable opcodes:
+
+```
+[00]            PUSH1            09
+[02]            JUMP
+[03]            PUSH1            06
+[05]            ADD
+[06]            PUSH2            0101
+[09]            JUMPDEST
+[0a]            PUSH1            01
+```
+
+As you can see, the jump destination—that is, the offset `0x09` to jump to—is just pushed onto the stack through a `PUSH1` opcode immediately before the `JUMP` opcode. The EVM pushes `0x09` onto the stack, then executes the `JUMP` opcode that takes as input the previously pushed `0x09` and moves the execution to the instruction at that offset. At `0x09`, a `JUMPDEST` opcode is found, so it's considered a valid jump destination, and the execution can go on correctly.
+
+Runtime validation is required in order to not jump to invalid destinations. Valid destinations are only `JUMPDEST` instructions that are not part of push data. This is very important to understand: legacy EVM doesn't have a proper separation between code and data. So whenever you meet the byte `0x5b`—the `JUMPDEST` opcode—in some bytecode, you cannot be completely sure if that's a real `JUMPDEST` opcode or it's part of push data without analyzing the contract as a whole.
+
+Take a look at the following example showing this subtle difference:
+
+```
+…6009566006016101015b6001…
+…6009566006016201015b6001…
+```
+
+These two bytecodes look almost identical; in fact, they differ only by one bit. But that's enough to make a huge difference in the outcome. The first bytecode is the same as the one shown in the previous example. The second looks like this in human-readable format:
+
+```
+[00]            PUSH1            09
+[02]            JUMP
+[03]            PUSH1            06
+[05]            ADD
+[06]            PUSH3            01015b
+[0a]            PUSH1            01
+```
+
+If you try to execute this second code, it will fail due to an invalid jump destination. It may look a bit weird because at offset `0x09`, there's still the `0x5b` byte, which represents the `JUMPDEST` opcode. The problem here relies on the fact that, in this case, the `0x5b` byte is part of the push data, so it could not be considered a valid jump destination. This is why the execution fails at that point.
+
+Jumpdest analysis is the process of analyzing a contract in order to know which jump destinations are valid and which are not so that when the EVM is executing the contract, it is able to detect an invalid jump destination and panic.
+
+Let's say you're sending a transaction that interacts with Contract A. When the EVM loads it, it immediately performs jumpdest analysis to save the map of valid jump destinations and then starts with the real execution of the transaction:
+
+```
+…6009566006016101015b60016015566006016201015b6001…
+```
+
+Here it is in human-readable format:
+
+```
+[00]            PUSH1            09
+[02]            JUMP
+[03]            PUSH1            06
+[05]            ADD
+[06]            PUSH2            0101
+[09]            JUMPDEST
+[0a]            PUSH1            01
+[0c]            PUSH1            15
+[0e]            JUMP
+[0f]            PUSH1            06
+[11]            ADD
+[12]            PUSH3            01015b
+[16]            PUSH1            01
+```
+
+The EVM skims through all the bytecode and creates a map where each `0x5b` byte is marked as a valid or invalid jump destination, as you can see in Figure 14-26.
+
+![Jumpdest analysis map](images/ch14/maet_1426.png)
+
+Figure 14-26.  The client creates a jumpdest map to separate valid from invalid jump destinations
+
+### Adding and Deprecating Features
+
+Adding or deprecating an opcode or a specific feature is not as easy as it may seem. While it is true that different opcodes have been added, such as `BLOBHASH`, `BLOBBASEFEE`, `BASEFEE`, and so on, this is always complicated because of the unstructured and not validated EVM's bytecode.
+
+Have a look at the following example, which contains an invalid opcode, specifically `0x0C`. Suppose this is a real contract deployed on Ethereum mainnet:
+
+```
+600C600052602060000C
+```
+
+Here it is in human-readable format:
+
+```
+[00]            PUSH1            0C
+[02]            PUSH1            00
+[04]            MSTORE
+[05]            PUSH1            20
+[07]            PUSH1            00
+[09]            NOT-EXISTING
+```
+
+If you try to execute this small bytecode inside an EVM, you will see that when the execution gets to the not-existing opcode, it fails.
+
+Let's say a future upgrade adds a new opcode, the `MAX` opcode, that takes two items from the stack and returns the one containing the bigger value. The byte assigned to it is `0x0C`. Consider again the previous bytecode (remember, we're assuming it's a real contract deployed on mainnet):
+
+```
+[00]            PUSH1            0C
+[02]            PUSH1            00
+[04]            MSTORE
+[05]            PUSH1            20
+[07]            PUSH1            00
+[09]            MAX
+```
+
+Now this bytecode has a completely different outcome. In fact, it doesn't fail anymore and returns successfully. This could create problems if there were contracts relying on the assumption that this contract always failed due to a (previously) not-existing opcode.
+
+Deprecating a feature is even harder since you cannot rely on a versioning system of the EVM. So if you remove an opcode or change how it works, old contracts that were using it could break, and there is nothing apart from manual intervention (by creating a new contract) that can fix it.
+
+When [EIP-2929](https://oreil.ly/_9kTv) was introduced to change the gas metering of state-access opcodes, some contracts broke because they were hard-coding the amount of gas to use or to expect. The solution to make them work again was to introduce *access lists*, where you can preload some accounts and storage slots that you know will be touched by the transaction and lower gas costs.
+
+Other important aspects of legacy EVM that make upgrades harder are *code introspection* and *gas observability*. Gas observability is possible thanks to opcodes such as `GAS` or even all the `*CALL` opcodes that take gas as input, while code introspection is achievable because of opcodes such as `CODESIZE`, `CODECOPY`, `EXTCODESIZE`, `EXTCODECOPY`, and `EXTCODEHASH`.
+
+The problem lies in the fact that if the EVM is able to access the remaining gas at a certain point of the execution, the logic of a smart contract can be made dependent on that. And if in the future, there is a change regarding gas metering of some opcodes (which is something not so rare to observe), there could be problems for all smart contracts that were relying on the old gas metering. The same applies for code introspection.
+
+> **Note**
+>
+> Without code introspection, it's possible for future versions of EOF to completely change the underlying virtual machine to something like Cairo VM or Wasm or any other by automatically transforming all contracts' code into the new VM's code with the same functionality.
+
+### Code and Data Separation
+
+Legacy EVM doesn't impose a structure on bytecode that is published on chain. There's no distinction between real code and data that is used within that code. Everything is just bytes, and it's interpreted step-by-step by the EVM during execution.
+
+It's impossible to say that a certain part of the bytecode is code or data without looking at the whole contract. Take a look at the following example:
+
+```
+…730102030405060708090a0b0c0d0e0f101112131431…
+[00]            PUSH20    0102030405060708090a0b0c0d0e0f1011121314
+[15]            BALANCE
+```
+
+Without diving into the code, you cannot immediately tell that `0102030405060708090a0b0c0d0e0f1011121314` is not to be interpreted as a series of opcodes—`0x01`: `ADD`, `0x02`: `MUL`, and so on— but rather that it's push data representing a fixed address we want to query the balance of. This is bad for static analysis tools and formal verification, and it makes it more difficult for smart contracts to be able to correctly process executable code directly on chain.
+
+### Stack Too Deep
+
+We're now going to take a look at one of the most hated limitations of the EVM: the "stack too deep" error. If you try to compile the following smart contract, you'll immediately get it:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.27;
+
+contract StackTooDeep {
+    function add(
+        uint256 a,uint256 b,uint256 c,uint256 d,uint256 e,uint256 f,uint256 g,uint256 h,uint256 i
+    ) external pure returns(uint256) {
+        return a+b+c+d+e+f+g+h+i;
+    }
+}
+```
+
+Here is the output when trying to compile the contract:
+
+```
+solc StackTooDeep.sol --bin
+Error: Stack too deep. Try compiling with `--via-ir` (cli) or the equivalent `viaIR: true` (standard JSON) while enabling the optimizer. Otherwise, try removing local variables.
+ --> StackTooDeep.sol:8:16:
+  |
+8 |         return a+b+c+d+e+f+g+h+i;
+  |                                ^
+```
+
+This error is very subtle because it's a direct consequence of how the EVM works. In fact, even though the maximum number of items you can push onto the stack is 1,024, the EVM is only capable of easy access to the top 16 elements of that, through opcodes such as `DUP1..16` and `SWAP1..16`.
+
+In our `StackTooDeep` example, the `add` function takes nine different parameters, each required to be put onto the stack. Then, it performs eight additions to get the final result. The problem lies in these details. While the final operation can look like a big single addition, in reality, the compiler has to segment each one and create a temporary variable that holds the intermediate result that needs to be saved into the stack. So we end up with nine parameters plus eight intermediate results, with a total of 17 stack items needed. When the compiler tries to reference a variable that is at position 17 or more in the stack, it fails because it doesn't have any opcodes that are able to easily access it.
+
+To even better visualize the problem, you can look at Figure 14-27, which shows the stack composition in detail for every step. You can easily see that variable `i` is at depth 17 at the end of execution. The compiler doesn't let a local variable or parameter to not be easily accessible in the function's scope, so it throws the "stack too deep" error.
+
+![Stack too deep visualization](images/ch14/maet_1427.png)
+
+Figure 14-27. Stack composition for every step
+
+This is just a very simple example that shows one of the problems smart contract developers have to overcome during their daily jobs. Even though compilers have become better and better at analyzing and managing these kinds of situations automatically, the EVM imposes some hard limitations based on how it currently works.
+
+### EOF
+
+EOF addresses all of these issues by introducing a container format for EVM bytecode with validation at deploy time, a versioning system, and a full separation between code and data. Here is an example of EOF-valid bytecode:
+
+```
+EF00010100040200010008030001003004002000008000045F5FD1005FEC0000EF00010100040200010004030001001404000000008000025F5FEE00EF00010100040200010001040000000080000000000102030405060708090a0b0c0d0e0f10111213141516171819101a1b1c1d1e
+```
+
+Here it is translated into human-readable format:
+
+```
+Magic bytes                      EF00
+EOF version                      01
+Stack validation data            01 0004
+Code sections                    02 0001 0008
+Subcontainer section size        03 0001 0030
+Data section size                04 0020
+Header terminator                00
+Stack: #ins, #outs, max stack    00 80 0004
+Code                             5F5FD1005FEC0000
+Subcontainers                    EF00010100040200010004030001001404000000008000025F5FEE00
+                                 EF00010100040200010001040000000080000000
+Data                             000102030405060708090a0b0c0d0e0f10111213141516171819101
+                                 a1b1c1d1e
+```
+
+Just hold on for a moment—we'll explain everything in the following sections.
+
+#### Improvements
+
+Jumpdest analysis and all gas and code introspection opcodes are completely removed and are now considered undefined. All opcodes in the code section must be valid, immediate values (such as push data) must be present in the code, and there must not be unreachable instructions. Stack validation is performed at creation time, too. This makes stack underflow and overflow impossible during execution, removing the necessity of doing all those checks at runtime because the EVM can assume contracts already respect all the rules since they have been validated at deployment.
+
+> **Tip**
+>
+> These validation guarantees improve the feasibility of AOT or JIT compilation of EVM bytecode into machine-native code.
+
+Dynamic jumps are removed, too, and static relative jumps are introduced with three new opcodes: `RJUMP`, `RJUMPI`, and `RJUMPV`, which take immediate values, similar to `PUSH` opcodes. Notice how it's possible with EOF to add new instructions that take immediates because there is no jumpdest analysis anymore and everything is checked at creation time instead of at runtime.
+
+As you can see from the EOF container in the previous section, EOF introduces the concept of *functions* (i.e., code sections), isolating the stack for each of them. Legacy EVM can only mimic this behavior by relying on dynamic jumps: Solidity or Vyper functions are only an internal representation.
+
+Three opcodes—`CALLF`, `RETF`, and `JUMPF`—and a *return stack* (completely separated from the EVM's usual operand stack) are added for that reason. In particular, the return stack is needed in order to save execution information before jumping into a function so that it's possible to return to the caller without losing data. Figure 14-28 can help you better visualize how this works.
+
+![EOF function calls with return stack](images/ch14/maet_1428.png)
+
+Figure 14-28. EOF introduces the concept of functions or code sections
+
+The "stack too deep" problem is solved through the addition of three new opcodes: `DUPN`, `SWAPN`, and `EXCHANGE`. The first two instructions are analogous to the old `DUP1..16` and `SWAP1..16` with the only difference being that they take one immediate value representing the index of the item to duplicate or swap. That index can go up to 256, much more than the previous hard limit of 16.
+
+The `EXCHANGE` opcode is a new opcode that lets you swap two different items in the stack (note that `SWAPN` always swaps the n item with the first one, while `EXCHANGE` can swap arbitrary items with one another). This is particularly useful for compilers implementing *stack-scheduling algorithms*, which try to minimize stack traffic given a set of variables and usage analysis.
+
+`CREATE` and `CREATE2` are made obsolete in EOF contracts. Instead, `EOFCREATE` and `RETURNCONTRACT` are introduced to provide a way to create new EOF contracts.
+
+In the end, new `CALL` instructions are added to replace the old, removed ones: `EXTCALL`, `EXTDELEGATECALL`, `EXTSTATICCALL`, and `RETURNDATALOAD`. They don't allow specifying a gas limit (no gas observability) and don't require an output buffer where the EVM would save the return data of the subcall. `RETURNDATALOAD` is introduced for the specific reason to get the return data of the last executed subcall onto the stack of the caller.
+
+#### EOF in action
+
+Let's analyze the EOF contract shown at the beginning of this section:
+
+```
+EF00010100040200010008030001003004002000008000045F5FD1005FEC0000EF00010100040200010004030001001404000000008000025F5FEE00EF00010100040200010001040000000080000000000102030405060708090a0b0c0d0e0f10111213141516171819101a1b1c1d1e
+```
+
+First, we have the EOF header, made by:
+
+```
+Magic bytes                    EF00
+```
+
+Magic bytes are needed to distinguish EOF contracts from legacy ones (no other contract starts with `EF00` in Ethereum mainnet thanks to EIP-3541).
+
+Then, there is the EOF version, which can lead to future upgrades to the EOF format in a graceful way:
+
+```
+EOF version                    01
+```
+
+Stack validation data always starts with the identifier `01`, and it's followed by the size of the "Stack" part. In this example, we have a 4-byte-long "Stack" section:
+
+```
+Stack validation data            01 0004
+```
+
+Code sections start with the identifier `02`, followed by the number of code sections (aka functions) and their related size. Here we have one code section, 8 bytes long:
+
+```
+Code sections                02 0001 0008
+```
+
+Subcontainer section size starts with the identifier `03`, followed by the number of subcontainers and their related sizes. Here we have one subcontainer, 48 bytes long (remember, it's always hex format):
+
+```
+Subcontainer section size        03 0001 0030
+```
+
+Data section size starts with the identifier `04`, followed by the size of the data section. Here we have 32 bytes in the data section:
+
+```
+Data section size                04 0020
+```
+
+Finally, there is the header terminator `00`, which always marks the end of the EOF header:
+
+```
+Header terminator                00
+```
+
+The Stack section shows the number of inputs and outputs and the max stack height for each code section (only one in this example). We have zero inputs and a nonreturning function (`80` is a special byte representing a nonreturning function), and the max height of the stack equals 4:
+
+```
+Stack: #ins, #outs, max stack        00 80 0004
+```
+
+Here are all the code sections containing EVM bytecode that is executed by the EVM:
+
+```
+Code                        5F5FD1005FEC0000
+```
+
+We have only one function (code section), containing the following opcodes:
+
+```
+PUSH0 PUSH0 DATALOADN 0 PUSH0 EOFCREATE 0 STOP
+```
+
+This code first pushes `0-0` onto the stack thanks to the first two `PUSH0` opcodes. Then, it reads 32 bytes of the data section, starting at offset zero (the next immediate value in the code) and pushes them onto the stack. Then, another `0` is pushed through the last `PUSH0`. Finally, `EOFCREATE` is called with `0` as the immediate argument, which calls the first code section of the first subcontainer:
+
+```
+Subcontainers                EF00010100040200010004030001001404000000008000025F5FEE00EF0001
+                             0100040200010001040000000080000000
+```
+
+The subcontainers section includes all of the EOF subcontainers included in the EOF bytecode. In this example, we have one subcontainer. Subcontainers are EOF-formatted bytecode: the idea is that you can nest EOF containers inside other EOF containers. This is useful for factory contracts.
+
+In the end, there is the data section containing all the data the contract needs for execution. Here we have 32 bytes of data:
+
+```
+Data                        000102030405060708090a0b0c0d0e0f10111213141516171819101a1b1c1d1e
+```
+
+This analysis could be recursively applied to the subcontainer of this EOF bytecode in order to completely understand what it's doing, but we leave that to the reader if you are interested in diving deeper into the rabbit hole of the EVM.
+
 ## EVMの将来
 
 EOFはさておき、EVMの将来は不確実であり、開発者やさまざまなプロジェクトによってEVMがどのように使用されるかに依存します。ただし、EVMが拡張できる興味深い領域がいくつかあります。たとえば、各ブロックの正しい実行を証明するゼロ知識証明を提供する*zk-EVM*などです。また、[*EVMMAX*](https://oreil.ly/ioqSx)と[*SIMD*](https://oreil.ly/7q0Dq)はEVMにより多くの演算能力をもたらし、暗号処理をはるかに高速に行えるようにします。これは、プライバシープロトコルやL2などの暗号技術に依存するアプリケーションに特に有益です。
