@@ -1118,15 +1118,15 @@ EOFは、デプロイ時に一度だけ検証を行う、EVM用の拡張可能�
 >
 > 本書の最終改訂時点（2025年6月）では、EOFアップグレードはイーサリアムコミュニティ内での合意が不十分なため、無期限に延期されています。実装に関する明確なタイムラインは現在なく、最終的に採用されない可能性もあります。それでもなお、EOFがEVMとイーサリアムエコシステム全体にどのような影響を与えうるかを理解するうえで、このセクションには価値があると考えています。
 
-### Jumpdest Analysis
+### JUMPDEST解析
 
-Legacy EVM doesn't validate the bytecode published on chain at creation time. On the one hand, this may look good because it lets you post whatever contract you want: you can deploy bytecode containing non-existent opcodes or add code that is never touched or truncated in the middle of a `PUSH` operation without giving the next immediate value that it must have in order to execute correctly. This actually adds lots of inefficiencies. In fact, the EVM has to check everything at runtime, which adds complexity and slows the overall performance. Here is an example of a non-existent opcode included inside an EVM bytecode:
+　レガシーEVMは、作成時にオンチェーンに公開されるバイトコードを検証しません。一見すると、任意のコントラクトをデプロイできるため良いことに思えるかもしれませんが、実際には多くの非効率性を生んでいます。存在しないオペコードを含むバイトコードをデプロイしたり、まったく実行されないコードを追加したり、`PUSH`オペコードが必要とする直後のデータバイトが欠落したままのコードを追加したりできてしまいます。EVMは実行時にこれらすべてをチェックしなければならず、複雑さが増し全体的なパフォーマンスが低下します。以下はEVMバイトコードに存在しないオペコードが含まれている例です：
 
 ```
 600C600052602060000C
 ```
 
-Here is the bytecode translated into human-readable opcodes:
+バイトコードを人間が読める形式のオペコードに変換すると以下のようになります：
 
 ```
 [00]            PUSH1            0C
@@ -1139,19 +1139,29 @@ Here is the bytecode translated into human-readable opcodes:
 
 Opcode `0C` doesn't exist, and when the EVM gets to that point, it will panic and early return. Notice how the second byte in the previous bytecode is also `0C`, but the EVM doesn't fail there. The difference is that while the last `0C` byte is interpreted as an opcode and fails because it's not valid, the other one is interpreted as push data since it's the immediate value of the first `PUSH1` opcode.
 
+　オペコード`0C`は存在せず、EVMがこの地点に到達するとパニックして即座にリターンします。前のバイトコードの2番目のバイトも`0C`ですが、EVMはそこでは失敗しません。最後の`0C`バイトはオペコードとして解釈され無効なため失敗しますが、もう一方は最初の`PUSH1`オペコードの即値であるプッシュデータとして解釈されるためです。
+
 One key part of this runtime check is the *jumpdest analysis*. Every client needs to do it at runtime every time a contract is executed. Let's spend some time understanding this jumpdest analysis and why it is needed in legacy EVM.
+
+　この実行時チェックの重要な部分が*JUMPDEST解析*です。すべてのクライアントはコントラクトが実行されるたびに実行時にJUMPDEST解析を行う必要があります。このJUMPDEST解析とは何か、なぜレガシーEVMで必要なのかを理解しましょう。
 
 > **Tip**
 >
 > To not have to perform jumpdest analysis at runtime every time a contract is called, some Ethereum node implementations save a jumpdest map for every contract. This map is created at contract deployment and saved inside the node's database.
 
+> **ヒント**
+>
+> コントラクトが呼び出されるたびに実行時にJUMPDEST解析を行わなくて済むように、一部のイーサリアムノード実装ではすべてのコントラクトについてJUMPDESTマップを保存している。このマップはコントラクトのデプロイ時に作成され、ノードのデータベースに保存される。
+
 Legacy EVM has dynamic jumps (`JUMP` and `JUMPI` opcodes) only to manage the control flow of the bytecode. This is very handy because you can change the normal flow of operations with just two opcodes. The cons are that dynamic jumps are very expensive and require a deep validation at runtime, even though most of the time, there is no need for the jump to be dynamic. In fact, very often the value to jump to is pushed to the stack immediately before the `JUMP` opcode itself. Here is a small example:
+
+　レガシーEVMはバイトコードの制御フローを管理するために動的ジャンプ（`JUMP`と`JUMPI`オペコード）のみを使用します。わずか2つのオペコードで操作の通常のフローを変更できるため非常に便利です。しかし動的ジャンプは非常にコストが高く、実行時に深い検証が必要になります。ほとんどの場合、ジャンプが動的である必要はありません。実際、ジャンプ先の値は`JUMP`オペコード自体の直前にスタックにプッシュされることが多いです。以下は簡単な例です：
 
 ```
 …6009566006016101015b6001…
 ```
 
-And translated into human-readable opcodes:
+　人間が読める形式のオペコードに変換すると以下のようになります：
 
 ```
 [00]            PUSH1            09
@@ -1165,9 +1175,15 @@ And translated into human-readable opcodes:
 
 As you can see, the jump destination—that is, the offset `0x09` to jump to—is just pushed onto the stack through a `PUSH1` opcode immediately before the `JUMP` opcode. The EVM pushes `0x09` onto the stack, then executes the `JUMP` opcode that takes as input the previously pushed `0x09` and moves the execution to the instruction at that offset. At `0x09`, a `JUMPDEST` opcode is found, so it's considered a valid jump destination, and the execution can go on correctly.
 
+　ジャンプ先、つまりジャンプするオフセット`0x09`は、`JUMP`オペコードの直前に`PUSH1`オペコードによってスタックにプッシュされています。EVMは`0x09`をスタックにプッシュし、次に`JUMP`オペコードを実行して先ほどプッシュされた`0x09`を入力として取り、そのオフセットの命令に実行を移動します。`0x09`には`JUMPDEST`オペコードがあるため有効なジャンプ先と見なされ、実行が正しく続行されます。
+
 Runtime validation is required in order to not jump to invalid destinations. Valid destinations are only `JUMPDEST` instructions that are not part of push data. This is very important to understand: legacy EVM doesn't have a proper separation between code and data. So whenever you meet the byte `0x5b`—the `JUMPDEST` opcode—in some bytecode, you cannot be completely sure if that's a real `JUMPDEST` opcode or it's part of push data without analyzing the contract as a whole.
 
+　無効な宛先にジャンプしないようにするために、実行時の検証が必要です。有効な宛先はプッシュデータの一部ではない`JUMPDEST`命令のみです。これは非常に重要な点です。レガシーEVMにはコードとデータの適切な分離がありません。そのためバイトコード内でバイト`0x5b`（`JUMPDEST`オペコード）に出会った場合、コントラクト全体を解析しなければ、それが本物の`JUMPDEST`オペコードなのかプッシュデータの一部なのかを確実に判断できません。
+
 Take a look at the following example showing this subtle difference:
+
+　この微妙な違いを示す次の例を見てみましょう：
 
 ```
 …6009566006016101015b6001…
@@ -1175,6 +1191,8 @@ Take a look at the following example showing this subtle difference:
 ```
 
 These two bytecodes look almost identical; in fact, they differ only by one bit. But that's enough to make a huge difference in the outcome. The first bytecode is the same as the one shown in the previous example. The second looks like this in human-readable format:
+
+　この2つのバイトコードはほぼ同一に見えます。実際、異なるのは1ビットだけです。しかしそれだけで結果に大きな違いが生じます。最初のバイトコードは前の例と同じです。2番目のバイトコードは人間が読める形式では以下のようになります：
 
 ```
 [00]            PUSH1            09
@@ -1187,15 +1205,21 @@ These two bytecodes look almost identical; in fact, they differ only by one bit.
 
 If you try to execute this second code, it will fail due to an invalid jump destination. It may look a bit weird because at offset `0x09`, there's still the `0x5b` byte, which represents the `JUMPDEST` opcode. The problem here relies on the fact that, in this case, the `0x5b` byte is part of the push data, so it could not be considered a valid jump destination. This is why the execution fails at that point.
 
+　この2番目のコードを実行しようとすると、無効なジャンプ先のために失敗します。オフセット`0x09`にはまだ`0x5b`バイト（`JUMPDEST`オペコード）があるため少し奇妙に見えるかもしれません。問題はこの場合、`0x5b`バイトがプッシュデータの一部であるため、有効なジャンプ先とは見なされないことにあります。このため実行がその時点で失敗します。
+
 Jumpdest analysis is the process of analyzing a contract in order to know which jump destinations are valid and which are not so that when the EVM is executing the contract, it is able to detect an invalid jump destination and panic.
 
+　JUMPDEST解析は、どのジャンプ先が有効でどれが無効かを把握するためにコントラクトを解析するプロセスです。EVMがコントラクトを実行する際に無効なジャンプ先を検出してパニックできるようにするためのものです。
+
 Let's say you're sending a transaction that interacts with Contract A. When the EVM loads it, it immediately performs jumpdest analysis to save the map of valid jump destinations and then starts with the real execution of the transaction:
+
+　コントラクトAとインタラクションするトランザクションを送信するとします。EVMはコントラクトAをロードすると、まずJUMPDEST解析を実行して有効なジャンプ先のマップを保存し、その後トランザクションの実際の実行を開始します：
 
 ```
 …6009566006016101015b60016015566006016201015b6001…
 ```
 
-Here it is in human-readable format:
+　人間が読める形式では以下のようになります：
 
 ```
 [00]            PUSH1            09
@@ -1215,21 +1239,23 @@ Here it is in human-readable format:
 
 The EVM skims through all the bytecode and creates a map where each `0x5b` byte is marked as a valid or invalid jump destination, as you can see in Figure 14-26.
 
-![Jumpdest analysis map](images/ch14/maet_1426.png)
+　EVMはすべてのバイトコードを走査し、各`0x5b`バイトが有効なジャンプ先か無効なジャンプ先かをマークしたマップを作成します。図14-26に示します。
 
-Figure 14-26.  The client creates a jumpdest map to separate valid from invalid jump destinations
+![JUMPDESTアナリシスマップ](images/ch14/maet_1426.png)
 
-### Adding and Deprecating Features
+図14-26. クライアントが有効なジャンプ先と無効なジャンプ先を区別するためにJUMPDESTマップを作成する
 
-Adding or deprecating an opcode or a specific feature is not as easy as it may seem. While it is true that different opcodes have been added, such as `BLOBHASH`, `BLOBBASEFEE`, `BASEFEE`, and so on, this is always complicated because of the unstructured and not validated EVM's bytecode.
+### 機能の追加と廃止
 
-Have a look at the following example, which contains an invalid opcode, specifically `0x0C`. Suppose this is a real contract deployed on Ethereum mainnet:
+　オペコードや特定の機能を追加・廃止することは、見た目ほど簡単ではありません。`BLOBHASH`、`BLOBBASEFEE`、`BASEFEE`など様々なオペコードが追加されてきたのは事実ですが、EVMのバイトコードが構造化されておらず検証もされていないため、常に複雑な作業になります。
+
+　以下の例を見てみましょう。無効なオペコード`0x0C`を含んでいます。これがイーサリアムメインネットにデプロイされた実際のコントラクトだと仮定します：
 
 ```
 600C600052602060000C
 ```
 
-Here it is in human-readable format:
+　人間が読める形式では以下のようになります：
 
 ```
 [00]            PUSH1            0C
@@ -1240,9 +1266,9 @@ Here it is in human-readable format:
 [09]            NOT-EXISTING
 ```
 
-If you try to execute this small bytecode inside an EVM, you will see that when the execution gets to the not-existing opcode, it fails.
+　この小さなバイトコードをEVM内で実行すると、存在しないオペコードに到達した時点で失敗します。
 
-Let's say a future upgrade adds a new opcode, the `MAX` opcode, that takes two items from the stack and returns the one containing the bigger value. The byte assigned to it is `0x0C`. Consider again the previous bytecode (remember, we're assuming it's a real contract deployed on mainnet):
+　将来のアップグレードで新しいオペコード`MAX`が追加され、スタックから2つのアイテムを取り出して大きい方の値を返すとします。割り当てられるバイトは`0x0C`です。先ほどのバイトコードをもう一度考えてみましょう（メインネットにデプロイされた実際のコントラクトと仮定しています）：
 
 ```
 [00]            PUSH1            0C
@@ -1253,25 +1279,25 @@ Let's say a future upgrade adds a new opcode, the `MAX` opcode, that takes two i
 [09]            MAX
 ```
 
-Now this bytecode has a completely different outcome. In fact, it doesn't fail anymore and returns successfully. This could create problems if there were contracts relying on the assumption that this contract always failed due to a (previously) not-existing opcode.
+　このバイトコードの結果はまったく異なるものになります。失敗せずに正常にリターンするようになるのです。（以前は）存在しないオペコードのためにこのコントラクトが常に失敗するという前提に依存していたコントラクトがあれば、問題が発生する可能性があります。
 
-Deprecating a feature is even harder since you cannot rely on a versioning system of the EVM. So if you remove an opcode or change how it works, old contracts that were using it could break, and there is nothing apart from manual intervention (by creating a new contract) that can fix it.
+　機能の廃止はさらに困難です。EVMにはバージョニングシステムがないためです。オペコードを削除したり動作を変更したりすると、そのオペコードを使用していた古いコントラクトが壊れる可能性があり、新しいコントラクトを作成するという手動の介入以外に修正方法はありません。
 
-When [EIP-2929](https://oreil.ly/_9kTv) was introduced to change the gas metering of state-access opcodes, some contracts broke because they were hard-coding the amount of gas to use or to expect. The solution to make them work again was to introduce *access lists*, where you can preload some accounts and storage slots that you know will be touched by the transaction and lower gas costs.
+　[EIP-2929](https://oreil.ly/_9kTv)がステートアクセスオペコードのガス計量を変更するために導入された際、使用するガス量や期待するガス量をハードコーディングしていた一部のコントラクトが壊れました。それらを再び動作させるための解決策が*アクセスリスト*の導入でした。アクセスリストでは、トランザクションによってアクセスされることが分かっているアカウントやストレージスロットを事前にロードしてガスコストを低減できます。
 
-Other important aspects of legacy EVM that make upgrades harder are *code introspection* and *gas observability*. Gas observability is possible thanks to opcodes such as `GAS` or even all the `*CALL` opcodes that take gas as input, while code introspection is achievable because of opcodes such as `CODESIZE`, `CODECOPY`, `EXTCODESIZE`, `EXTCODECOPY`, and `EXTCODEHASH`.
+　レガシーEVMのアップグレードを困難にする他の重要な側面として、*コードイントロスペクション*と*ガスオブザーバビリティ*があります。ガスオブザーバビリティは`GAS`やガスを入力として取るすべての`*CALL`オペコードによって実現され、コードイントロスペクションは`CODESIZE`、`CODECOPY`、`EXTCODESIZE`、`EXTCODECOPY`、`EXTCODEHASH`などのオペコードによって実現されます。
 
-The problem lies in the fact that if the EVM is able to access the remaining gas at a certain point of the execution, the logic of a smart contract can be made dependent on that. And if in the future, there is a change regarding gas metering of some opcodes (which is something not so rare to observe), there could be problems for all smart contracts that were relying on the old gas metering. The same applies for code introspection.
+　問題は、EVMが実行の特定の時点で残りのガスにアクセスできる場合、スマートコントラクトのロジックをそのガス量に依存させることができる点にあります。将来、一部のオペコードのガス計量に変更が加えられた場合（これはそれほど珍しいことではありません）、古いガス計量に依存していたすべてのスマートコントラクトに問題が生じる可能性があります。コードイントロスペクションについても同様です。
 
-> **Note**
+> **注記**
 >
-> Without code introspection, it's possible for future versions of EOF to completely change the underlying virtual machine to something like Cairo VM or Wasm or any other by automatically transforming all contracts' code into the new VM's code with the same functionality.
+> コードイントロスペクションがなければ、将来のEOFバージョンで基盤となる仮想マシンをCairo VMやWasmなど別のものに完全に変更し、すべてのコントラクトのコードを同じ機能を持つ新しいVMのコードに自動変換することが可能になる。
 
-### Code and Data Separation
+### コードとデータの分離
 
-Legacy EVM doesn't impose a structure on bytecode that is published on chain. There's no distinction between real code and data that is used within that code. Everything is just bytes, and it's interpreted step-by-step by the EVM during execution.
+　レガシーEVMは、オンチェーンに公開されるバイトコードに構造を課しません。コード内で使用される実際のコードとデータの区別はありません。すべてはただのバイト列であり、実行時にEVMによってステップごとに解釈されます。
 
-It's impossible to say that a certain part of the bytecode is code or data without looking at the whole contract. Take a look at the following example:
+　コントラクト全体を見なければ、バイトコードの特定の部分がコードなのかデータなのかを判断することは不可能です。以下の例を見てみましょう：
 
 ```
 …730102030405060708090a0b0c0d0e0f101112131431…
@@ -1279,11 +1305,11 @@ It's impossible to say that a certain part of the bytecode is code or data witho
 [15]            BALANCE
 ```
 
-Without diving into the code, you cannot immediately tell that `0102030405060708090a0b0c0d0e0f1011121314` is not to be interpreted as a series of opcodes—`0x01`: `ADD`, `0x02`: `MUL`, and so on— but rather that it's push data representing a fixed address we want to query the balance of. This is bad for static analysis tools and formal verification, and it makes it more difficult for smart contracts to be able to correctly process executable code directly on chain.
+　コードの中身を詳しく見なければ、`0102030405060708090a0b0c0d0e0f1011121314`が一連のオペコード（`0x01`：`ADD`、`0x02`：`MUL`など）として解釈されるべきものではなく、残高を照会したい固定アドレスを表すプッシュデータであることをすぐには判断できません。これは静的解析ツールや形式検証にとって問題であり、スマートコントラクトがオンチェーンで実行可能なコードを正しく処理することを困難にしています。
 
 ### Stack Too Deep
 
-We're now going to take a look at one of the most hated limitations of the EVM: the "stack too deep" error. If you try to compile the following smart contract, you'll immediately get it:
+　ここではEVMの最も嫌われている制限の1つである「stack too deep」エラーについて見ていきます。以下のスマートコントラクトをコンパイルしようとすると、このエラーがすぐに発生します：
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -1298,7 +1324,7 @@ contract StackTooDeep {
 }
 ```
 
-Here is the output when trying to compile the contract:
+　コントラクトをコンパイルしようとした際の出力は以下のとおりです：
 
 ```
 solc StackTooDeep.sol --bin
@@ -1309,27 +1335,27 @@ Error: Stack too deep. Try compiling with `--via-ir` (cli) or the equivalent `vi
   |                                ^
 ```
 
-This error is very subtle because it's a direct consequence of how the EVM works. In fact, even though the maximum number of items you can push onto the stack is 1,024, the EVM is only capable of easy access to the top 16 elements of that, through opcodes such as `DUP1..16` and `SWAP1..16`.
+　このエラーは非常に微妙で、EVMの動作方法の直接的な結果です。スタックにプッシュできるアイテムの最大数は1,024ですが、EVMは`DUP1..16`や`SWAP1..16`のようなオペコードを通じて上位16要素にしか容易にアクセスできません。
 
-In our `StackTooDeep` example, the `add` function takes nine different parameters, each required to be put onto the stack. Then, it performs eight additions to get the final result. The problem lies in these details. While the final operation can look like a big single addition, in reality, the compiler has to segment each one and create a temporary variable that holds the intermediate result that needs to be saved into the stack. So we end up with nine parameters plus eight intermediate results, with a total of 17 stack items needed. When the compiler tries to reference a variable that is at position 17 or more in the stack, it fails because it doesn't have any opcodes that are able to easily access it.
+　`StackTooDeep`の例では、`add`関数は9つの異なるパラメータを取り、それぞれをスタックに置く必要があります。その後、最終結果を得るために8回の加算を実行します。問題はこの詳細にあります。最終的な操作は1つの大きな加算に見えますが、実際にはコンパイラは各加算を分割し、中間結果を保持する一時変数を作成してスタックに保存する必要があります。結果として9個のパラメータと8個の中間結果、合計17個のスタックアイテムが必要になります。コンパイラがスタック内の17番目以降の位置にある変数を参照しようとすると、容易にアクセスできるオペコードがないため失敗します。
 
-To even better visualize the problem, you can look at Figure 14-27, which shows the stack composition in detail for every step. You can easily see that variable `i` is at depth 17 at the end of execution. The compiler doesn't let a local variable or parameter to not be easily accessible in the function's scope, so it throws the "stack too deep" error.
+　この問題をさらに視覚化するために、図14-27を見てください。各ステップのスタック構成が詳細に示されています。実行の最後に変数`i`が深さ17にあることが容易に分かります。コンパイラは関数のスコープ内でローカル変数やパラメータに容易にアクセスできない状態を許容しないため、「stack too deep」エラーをスローします。
 
-![Stack too deep visualization](images/ch14/maet_1427.png)
+![Stack too deepの視覚化](images/ch14/maet_1427.png)
 
-Figure 14-27. Stack composition for every step
+図14-27. 各ステップのスタック構成
 
-This is just a very simple example that shows one of the problems smart contract developers have to overcome during their daily jobs. Even though compilers have become better and better at analyzing and managing these kinds of situations automatically, the EVM imposes some hard limitations based on how it currently works.
+　これはスマートコントラクト開発者が日常業務で克服しなければならない問題の1つを示す非常にシンプルな例です。コンパイラはこのような状況の解析と管理を自動的に行う能力が向上してきていますが、EVMは現在の仕組みに基づくハードな制限を課しています。
 
 ### EOF
 
-EOF addresses all of these issues by introducing a container format for EVM bytecode with validation at deploy time, a versioning system, and a full separation between code and data. Here is an example of EOF-valid bytecode:
+　EOFはデプロイ時の検証を伴うEVMバイトコードのコンテナフォーマット、バージョニングシステム、コードとデータの完全な分離を導入することで、これらの問題すべてに対処します。以下はEOF有効なバイトコードの例です：
 
 ```
 EF00010100040200010008030001003004002000008000045F5FD1005FEC0000EF00010100040200010004030001001404000000008000025F5FEE00EF00010100040200010001040000000080000000000102030405060708090a0b0c0d0e0f10111213141516171819101a1b1c1d1e
 ```
 
-Here it is translated into human-readable format:
+　人間が読める形式に変換すると以下のようになります：
 
 ```
 Magic bytes                      EF00
@@ -1347,120 +1373,120 @@ Data                             000102030405060708090a0b0c0d0e0f101112131415161
                                  a1b1c1d1e
 ```
 
-Just hold on for a moment—we'll explain everything in the following sections.
+　少し待ってください。以降のセクションですべて説明します。
 
-#### Improvements
+#### 改善点
 
-Jumpdest analysis and all gas and code introspection opcodes are completely removed and are now considered undefined. All opcodes in the code section must be valid, immediate values (such as push data) must be present in the code, and there must not be unreachable instructions. Stack validation is performed at creation time, too. This makes stack underflow and overflow impossible during execution, removing the necessity of doing all those checks at runtime because the EVM can assume contracts already respect all the rules since they have been validated at deployment.
+　JUMPDEST解析とすべてのガスおよびコードイントロスペクションオペコードは完全に削除され、未定義とみなされるようになりました。コードセクション内のすべてのオペコードは有効でなければならず、即値（プッシュデータなど）はコード内に存在しなければならず、到達不能な命令があってはなりません。スタック検証も作成時に実行されます。これにより実行中のスタックアンダーフローとオーバーフローが不可能になり、デプロイ時に検証済みのコントラクトはすべてのルールを遵守していると仮定できるため、実行時にこれらのチェックを行う必要がなくなります。
 
-> **Tip**
+> **ヒント**
 >
-> These validation guarantees improve the feasibility of AOT or JIT compilation of EVM bytecode into machine-native code.
+> これらの検証保証により、EVMバイトコードからマシンネイティブコードへのAOTまたはJITコンパイルの実現可能性が向上する。
 
-Dynamic jumps are removed, too, and static relative jumps are introduced with three new opcodes: `RJUMP`, `RJUMPI`, and `RJUMPV`, which take immediate values, similar to `PUSH` opcodes. Notice how it's possible with EOF to add new instructions that take immediates because there is no jumpdest analysis anymore and everything is checked at creation time instead of at runtime.
+　動的ジャンプも削除され、3つの新しいオペコード`RJUMP`、`RJUMPI`、`RJUMPV`による静的相対ジャンプが導入されました。これらは`PUSH`オペコードと同様に即値を取ります。EOFではJUMPDEST解析がなくなり、すべてが実行時ではなく作成時にチェックされるため、即値を取る新しい命令を追加できるようになった点に注目してください。
 
-As you can see from the EOF container in the previous section, EOF introduces the concept of *functions* (i.e., code sections), isolating the stack for each of them. Legacy EVM can only mimic this behavior by relying on dynamic jumps: Solidity or Vyper functions are only an internal representation.
+　前のセクションのEOFコンテナから分かるように、EOFは*関数*（すなわちコードセクション）の概念を導入し、それぞれのスタックを分離しています。レガシーEVMは動的ジャンプに頼ることでのみこの動作を模倣できます。SolidityやVyperの関数は内部表現にすぎません。
 
-Three opcodes—`CALLF`, `RETF`, and `JUMPF`—and a *return stack* (completely separated from the EVM's usual operand stack) are added for that reason. In particular, the return stack is needed in order to save execution information before jumping into a function so that it's possible to return to the caller without losing data. Figure 14-28 can help you better visualize how this works.
+　そのために3つのオペコード（`CALLF`、`RETF`、`JUMPF`）と*リターンスタック*（EVMの通常のオペランドスタックとは完全に分離されたもの）が追加されました。リターンスタックは特に、関数にジャンプする前に実行情報を保存し、データを失わずに呼び出し元に戻れるようにするために必要です。図14-28はこの仕組みの視覚化に役立ちます。
 
-![EOF function calls with return stack](images/ch14/maet_1428.png)
+![EOFの関数呼び出しとリターンスタック](images/ch14/maet_1428.png)
 
-Figure 14-28. EOF introduces the concept of functions or code sections
+図14-28. EOFは関数（コードセクション）の概念を導入する
 
-The "stack too deep" problem is solved through the addition of three new opcodes: `DUPN`, `SWAPN`, and `EXCHANGE`. The first two instructions are analogous to the old `DUP1..16` and `SWAP1..16` with the only difference being that they take one immediate value representing the index of the item to duplicate or swap. That index can go up to 256, much more than the previous hard limit of 16.
+　「stack too deep」問題は3つの新しいオペコード`DUPN`、`SWAPN`、`EXCHANGE`の追加により解決されます。最初の2つの命令は従来の`DUP1..16`と`SWAP1..16`に類似していますが、唯一の違いは複製またはスワップするアイテムのインデックスを表す即値を1つ取ることです。そのインデックスは最大256まで指定でき、従来のハードリミットである16よりもはるかに大きくなっています。
 
-The `EXCHANGE` opcode is a new opcode that lets you swap two different items in the stack (note that `SWAPN` always swaps the n item with the first one, while `EXCHANGE` can swap arbitrary items with one another). This is particularly useful for compilers implementing *stack-scheduling algorithms*, which try to minimize stack traffic given a set of variables and usage analysis.
+　`EXCHANGE`オペコードはスタック内の2つの異なるアイテムをスワップできる新しいオペコードです（`SWAPN`は常にn番目のアイテムと先頭のアイテムをスワップしますが、`EXCHANGE`は任意のアイテム同士をスワップできます）。これは変数のセットと使用分析に基づいてスタックトラフィックを最小化しようとする*スタックスケジューリングアルゴリズム*を実装するコンパイラにとって特に有用です。
 
-`CREATE` and `CREATE2` are made obsolete in EOF contracts. Instead, `EOFCREATE` and `RETURNCONTRACT` are introduced to provide a way to create new EOF contracts.
+　EOFコントラクトでは`CREATE`と`CREATE2`は廃止されます。代わりに`EOFCREATE`と`RETURNCONTRACT`が導入され、新しいEOFコントラクトを作成する手段を提供します。
 
-In the end, new `CALL` instructions are added to replace the old, removed ones: `EXTCALL`, `EXTDELEGATECALL`, `EXTSTATICCALL`, and `RETURNDATALOAD`. They don't allow specifying a gas limit (no gas observability) and don't require an output buffer where the EVM would save the return data of the subcall. `RETURNDATALOAD` is introduced for the specific reason to get the return data of the last executed subcall onto the stack of the caller.
+　最後に、削除された古い`CALL`命令を置き換える新しい命令が追加されます：`EXTCALL`、`EXTDELEGATECALL`、`EXTSTATICCALL`、`RETURNDATALOAD`です。これらはガスリミットの指定を許可せず（ガスオブザーバビリティなし）、EVMがサブコールの戻りデータを保存する出力バッファも必要としません。`RETURNDATALOAD`は、最後に実行されたサブコールの戻りデータを呼び出し元のスタックに取得するために導入されました。
 
-#### EOF in action
+#### EOFの実例
 
-Let's analyze the EOF contract shown at the beginning of this section:
+　このセクションの冒頭で示したEOFコントラクトを解析してみましょう：
 
 ```
 EF00010100040200010008030001003004002000008000045F5FD1005FEC0000EF00010100040200010004030001001404000000008000025F5FEE00EF00010100040200010001040000000080000000000102030405060708090a0b0c0d0e0f10111213141516171819101a1b1c1d1e
 ```
 
-First, we have the EOF header, made by:
+　まずEOFヘッダーがあります：
 
 ```
 Magic bytes                    EF00
 ```
 
-Magic bytes are needed to distinguish EOF contracts from legacy ones (no other contract starts with `EF00` in Ethereum mainnet thanks to EIP-3541).
+　マジックバイトはEOFコントラクトをレガシーコントラクトと区別するために必要です（EIP-3541のおかげでイーサリアムメインネットでは`EF00`で始まるコントラクトは他にありません）。
 
-Then, there is the EOF version, which can lead to future upgrades to the EOF format in a graceful way:
+　次にEOFバージョンがあります。将来のEOFフォーマットのアップグレードをスムーズに行えるようにするためのものです：
 
 ```
 EOF version                    01
 ```
 
-Stack validation data always starts with the identifier `01`, and it's followed by the size of the "Stack" part. In this example, we have a 4-byte-long "Stack" section:
+　スタック検証データは常に識別子`01`で始まり、その後に「Stack」部分のサイズが続きます。この例では4バイト長の「Stack」セクションがあります：
 
 ```
 Stack validation data            01 0004
 ```
 
-Code sections start with the identifier `02`, followed by the number of code sections (aka functions) and their related size. Here we have one code section, 8 bytes long:
+　コードセクションは識別子`02`で始まり、コードセクション（関数とも呼ばれる）の数とそのサイズが続きます。ここでは8バイト長のコードセクションが1つあります：
 
 ```
 Code sections                02 0001 0008
 ```
 
-Subcontainer section size starts with the identifier `03`, followed by the number of subcontainers and their related sizes. Here we have one subcontainer, 48 bytes long (remember, it's always hex format):
+　サブコンテナセクションサイズは識別子`03`で始まり、サブコンテナの数とそのサイズが続きます。ここでは48バイト長のサブコンテナが1つあります（常に16進形式であることに注意してください）：
 
 ```
 Subcontainer section size        03 0001 0030
 ```
 
-Data section size starts with the identifier `04`, followed by the size of the data section. Here we have 32 bytes in the data section:
+　データセクションサイズは識別子`04`で始まり、データセクションのサイズが続きます。ここではデータセクションに32バイトがあります：
 
 ```
 Data section size                04 0020
 ```
 
-Finally, there is the header terminator `00`, which always marks the end of the EOF header:
+　最後にヘッダーターミネータ`00`があり、常にEOFヘッダーの終わりを示します：
 
 ```
 Header terminator                00
 ```
 
-The Stack section shows the number of inputs and outputs and the max stack height for each code section (only one in this example). We have zero inputs and a nonreturning function (`80` is a special byte representing a nonreturning function), and the max height of the stack equals 4:
+　Stackセクションは各コードセクション（この例では1つのみ）の入力数、出力数、最大スタック高さを示します。入力はゼロで、非リターン関数（`80`は非リターン関数を表す特殊バイト）であり、スタックの最大高さは4です：
 
 ```
 Stack: #ins, #outs, max stack        00 80 0004
 ```
 
-Here are all the code sections containing EVM bytecode that is executed by the EVM:
+　以下はEVMが実行するEVMバイトコードを含むすべてのコードセクションです：
 
 ```
 Code                        5F5FD1005FEC0000
 ```
 
-We have only one function (code section), containing the following opcodes:
+　関数（コードセクション）は1つだけで、以下のオペコードを含んでいます：
 
 ```
 PUSH0 PUSH0 DATALOADN 0 PUSH0 EOFCREATE 0 STOP
 ```
 
-This code first pushes `0-0` onto the stack thanks to the first two `PUSH0` opcodes. Then, it reads 32 bytes of the data section, starting at offset zero (the next immediate value in the code) and pushes them onto the stack. Then, another `0` is pushed through the last `PUSH0`. Finally, `EOFCREATE` is called with `0` as the immediate argument, which calls the first code section of the first subcontainer:
+　このコードはまず最初の2つの`PUSH0`オペコードによって`0-0`をスタックにプッシュします。次にデータセクションの32バイトをオフセットゼロ（コード内の次の即値）から読み取り、スタックにプッシュします。その後、最後の`PUSH0`によってもう1つの`0`がプッシュされます。最後に`EOFCREATE`が即値引数`0`で呼び出され、最初のサブコンテナの最初のコードセクションを呼び出します：
 
 ```
 Subcontainers                EF00010100040200010004030001001404000000008000025F5FEE00EF0001
                              0100040200010001040000000080000000
 ```
 
-The subcontainers section includes all of the EOF subcontainers included in the EOF bytecode. In this example, we have one subcontainer. Subcontainers are EOF-formatted bytecode: the idea is that you can nest EOF containers inside other EOF containers. This is useful for factory contracts.
+　サブコンテナセクションにはEOFバイトコードに含まれるすべてのEOFサブコンテナが含まれています。この例ではサブコンテナが1つあります。サブコンテナはEOFフォーマットのバイトコードです。EOFコンテナの中にEOFコンテナをネストできるという考え方で、ファクトリコントラクトに有用です。
 
-In the end, there is the data section containing all the data the contract needs for execution. Here we have 32 bytes of data:
+　最後にコントラクトの実行に必要なすべてのデータを含むデータセクションがあります。ここでは32バイトのデータがあります：
 
 ```
 Data                        000102030405060708090a0b0c0d0e0f10111213141516171819101a1b1c1d1e
 ```
 
-This analysis could be recursively applied to the subcontainer of this EOF bytecode in order to completely understand what it's doing, but we leave that to the reader if you are interested in diving deeper into the rabbit hole of the EVM.
+　この解析はEOFバイトコードのサブコンテナに再帰的に適用して、何をしているかを完全に理解することもできます。EVMのウサギの穴をさらに深く探りたい方は、ぜひ挑戦してみてください。
 
 ## EVMの将来
 
