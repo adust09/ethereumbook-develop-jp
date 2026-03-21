@@ -12,7 +12,7 @@ EVMは*スタックベースアーキテクチャ*を持っており、一時的
 
 - 実行されるスマートコントラクトのバイトコードが読み込まれた、不変のプログラムコードROM
 - すべての領域が明示的にゼロに初期化された揮発性のメモリ
-- 単一のトランザクションの処理中にのみ保持する（イーサリアムのstateの一部ではない）一時ストレージ
+- 単一のトランザクションの処理中にのみ保持する（イーサリアムのステートの一部ではない）一時ストレージ
 - メモリと同様にゼロに初期化されたイーサリアムの状態の一部である永続ストレージ
 
 There is also a set of environment variables and data that is available during execution. We will go through these in more detail later in this chapter.
