@@ -269,11 +269,11 @@ $ cast balance 0x7e41354AfE84800680ceB104c5Fc99eCB98A25f0 --rpc-url https://ethe
 > - [LlamaNodes](https://llamarpc.com/eth)
 > - [ChainList](https://chainlist.org)
 
-　無料のSepolia ETHトークンを入手するには、オンラインのフォーセットを利用できます。ここでは、図6-3に示すGoogle Cloud Web3フォーセットを使用します。0.05 ETHが提供されます。[Ethereum Sepolia Faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia)にアクセスし、アドレスを貼り付けて「Receive 0.05 Sepolia ETH」ボタンをクリックしてください。すぐに0.05 ETHを受け取れるはずです。
+　無料のSepolia ETHトークンを入手するには、オンラインのファウセットを利用できます。ここでは、図6-3に示すGoogle Cloud Web3ファウセットを使用します。0.05 ETHが提供されます。[Ethereum Sepolia Faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia)にアクセスし、アドレスを貼り付けて「Receive 0.05 Sepolia ETH」ボタンをクリックしてください。すぐに0.05 ETHを受け取れるはずです。
 
 ![Google Cloud Web3 faucet interface](images/ch6/maet_0603.png)
 
-**図6-3** Google Cloud Web3フォーセット
+**図6-3** Google Cloud Web3ファウセット
 
 　残高が変更され、0ではなくなっていることを確認できます。
 
