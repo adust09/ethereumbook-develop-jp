@@ -779,51 +779,51 @@ s ≡ q-1 (Keccak256(m) + r * k) (mod p)
 **例6-1. 生のイーサリアムトランザクションの作成と署名**
 
 ```javascript
-// Load requirements first:
+// 必要なパッケージを先にインストール:
 //
 // npm install ethers
 //
-// Run with: node eip1559_tx.js
+// 実行方法: node eip1559_tx.js
 import { ethers } from "ethers";
 
-// Create provider with your RPC endpoint
+// RPCエンドポイントでプロバイダを作成
 const provider = new ethers.JsonRpcProvider("https://ethereum-sepolia-rpc.publicnode.com");
 
-// Private key
+// 秘密鍵
 const privKey = "0xd6d2672c6b4489e6bcd4e93b9af620fa0204b639b7d7f93765479c0846be0b58";
 
-// Create a wallet instance
+// ウォレットインスタンスを作成
 const wallet = new ethers.Wallet(privKey);
 
-// Get nonce and create transaction data
+// ナンスを取得してトランザクションデータを作成
 const txData = {
-  nonce: await provider.getTransactionCount(wallet.address), // Get nonce from provider
-  to: "0xb0920c523d582040f2bcb1bd7fb1c7c1ecebdb34", // Receiver address
-  value: ethers.parseEther("0.0001"), // Amount to send (0.0001 ETH here)
-  gasLimit: ethers.toBeHex(0x30000), // Gas limit
-  maxFeePerGas: ethers.parseUnits("100", "gwei"), // Max fee per gas
-  maxPriorityFeePerGas: ethers.parseUnits("2", "gwei"), // Max priority fee
-  data: "0x", // Optional data
-  chainId: 11155111, // Sepolia chain ID
+  nonce: await provider.getTransactionCount(wallet.address), // プロバイダからナンスを取得
+  to: "0xb0920c523d582040f2bcb1bd7fb1c7c1ecebdb34", // 受信者アドレス
+  value: ethers.parseEther("0.0001"), // 送信量（ここでは0.0001 ETH）
+  gasLimit: ethers.toBeHex(0x30000), // ガスリミット
+  maxFeePerGas: ethers.parseUnits("100", "gwei"), // ガスあたりの最大手数料
+  maxPriorityFeePerGas: ethers.parseUnits("2", "gwei"), // 最大優先手数料
+  data: "0x", // オプションのデータ
+  chainId: 11155111, // SepoliaチェーンID
 };
 
-// Calculate RLP-encoded transaction hash (pre-signed)
+// RLPエンコードされたトランザクションハッシュを計算（署名前）
 const unsignedTx = ethers.Transaction.from(txData).unsignedSerialized;
 console.log("RLP-Encoded Tx (Unsigned): " + unsignedTx);
 const txHash = ethers.keccak256(unsignedTx);
 console.log("Tx Hash (Unsigned): " + txHash);
 
-// Sign the transaction
+// トランザクションに署名
 async function signAndSend() {
-  // Sign the transaction with the wallet
+  // ウォレットでトランザクションに署名
   const signedTx = await wallet.signTransaction(txData);
   console.log("Signed Raw Transaction: " + signedTx);
 
-  // Send the signed transaction to the Ethereum network
+  // 署名済みトランザクションをイーサリアムネットワークに送信
   const txResponse = await provider.broadcastTransaction(signedTx);
   console.log("Transaction Hash: " + txResponse.hash);
 
-  // Wait for the transaction to be mined
+  // トランザクションがマイニングされるのを待つ
   const receipt = await txResponse.wait();
   console.log("Transaction Receipt: ", receipt);
 }
@@ -869,27 +869,27 @@ Transaction Receipt:  TransactionReceipt {
 import { ethers } from "ethers";
 const RLP = require('@ethereumjs/rlp');
 
-// Replace with your own RPC and private key
-const rpcUrl = "https://ethereum-sepolia-rpc.publicnode.com"; // or mainnet, etc.
+// 自身のRPCと秘密鍵に置き換えてください
+const rpcUrl = "https://ethereum-sepolia-rpc.publicnode.com"; // メインネット等も可
 const provider = new ethers.JsonRpcProvider(rpcUrl);
 const privateKey = "0xYOUR_PRIVATE_KEY_HERE";
 const wallet = new ethers.Wallet(privateKey, provider);
 
-const recipient = "0xRECIPENT_ADDRESS"; // example address
+const recipient = "0xRECIPENT_ADDRESS"; // 送信先アドレスの例
 
 async function createAndSendRawEip1559Tx() {
-  const chainId = await provider.getChainId(); // This is a RPC call
-  const nonce = await provider.getTransactionCount(wallet.address); // This is a RPC call
+  const chainId = await provider.getChainId(); // RPCコール
+  const nonce = await provider.getTransactionCount(wallet.address); // RPCコール
 
-  // Example parameters — adjust as needed (or use provider.estimateGas + getFeeData)
-  const maxPriorityFeePerGas = ethers.parseUnits("2", "gwei");   // tip
-  const maxFeePerGas = ethers.parseUnits("30", "gwei");         // fee cap (base fee + tip)
+  // パラメータの例 — 必要に応じて調整（またはprovider.estimateGas + getFeeDataを使用）
+  const maxPriorityFeePerGas = ethers.parseUnits("2", "gwei");   // チップ
+  const maxFeePerGas = ethers.parseUnits("30", "gwei");         // 手数料上限（ベース手数料＋チップ）
   const gasLimit = 21000n;
   const value = ethers.parseEther("0.01"); // 0.01 ETH
-  const data = "0x"; // or contract calldata
-  const accessList = []; // [] or proper access list for EIP-2930 style savings
+  const data = "0x"; // またはコントラクトのコールデータ
+  const accessList = []; // 空またはEIP-2930形式のアクセスリスト
 
-  // Unsigned fields in strict order for Transaction Type 2
+  // トランザクションタイプ2の未署名フィールド（厳密な順序）
   const unsignedFields = [
     ethers.toBeHex(chainId),              // chainId
     ethers.toBeHex(nonce),                // nonce
@@ -902,24 +902,24 @@ async function createAndSendRawEip1559Tx() {
     accessList                            // accessList
   ];
 
-  // RLP-encode the unsigned fields
+  // 未署名フィールドをRLPエンコード
   const encodedUnsigned = RLP.encode(unsignedFields);
 
-  // Prepend the transaction type byte (0x02)
+  // トランザクションタイプバイト（0x02）を先頭に付加
   const txType = Buffer.from('02', 'hex');
   const fullTx = Buffer.concat([txType, encodedUnsigned]);
 
-  // This is the signing hash
+  // 署名ハッシュ
   const signingHash = ethers.keccak256(fullTx);
 
-  // Sign the hash
+  // ハッシュに署名
   const signingKey = new ethers.SigningKey(wallet.privateKey);
   const signature = signingKey.sign(ethers.getBytes(signingHash));
 
-  // For typed transactions we use yParity (0 or 1) instead of legacy v
+  // 型付きトランザクションではレガシーのvの代わりにyParity（0または1）を使用
   const signedFields = [
     ...unsignedFields,
-    sig.v - 27, // yParity (0 or 1)
+    sig.v - 27, // yParity（0または1）
     sig.r,
     sig.s
   ];
@@ -930,7 +930,7 @@ async function createAndSendRawEip1559Tx() {
 
   console.log("Raw transaction hex:\n", rawTransaction);
 
-  // Send the raw transaction
+  // 生のトランザクションを送信
   const txHash = await provider.send("eth_sendRawTransaction", [rawTransaction]);
   console.log("Transaction sent! Hash:", txHash);
 
