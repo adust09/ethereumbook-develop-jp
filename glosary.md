@@ -18,7 +18,7 @@
 | Blockchain | ブロックチェーン |
 | Bytecode | バイトコード |
 | Byzantium fork | ビザンチウム フォーク |
-| computer science | コンピューターサイエンス |
+| computer science | コンピューター サイエンス |
 | computation engine | 計算処理エンジン |
 | Consensus | コンセンサス |
 | Consensus rules | コンセンサス ルール |
@@ -103,7 +103,7 @@
 | Serpent | サーペント |
 | SHA | SHA |
 | Singleton | シングルトン |
-| Smart contract | スマートコントラクト |
+| Smart contract | スマート コントラクト |
 | Solidity | Solidity |
 | Solidity inline assembly | Solidityインラインアセンブリ |
 | Spurious Dragon | スプリアス ドラゴン |
@@ -124,7 +124,7 @@
 | Whisper | Whisper |
 | Zero address | ゼロ アドレス |
 | peer-to-peer network | ピア ツー ピア |
-| the world computer | ワールドコンピューター |
+| the world computer | ワールド コンピューター |
 | spending condition | 使用条件 |
 | public blockchain | パブリック ブロックチェーン |
 | journal | ジャーナル |
