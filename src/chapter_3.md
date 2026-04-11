@@ -615,7 +615,7 @@ $ curl -X POST -H "Content-Type: application/json" --data \
 {"jsonrpc":"2.0","id":1,"result":"Geth/1.14.3-stable/darwin-arm64/go1.22.2"}
 ```
 
-　この例ではcurlを使って`http://localhost:8545`へのHTTP接続を行っています。すでに実行クライアントを起動しており、ポート8545上でJSON-RPC APIをHTTPサービスとして提供しています。curlにHTTP POSTメソッドを使うよう指示し、コンテンツタイプを**application/json**として指定しています。最後にHTTPリクエストのデータコンポーネントとしてJSONエンコードされたリクエストを渡しています。コマンドラインの大部分はcurlがHTTP接続を正しく行うための設定です。興味深い部分は実際に発行するJSON-RPCコマンドです。
+　この例ではcurlを使って`http://localhost:8545`へのHTTP接続を行っています。すでに実行クライアントを起動しており、ポート8545上でJSON-RPC APIをHTTPサービスとして提供しています。curlにHTTP POSTメソッドを使うよう指示し、コンテンツタイプを**application/json**として指定しています。最後にHTTPリクエストのデータコンポーネントとしてJSONエンコードされたリクエストを渡しています。このコマンドラインの大部分は、curlがHTTP接続を正しく行うための設定にすぎません。注目すべきなのは実際に発行するJSON-RPCコマンドです。
 
 ```bash
 {"jsonrpc":"2.0","method":"web3_clientVersion","params":[],"id":1}
