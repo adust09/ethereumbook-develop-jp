@@ -345,7 +345,7 @@ $ cd consensus
 $ curl https://raw.githubusercontent.com/prysmaticlabs/prysm/master/prysm.sh --output prysm.sh && chmod +x prysm.sh
 ```
 
-**JWT（JSON Web Token）シークレットの生成**。イーサリアムノードを構成する実行クライアントとコンセンサスクライアントは2つの別々のソフトウェアですが、常に相互にやり取りする必要があります。そのため両方のクライアントが接続の認証に使用する一種のパスワードがあります。ここではそのパスワードを生成します。
+**JWT（JSON Web Token）シークレットの生成**。イーサリアムノードを構成する実行クライアントとコンセンサスクライアントは2つの別々のソフトウェアですが、常に相互にやり取りする必要があります。そのため両方のクライアントが接続の認証に使用するパスワードに相当するものがあります。ここではそのパスワードを生成します。
 
 ```bash
 $ ./prysm.sh beacon-chain generate-auth-secret
