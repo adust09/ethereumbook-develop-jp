@@ -17,13 +17,13 @@
 | Block | ブロック |
 | Blockchain | ブロックチェーン |
 | Bytecode | バイトコード |
-| Byzantium fork | ビザンチウム フォーク |
-| computer science | コンピューター サイエンス |
+| Byzantium fork | ビザンチウムフォーク |
+| computer science | コンピュータサイエンス |
 | computation engine | 計算処理エンジン |
 | Consensus | コンセンサス |
-| Consensus rules | コンセンサス ルール |
-| Constantinople fork | コンスタンティノープル フォーク |
-| Contract account | コントラクト アカウント |
+| Consensus rules | コンセンサスルール |
+| Constantinople fork | コンスタンティノープルフォーク |
+| Contract account | コントラクトアカウント |
 | Contract creation transaction | コントラクト生成トランザクション |
 | DAO | DAO |
 | DApp | DApp |
@@ -52,9 +52,9 @@
 | Frontier | フロンティア |
 | Ganache | Ganache |
 | Gas | ガス |
-| Gas limit | ガス リミット |
-| Gas Price | ガス プライス |
-| Genesis block | ジェネシス ブロック |
+| Gas limit | ガスリミット |
+| Gas Price | ガスプライス |
+| Genesis block | ジェネシスブロック |
 | Geth | Geth |
 | Hard fork | ハードフォーク |
 | Hash | ハッシュ値 |
@@ -63,7 +63,7 @@
 | HD wallet seed | マスターシード |
 | Homestead | ホームステッド |
 | ICAP | ICAP |
-| Ice Age | アイス エイジ |
+| Ice Age | アイスエイジ |
 | IDE | 統合開発環境 |
 | Immutable deployed code problem | デプロイ済コードイミュータブル問題 |
 | Infura |  |
@@ -74,11 +74,11 @@
 | Keccak-256 | Keccak-256 |
 | Keystore file | Keystoreファイル |
 | LevelDB | LevelDB |
-| Library | ライブラリー |
+| Library | ライブラリ |
 | Lightweight client | 軽量クライアント |
-| Merkle Patricia Tree | マークル パトリシア ツリー |
+| Merkle Patricia Tree | マークルパトリシアツリー |
 | Message | メッセージ |
-| Message call | メッセージ コール |
+| Message call | メッセージコール |
 | METoken | MEトークン |
 | Metropolis | メトロポリス |
 | Miner | マイナー |
@@ -103,14 +103,14 @@
 | Serpent | サーペント |
 | SHA | SHA |
 | Singleton | シングルトン |
-| Smart contract | スマート コントラクト |
+| Smart contract | スマートコントラクト |
 | Solidity | Solidity |
 | Solidity inline assembly | Solidityインラインアセンブリ |
-| Spurious Dragon | スプリアス ドラゴン |
+| Spurious Dragon | スプリアスドラゴン |
 | state machine | 状態マシン |
 | Swarm | Swarm |
 | Szabo | Szabo |
-| Tangerine Whistle | タンジェリン ホイッスル |
+| Tangerine Whistle | タンジェリンホイッスル |
 | Testnet | テストネット |
 | Transaction | トランザクション |
 | Truffle | Truffle |
@@ -122,22 +122,22 @@
 | Web3 | Web3 |
 | Wei | Wei |
 | Whisper | Whisper |
-| Zero address | ゼロ アドレス |
-| peer-to-peer network | ピア ツー ピア |
-| the world computer | ワールド コンピューター |
+| Zero address | ゼロアドレス |
+| peer-to-peer network | ピアツーピア |
+| the world computer | ワールドコンピュータ |
 | spending condition | 使用条件 |
-| public blockchain | パブリック ブロックチェーン |
+| public blockchain | パブリックブロックチェーン |
 | journal | ジャーナル |
 | Authenticity | 信頼性 |
 | Decentralized | 非中央集権 |
 | Distributed | 分散 |
 | Web | ウェブ |
 | a denial-of-service attack(DOS) | DoS攻撃 |
-| data store | データ ストア |
+| data store | データストア |
 | reference specification | リファレンス仕様 |
-| non-fungible | ノン ファンジブル |
-| Name registry provider | ネーム レジストリ プロバイダ |
-| Nakamoto Consensus | ナカモト コンセンサス |
+| non-fungible | ノンファンジブル |
+| Name registry provider | ネームレジストリプロバイダ |
+| Nakamoto Consensus | ナカモトコンセンサス |
 | proof-of-authority | proof-of-authority |
 | permissioned testnet |  |
 | MetaMask | MetaMask |
@@ -145,7 +145,7 @@
 | MyEtherWallet | MyEtherWallet |
 | MyCrypto | MyCrypto |
 | bootstrap | bootstrap |
-| remote client | リモート クライアント |
+| remote client | リモートクライアント |
 | Light Client | 軽量クライアント |
 | Simplified Payment Verification | Simplified Payment Verification |
 | remote wallet |  |
@@ -155,38 +155,38 @@
 | Ethereum Foundation | イーサリアムファンデーション |
 | censorship resistance | 検閲耐性 |
 | resilience | レジリエンス |
-| Public Testnet | パブリック テストネット |
+| Public Testnet | パブリックテストネット |
 | faucet |  |
 | N-of-M Multisig |  |
 | Salt |  |
 | sequential memory |  |
 | block explorers |  |
 | contract explorer |  |
-| Mobile Wallets | モバイル ウォレット |
-| Browser Wallets | ブラウザー ウォレット |
+| Mobile Wallets | モバイルウォレット |
+| Browser Wallets | ブラウザウォレット |
 | Ethereum Virtual Machine | イーサリアム仮想マシン |
 | source of randomness | ランダム源 |
-| camelCase checksum | キャメルケース チェックサム |
+| camelCase checksum | キャメルケースチェックサム |
 | ENS name | ENS名 |
 | serialized | シリアライズ |
 | Recipient | 受信者 |
 | stake(verb) | ステーク |
 | Ethereum Improvement Proposals | EIP |
 | Bitcoin | ビットコイン |
-| Ethereum Standards | イーサリアム スタンダード |
+| Ethereum Standards | イーサリアムスタンダード |
 | operating system | OS |
 | air-gapped device | 隔離されたデバイス |
 | Aura consensus protocol |  |
 | federated signing | 連合署名 |
-| Bitcoin core | ビットコイン コア |
+| Bitcoin core | ビットコインコア |
 | Wisper | Wisper |
 | Swarm | Swarm |
 | "" |  |
 | :（コロン） |  |
 | Burn | バーン |
 | Value | バリュー |
-| a global singleton | グローバル シングルトン |
-| global singleton state machine | グローバル シングルトン状態マシン |
+| a global singleton | グローバルシングルトン |
+| global singleton state machine | グローバルシングルトン状態マシン |
 | curly brace |  |
 | the special child derivation function |  |
 | Mnemonic Code Word |  |
@@ -197,7 +197,7 @@
 | mempool | メモリプール |
 | serialize | シリアライズ |
 | Andreas M. Antonopoulos | アンドレアス・M・アントノプロス |
-| Gavin Wood | ギャビン・ウッド |
+| Gavin Wood | ギャヴィン・ウッド |
 | Martin Becze | マーティン・ビーズィー |
 | Hudson Jameson | ハドソン・ジェイムソン |
 | Vitalik Buterin | ヴィタリック・ブテリン |
@@ -217,16 +217,16 @@
 | Péter Szilágyi | ピーター・シラーギ |
 | William Entriken | ウィリアム・エントリケン |
 | Dieter Shirley | ディーター・シャリー |
-| Jacob Evans | ジェイコブ・エバンス |
-| Nastassia Sachs | ナスターシャ・サックス |
+| Jacob Evans | ジェイコブ・エヴァンス |
+| Nastassia Sachs | ナスターシア・サックス |
 | Jack Peterson | ジャック・ピーターソン |
 | ligi | リージー |
 | Augusto Lemble | アウグスト・レンブル |
 | boilerplate | ボイラープレート |
 | withdraw | 引き出し |
-| Peter Vessenes | ピーター・ヴェッセネス |
+| Peter Vessenes | ピーター・ヴェスネス |
 | Stephen Tual | ステファン・トゥアル |
-| Phil Daian | フィル・ダイアン |
+| Phil Daian | フィリップ・ダイアン |
 | Foundation | 財団 |
 | Ropsten | ロプステン |
 | Ethereum Classic | イーサリアムクラシック |
@@ -238,8 +238,8 @@
 | Thaddeus Dryja | タデウス・ドライジャ |
 | Mastercoin | Mastercoin |
 | Verkle trees | バークルツリー |
-| Beacon Chain | ビーコン チェーン |
+| Beacon Chain | ビーコンチェーン |
 | sharding | シャーディング |
 | Gasper | Gasper |
-| validator | バリデーター |
+| validator | バリデータ |
 | finality | ファイナリティ |
