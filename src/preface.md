@@ -26,7 +26,7 @@
 
 ## 対象読者
 
-　本書は主にすべての人を対象としています。スマートコントラクトブロックチェーンの仕組み、その使い方、そしてスマートコントラクトやDAppの開発方法を学ぶことができます。最初の数章は、イーサリアム初心者向けの入門としても最適です。
+　本書は主にすべての人を対象としています。スマートコントラクトやブロックチェーンの仕組み、その使い方、そしてスマートコントラクトやDAppの開発方法を学ぶことができます。最初の数章は、イーサリアム初心者向けの入門としても最適です。
 
 ## コード例
 
@@ -128,7 +128,7 @@ Santa Rosa, CA 95401
 
 Carloの[YouTubeチャンネル](https://www.youtube.com/@BlackieCrypto)を購読する
 
-Carloを[Twitter/X]( https://x.com/ManInBlackie)でフォローする
+Carloを[Twitter/X](https://x.com/ManInBlackie)でフォローする
 
 Carloと[LinkedIn](https://www.linkedin.com/in/carloparisis)で繋がる
 
