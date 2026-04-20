@@ -537,7 +537,7 @@ Keccak256("001d3f1ef827552ae1114027bd3ecf1f086ba0e9") = 5429b5d9460122fb4b11af9c
 y^2 = x^3 + 4
 ```
 
-　整数をqで法とする演算上で定義されます。ここでqは115桁の10進数です：`0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab`。
+　qを法とする整数上で定義されます。ここでqは115桁の10進数です：`0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab`。
 
 #### 仕組み
 
