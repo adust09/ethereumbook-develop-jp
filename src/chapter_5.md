@@ -294,7 +294,7 @@ BIP-39を提案したSatoshiLabsチームによるリファレンス実装（Pyt
 
     xprv9s21ZrQH143K2JF8RafpqtKiTbsbaxEeUaMnNHsm5o6wCW3z8ySyH4UxFVSfZ8n7ESu7fgir8i...
 
-拡張された公開鍵は、プレフィックス`xpub`によって識別されます：
+拡張公開鍵は、プレフィックス`xpub`によって識別されます：
 
     xpub661MyMwAqRbcEnKbXcCqD2GT1di5zQxVqoHPAgHNe8dv5JP8gWmDproS6kFHJnLZd23tWevhdn...
 
