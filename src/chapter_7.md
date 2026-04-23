@@ -1002,7 +1002,7 @@ npm i ethers
 
 　次に、USDTコントラクトのABIが必要です。[Etherscan](https://oreil.ly/LoWH4)のコントラクトソースコードのすぐ下から取得し（図7-1を参照）、プロジェクトフォルダに保存します。
 
-![Etherscan's USDT ABI section](images/ch1/maet_0701.png)
+![Etherscan's USDT ABI section](images/ch7/maet_0701.png)
 
 **図7-1.** EtherscanのUSDT ABIセクション
 
