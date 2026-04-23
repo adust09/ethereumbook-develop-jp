@@ -591,7 +591,12 @@ function FunctionName([parameters]) {public|private|internal|external} [virtual|
 
 **payable**
 
-　payable関数は入金を受け入れることができます。`payable`として宣言されていない関数は入金を拒否します。EVMの仕様により2つの例外があります。コインベース支払いと`SELFDESTRUCT`の継承は、フォールバック関数が`payable`として宣言されていなくても支払われますが、これらの支払いではコード実行が行われないため、理にかなっています。
+　payable関数は入金を受け入れることができます。`payable`として宣言されていない関数は入金を拒否します。EVMの仕様により2つの例外があります。
+
+- コインベース支払い
+- `SELFDESTRUCT`の継承
+
+これらは、フォールバック関数が`payable`として宣言されていなくても支払われます。支払い時にコード実行が行われないため、この挙動は理にかなっています。
 
 　次に、2つの特殊な関数、`receive`と`fallback`の動作を見てみましょう。
 
