@@ -606,7 +606,11 @@ function FunctionName([parameters]) {public|private|internal|external} [virtual|
 
 **fallback()**
 
-　フォールバック（fallback）関数は、コントラクトが他のどの関数シグネチャにも一致しないデータで呼び出されたときに実行されます。`fallback() external [payable]`または`fallback(bytes calldata input) external [payable] returns (bytes memory output)`のいずれかで宣言できます。fallback関数にinputパラメータが含まれている場合、コントラクトに送信されたデータ全体が格納されます（`msg.data`と同等）。receive関数と同様に、fallback関数はpayableやvirtualにでき、オーバーライドや修飾子も使えます。現在では、主に*プロキシパターン*（proxy pattern）の実装に使用されています。これはスマートコントラクトのアップグレード可能性を実現する設計パターンです。
+　フォールバック（fallback）関数は、コントラクトが他のどの関数シグネチャにも一致しないデータで呼び出されたときに実行されます。
+
+　`fallback() external [payable]`または`fallback(bytes calldata input) external [payable] returns (bytes memory output)`のいずれかで宣言できます。fallback関数にinputパラメータが含まれている場合、コントラクトに送信されたデータ全体が格納されます（`msg.data`と同等）。receive関数と同様に、fallback関数はpayableやvirtualにでき、オーバーライドや修飾子も使えます。
+
+　現在では、主に*プロキシパターン*（proxy pattern）の実装に使用されています。これはスマートコントラクトのアップグレード可能性を実現する設計パターンです。
 
 > **注記**
 >
