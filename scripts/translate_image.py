@@ -115,6 +115,42 @@ def inpaint_image(image_path: str, mask: np.ndarray, radius: int = 3) -> np.ndar
     return cv2.inpaint(img_cv, mask, radius, cv2.INPAINT_TELEA)
 
 
+def restore_borders(
+    original_path: str,
+    inpainted: np.ndarray,
+    detections: list[dict],
+    dark_thresh: int = 100,
+    text_pad: int = 8,
+) -> np.ndarray:
+    """Inpainting でぼけた枠線・矢印を原本から復元する。
+
+    原本の暗いピクセル (gray < dark_thresh) のうち、OCR テキスト bbox の
+    外側にあるものだけを inpainted 画像に上書きコピーする。
+    """
+    orig = cv2.imread(original_path)
+    gray = cv2.cvtColor(orig, cv2.COLOR_BGR2GRAY)
+    h, w = gray.shape
+
+    # テキスト除外ゾーン（OCR bbox + padding）
+    text_zone = np.zeros((h, w), dtype=np.uint8)
+    for det in detections:
+        x1, y1, x2, y2 = det["box"]
+        x1 = max(0, x1 - text_pad)
+        y1 = max(0, y1 - text_pad)
+        x2 = min(w, x2 + text_pad)
+        y2 = min(h, y2 + text_pad)
+        text_zone[y1:y2, x1:x2] = 1
+
+    # 枠線マスク: 暗いピクセル & テキスト外
+    border = ((gray < dark_thresh).astype(np.uint8)) & (1 - text_zone)
+    kernel = np.ones((2, 2), np.uint8)
+    border = cv2.dilate(border, kernel, iterations=1)
+
+    result = inpainted.copy()
+    result[border == 1] = orig[border == 1]
+    return result
+
+
 def compute_size_groups(regions: list[dict]) -> dict:
     """同一 size_group の region は bbox 高さの中央値でフォントサイズを揃える。"""
     grouped = defaultdict(list)
@@ -303,6 +339,9 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             if len(sample_pixels) > 0:
                 fill_color = np.median(sample_pixels, axis=0).astype(np.uint8)
                 inpainted[y1:y2, x1:x2] = fill_color
+
+    # 枠線・矢印の復元（inpainting で発生したボケを原本から上書き修復）
+    inpainted = restore_borders(image_path, inpainted, detections)
 
     print("[4/4] Drawing Japanese text")
     result = draw_translations(inpainted, regions)

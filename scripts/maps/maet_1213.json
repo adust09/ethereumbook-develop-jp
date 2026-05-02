@@ -13,7 +13,7 @@
   "Database": {"ja": "データベース", "font_size": 22},
   "Official": {"ja": "公式", "font_size": 22},
   "frontend": {"ja": "フロントエンド", "font_size": 18},
-  "Fallbacks": {"ja": "フォールバック", "font_size": 22},
+  "Fallbacks": {"ja": "フォールバック", "font_size": 18, "text_offset_x": 20},
   "Alternative": {"ja": "代替", "font_size": 22},
   "frontendi": {"ja": "フロントエンド1", "font_size": 18},
   "frontend2": {"ja": "フロントエンド2", "font_size": 18},
