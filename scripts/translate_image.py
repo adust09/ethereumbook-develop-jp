@@ -3,22 +3,36 @@
 画像内の英語テキストを日本語に翻訳するスクリプト。
 
 OCR (EasyOCR) + Inpainting (OpenCV) により、元画像のレイアウト（矢印、枠線、アイコン等）
-を完全に維持しながらテキスト部分のみを差し替える。
+を維持しながらテキスト部分のみを差し替える。
 
 Usage:
     # venv setup (初回のみ)
     python3 -m venv /tmp/imgtools
     /tmp/imgtools/bin/pip install Pillow opencv-python-headless easyocr
 
-    # 実行
-    /tmp/imgtools/bin/python3 scripts/translate_image.py src/images/ch13/maet_1301.png
+    # 実行（翻訳マップ JSON 指定）
+    /tmp/imgtools/bin/python3 scripts/translate_image.py \\
+        src/images/ch11/maet_1102.png --map maps/maet_1102.json
 
-    # プレビューのみ（上書きしない）
-    /tmp/imgtools/bin/python3 scripts/translate_image.py src/images/ch13/maet_1301.png --preview
+    # プレビューのみ（上書きしない、_jp.png に保存）
+    /tmp/imgtools/bin/python3 scripts/translate_image.py \\
+        src/images/ch11/maet_1102.png --map maps/maet_1102.json --preview
+
+翻訳マップ JSON の仕様:
+    {
+      "Original Text": {
+        "ja": "翻訳テキスト",
+        "bold": true,           // (省略可) ヒラギノ W6 を使う
+        "font_size": 22,        // (省略可) フォントサイズを明示指定（自動縮小無効）
+        "size_group": "steps",  // (省略可) 同グループは bbox 高さ中央値でサイズ統一
+        "group": "step1"        // (省略可) 複数 OCR 領域を 1 つの翻訳にマージ
+      },
+      // ja=null は「テキストを残す」preserve（マスクから除外）
+      "Web3": {"ja": null}
+    }
 """
 import argparse
 import fnmatch
-import sys
 import json
 from collections import defaultdict
 import cv2
@@ -33,20 +47,27 @@ FONT_REGULAR = "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc"
 def detect_text(image_path: str) -> list[dict]:
     reader = easyocr.Reader(["en"], gpu=False)
     results = reader.readtext(image_path)
-    detections = []
+    out = []
     for bbox, text, conf in results:
         pts = np.array(bbox, dtype=np.int32)
         x_min, y_min = pts.min(axis=0).tolist()
         x_max, y_max = pts.max(axis=0).tolist()
-        detections.append({
+        out.append({
             "text": text,
             "confidence": round(conf, 2),
             "box": [x_min, y_min, x_max, y_max],
         })
-    return detections
+    return out
 
 
-def build_mask(image_path: str, regions: list[dict], pad: int = 6) -> np.ndarray:
+def build_mask(image_path: str, regions: list[dict], pad: int = 2) -> np.ndarray:
+    """
+    bbox 内の「文字形状の連結成分」だけをマスクする。
+    枠線・矢印などの線（横長/縦長/極端なアスペクト比/巨大塗りつぶし）は除外して保護する。
+
+    旧実装は `gray < 180` を bbox 全体に適用していたため、bbox 内に侵入した
+    枠線や矢印まで削除していた。連結成分フィルターでこれを防ぐ。
+    """
     img_cv = cv2.imread(image_path)
     gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
     h, w = gray.shape
@@ -54,16 +75,37 @@ def build_mask(image_path: str, regions: list[dict], pad: int = 6) -> np.ndarray
 
     for region in regions:
         x1, y1, x2, y2 = region["box"]
-        x1 = max(0, x1 - pad)
-        y1 = max(0, y1 - pad)
-        x2 = min(w, x2 + pad)
-        y2 = min(h, y2 + pad)
+        x1 = max(0, x1 - pad); y1 = max(0, y1 - pad)
+        x2 = min(w, x2 + pad); y2 = min(h, y2 + pad)
+        rh, rw = y2 - y1, x2 - x1
+        if rh <= 0 or rw <= 0:
+            continue
 
-        region_gray = gray[y1:y2, x1:x2]
-        text_mask = (region_gray < 180).astype(np.uint8) * 255
+        roi = gray[y1:y2, x1:x2]
+        bin_dark = (roi < 180).astype(np.uint8)
+
+        n_labels, labels, stats, _ = cv2.connectedComponentsWithStats(bin_dark, 8)
+        char_mask = np.zeros_like(bin_dark)
+
+        for i in range(1, n_labels):
+            _, _, cw, ch_, area = stats[i]
+            if area < 3:
+                continue
+            aspect = max(cw, ch_) / max(1, min(cw, ch_))
+            if cw >= rw * 0.85 and ch_ <= rh * 0.35:
+                continue  # 横線
+            if ch_ >= rh * 0.85 and cw <= rw * 0.35:
+                continue  # 縦線
+            if aspect > 12:
+                continue  # 細長い線
+            if area > rh * rw * 0.5:
+                continue  # 巨大な塗りつぶし
+            char_mask[labels == i] = 1
+
+        # アンチエイリアス端カバーの軽い膨張のみ（旧 iterations=2 → 1）
         kernel = np.ones((3, 3), np.uint8)
-        text_mask = cv2.dilate(text_mask, kernel, iterations=2)
-        mask[y1:y2, x1:x2] = np.maximum(mask[y1:y2, x1:x2], text_mask)
+        char_mask = cv2.dilate(char_mask, kernel, iterations=1)
+        mask[y1:y2, x1:x2] = np.maximum(mask[y1:y2, x1:x2], char_mask * 255)
 
     return mask
 
@@ -73,9 +115,20 @@ def inpaint_image(image_path: str, mask: np.ndarray, radius: int = 3) -> np.ndar
     return cv2.inpaint(img_cv, mask, radius, cv2.INPAINT_TELEA)
 
 
+def compute_size_groups(regions: list[dict]) -> dict:
+    """同一 size_group の region は bbox 高さの中央値でフォントサイズを揃える。"""
+    grouped = defaultdict(list)
+    for r in regions:
+        g = r.get("size_group")
+        if g:
+            grouped[g].append(r["box"][3] - r["box"][1])
+    return {g: int(np.median(hs) * 0.55) for g, hs in grouped.items()}
+
+
 def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.Image:
     img_pil = Image.fromarray(cv2.cvtColor(inpainted_bgr, cv2.COLOR_BGR2RGB))
     draw = ImageDraw.Draw(img_pil)
+    group_sizes = compute_size_groups(regions)
 
     for region in regions:
         box = region["box"]
@@ -84,37 +137,51 @@ def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.I
         box_w = box[2] - box[0]
         box_h = box[3] - box[1]
 
-        font_size = max(14, int(box_h * 0.55))
-        if "\n" in region["translation"]:
-            font_size = max(14, int(box_h * 0.35))
+        # 優先順位: 明示 font_size > size_group の中央値 > box_h ベース
+        if region.get("font_size"):
+            font_size = int(region["font_size"])
+            allow_shrink = False
+        elif region.get("size_group") in group_sizes:
+            font_size = max(14, group_sizes[region["size_group"]])
+            allow_shrink = False
+        else:
+            font_size = max(14, int(box_h * 0.55))
+            allow_shrink = True
+        if "\n" in region["translation"] and allow_shrink:
+            font_size = max(14, int(font_size * 0.7))
 
         font_path = FONT_BOLD if region.get("bold") else FONT_REGULAR
         font = ImageFont.truetype(font_path, font_size)
-        max_w = box_w * 0.95
-        longest_line = max(region["translation"].split("\n"), key=len)
-        while font_size > 8:
-            tb = font.getbbox(longest_line)
-            if (tb[2] - tb[0]) <= max_w:
-                break
-            font_size -= 1
-            font = ImageFont.truetype(font_path, font_size)
+
+        if allow_shrink:
+            max_w = box_w * 0.95
+            longest_line = max(region["translation"].split("\n"), key=len)
+            while font_size > 8:
+                tb = font.getbbox(longest_line)
+                if (tb[2] - tb[0]) <= max_w:
+                    break
+                font_size -= 1
+                font = ImageFont.truetype(font_path, font_size)
+
         draw.text((cx, cy), region["translation"], font=font, fill=(0, 0, 0), anchor="mm")
 
     return img_pil
 
 
-def translate_image(image_path: str, translation_map: dict, preview: bool = False):
+def translate_image(image_path: str, translation_map: dict, preview: bool = False, output_path: str = None):
     print(f"[1/4] OCR: detecting text in {image_path}")
     detections = detect_text(image_path)
     print(f"       Found {len(detections)} text regions")
+
+    # マップに __extra_mask_boxes__ があれば OCR が拾えなかった領域を強制マスク
+    extra_mask_boxes = translation_map.pop("__extra_mask_boxes__", [])
 
     regions = []
     preserve_boxes = []
     groups = defaultdict(list)
     for det in detections:
         text_lower = det["text"].lower().strip()
-        matched = None
-        matched_key = None
+        matched, matched_key = None, None
         for key, value in translation_map.items():
             if text_lower == key.lower():
                 matched, matched_key = value, key
@@ -128,14 +195,15 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
         if matched_key is None:
             print(f"       '{det['text']}' → (skip)")
             continue
-        if matched is None:
-            preserve_boxes.append(det["box"])
-            print(f"       '{det['text']}' → (preserve)")
-            continue
-
+        # group は preserve より優先（group メンバーは ja=null でも OK）
         if matched.get("group"):
             groups[matched["group"]].append((det, matched))
-            print(f"       '{det['text']}' → (group:{matched['group']})")
+            print(f"       '{det['text']}' → (merge:{matched['group']})")
+            continue
+        # ja=null は preserve（マスクから除外して原文を残す）
+        if matched.get("ja") is None:
+            preserve_boxes.append(det["box"])
+            print(f"       '{det['text']}' → (preserve)")
             continue
 
         regions.append({
@@ -143,6 +211,8 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             "original": det["text"],
             "translation": matched["ja"],
             "bold": matched.get("bold", False),
+            "size_group": matched.get("size_group"),
+            "font_size": matched.get("font_size"),
         })
         print(f"       '{det['text']}' → '{matched['ja']}'")
 
@@ -156,67 +226,56 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
         ]
         ja = next((v["ja"] for _, v in items if v.get("ja")), None)
         bold = next((v.get("bold", False) for _, v in items if v.get("ja")), False)
+        size_group = next((v.get("size_group") for _, v in items if v.get("ja")), None)
+        font_size = next((v.get("font_size") for _, v in items if v.get("ja")), None)
         if ja:
             regions.append({
                 "box": merged_box,
                 "original": f"<group:{gname}>",
                 "translation": ja,
                 "bold": bold,
+                "size_group": size_group,
+                "font_size": font_size,
             })
             print(f"       (merged '{gname}') → '{ja}'")
 
-    if not regions:
+    if not regions and not preserve_boxes:
         print("No regions to translate.")
         return
 
-    print(f"[2/4] Creating pixel-level mask for {len(regions)} regions")
-    mask = build_mask(image_path, regions)
+    print(f"[2/4] Mask (connected-component filter) for {len(regions)} regions")
+    mask_regions = list(regions)
+    if extra_mask_boxes:
+        for box in extra_mask_boxes:
+            mask_regions.append({"box": box})
+        print(f"       + {len(extra_mask_boxes)} extra mask box(es)")
+    mask = build_mask(image_path, mask_regions)
     for box in preserve_boxes:
         x1, y1, x2, y2 = box
         mask[y1:y2, x1:x2] = 0
 
-    print("[3/4] Inpainting (removing text, preserving structure)")
+    print("[3/4] Inpainting (TELEA)")
     inpainted = inpaint_image(image_path, mask)
 
     print("[4/4] Drawing Japanese text")
     result = draw_translations(inpainted, regions)
 
     if preview:
-        out_path = image_path.replace(".png", "_jp.png")
-        result.save(out_path)
-        print(f"Preview saved: {out_path}")
+        out = output_path or image_path.replace(".png", "_jp.png")
     else:
-        result.save(image_path)
-        print(f"Overwritten: {image_path}")
-
-
-# ============================================================
-# サンプル: ch13/maet_1301.png (TradFi vs DeFi) の翻訳マッピング
-# ============================================================
-SAMPLE_MAP = {
-    "Prerequisites": {"ja": "前提条件", "bold": True},
-    "User": {"ja": "ユーザー", "bold": True},
-    "Loan application": {"ja": "融資の申請"},
-    "Approvalof theloan": {"ja": "融資の承認"},
-    "Approval of the loan": {"ja": "融資の承認"},
-    "Overcollateralization": {"ja": "融資の\n過剰担保"},
-    "of the loan": {"ja": "過剰担保"},
-    "Loan received": {"ja": "融資の受領"},
-}
+        out = output_path or image_path
+    result.save(out)
+    print(f"Saved: {out}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Translate image text EN→JP")
     parser.add_argument("image", help="Path to PNG image")
+    parser.add_argument("--map", required=True, help="JSON file with translation map")
     parser.add_argument("--preview", action="store_true", help="Save as _jp.png instead of overwriting")
-    parser.add_argument("--map", help="JSON file with translation map (default: built-in sample)")
+    parser.add_argument("--out", default=None, help="Explicit output path")
     args = parser.parse_args()
 
-    if args.map:
-        with open(args.map) as f:
-            tmap = json.load(f)
-    else:
-        tmap = SAMPLE_MAP
-        print("Using built-in sample translation map")
-
-    translate_image(args.image, tmap, preview=args.preview)
+    with open(args.map) as f:
+        tmap = json.load(f)
+    translate_image(args.image, tmap, preview=args.preview, output_path=args.out)
