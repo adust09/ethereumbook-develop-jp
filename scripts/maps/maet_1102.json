@@ -7,7 +7,7 @@
   "logs": {"ja": null, "group": "step2"},
   "Oracle": {"ja": "オラクル", "bold": true, "font_size": 28},
   "Off-chain daemon": {"ja": "オフチェーンデーモン", "bold": true, "font_size": 24},
-  "Read": {"ja": "4. 読み取り", "font_size": 22},
+  "Read": {"ja": "4. 読み取り", "font_size": 22, "text_offset_x": 30},
   "3. Notifies the smart contract": {"ja": "3. オラクルが更新されたことを\nスマートコントラクトに通知", "font_size": 22, "group": "step3"},
   "that the oracle is updated": {"ja": null, "group": "step3"},
   "Smart contract": {"ja": "スマートコントラクト", "bold": true, "font_size": 24},
