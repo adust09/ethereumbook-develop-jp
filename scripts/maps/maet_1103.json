@@ -8,7 +8,7 @@
   "Updated data gets pushed to the oracle": {"ja": null, "group": "step4"},
   "5. Reads the logs of": {"ja": "5. 更新されたオラクルの\nログを読み取る", "font_size": 18, "group": "step5"},
   "the updated oracle": {"ja": null, "group": "step5"},
-  "6.Notifies the smart": {"ja": "6. オラクルが更新されたことを\nスマートコントラクトに通知", "font_size": 18, "group": "step6"},
+  "6.Notifies the smart": {"ja": "6. オラクルが更新されたことを\nスマートコントラクトに通知", "font_size": 18, "group": "step6", "text_offset_x": 30},
   "contract that the": {"ja": null, "group": "step6"},
   "oracle is updated": {"ja": null, "group": "step6"},
   "7 Read": {"ja": "7. 読み取り", "font_size": 18},

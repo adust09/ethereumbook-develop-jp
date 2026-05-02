@@ -132,8 +132,8 @@ def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.I
 
     for region in regions:
         box = region["box"]
-        cx = (box[0] + box[2]) / 2
-        cy = (box[1] + box[3]) / 2
+        cx = (box[0] + box[2]) / 2 + region.get("text_offset_x", 0)
+        cy = (box[1] + box[3]) / 2 + region.get("text_offset_y", 0)
         box_w = box[2] - box[0]
         box_h = box[3] - box[1]
 
@@ -177,6 +177,8 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
     extra_mask_boxes = translation_map.pop("__extra_mask_boxes__", [])
     # __extra_mask_boxes_soft__: 連結成分フィルター適用マスク（はみ出し文字の追加マスクに）
     extra_mask_boxes_soft = translation_map.pop("__extra_mask_boxes_soft__", [])
+    # __extra_preserve_boxes__: マスクから強制的に除外する領域（矢印などを保護）
+    extra_preserve_boxes = translation_map.pop("__extra_preserve_boxes__", [])
     # __extra_text_regions__ は OCR を経由せず座標指定で翻訳テキストを描画
     # 形式: [{"box": [x1,y1,x2,y2], "ja": "テキスト", "bold": true, "font_size": 24}, ...]
     extra_text_regions = translation_map.pop("__extra_text_regions__", [])
@@ -218,6 +220,8 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             "bold": matched.get("bold", False),
             "size_group": matched.get("size_group"),
             "font_size": matched.get("font_size"),
+            "text_offset_x": matched.get("text_offset_x", 0),
+            "text_offset_y": matched.get("text_offset_y", 0),
         })
         print(f"       '{det['text']}' → '{matched['ja']}'")
 
@@ -233,6 +237,8 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
         bold = next((v.get("bold", False) for _, v in items if v.get("ja")), False)
         size_group = next((v.get("size_group") for _, v in items if v.get("ja")), None)
         font_size = next((v.get("font_size") for _, v in items if v.get("ja")), None)
+        text_offset_x = next((v.get("text_offset_x") for _, v in items if v.get("ja")), 0) or 0
+        text_offset_y = next((v.get("text_offset_y") for _, v in items if v.get("ja")), 0) or 0
         if ja:
             regions.append({
                 "box": merged_box,
@@ -241,6 +247,8 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
                 "bold": bold,
                 "size_group": size_group,
                 "font_size": font_size,
+                "text_offset_x": text_offset_x,
+                "text_offset_y": text_offset_y,
             })
             print(f"       (merged '{gname}') → '{ja}'")
 
@@ -273,6 +281,9 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             mask[y1:y2, x1:x2] = 255  # 連結成分フィルター無視で全領域マスク
         print(f"       + {len(extra_mask_boxes)} extra mask box(es) [unconditional]")
     for box in preserve_boxes:
+        x1, y1, x2, y2 = box
+        mask[y1:y2, x1:x2] = 0
+    for box in extra_preserve_boxes:
         x1, y1, x2, y2 = box
         mask[y1:y2, x1:x2] = 0
 
