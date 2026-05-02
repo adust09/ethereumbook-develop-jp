@@ -36,7 +36,8 @@ python3 -m venv /tmp/imgtools
 1. **OCR**: EasyOCR が全テキストの位置・内容を自動検出
 2. **Mask (連結成分フィルター)**: 各 OCR bbox 内の「文字形状の連結成分」だけマスクし、横長/縦長/極端なアスペクト比の連結成分（= 矢印・枠線・直線）はマスクから除外して保護する
 3. **Inpainting**: OpenCV TELEA でテキスト部分の背景を復元
-4. **Overlay**: 復元された背景の上に日本語テキストを描画
+4. **Border Restoration**: 原本の枠線・矢印ピクセル（gray < 100）を inpainting 後の画像に上書き復元する。OCR テキスト bbox（+8px padding）内は除外して英文残骸の混入を防ぐ
+5. **Overlay**: 復元された背景の上に日本語テキストを描画
 
 ### 旧版（v1）の問題と v2 の対応
 
@@ -55,12 +56,18 @@ python3 -m venv /tmp/imgtools
     "bold": true,
     "font_size": 22,
     "size_group": "steps",
-    "group": "step1"
+    "group": "step1",
+    "text_offset_x": 10,
+    "text_offset_y": -5
   },
   "Web3": {"ja": null},
-  "__extra_mask_boxes__": [[x1, y1, x2, y2], [x1, y1, x2, y2]]
+  "__extra_mask_boxes__": [[x1, y1, x2, y2]],
+  "__extra_mask_boxes_soft__": [[x1, y1, x2, y2]],
+  "__extra_preserve_boxes__": [[x1, y1, x2, y2]]
 }
 ```
+
+### テキストフィールド
 
 | フィールド | 用途 |
 |---|---|
@@ -69,7 +76,16 @@ python3 -m venv /tmp/imgtools
 | `font_size` | フォントサイズの明示指定。指定すると自動縮小も無効化される |
 | `size_group` | 同 group 名の region は bbox 高さの中央値でフォントサイズを統一 |
 | `group` | OCR が分割検出した断片を 1 つの翻訳としてマージ（`ja` を持つ要素が代表） |
-| `__extra_mask_boxes__` | OCR が拾えなかった領域を `[x1, y1, x2, y2]` 配列で強制マスク。残った数字や記号を消すのに使う |
+| `text_offset_x` | 描画位置の水平オフセット（px）。正で右、負で左にずらす |
+| `text_offset_y` | 描画位置の垂直オフセット（px）。正で下、負で上にずらす |
+
+### 特殊キー（マスク制御）
+
+| キー | 用途 |
+|---|---|
+| `__extra_mask_boxes__` | 指定領域を無条件で全マスク + inpaint 後に周辺中央値で塗装。テキスト残骸やタイトルバンドの除去に使う |
+| `__extra_mask_boxes_soft__` | 指定領域を連結成分フィルター付きでマスク。枠線を保護しつつテキストだけ消したい場合に使う |
+| `__extra_preserve_boxes__` | 指定領域をマスクから強制除外。OCR bbox と重なる枠線・矢印を保護する |
 
 ### マッチング順序
 
@@ -138,6 +154,9 @@ for bbox, text, conf in r.readtext('src/images/ch11/maet_1102.png'):
 | 症状 | 原因 | 対処 |
 |---|---|---|
 | 矢印・枠線が灰色化 / 消失 | bbox 内の線が連結成分フィルターで除外されない | `aspect > 8` を `> 5` に厳しくする、または `pad` を 0 に |
+| 枠線がボケている / 太さが変わる | inpainting がテキスト近傍の枠線まで平滑化した | `restore_borders()` が自動復元するが、OCR bbox と枠線が重なる場合は `__extra_preserve_boxes__` で枠線座標を明示保護する |
+| テキスト残骸の黒いドットが残る | 連結成分フィルターの最小面積閾値 (area < 3) で除外された微小ピクセル | `__extra_mask_boxes__`（unconditional）で該当領域を強制マスクする。`__extra_mask_boxes_soft__` では消えない |
+| 翻訳テキストが矢印や枠線に被る | 日本語テキストが英語より長く、描画位置が重なる | `text_offset_x` / `text_offset_y` で位置調整、または `font_size` を縮小する |
 | 番号 (1. 2. 3.) のサイズがバラバラ | OCR 検出ごとに個別計算されている | 翻訳マップで `font_size` 明示 or `size_group` で統一 |
 | 一部の OCR が拾えない (例: 数字 "4") | EasyOCR の検出漏れ | 該当領域に `preserve` boxを与えるか、隣接テキストとまとめて bbox 拡張 |
 | 翻訳が反映されない | OCR テキストとマップキーが一致していない | OCR 結果の repr を確認（半角/全角、ハイフン、コンマの違い） |
