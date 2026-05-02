@@ -17,8 +17,10 @@ Usage:
     /tmp/imgtools/bin/python3 scripts/translate_image.py src/images/ch13/maet_1301.png --preview
 """
 import argparse
+import fnmatch
 import sys
 import json
+from collections import defaultdict
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
@@ -79,6 +81,7 @@ def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.I
         box = region["box"]
         cx = (box[0] + box[2]) / 2
         cy = (box[1] + box[3]) / 2
+        box_w = box[2] - box[0]
         box_h = box[3] - box[1]
 
         font_size = max(14, int(box_h * 0.55))
@@ -87,6 +90,14 @@ def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.I
 
         font_path = FONT_BOLD if region.get("bold") else FONT_REGULAR
         font = ImageFont.truetype(font_path, font_size)
+        max_w = box_w * 0.95
+        longest_line = max(region["translation"].split("\n"), key=len)
+        while font_size > 8:
+            tb = font.getbbox(longest_line)
+            if (tb[2] - tb[0]) <= max_w:
+                break
+            font_size -= 1
+            font = ImageFont.truetype(font_path, font_size)
         draw.text((cx, cy), region["translation"], font=font, fill=(0, 0, 0), anchor="mm")
 
     return img_pil
@@ -98,23 +109,61 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
     print(f"       Found {len(detections)} text regions")
 
     regions = []
+    preserve_boxes = []
+    groups = defaultdict(list)
     for det in detections:
         text_lower = det["text"].lower().strip()
         matched = None
+        matched_key = None
         for key, value in translation_map.items():
-            if key.lower() in text_lower or text_lower in key.lower():
-                matched = value
+            if text_lower == key.lower():
+                matched, matched_key = value, key
                 break
-        if matched:
-            regions.append({
-                "box": det["box"],
-                "original": det["text"],
-                "translation": matched["ja"],
-                "bold": matched.get("bold", False),
-            })
-            print(f"       '{det['text']}' → '{matched['ja']}'")
-        else:
+        if matched_key is None:
+            for key, value in translation_map.items():
+                if "*" in key and fnmatch.fnmatchcase(text_lower, key.lower()):
+                    matched, matched_key = value, key
+                    break
+
+        if matched_key is None:
             print(f"       '{det['text']}' → (skip)")
+            continue
+        if matched is None:
+            preserve_boxes.append(det["box"])
+            print(f"       '{det['text']}' → (preserve)")
+            continue
+
+        if matched.get("group"):
+            groups[matched["group"]].append((det, matched))
+            print(f"       '{det['text']}' → (group:{matched['group']})")
+            continue
+
+        regions.append({
+            "box": det["box"],
+            "original": det["text"],
+            "translation": matched["ja"],
+            "bold": matched.get("bold", False),
+        })
+        print(f"       '{det['text']}' → '{matched['ja']}'")
+
+    for gname, items in groups.items():
+        boxes = [det["box"] for det, _ in items]
+        merged_box = [
+            min(b[0] for b in boxes),
+            min(b[1] for b in boxes),
+            max(b[2] for b in boxes),
+            max(b[3] for b in boxes),
+        ]
+        ja = next((v["ja"] for _, v in items if v.get("ja")), None)
+        bold = next((v.get("bold", False) for _, v in items if v.get("ja")), False)
+        if ja:
+            regions.append({
+                "box": merged_box,
+                "original": f"<group:{gname}>",
+                "translation": ja,
+                "bold": bold,
+            })
+            print(f"       (merged '{gname}') → '{ja}'")
 
     if not regions:
         print("No regions to translate.")
@@ -122,6 +171,9 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
 
     print(f"[2/4] Creating pixel-level mask for {len(regions)} regions")
     mask = build_mask(image_path, regions)
+    for box in preserve_boxes:
+        x1, y1, x2, y2 = box
+        mask[y1:y2, x1:x2] = 0
 
     print("[3/4] Inpainting (removing text, preserving structure)")
     inpainted = inpaint_image(image_path, mask)
