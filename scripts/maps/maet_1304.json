@@ -1,0 +1,6 @@
+{
+  "Ethereum": {"ja": "イーサリアム", "bold": true, "font_size": 22},
+  "Borrower": {"ja": "借り手", "bold": true, "font_size": 22},
+  "Deposits $150 of collateral": {"ja": "150ドル分の担保を預ける", "font_size": 22},
+  "Withdraws $1O0 of liquidity borrowed": {"ja": "借り入れた100ドル分の流動性を引き出す", "font_size": 22}
+}

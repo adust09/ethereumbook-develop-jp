@@ -175,6 +175,9 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
 
     # マップに __extra_mask_boxes__ があれば OCR が拾えなかった領域を強制マスク
     extra_mask_boxes = translation_map.pop("__extra_mask_boxes__", [])
+    # __extra_text_regions__ は OCR を経由せず座標指定で翻訳テキストを描画
+    # 形式: [{"box": [x1,y1,x2,y2], "ja": "テキスト", "bold": true, "font_size": 24}, ...]
+    extra_text_regions = translation_map.pop("__extra_text_regions__", [])
 
     regions = []
     preserve_boxes = []
@@ -239,17 +242,29 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             })
             print(f"       (merged '{gname}') → '{ja}'")
 
+    # __extra_text_regions__ をそのまま region に追加（OCR 経由しない描画）
+    for er in extra_text_regions:
+        regions.append({
+            "box": er["box"],
+            "original": "<extra>",
+            "translation": er["ja"],
+            "bold": er.get("bold", False),
+            "size_group": er.get("size_group"),
+            "font_size": er.get("font_size"),
+        })
+        print(f"       (extra) → '{er['ja']}'")
+
     if not regions and not preserve_boxes:
         print("No regions to translate.")
         return
 
     print(f"[2/4] Mask (connected-component filter) for {len(regions)} regions")
-    mask_regions = list(regions)
+    mask = build_mask(image_path, regions)
     if extra_mask_boxes:
         for box in extra_mask_boxes:
-            mask_regions.append({"box": box})
-        print(f"       + {len(extra_mask_boxes)} extra mask box(es)")
-    mask = build_mask(image_path, mask_regions)
+            x1, y1, x2, y2 = box
+            mask[y1:y2, x1:x2] = 255  # 連結成分フィルター無視で全領域マスク
+        print(f"       + {len(extra_mask_boxes)} extra mask box(es) [unconditional]")
     for box in preserve_boxes:
         x1, y1, x2, y2 = box
         mask[y1:y2, x1:x2] = 0

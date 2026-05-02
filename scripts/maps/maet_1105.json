@@ -1,0 +1,9 @@
+{
+  "Source chain": {"ja": "ソースチェーン", "bold": true, "font_size": 26},
+  "Target chain": {"ja": "ターゲットチェーン", "bold": true, "font_size": 24},
+  "Off-chain": {"ja": "オフチェーン", "bold": true, "font_size": 24},
+  "Source": {"ja": "ソース", "font_size": 22},
+  "Target": {"ja": "ターゲット", "font_size": 18},
+  "contract": {"ja": "コントラクト", "font_size": 18},
+  "process": {"ja": "処理", "font_size": 22}
+}

@@ -1,0 +1,15 @@
+{
+  "Ethereum smart contracts": {"ja": "イーサリアムスマートコントラクト", "bold": true, "font_size": 22},
+  "Logic": {"ja": "ロジック", "font_size": 22},
+  "Database": {"ja": "データベース", "font_size": 22},
+  "Official": {"ja": "公式", "font_size": 22},
+  "frontend": {"ja": "フロントエンド", "font_size": 18},
+  "Fallbacks": {"ja": "フォールバック", "font_size": 22},
+  "Alternative": {"ja": "代替", "font_size": 22},
+  "frontendi": {"ja": "フロントエンド1", "font_size": 18},
+  "frontend2": {"ja": "フロントエンド2", "font_size": 18},
+  "__extra_text_regions__": [
+    {"box": [170, 0, 880, 70], "ja": "分散型アプリケーション", "bold": true, "font_size": 32}
+  ],
+  "__extra_mask_boxes__": [[170, 0, 880, 70]]
+}

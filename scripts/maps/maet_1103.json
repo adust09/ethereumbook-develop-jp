@@ -1,0 +1,22 @@
+{
+  "1. Interacts": {"ja": "1. 操作", "font_size": 18},
+  "2. Requests": {"ja": "2. データ要求", "font_size": 18, "group": "step2"},
+  "data": {"ja": null, "group": "step2"},
+  "3. Off-chain": {"ja": "3. オフチェーン取得", "font_size": 18, "group": "step3"},
+  "fetch": {"ja": null, "group": "step3"},
+  "4_": {"ja": "4. 更新データがオラクルにプッシュ", "font_size": 18, "group": "step4"},
+  "Updated data gets pushed to the oracle": {"ja": null, "group": "step4"},
+  "5. Reads the logs of": {"ja": "5. 更新されたオラクルの\nログを読み取る", "font_size": 18, "group": "step5"},
+  "the updated oracle": {"ja": null, "group": "step5"},
+  "6.Notifies the smart": {"ja": "6. オラクルが更新されたことを\nスマートコントラクトに通知", "font_size": 18, "group": "step6"},
+  "contract that the": {"ja": null, "group": "step6"},
+  "oracle is updated": {"ja": null, "group": "step6"},
+  "7 Read": {"ja": "7. 読み取り", "font_size": 18},
+  "User": {"ja": "ユーザー", "bold": true, "font_size": 22},
+  "Smart contract": {"ja": "スマートコントラクト", "bold": true, "font_size": 18},
+  "Oracle": {"ja": "オラクル", "bold": true, "font_size": 22},
+  "Off-chain fetcher": {"ja": "データのオフチェーン\nフェッチャー", "bold": true, "font_size": 18, "group": "box_fetcher"},
+  "of data": {"ja": null, "group": "box_fetcher"},
+  "Off-chain": {"ja": "オフチェーン\nデーモン", "bold": true, "font_size": 18, "group": "box_daemon"},
+  "daemon": {"ja": null, "group": "box_daemon"}
+}

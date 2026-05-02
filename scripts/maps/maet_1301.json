@@ -1,0 +1,12 @@
+{
+  "TradFi": {"ja": null},
+  "DeFi": {"ja": null},
+  "Prerequisites": {"ja": "前提条件", "bold": true, "font_size": 28},
+  "User": {"ja": "ユーザー", "bold": true, "font_size": 22},
+  "Loan application": {"ja": "ローンの申請", "font_size": 22},
+  "Approvalof theloan": {"ja": "ローンの承認", "font_size": 22},
+  "Approval of the loan": {"ja": "ローンの承認", "font_size": 22},
+  "Overcollateralization": {"ja": "ローンの過剰担保", "font_size": 22, "group": "overcoll"},
+  "of the loan": {"ja": null, "group": "overcoll"},
+  "Loan received": {"ja": "ローンの受領", "font_size": 22}
+}

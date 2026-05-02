@@ -1,0 +1,15 @@
+{
+  "Shortopened": {"ja": "ショート開始", "bold": true, "font_size": 28},
+  "Short closed": {"ja": "ショート終了", "bold": true, "font_size": 28},
+  "Borrower": {"ja": "借り手", "bold": true, "font_size": 22},
+  "Leadieg": {"ja": "レンディング\nマーケット", "bold": true, "font_size": 18},
+  "Lipodity": {"ja": "流動性\nプール", "bold": true, "font_size": 22},
+  "Ligodity": {"ja": "流動性\nプール", "bold": true, "font_size": 22},
+  "Deposits 150 USDC of collateral": {"ja": "150 USDC の担保を預ける", "font_size": 22},
+  "Withdraws O.01ETH": {"ja": "0.01 ETH を引き出す", "font_size": 22},
+  "Sells 0.01ETH": {"ja": "0.01 ETH を売却", "font_size": 22},
+  "Repays the loan of 0.01ETH": {"ja": "0.01 ETH のローンを返済", "font_size": 22},
+  "Withdraws 150 USDC deposited": {"ja": "預けた 150 USDC を引き出す", "font_size": 22},
+  "Buys": {"ja": "0.01 ETH を購入", "font_size": 22, "group": "buys"},
+  "0.01ETH": {"ja": null, "group": "buys"}
+}
