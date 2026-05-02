@@ -84,7 +84,7 @@ def build_mask(image_path: str, regions: list[dict], pad: int = 2) -> np.ndarray
         roi = gray[y1:y2, x1:x2]
         bin_dark = (roi < 180).astype(np.uint8)
 
-        n_labels, labels, stats, _ = cv2.connectedComponentsWithStats(bin_dark, 8)
+        n_labels, labels, stats, _ = cv2.connectedComponentsWithStats(bin_dark, 4)
         char_mask = np.zeros_like(bin_dark)
 
         for i in range(1, n_labels):
@@ -173,8 +173,10 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
     detections = detect_text(image_path)
     print(f"       Found {len(detections)} text regions")
 
-    # マップに __extra_mask_boxes__ があれば OCR が拾えなかった領域を強制マスク
+    # __extra_mask_boxes__: 全領域マスク（タイトルバンドなど大きく消したい場合）
     extra_mask_boxes = translation_map.pop("__extra_mask_boxes__", [])
+    # __extra_mask_boxes_soft__: 連結成分フィルター適用マスク（はみ出し文字の追加マスクに）
+    extra_mask_boxes_soft = translation_map.pop("__extra_mask_boxes_soft__", [])
     # __extra_text_regions__ は OCR を経由せず座標指定で翻訳テキストを描画
     # 形式: [{"box": [x1,y1,x2,y2], "ja": "テキスト", "bold": true, "font_size": 24}, ...]
     extra_text_regions = translation_map.pop("__extra_text_regions__", [])
@@ -259,7 +261,12 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
         return
 
     print(f"[2/4] Mask (connected-component filter) for {len(regions)} regions")
-    mask = build_mask(image_path, regions)
+    mask_regions = list(regions)
+    if extra_mask_boxes_soft:
+        for box in extra_mask_boxes_soft:
+            mask_regions.append({"box": box})
+        print(f"       + {len(extra_mask_boxes_soft)} soft extra mask box(es)")
+    mask = build_mask(image_path, mask_regions)
     if extra_mask_boxes:
         for box in extra_mask_boxes:
             x1, y1, x2, y2 = box
@@ -271,6 +278,20 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
 
     print("[3/4] Inpainting (TELEA)")
     inpainted = inpaint_image(image_path, mask)
+    # extra_mask_boxes (hard) は inpaint 後に各 box の周辺中央値で再塗装
+    # （inpaint が複雑な領域で失敗した残骸を確実に消す）
+    if extra_mask_boxes:
+        for box in extra_mask_boxes:
+            x1, y1, x2, y2 = box
+            h_img, w_img = inpainted.shape[:2]
+            sx1, sy1 = max(0, x1 - 5), max(0, y1 - 5)
+            sx2, sy2 = min(w_img, x2 + 5), min(h_img, y2 + 5)
+            sample = inpainted[sy1:sy2, sx1:sx2].copy()
+            sample[max(0, y1-sy1):y2-sy1, max(0, x1-sx1):x2-sx1] = 0
+            sample_pixels = sample[sample.sum(axis=2) > 0]
+            if len(sample_pixels) > 0:
+                fill_color = np.median(sample_pixels, axis=0).astype(np.uint8)
+                inpainted[y1:y2, x1:x2] = fill_color
 
     print("[4/4] Drawing Japanese text")
     result = draw_translations(inpainted, regions)

@@ -18,5 +18,9 @@
   "Off-chain fetcher": {"ja": "データのオフチェーン\nフェッチャー", "bold": true, "font_size": 18, "group": "box_fetcher"},
   "of data": {"ja": null, "group": "box_fetcher"},
   "Off-chain": {"ja": "オフチェーン\nデーモン", "bold": true, "font_size": 18, "group": "box_daemon"},
-  "daemon": {"ja": null, "group": "box_daemon"}
+  "daemon": {"ja": null, "group": "box_daemon"},
+  "__extra_mask_boxes__": [
+    [1020, 80, 1052, 130],
+    [505, 248, 530, 292]
+  ]
 }
