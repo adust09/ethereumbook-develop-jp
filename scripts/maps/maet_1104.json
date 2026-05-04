@@ -5,9 +5,9 @@
   "Relayer": {"ja": "リレイヤー", "font_size": 22},
   "User": {"ja": "ユーザー", "font_size": 18},
   "application,": {"ja": "アプリケーション", "font_size": 16},
-  "LayerZero": {"ja": null},
-  "endpoint": {"ja": "エンドポイント", "font_size": 16},
-  "Smart contract": {"ja": "スマートコントラクト", "font_size": 16},
+  "LayerZero": {"ja": "LayerZero", "font_size": 20},
+  "endpoint": {"ja": "エンドポイント", "font_size": 20},
+  "Smart contract": {"ja": "スマートコントラクト", "font_size": 20},
   "Independent": {"ja": "独立", "font_size": 22},
   "Oracle": {"ja": "オラクル", "font_size": 22},
   "__extra_mask_boxes__": [[75, 15, 218, 76], [864, 18, 1006, 76], [125, 288, 205, 328], [910, 288, 990, 328]]
