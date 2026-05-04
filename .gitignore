@@ -6,3 +6,5 @@ service-account-*.json
 ethereum-book-*.json
 translate_*.py
 __pycache__/
+.claude/memory/*
+devcontainer.json

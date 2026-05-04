@@ -1,40 +1,42 @@
-# Chapter 5: Wallets
+# 第5章：ウォレット
 
-The word *wallet* is used to describe a few different things in Ethereum. At a high level, a wallet is a software application that serves as the primary user interface to Ethereum. The wallet controls access to a user's money, manages keys and addresses, tracks the balance, and creates and signs transactions. In addition, some Ethereum wallets can interact with contracts, such as ERC-20 tokens.
+　「ウォレット」という用語は、イーサリアムにおいていくつかの異なるものを表すために使われます。広義には、ウォレットとはイーサリアムへの主要なユーザーインターフェイスとして機能するソフトウェアアプリケーションのことです。ウォレットはユーザーの資金へのアクセスを制御し、鍵とアドレスの管理、残高の追跡、トランザクションの作成と署名を行います。さらに、一部のイーサリアムウォレットはERC-20トークンなどのコントラクトとやり取りすることもできます。
 
-More narrowly, from a programmer's perspective, the word *wallet* refers to the system used to store and manage a user's keys. Every wallet has a key-management component. For some wallets, that's all there is. Other wallets are part of a much broader category, that of *browsers*, which are interfaces to Ethereum-based DApps, which we will examine in more detail in Chapter 12. There are no clear lines of distinction between the various categories that are conflated under the term *wallet*.
+　プログラマーの観点からより狭い意味で言えば、「ウォレット」という用語はユーザーの鍵を保管・管理するためのシステムを指します。すべてのウォレットは鍵を管理する機能を備えていますが、中には鍵の管理機能しか持たないウォレットもあります。他のウォレットは*ブラウザ*というはるかに広いカテゴリーに属しています。ブラウザとはイーサリアムベースのDAppへのインターフェイスのことで、第12章で詳しく解説します。「ウォレット」という用語でまとめられているさまざまなカテゴリーの間には、明確な線引きはありません。
 
-In this chapter, we will look at wallets as containers for private keys and as systems for managing these keys.
+　この章では、秘密鍵を保存するコンテナとして、また鍵を管理するシステムとして、ウォレットを解説します。
 
-## Overview of Wallet Technologies
+## ウォレット技術の概要
 
-In this section, we summarize the various technologies used to construct user-friendly, secure, and flexible Ethereum wallets.
+　この節では、利便性、安全性、柔軟性を兼ね備えたイーサリアムウォレットを実現するために使われているさまざまな技術の概要を説明します。
 
-One key consideration in designing wallets is balancing convenience and privacy. The most convenient Ethereum wallet is one with a single private key and address that you reuse for everything. Unfortunately, such a solution is a privacy nightmare since anyone can easily track and correlate all your transactions. Using a new key for every transaction is best for privacy but becomes very difficult to manage. The correct balance is difficult to achieve, which is why good wallet design is paramount.
+　ウォレット設計における重要な検討事項の1つは、利便性とプライバシーのバランスをとることです。最も使いやすいイーサリアムウォレットとは、常に1つの秘密鍵とアドレスを再利用するものでしょう。残念ながら、そのような設計はプライバシーの面では悪夢のようなものです。誰もがトランザクションを簡単に追跡し、関連付けられるからです。すべてのトランザクションに対して新しい鍵を使うことがプライバシーの観点からは最も望ましいのですが、管理は非常に難しくなります。適切なバランスをとることは困難な課題であり、だからこそ優れたウォレット設計が重要になります。
 
-A common misconception about Ethereum is that Ethereum wallets contain ether or tokens. In fact, very strictly speaking, the wallet holds only keys. The ether or other tokens are recorded on the Ethereum blockchain. Users control the tokens on the network by signing transactions with the keys in their wallets. In a sense, an Ethereum wallet is a *keychain*. Having said that, given that the keys held by the wallet are the only things needed to transfer ether or tokens to others, in practice this distinction is fairly irrelevant.
+　イーサリアムに関するよくある誤解は、「イーサリアムのウォレットはイーサやトークンを保管している」というものです。非常に厳密に言えば、ウォレットは鍵しか保管していません。イーサや他のトークンはイーサリアムブロックチェーンに記録されています。ユーザーは自身のウォレットにある鍵でトランザクションに署名することで、ネットワーク上のトークンを制御します。ある意味、イーサリアムのウォレットは*キーチェーン*なのです。とはいえ、ウォレットに保管されている鍵はほかの人にイーサやトークンを転送するために必要な唯一のものであるため、実際にはこの区別はほとんど意味がありません。
 
-Where the difference does matter is in changing one's mindset from dealing with the centralized system of conventional banking (where only you and the bank can see the money in your account, and you only need to convince the bank that you want to move funds to make a transaction) to the decentralized system of blockchain platforms (where everyone can see the ether balance of an account, although they probably don't know the account's owner, and everyone needs to be convinced that the owner wants to move funds for a transaction to be enacted). In practice, this means that there is an independent way to check an account's balance without needing its wallet. Moreover, you can move your account handling from your current wallet to a different wallet, if you grow to dislike the wallet app you started out using.
+　この違いが重要になるのは、考え方を従来の銀行の中央集権システムからブロックチェーンプラットフォームの分散型システムへ転換するときです。従来の銀行では、本人と銀行だけが口座の資金を確認でき、取引のために資金を移動するには銀行を説得するだけでよいものでした。一方、ブロックチェーンの分散型システムでは、誰もがアカウントのイーサ残高を見られますが、アカウントの所有者はおそらくわからず、トランザクションを実行するには所有者が資金の移動を望んでいることを全員が納得する必要があります。実際にはこれは、ウォレットを必要とせずにアカウントの残高を確認する独立した方法があることを意味します。さらに、最初に使い始めたウォレットアプリが気に入らない場合は、現在のウォレットから別のウォレットにアカウント管理を移行することもできます。
 
 > **注記**
 >
-> Ethereum wallets contain keys, not ether or tokens. Wallets are like keychains containing pairs of private and public keys. Users sign transactions with the private keys, thereby proving they own the ether. The ether is stored on the blockchain.
+> イーサリアムのウォレットには、イーサやトークンではなく、鍵が保管されています。ウォレットは秘密鍵と公開鍵のペアを含むキーチェーンのようなものです。ユーザーは秘密鍵を使ってトランザクションに署名し、それによってイーサを所有していることを証明します。イーサはブロックチェーン上に保管されています。
 
-There are two primary types of wallets, distinguished by whether the keys they contain are related to one another or not.
+　ウォレットには、主に2つの種類があります。両者の区別は、ウォレットが保持している複数の鍵が互いに関連しているかどうかによります。
 
-The first type is a *nondeterministic wallet*, where each key is independently generated from a different random number. The keys are not related to one another. This type of wallet is also known as a *JBOK wallet*, from the phrase "just a bunch of keys."
+1つ目のタイプは*非決定性ウォレット*であり、それぞれの鍵は異なる乱数から独立に生成されます。鍵は互いに関連していません。このタイプのウォレットは「just a bunch of keys（鍵の束）」というフレーズから*JBOKウォレット*とも呼ばれています。
 
-The second type of wallet is a *deterministic wallet*, where all the keys are derived from a single master key, known as the *seed*. All the keys in this type of wallet are related to one another and can be generated again if you have the original seed. Several different key-derivation methods are used in deterministic wallets. The most common derivation method uses a treelike structure, as described in "Hierarchical Deterministic Wallets (BIP-32/BIP-44)".
+2つ目のタイプは*決定性ウォレット*です。すべての鍵は*シード*と呼ばれる1つのマスター鍵から導出されます。決定性ウォレット内のすべての鍵は互いに関連しており、元のシードがあれば再び生成することができます。決定性ウォレットではいくつかの異なる鍵導出方法が使用されています。最も一般的な導出方法は、「階層的決定性ウォレット（BIP-32/BIP-44）」で説明しているように、ツリー状の構造を用いたものです。
 
-To make deterministic wallets slightly more secure against data-loss accidents, such as having your phone stolen or dropping it in the toilet, the seeds are often encoded as a list of words (in English or another language) for you to write down and use in case of an accident. These are known as the wallet's *mnemonic code words*. Of course, if someone gets hold of your mnemonic code words, then they can also re-create your wallet and thus gain access to your ether and smart contracts. As such, be very, very careful with your recovery word list! Never store it electronically, in a file on your computer or phone. Write it down on paper and store it in a safe, secure place.
+　携帯電話の盗難や水没などのデータ消失に備えて、決定性ウォレットの安全性を少しでも高めるために、シードを単語リスト（英語など）にエンコードして書き留めておくことがよくあります。この単語のリストはウォレットの*ニーモニックコードワード*として知られています。もちろん、第三者がニーモニックコードワードを入手した場合、ウォレットを再生成してイーサやスマートコントラクトにアクセスすることもできます。したがって、リカバリー用の単語リストの取り扱いには細心の注意を払ってください！電子的に保存してはいけません。コンピュータや携帯電話のファイルに保管してはいけません。紙に書き留め、安全で確実な場所に保管してください。
 
-The next few sections introduce each of the wallet technologies at a high level.
+　次項以降では、それぞれのウォレット技術について概説します。
 
-### Nondeterministic (Random) Wallets
+### 非決定性（ランダム）ウォレット
 
-In the first Ethereum wallet (produced for the Ethereum presale), each wallet file stored a single randomly generated private key. Such wallets are being replaced with deterministic wallets because these "old-style" wallets are in many ways inferior. For example, it is considered good practice to avoid reusing Ethereum addresses as part of maximizing your privacy while using Ethereum—that is, to use a new address (which needs a new private key) every time you receive funds. You can go further and use a new address for each transaction, although this can get expensive if you deal a lot with tokens. To follow this practice, a nondeterministic wallet will need to regularly increase its list of keys, which means you will need to make regular backups. If you ever lose your data (disk failure, drink accident, phone stolen) before you've managed to back up your wallet, you will lose access to your funds and smart contracts. The "type 0" nondeterministic wallets are the hardest to deal with because they create a new wallet file for every new address in a "just in time" manner.
+　最初のイーサリアムウォレットはイーサリアムの先行販売のために作られ、それぞれのウォレットファイルにはランダムに生成された単一の秘密鍵が格納されていました。このような「古いスタイル」の非決定性ウォレットは多くの点で不備や欠点があり、決定性ウォレットで置き換えられつつあります。たとえば、イーサリアムを使用する際は、プライバシーを最大限に保護するためにも、イーサリアムアドレスの再利用は避けたほうがよいでしょう。資金を受け取る場合は、都度新しいアドレス（新しい秘密鍵が必要）を使うようにしてください。あるいは、各トランザクションに対して新しいアドレスを使用することもできますが、トークンを大量に取り扱う場合にはコストが高くなります。この方法を採用する場合、非決定性ウォレットは定期的に鍵のリストを増やす必要があります。つまり、定期的にバックアップを取る必要があります。ウォレットのバックアップを取る前にデータを失った場合（ディスクの故障、飲み物をこぼす、携帯電話の盗難）、資金とスマートコントラクトにアクセスできなくなります。
 
-Nevertheless, many Ethereum clients (including Geth) use a *keystore file*, which is a JSON-encoded file that contains a single (randomly generated) private key, encrypted by a passphrase for extra security. The JSON file's contents look like this:
+　「Type-0」の非決定性ウォレットは、「使い捨て」のような方法で新しいアドレスごとに新しいウォレットファイルを作成するため、取り扱いがかなり面倒になります。
+
+　それにもかかわらず、多くのイーサリアムクライアント（Gethを含む）は*キーストアファイル*を使用しています。キーストアファイルはJSONエンコードされたファイルであり、ランダムに生成された秘密鍵が1つ含まれ、セキュリティを強化するためにパスフレーズで暗号化されています。JSONファイルの内容は次のようになります：
 
 ```json
 {
@@ -62,106 +64,106 @@ Nevertheless, many Ethereum clients (including Geth) use a *keystore file*, whic
 }
 ```
 
-The keystore format uses a *key derivation function* (KDF), also known as a *password-stretching algorithm*, which protects against brute-force, dictionary, and rainbow table attacks. In simple terms, the private key is not encrypted by the passphrase directly. Instead, the passphrase is "stretched" by repeatedly hashing it. The hashing function is repeated for 262,144 rounds, which can be seen in the keystore JSON as the parameter `crypto.kdfparams.n`. An attacker trying to brute-force the passphrase would have to apply 262,144 rounds of hashing for every attempted passphrase, which slows the attack sufficiently to make it infeasible for passphrases of appropriate complexity and length.
+　キーストア形式では、*パスワードストレッチングアルゴリズム*とも呼ばれる*鍵導出関数*（KDF）を使用しており、ブルートフォース（総当たり）攻撃、辞書攻撃、レインボーテーブル攻撃から保護します。簡単に言えば、秘密鍵はパスフレーズで直接暗号化はされません。その代わり、パスフレーズに対して繰り返しハッシュ関数を実行するストレッチングが行われます。ハッシュ関数は262,144ラウンド繰り返されており、キーストアJSONでは`crypto.kdfparams.n`として確認できます。パスフレーズをブルートフォース攻撃しようとする攻撃者は、試行するパスフレーズごとに262,144回のハッシュを適用しなければなりません。この仕組みにより攻撃は十分に遅くなります。結果として、十分な複雑さと長さを持つパスフレーズは実質的に破られなくなります。
 
 > **ヒント**
 >
-> Using nondeterministic wallets is discouraged for anything other than simple tests. They are too cumbersome to back up and use for anything but the most basic of situations. Instead, use an industry standard–based hierarchical deterministic wallet with a mnemonic seed for backup.
+> 非決定性ウォレットの使用は、単純なテスト以外の用途では推奨されません。ごく基本的な状況以外では、バックアップして使うには扱いにくすぎます。代わりに、バックアップのためにニーモニックシードを用いる業界標準ベースの階層的決定性ウォレットを使用してください。
 
-### Deterministic (Seeded) Wallets
+### 決定性（シード）ウォレット
 
-Deterministic or "seeded" wallets contain private keys that are all derived from a single master key, or seed. The seed is a randomly generated number that is combined with other data, such as an index number or "chain code" (see "Extended Public and Private Keys"), to derive any number of private keys. In a deterministic wallet, the seed is sufficient to recover all the derived keys, and therefore a single backup, at creation time, is sufficient to secure all the funds and smart contracts in the wallet. The seed is also sufficient for a wallet export or import, allowing for easy migration of all the keys between different wallet implementations.
+　決定性ウォレット、または「シード（seeded）」ウォレットは、すべて1つのマスター鍵もしくはシードから導出された秘密鍵が入ったウォレットです。シードとは、ランダムに生成された数値で、インデックス番号または「チェーンコード」（「拡張公開鍵と拡張秘密鍵」を参照）といった他のデータと組み合わせて複数の秘密鍵を生成します。決定性ウォレットでは、シードがあれば生成したすべての鍵を復元できます。そのため、シードの生成時にバックアップを1回取るだけで、ウォレット内のすべての資金とスマートコントラクトを保護できます。このシードはウォレットのエクスポートとインポートに適しており、異なる実装のウォレット間において鍵の移行を容易にしてくれます。
 
-This design makes the security of the seed of utmost importance, as only the seed is needed to gain access to the entire wallet. On the other hand, being able to focus security efforts on a single piece of data can be seen as an advantage.
+　この設計では、シードのセキュリティが最も重要になります。シードだけあればウォレット全体へのアクセスを得ることができるからです。一方で、セキュリティ対策を1つのデータに集中できるという点は利点とも言えます。
 
-### Hierarchical Deterministic Wallets (BIP-32/BIP-44)
+### 階層的決定性ウォレット（BIP-32/BIP-44）
 
-Deterministic wallets were developed to make it easy to derive many keys from a single seed. Currently, one of the most advanced forms of deterministic wallet is the *hierarchical deterministic (HD) wallet* defined by Bitcoin's BIP-32 standard. HD wallets contain keys derived in a tree structure, such that a parent key can derive a sequence of child keys, each of which can derive a sequence of grandchild keys, and so on. This tree structure is illustrated in Figure 5-1.
+　決定性ウォレットは、1つのシードから多くの鍵を生成しやすくするために開発されました。現在、決定性ウォレットの最も進んだ形式は、ビットコインのBIP-32標準で定義されている階層的決定性（HD）ウォレットです。HDウォレットには、ツリー構造から導出された鍵が含まれています。この構造においては、親鍵が子鍵群を生成し、子鍵がさらに孫鍵群を生成する、という連鎖が続きます。このツリー構造を図5-1に示します。
 
 ![HD wallet: a tree of keys generated from a single seed](images/ch5/maet_0501.png)
 
-Figure 5-1. HD wallet: a tree of keys generated from a single seed
+図5-1. HDウォレット：1つのシードから生成された鍵ツリー
 
-HD wallets offer a few key advantages over simpler deterministic wallets. First, the tree structure can be used to express additional organizational meaning, such as when a specific branch of subkeys is used to receive incoming payments and a different branch is used to receive change from outgoing payments. Branches of keys can also be used in corporate settings, where different branches can be allocated to departments, subsidiaries, specific functions, or accounting categories.
+　HDウォレットには、単純な決定性ウォレットに比べて、いくつかの大きな利点があります。1つ目の利点は、ツリー構造を用いることで用途を使い分けられることです。たとえば、ある特定の鍵の「ブランチ」を支払いの受け取りとして利用したり、他の「ブランチ」を支払いのお釣りの受け取りとして使ったりできます。他にも、会社内での使い分けとして、部や課などの部署ごと、特定の機能ごと、口座の種別ごとにブランチを割り当てることもできます。
 
-The second advantage of HD wallets is that users can create a sequence of public keys without having access to the corresponding private keys. This allows HD wallets to be used on an insecure server or in a watch-only or receive-only capacity, where the wallet doesn't have the private keys that can spend the funds.
+　HDウォレットのもう1つの利点は、対応する秘密鍵にアクセスすることなく公開鍵群を生成できることです。これにより、秘密鍵を持たないサーバー（安全でないサーバーや閲覧・受信専用サーバー）でもHDウォレットを利用できます。
 
-### Seeds and Mnemonic Codes (BIP-39)
+### シードとニーモニックコード（BIP-39）
 
-There are many ways to encode a private key for secure backup and retrieval. The currently preferred method is to use a sequence of words that, when taken together in the correct order, can uniquely re-create the private key. This is sometimes known as a *mnemonic*, and the approach has been standardized by BIP-39. Today, many Ethereum wallets (as well as wallets for other cryptocurrencies) use this standard and can import and export seeds for backup and recovery using interoperable mnemonics.
+　安全なバックアップと復元のために秘密鍵をエンコードする方法はたくさんあります。現在推奨されている方法は、正しい順序でまとめると秘密鍵を一意に再生成できる一連の単語を使用することです。これは*ニーモニック*と呼ばれることがあり、BIP-39で標準化されています。今日では、多くのイーサリアムウォレット（および他の暗号通貨ウォレット）がこの標準を使用しており、相互運用可能なニーモニックを用いてバックアップおよびリカバリー用のシードをインポート・エクスポートすることができます。
 
-To see why this approach has become popular, let's have a look at an example:
+このアプローチが普及した理由を理解するために、以下の例を見てみましょう：
 
 ```
-FCCF1AB3329FD5DA3DA9577511F8F137 ← seed in hexadecimal
+FCCF1AB3329FD5DA3DA9577511F8F137 ← 16進数表記のシード
 wolf juice proud gown wool unfair
-wall cliff insect more detail hub ← seed using BIP-39 representation
+wall cliff insect more detail hub ← BIP-39表記のシード
 ```
 
-In practical terms, the chance of an error when writing down the hex sequence is unacceptably high. In contrast, the list of known words is quite easy to deal with, mainly because there is a high level of redundancy in the writing of words (especially English words). If *inzect* had been recorded by accident, it could quickly be determined, upon the need for wallet recovery, that *inzect* is not a valid English word and that *insect* should be used instead. We are talking about writing down a representation of the seed because that is good practice when managing HD wallets: the seed is needed to recover the wallet in the case of data loss (whether through accident or theft), so keeping a backup is very prudent. However, the seed must be kept extremely private, so digital backups should be carefully avoided—hence, the advice to back up with pen and paper.
+　実際の問題として、16進数の文字列を書き留める際に転記ミスが発生する確率は容認できないほど高くなります。その一方で、既知の単語のリストは扱いがとても簡単です。主な理由は、単語（特に英語の単語）の書き取りには高い冗長性があるためです。もし誤って*inzect*が記録された場合、ウォレットのリカバリーの際に*inzect*は正しい英単語ではなく、代わりに*insect*が使用されるべきだとすぐに判断できます。HDウォレット管理時にはシードを書き留めることが推奨されています。データ消失（事故や盗難）時のリカバリーに必要だからです。バックアップを取っておくことは非常に賢明です。ただし、シードは極めて秘密に保たなければならないため、デジタルバックアップは慎重に避けるべきです。ペンと紙でバックアップすることをおすすめします。
 
-In summary, using a recovery word list to encode the seed for an HD wallet is the easiest way to safely export a private key set, transcribe it, record it on paper, read it without error, and import it into another wallet.
+　要約すると、HDウォレットのシードをエンコードしたリカバリーワードリストを使用することが、秘密鍵のセットを安全にエクスポートし、転記し、紙に記録し、エラーなく読み取り、別のウォレットにインポートするための最も簡単な方法です。
 
-## Wallet Best Practices
+## ウォレットのベストプラクティス
 
-As cryptocurrency wallet technology has matured, certain industry standards have emerged that make wallets broadly interoperable, easy to use, secure, and flexible. These standards also allow wallets to derive keys for multiple different cryptocurrencies, all from a single mnemonic. These standards are:
+　暗号通貨ウォレットの技術が成熟するにつれて、共通の業界標準が現れました。これらの標準により、幅広い相互運用性と使いやすさ、安全性、柔軟性を備えたウォレットを設計できるようになりました。これらの標準により、ウォレットは、1つのニーモニックから複数の異なる暗号通貨の鍵を生成することもできます。共通標準として次のものがあります。
 
-- Mnemonic code words, based on BIP-39
-- HD wallets, based on BIP-32
-- A multipurpose HD wallet structure, based on BIP-43
-- Multicurrency and multiaccount wallets, based on BIP-44
+- ニーモニックコードワード（BIP-39準拠）
+- HDウォレット（BIP-32準拠）
+- 多目的HDウォレット構造（BIP-43準拠）
+- 多通貨、複数アカウントウォレット（BIP-44準拠）
 
-These standards may change or be made obsolete by future developments, but for now, they form a set of interlocking technologies that have become the de facto wallet standard for most blockchain platforms and their cryptocurrencies.
+　これらの標準は将来の開発によって変わるかもしれませんし、また時代遅れになるかもしれません。しかし、今のところこれらの標準は、それぞれに連動した技術を形成しており、ほとんどのブロックチェーンプラットフォームとそれらの暗号通貨のデファクトスタンダードになっています。
 
-A broad range of software and hardware wallets have adopted the standards, making all these wallets interoperable. A user can export a mnemonic generated in one of these wallets and import it to another wallet, recovering all keys and addresses.
+　幅広いソフトウェアウォレットおよびハードウェアウォレットがこれらの標準を採用しており、すべて相互運用が可能です。ユーザーは、これらのウォレットの1つで生成されたニーモニックをエクスポートし、別のウォレットにインポートすることで、すべての鍵とアドレスをリカバリーできます。
 
-Some examples of software wallets supporting these standards include Rabby Wallet, MetaMask, and Phantom. Examples of hardware wallets supporting these standards are various models of Ledger and Trezor.
+　これらの標準をサポートするソフトウェアウォレットの例としては、Rabby Wallet、MetaMask、Phantomがあります。ハードウェアウォレットの例としては、LedgerおよびTrezorの各種モデルがあります。
 
-The following sections examine each of these technologies in detail.
+　以下では、これらの技術のそれぞれの詳細について説明します。
 
 > **ヒント**
 >
-> If you are implementing an Ethereum wallet, it should be built as an HD wallet, with a seed encoded as a mnemonic code for backup, following the BIP-32, BIP-39, BIP-43, and BIP-44 standards, as described in the following sections.
+> もしイーサリアムウォレットを実装する場合は、以下で説明するBIP-32、BIP-39、BIP-43、BIP-44の標準に従い、バックアップのニーモニックコードとしてエンコードされたシードを持つHDウォレットとして構築する必要があります。
 
-### Mnemonic Code Words (BIP-39)
+### ニーモニックコードワード（BIP-39）
 
-Mnemonic code words are word sequences that encode a random number used as a seed to derive a deterministic wallet. The sequence of words is sufficient to re-create the seed and, from there, to re-create the wallet and all the derived keys. A wallet application that implements deterministic wallets with mnemonic words will show the user a sequence of 12–24 words when first creating a wallet. That sequence of words is the wallet backup and can be used to recover and re-create all the keys in the same or any compatible wallet application. As we explained earlier, mnemonic word lists make it easier for users to back up wallets because they are easy to read and correctly transcribe.
+　ニーモニックコードワードとは、決定性ウォレットを生成する際にシードとして使用される乱数をエンコードした単語のリストです。この単語のリストがあればシードを再生成できます。そして、再生成したシードを用いて、ウォレットとすべての鍵を再生成できます。ニーモニックワード方式の決定性ウォレットを実装するアプリケーションは、初期設定時に12〜24個の単語リストをユーザーに表示します。この単語のリストはウォレットのバックアップであり、同一もしくは互換性のあるウォレットにおいて、すべての鍵を復元・再生成するために使うことができます。前節で説明したように、ニーモニックワードのリストは、可読性が高く、正確に転記できます。そのためユーザーは簡単にウォレットをバックアップすることができます。
 
 > **注記**
 >
-> Mnemonic words are often confused with *brainwallets*. They are not the same. The primary difference is that a brainwallet consists of words chosen by the user, whereas mnemonic words are created randomly by the wallet and presented to the user. This important difference makes mnemonic words much more secure because humans are very poor sources of randomness. Perhaps more important, using the term *brainwallet* suggests that the words have to be memorized, which is a terrible idea and a recipe for not having your backup when you need it.
+> ニーモニックワードはよく*ブレインウォレット*と混同されるが、両者は同じものではない。主な違いは、ブレインウォレットがユーザーの選んだ単語で構成されるのに対し、ニーモニックワードはウォレットによってランダムに生成されてユーザーに提示される点である。この違いにより、ニーモニックワードははるかに安全である。人間はランダム性の生成源として非常に乏しいためである。さらに重要な点として、*ブレインウォレット*という用語は単語を暗記すべきであることを示唆している。これは悪い考えであり、必要なときにバックアップが手元にないという事態を招く。
 
-Mnemonic codes are defined in BIP-39. Note that BIP-39 is one implementation of a mnemonic code standard. There is a different standard, with a different set of words, used by the Electrum Bitcoin wallet and predating BIP-39. BIP-39 was proposed by the company behind the Trezor hardware wallet and is incompatible with Electrum's implementation. However, BIP-39 has now achieved broad industry support across dozens of interoperable implementations and should be considered the de facto industry standard. Furthermore, BIP-39 can be used to produce multicurrency wallets supporting Ethereum, whereas Electrum seeds cannot.
+　ニーモニックコードはBIP-39で定義されています。ただし、BIP-39はニーモニック標準の実装方式の1つでしかないことに注意してください。ビットコインウォレットのElectrumは、BIP-39に先行して、別の単語群を持った標準を採用しています。BIP-39は、Trezorハードウェアウォレットを製造している会社によって提案されたもので、Electrumとの実装には互換性はありません。しかしながらBIP-39は、現在、数多くの相互運用可能な実装によって幅広い業界のサポートを得ており、デファクトスタンダードとみなせます。さらに、BIP-39はイーサリアム対応の多通貨ウォレット実装に使えます。一方でElectrumのシードは使えません。
 
-BIP-39 defines the creation of a mnemonic code and seed, which we describe here in nine steps. For clarity, the process is split into two parts: steps 1 through 6 are listed in "Generating mnemonic words", and steps 7 through 9 are listed in "From mnemonic to seed".
+　BIP-39は、ニーモニックコードとシードの生成手順を定義しています。ここでは9ステップで説明します。理解しやすくするために、生成手順を2つの部分に分けています。ステップ1〜6は「ニーモニックワードの生成」に、ステップ7〜9は「ニーモニックからシードへ」に記載しています。
 
-#### Generating mnemonic words
+#### ニーモニックワードの生成
 
-The wallet generates mnemonic words automatically using the standardized process defined in BIP-39. The wallet starts from a source of entropy, adds a checksum, and then maps the entropy to a word list following these steps:
+　ウォレットはBIP-39で定義された標準化されたプロセスを使用して、ニーモニックワードを自動的に生成します。ウォレットはエントロピー源から開始し、チェックサムを追加した後、以下のステップに従ってエントロピーを単語リストにマッピングします：
 
-1. Create a cryptographically random sequence *S* of 128–256 bits.
+1. 128〜256ビットの暗号論的にランダムなシーケンス*S*を生成する
 
-2. Create a checksum of *S* by taking the first length-of-*S* ÷ 32 bits of the SHA-256 hash of *S*.
+2. *S*のSHA-256ハッシュの先頭（*S*のビット長÷32）ビットを取り、*S*のチェックサムを生成する
 
-3. Add the checksum to the end of the random sequence *S*.
+3. チェックサムをランダムなシーケンス*S*の末尾に追加する
 
-4. Divide the sequence-and-checksum concatenation into sections of 11 bits.
+4. シーケンスとチェックサムの連結を11ビットずつのセクションに分割する
 
-5. Map each 11-bit value to a word from the predefined dictionary of 2,048 words.
+5. 各11ビットの値を、あらかじめ定義された2,048語を持つ辞書の中の単語にマッピングする
 
-6. Create the mnemonic code from the sequence of words, maintaining the order.
+6. 順序を維持しながら、一連の単語からニーモニックコードを生成する
 
-Figure 5-2 shows how entropy is used to generate mnemonic words.
+図5-2は、エントロピーを使用してニーモニックワードを生成する方法を示しています。
 
 ![Generating mnemonic words](images/ch5/maet_0502.png)
 
-Figure 5-2. Generating mnemonic words
+図5-2. ニーモニックワードの生成
 
-Table 5-1 shows the relationship between the size of the entropy data and the length of mnemonic codes in words.
+　表5-1は、エントロピーデータのサイズとニーモニックコードの長さ（単語数）の関係を示しています。
 
-**Table 5-1. Mnemonic codes: Entropy and word length**
+**表5-1 ニーモニックコード：エントロピーと単語長**
 
-| Entropy (bits) | Checksum (bits) | Entropy + checksum (bits) | Mnemonic length (words) |
+| エントロピー（ビット） | チェックサム（ビット） | エントロピー＋チェックサム（ビット） | ニーモニックの長さ（単語数） |
 |---|---|---|---|
 | 128 | 4 | 132 | 12 |
 | 160 | 5 | 165 | 15 |
@@ -169,409 +171,413 @@ Table 5-1 shows the relationship between the size of the entropy data and the le
 | 224 | 7 | 231 | 21 |
 | 256 | 8 | 264 | 24 |
 
-#### From mnemonic to seed
+#### ニーモニックからシードへ
 
-The mnemonic words represent entropy with a length of 128–256 bits. The entropy is then used to derive a longer (512-bit) seed through the use of the key-stretching function PBKDF2. The seed produced is used to build a deterministic wallet and derive its keys.
+　ニーモニックワードは、128〜256ビットの長さを持つエントロピーを表しています。このエントロピーは、鍵ストレッチ関数PBKDF2を用いてより長い（512ビット）シードを導出するために使われます。生成されたシードは、決定性ウォレットを構築し、そのウォレットの鍵を生成するために使われます。
 
-The key-stretching function takes two parameters: the mnemonic and a salt. The purpose of a salt in a key-stretching function is to make it difficult to build a lookup table enabling a brute-force attack. In the BIP-39 standard, the salt has another purpose: it allows for the introduction of a passphrase that serves as an additional security factor protecting the seed, which we will describe in more detail in the next section.
+　鍵ストレッチ関数には2つの引数があります。ニーモニックとソルトです。鍵ストレッチ関数におけるソルトの目的は、ブルートフォース攻撃を可能にするルックアップテーブルの構築を困難にすることです。BIP-39標準では、ソルトにはもう1つの目的があります。それは、シードを保護する追加のセキュリティ要素として機能するパスフレーズの導入を可能にすることで、次のセクションで詳しく説明します。
 
-The process continues from the previous section with the following steps:
+プロセスは前のセクションから続き、以下のステップで進みます：
 
-7. The first parameter to the PBKDF2 key-stretching function is the mnemonic produced in step 6.
+7. 鍵ストレッチ関数PBKDF2の最初の引数は、ステップ6で生成したニーモニックである
 
-8. The second parameter to the PBKDF2 key-stretching function is a *salt*. The salt is composed of the string constant `"mnemonic"` concatenated with an optional user-supplied passphrase.
+8. 鍵ストレッチ関数PBKDF2の2つ目の引数は*ソルト*である。このソルトは、文字列定数`"mnemonic"`とユーザーが提供するオプションのパスフレーズの連結で構成される
 
-9. PBKDF2 stretches the mnemonic and salt parameters using 2,048 rounds of hashing with the HMAC-SHA512 algorithm, producing a 512-bit value as its final output. That 512-bit value is the seed.
+9. PBKDF2は、HMAC-SHA512アルゴリズムで2,048ラウンドのハッシュ化を行い、ニーモニックとソルトのパラメータを拡張し、最終出力として512ビットの値を生成する。その512ビットの値がシードとなる
 
-Figure 5-3 shows how a mnemonic is used to generate a seed.
+図5-3にニーモニックを使ってシードを生成する方法を示します。
 
 ![From mnemonic to seed](images/ch5/maet_0503.png)
 
-Figure 5-3. From mnemonic to seed
+図5-3. ニーモニックからシードへ
 
 > **注記**
 >
-> The key-stretching function, with its 2,048 rounds of hashing, is a somewhat effective protection against brute-force attacks against the mnemonic or the passphrase. It makes it costly (in computation) to try more than a few thousand passphrase and mnemonic combinations, while the number of possible derived seeds is vast (2^512^, or about 10^154^)—far bigger than the number of atoms in the visible universe (about 10^80^).
+> 2,048ラウンドのハッシュ化を行う鍵ストレッチ関数は、ニーモニックやパスフレーズへのブルートフォース攻撃に対していくらか効果的な保護手段です。数千ものパスフレーズやニーモニックの組み合わせを試すのにはかなりの計算量となりコストがかかります。一方で、取り得るシードの数は膨大です（2^512^、すなわち約10^154^）。これは可視宇宙に存在する原子の数（約10^80^）よりもはるかに多いのです。
 
-Tables 5-2, 5-3, and 5-4 show some examples of mnemonic codes and the seeds they produce.
+　表5-2から表5-4にニーモニックコードとそれらが生成するシードの例を示します。
 
-**Table 5-2. A 128-bit entropy mnemonic code with no passphrase and the resulting seed**
-
-| | |
-|---|---|
-| **Entropy** | 0c1e24e5917779d297e14d45f14e1a1a |
-| **Mnemonic** | army van defense carry jealous true garbage claim echo media make crunch |
-| **Passphrase** | (none) |
-| **Seed** | 5b56c417303faa3fcba7e57400e120a0ca83ec5a4fc9ffba757fbe63fbd77a89a1a3be4c67196f57c39... |
-
-**Table 5-3. A 128-bit entropy mnemonic code with a passphrase and the resulting seed**
+**表5-2 128ビットエントロピーのニーモニックコード（パスフレーズなし）と生成されるシード**
 
 | | |
 |---|---|
-| **Entropy** | 0c1e24e5917779d297e14d45f14e1a1a |
-| **Mnemonic** | army van defense carry jealous true garbage claim echo media make crunch |
-| **Passphrase** | SuperDuperSecret |
-| **Seed** | 3b5df16df2157104cfdd22830162a5e170c0161653e3afe6c88defeefb0818c793dbb28ab3ab091897d0... |
+| **エントロピー** | 0c1e24e5917779d297e14d45f14e1a1a |
+| **ニーモニック** | army van defense carry jealous true garbage claim echo media make crunch |
+| **パスフレーズ** | （なし） |
+| **シード** | 5b56c417303faa3fcba7e57400e120a0ca83ec5a4fc9ffba757fbe63fbd77a89a1a3be4c67196f57c39... |
 
-**Table 5-4. A 256-bit entropy mnemonic code with no passphrase and the resulting seed**
+**表5-3 128ビットエントロピーのニーモニックコード（パスフレーズあり）と生成されるシード**
 
 | | |
 |---|---|
-| **Entropy** | 2041546864449caff939d32d574753fe684d3c947c3346713dd8423e74abcf8c |
-| **Mnemonic** | cake apple borrow silk endorse fitness top denial coil riot stay wolf luggage oxygen faint major edit measure invite love trap field dilemma oblige |
-| **Passphrase** | (none) |
-| **Seed** | 3269bce2674acbd188d4f120072b13b088a0ecf87c6e4cae41657a0bb78f5315b33b3a04356e53d062e5... |
+| **エントロピー** | 0c1e24e5917779d297e14d45f14e1a1a |
+| **ニーモニック** | army van defense carry jealous true garbage claim echo media make crunch |
+| **パスフレーズ** | SuperDuperSecret |
+| **シード** | 3b5df16df2157104cfdd22830162a5e170c0161653e3afe6c88defeefb0818c793dbb28ab3ab091897d0... |
 
-#### Optional Passphrase in BIP-39
+**表5-4 256ビットエントロピーのニーモニックコード（パスフレーズなし）と生成されるシード**
 
-The BIP-39 standard allows for the use of an optional passphrase in the derivation of the seed. If no passphrase is used, the mnemonic is stretched with a salt consisting of the constant string `"mnemonic"`, producing a specific 512-bit seed from any given mnemonic. If a passphrase is used, the stretching function produces a *different* seed from that same mnemonic. In fact, given a single mnemonic, every possible passphrase leads to a different seed. Essentially, there is no "wrong" passphrase. All passphrases are valid, and they all lead to different seeds, forming a vast set of possible uninitialized wallets. The set of possible wallets is so large (2^512^) that there is no practical possibility of brute-forcing or accidentally guessing one that is in use, as long as the passphrase has sufficient complexity and length.
+| | |
+|---|---|
+| **エントロピー** | 2041546864449caff939d32d574753fe684d3c947c3346713dd8423e74abcf8c |
+| **ニーモニック** | cake apple borrow silk endorse fitness top denial coil riot stay wolf luggage oxygen faint major edit measure invite love trap field dilemma oblige |
+| **パスフレーズ** | （なし） |
+| **シード** | 3269bce2674acbd188d4f120072b13b088a0ecf87c6e4cae41657a0bb78f5315b33b3a04356e53d062e5... |
+
+#### BIP-39のオプションのパスフレーズ
+
+　BIP-39標準では、シードの導出にオプションのパスフレーズを使用できます。パスフレーズが使用されない場合、ニーモニックワードは定数文字列「mnemonic」からなるソルトでストレッチ（引き伸ばし）され、任意のニーモニックワードから特定の512ビットのシードが生成されます。パスフレーズが使用されている場合、ストレッチ関数は同じニーモニックから別のシードを生成します。実際には、1つのニーモニックがあれば、ありとあらゆるパスフレーズから異なるシードが生成されます。基本的に「間違った」パスフレーズというものは存在しません。すべてのパスフレーズは有効であり、それらはすべて異なるシードを生成します。そして、膨大な数の未初期化ウォレットを作り出すことができます。生成可能なウォレットの数は2^512^と膨大です。パスフレーズの複雑さと長さが十分であれば、ブルートフォース攻撃で破られたり偶然推測されたりすることは事実上ありません。
 
 > **ヒント**
 >
-> There are no "wrong" passphrases in BIP-39. Every passphrase leads to some wallet, which unless previously used will be empty.
+> BIP-39には「間違った」パスフレーズはありません。あらゆるパスフレーズはウォレットを生成することができます。つまり以前に使用されていない限り、新しいウォレットを生成できます。
 
-The optional passphrase creates two important features:
+　オプションのパスフレーズは、2つの重要な機能があります。
 
-- A second factor (something memorized) that makes a mnemonic useless on its own, protecting mnemonic backups from compromise by a thief
+- 第2の要素（暗記したもの）、つまりオプションのパスフレーズによって、ニーモニックを単独では使えないようにできる。これで、泥棒による情報漏洩からニーモニックのバックアップを保護できるようになる
+- 一見もっともらしい形態を取ったウォレット、または「脅迫ウォレット（duress wallet）」を作ることができる。オプションのパスフレーズを使用することで、少額の資産しか入っていないウォレットも作れる。これは大半の資産が入っている「本物」のウォレットを攻撃からそらすために使える
 
-- A form of plausible deniability or "duress wallet," where a chosen passphrase leads to a wallet with a small amount of funds, used to distract an attacker from the "real" wallet that contains the majority of funds
+　しかしながら、パスフレーズを使うことには紛失の危険性があることに注意しなければなりません。
 
-However, it is important to note that the use of a passphrase also introduces the risk of loss:
+- もしウォレットの所有者が、活動することができないか死亡しており、誰もパスフレーズを知らない場合、そのシードは役に立たない。ウォレットに保存されているすべての資産は永遠に失われる
+- 逆に、所有者がシードと同じ場所にパスフレーズをバックアップすると、シード生成のための第2の要素としての役割を果たさない
 
-- If the wallet owner is incapacitated or dead and no one else knows the passphrase, the seed is useless, and all the funds stored in the wallet are lost forever.
+　パスフレーズは非常に便利ですが、一方で、相続人が暗号通貨資産をリカバリーできるようにしておくなど、バックアップとリカバリーのために慎重に計画したプロセスと組み合わせてパスフレーズを使用する必要があります。
 
-- Conversely, if the owner backs up the passphrase in the same place as the seed, that defeats the purpose of a second factor.
+#### ニーモニックコードの活用
 
-While passphrases are very useful, they should be used only in combination with a carefully planned process for backup and recovery, considering the possibility of heirs surviving the owner being able to recover the cryptocurrency.
-
-#### Working with Mnemonic Codes
-
-BIP-39 is implemented as a library in many different programming languages, such as:
+BIP-39は数多くのプログラミング言語でライブラリとして実装されています。以下に例を示します。
 
 **python-mnemonic**
 
-The reference implementation of the standard by the SatoshiLabs team that proposed BIP-39, in Python
+BIP-39を提案したSatoshiLabsチームによるリファレンス実装（Python）
 
 **ConsenSys/eth-lightwallet**
 
-A lightweight JavaScript Ethereum wallet for nodes and browser (with BIP-39)
+ノードとブラウザ向けの軽量JavaScriptイーサリアムウォレット（BIP-39対応）
 
 **npm/bip39**
 
-A JavaScript implementation of Bitcoin BIP-39
+ビットコインBIP-39のJavaScript実装
 
-There is also a BIP-39 generator implemented in a standalone web page (Figure 5-4), which is extremely useful for testing and experimentation. The [Mnemonic Code Converter](https://iancoleman.io/bip39/) generates mnemonics, seeds, and extended private keys. It can be used offline in a browser, or it can be accessed online.
+　スタンドアロンのウェブページとして実装されたBIP-39ジェネレーターもあり（図5-4）、テストや実験に非常に便利です。[Mnemonic Code Converter](https://iancoleman.io/bip39/)はニーモニック、シード、拡張秘密鍵を生成します。ブラウザでオフラインで使用することも、オンラインでアクセスすることもできます。
 
 > **注記**
 >
-> This will be emphasized repeatedly throughout the chapter because it is the most crucial rule for seed security: never, under any circumstances, save your seed phrase in digital form.
+> この章を通じて繰り返し強調されますが、シードのセキュリティにおいて最も重要なルールです：いかなる状況においても、シードフレーズをデジタル形式で保存してはいけません。
 
 ![The BIP-39 generator web page](images/ch5/maet_0504.png)
 
-Figure 5-4. The BIP-39 generator web page
+図5-4. BIP-39ジェネレーターのウェブページ
 
-### Creating an HD Wallet from the Seed
+### シードからのHDウォレットの生成
 
-HD wallets are created from a single *root seed*, which is a 128-, 256-, or 512-bit random number. This seed is most commonly generated from a mnemonic, as detailed in the previous section.
+　HDウォレットは、128ビットあるいは256ビット、512ビットの乱数である単一のルートシードから生成されます。通常、このシードは、前節で説明したニーモニックから生成されます。
 
-Every key in the HD wallet is deterministically derived from this root seed, which makes it possible to re-create the entire HD wallet from that seed in any compatible HD wallet. This makes it easy to export, back up, restore, and import HD wallets containing thousands or even millions of keys by transferring just the mnemonic from which the root seed is derived.
+　HDウォレットにあるすべての鍵は、ルートシードから決定論的に導出されます。この仕組みにより、互換性のあるHDウォレットであればシードからウォレット全体を再生成できます。ルートシードを生成したニーモニックを転送するだけで、HDウォレット（数千から数百万の鍵を含むもの）のバックアップ・復元・エクスポート・インポートを容易に行えます。
 
-### HD Wallets (BIP-32)
+### HDウォレット（BIP-32）
 
-Most HD wallets follow the BIP-32 standard, which has become a de facto industry standard for deterministic key generation. We won't be discussing all the details of BIP-32 here, only the components necessary to understand how it is used in wallets. The most important aspect is the treelike hierarchical relationships that it is possible for the derived keys to have, as you can see in Figure 5-1. It's also important to understand the ideas of extended keys and hardened keys, which are explained in the following sections.
+　ほとんどのHDウォレットはBIP-32標準に準拠しており、決定論的な鍵生成のデファクトスタンダードとなっています。ここではBIP-32のすべての詳細を議論するのではなく、ウォレットでの使われ方を理解するために必要なコンポーネントのみを説明します。最も重要な点は、図5-1で見られるように、導出された鍵がツリー状の階層的な関係を持てることです。拡張鍵と強化鍵の概念を理解することも重要であり、これらは以降の節で説明します。
 
-There are dozens of interoperable implementations of BIP-32 offered in many software libraries. These are mostly designed for Bitcoin wallets, which implement addresses in a different way, but they share the same key-derivation implementation as Ethereum's BIP-32-compatible wallets. Use one designed for Ethereum or adapt one from Bitcoin by adding an Ethereum address encoding library.
+　多くのソフトウェアライブラリで、相互運用可能なBIP-32の実装が数多く提供されています。これらの多くはビットコインウォレット向けに設計されており、アドレスの実装方法は異なりますが、イーサリアムのBIP-32互換ウォレットと同じ鍵導出の実装を共有しています。イーサリアム向けに設計されたものを使用するか、ビットコイン向けのものにイーサリアムアドレスのエンコーディングライブラリを追加して適用してください。
 
-There is also a BIP-32 generator implemented as a standalone web page that is very useful for testing and experimentation with BIP-32.
+　スタンドアロンのウェブページとして実装されたBIP-32生成器もあり、BIP-32のテストや実験に非常に便利です。
 
 > **警告**
 >
-> The standalone BIP-32 generator is not an HTTPS site. That's to remind you that using this tool is not secure. It is only for testing. You should not use the keys produced by this site with real funds.
+> スタンドアロンのBIP-32生成器はHTTPSサイトではありません。ここでHTTPSサイトでないことを強調しているのは、このツールの使用の安全性が保証されていないことを知ってもらうためです。あくまでもこのツールはテスト専用です。このサイトで生成した鍵は、本物の資金の運用で使うべきではありません。
 
-#### Extended Public and Private Keys
+#### 拡張公開鍵と拡張秘密鍵
 
-In BIP-32 terminology, keys can be "extended." With the right mathematical operations, these extended "parent" keys can be used to derive "child" keys, thus producing the hierarchy of keys and addresses described earlier. A parent key doesn't have to be at the top of the tree. It can be picked out from anywhere in the tree hierarchy. Extending a key involves taking the key itself and appending a special *chain code* to it. A chain code is a 256-bit binary string that is mixed with each key to produce child keys.
+　BIP-32の用語では、鍵は「拡張」することができます。適切な数学的演算を用いることで、これらの拡張された「親」鍵から「子」鍵を導出し、前述した鍵とアドレスの階層構造を生成できます。親鍵はツリーの最上位にある必要はなく、ツリー階層のどこからでも選択できます。鍵を拡張するとは、鍵自体に特別な*チェーンコード*を付加することです。チェーンコードは256ビットのバイナリ文字列で、各鍵と混合されて子鍵を生成します。
 
-If the key is a private key, it becomes an *extended private key* distinguished by the prefix `xprv`:
+鍵が秘密鍵である場合、プレフィックス`xprv`で識別される*拡張秘密鍵*になります：
 
     xprv9s21ZrQH143K2JF8RafpqtKiTbsbaxEeUaMnNHsm5o6wCW3z8ySyH4UxFVSfZ8n7ESu7fgir8i...
 
-An *extended public key* is distinguished by the prefix `xpub`:
+拡張公開鍵は、プレフィックス`xpub`によって識別されます：
 
     xpub661MyMwAqRbcEnKbXcCqD2GT1di5zQxVqoHPAgHNe8dv5JP8gWmDproS6kFHJnLZd23tWevhdn...
 
-A very useful characteristic of HD wallets is the ability to derive child public keys from parent public keys *without* having the private keys. This gives us two ways to derive a child public key: either directly from the child private key or from the parent public key. An extended public key can be used, therefore, to derive all the public keys (and *only* the public keys) in that branch of the HD wallet structure.
+　HDウォレットには、秘密鍵を使わずに親の公開鍵から子の公開鍵を生成できるという、とても有用な特徴があります。このことから、子の公開鍵を生成する方法が2種類あることがわかります。子の秘密鍵から直接生成するか、または親の公開鍵から生成するかです。したがって、拡張公開鍵を用いることで、HDウォレットの持つブランチにあるすべての公開鍵（公開鍵のみ）を取得できます。
 
-This shortcut can be used to create extremely secure public-key-only deployments, where a server or application has a copy of an extended public key but no private keys whatsoever. That kind of deployment can produce an infinite number of public keys and Ethereum addresses but cannot spend any money sent to those addresses. Meanwhile, on another, more secure server, the extended private key can derive all the corresponding private keys to sign transactions and spend the money.
+　この仕組みにより、拡張公開鍵のコピーを持っているものの秘密鍵は一切持たないサーバーやアプリケーションにおいて、非常に安全に公開鍵のみがデプロイできます。このようなデプロイにおいては、制限なく公開鍵とイーサリアムアドレスが生成できますが、それらのアドレスに送金された資産を使うことはできません。一方、より安全な別のサーバーにおいて、拡張秘密鍵から対応するすべての秘密鍵を生成し、トランザクションに署名して資産を使うことができます。
 
-One common application of this method is to install an extended public key on a web server that serves an ecommerce application. The web server can use the public key derivation function to create a new Ethereum address for every transaction (e.g., for a customer shopping cart) and will not have any private keys that would be vulnerable to theft. Without HD wallets, the only way to do this is to generate thousands of Ethereum addresses on a separate secure server and then preload them on the ecommerce server. That approach is cumbersome and requires constant maintenance to ensure that the server doesn't run out of keys—hence the preference to use extended public keys from HD wallets.
+　この方法の応用として一般的なのは、eコマースを提供するウェブサーバーに拡張公開鍵をインストールすることです。このウェブサーバーは、公開鍵の導出関数を使って、すべてのトランザクションのために新しいイーサリアムアドレスを生成することができます（たとえば顧客のショッピングカートごとに）。このウェブサーバーには盗難に脆弱な秘密鍵は保管されません。HDウォレットを使わない場合、別の安全なサーバーで何千ものイーサリアムアドレスを事前生成し、eコマースサーバーに読み込んでおく必要があります。このアプローチは煩雑であり、eコマースサーバーが鍵を使い果たさないようにするためには、定期的なメンテナンスが必要になります。そのためHDウォレットの拡張公開鍵を使用することが好ましいでしょう。
 
-Another common application of this solution is for cold-storage or hardware wallets. In that scenario, the extended private key can be stored in a hardware wallet, while the extended public key can be kept online. The user can create "receive" addresses at will while the private keys are safely stored offline. To spend the funds, the user can use the extended private key in an offline signing Ethereum client or sign transactions on the hardware wallet device.
+　もう1つの一般的な応用としては、コールドストレージもしくはハードウェアウォレットを用いることです。この場合は、拡張秘密鍵はハードウェアウォレットに保管されますが、拡張公開鍵はオンラインで保管することができます。ユーザーは自由に「受信」アドレスを作成できますが、一方で秘密鍵は安全にオフラインで保存されます。資産を使うには、ユーザーは拡張秘密鍵をイーサリアムのオフライン署名クライアントで使用するか、ハードウェアウォレットデバイス上でトランザクションに署名する必要があります。
 
-#### Hardened Child Key Derivation
+#### 強化子鍵導出
 
-The ability to derive a branch of public keys from an extended public key, or `xpub`, is very useful, but it comes with potential risk. Access to an `xpub` does not give access to child private keys. However, because the `xpub` contains the chain code (used to derive child public keys from the parent public key), if a child private key is known or somehow leaked, it can be used with the chain code to derive all the other child private keys. A single leaked child private key, together with a parent chain code, reveals all the private keys of all the children. Worse, the child private key together with a parent chain code can be used to deduce the parent private key.
+　拡張公開鍵もしくは`xpub`から公開鍵のブランチを生成する機能は非常に便利ですが、これには潜在的なリスクが伴います。`xpub`へアクセスできても、子秘密鍵へのアクセスはできません。しかしながら、`xpub`にはチェーンコード（親公開鍵から子公開鍵の導出に使用）が含まれています。そのため、子秘密鍵が1つでも漏洩すると、チェーンコードを用いて他のすべての子秘密鍵を生成できてしまいます。親チェーンコードとともに、1つの子秘密鍵が漏洩してしまえば、すべての子の秘密鍵が明らかになってしまいます。さらに悪いことに、親チェーンコードとともに子秘密鍵を使うことで、親秘密鍵を推測することもできてしまいます。
 
-To counter this risk, HD wallets use an alternative derivation function called *hardened derivation*, which "breaks" the relationship between parent public key and child chain code. The hardened derivation function uses the parent private key to derive the child chain code, instead of the parent public key. This creates a "firewall" in the parent-child sequence, with a chain code that cannot be used to compromise a parent or sibling private key.
+　このリスクに対処するため、HDウォレットは、親の公開鍵と子のチェーンコードの関係を「破壊」する*強化導出*（hardened derivation）と呼ばれる鍵導出関数を代わりに使用します。この強化鍵導出関数は、親公開鍵ではなく、親秘密鍵を用いて子チェーンコードを導出します。親または兄弟秘密鍵を危険にさらすことのないチェーンコードを使って、親と子の間に「ファイアウォール」が作られるのです。
 
-In simple terms, if you want to use the convenience of an `xpub` to derive branches of public keys without exposing yourself to the risk of a leaked chain code, you should derive it from a hardened parent, rather than a normal parent. Best practice is to have the level-one children of the master keys always derived by hardened derivation, to prevent compromise of the master keys.
+　チェーンコードの漏洩リスクにさらされることなく、`xpub`の利便性を利用して公開鍵のブランチを導出したいのであれば、通常の親（親公開鍵）ではなく、強化された親（親秘密鍵）から導出する必要があります。マスター鍵の第1レベルの子は、マスター鍵への不正アクセスを防ぐために常に強化導出を通じて生成するというのがベストプラクティスになります。
 
-#### Index Numbers for Normal and Hardened Derivation
+#### 通常導出と強化導出のインデックス番号
 
-It is clearly desirable to be able to derive more than one child key from a given parent key. To manage this, an index number is used. Each index number, when combined with a parent key using the special child derivation function, gives a different child key. The index number used in the BIP-32 parent-to-child derivation function is a 32-bit integer. To easily distinguish between keys derived through the normal (unhardened) derivation function versus keys derived through hardened derivation, this index number is split into two ranges. Index numbers between 0 and 2^31^–1 (0x0 to 0x7FFFFFFF) are used *only* for normal derivation. Index numbers between 2^31^ and 2^32^–1 (0x80000000 to 0xFFFFFFFF) are used *only* for hardened derivation. Therefore, if the index number is less than 2^31^, the child is normal, whereas if the index number is equal to or above 2^31^, the child is hardened.
+　与えられた親鍵から複数の子鍵を導出できることは明らかに望ましいことです。これを管理するために、インデックス番号が使用されます。各インデックス番号は、特別な子鍵導出関数を使って親鍵と組み合わされると、異なる子鍵を生成します。BIP-32の親から子への導出関数で使用されるインデックス番号は32ビット整数です。このインデックス番号は2つの範囲に分割されています。通常（非強化）の鍵導出関数で導出された鍵と、強化導出関数で導出された鍵を簡単に区別するためです。0から2^31^-1（0x0から0x7FFFFFFF）のインデックス番号は、通常の導出にのみ使用されます。2^31^から2^32^-1（0x80000000から0xFFFFFFFF）のインデックス番号は強化導出にのみ使用されます。したがって、インデックス番号が2^31^未満であれば子は通常の鍵導出関数によって導出されており、2^31^以上であれば子は強化導出によって導出されています。
 
-To make the index numbers easier to read and display, the index numbers for hardened children are displayed starting from zero, but with a prime symbol. The first normal child key is therefore displayed as 0, whereas the first hardened child (index 0x80000000) is displayed as 0′. In sequence, then, the second hardened key would have an index of 0x80000001 and would be displayed as 1′, and so on. When you see an HD wallet index *i*′, that means 2^31^ + *i*.
+　インデックス番号を読みやすく表示するために、強化導出によって導出された子のインデックス番号はゼロから始まり、プライム記号（'）付きで表示されます。したがって、最初の通常導出による子鍵は0として表示され、最初の強化導出による子鍵（インデックス0x80000000）は0'として表示されます。2番目の強化導出鍵はインデックス0x80000001を持ち、1'として表示されます。HDウォレットのインデックス番号*i*'は、2^31^ + *i*を意味します。
 
-#### HD Wallet Key Identifier (Path)
+#### HDウォレットの鍵識別子（パス）
 
-Keys in an HD wallet are identified using a "path" naming convention, with each level of the tree separated by a slash (`/`) character (see Table 5-5). Private keys derived from the master private key start with `m`. Public keys derived from the master public key start with `M`. Therefore, the first child private key of the master private key is `m/0`. The first child public key is `M/0`. The second grandchild of the first child is `m/0/1`, and so on.
+　HDウォレット内の鍵は「パス」の命名規則を使用して識別され、ツリーの各レベルはスラッシュ（`/`）文字で区切られます（表5-5参照）。マスター秘密鍵から得られた秘密鍵は`m`で始まります。マスター公開鍵から得られた公開鍵は`M`で始まります。したがって、マスター秘密鍵の最初の子秘密鍵は`m/0`です。最初の子公開鍵は`M/0`です。最初の子の2番目の孫は`m/0/1`であり、以下同様に続いていきます。
 
-The "ancestry" of a key is read from right to left, until you reach the master key from which it was derived. For example, identifier `m/x/y/z` describes the key that is the *z*-th child of key `m/x/y`, which is the *y*-th child of key `m/x`, which is the *x*-th child of `m`.
+　右から左に進むほど「祖先」に近づき、最終的にはマスター鍵にたどり着きます。たとえば、識別子`m/x/y/z`は、鍵`m/x/y`の*z*番目の子である鍵を示します。また鍵`m/x/y`は鍵`m/x`の*y*番目の子です。さらに`m/x`は`m`の*x*番目の子です。
 
-**Table 5-5. HD wallet path examples**
+**表5-5. HDウォレットのパスの例**
 
-| HD path | Key described |
+| HDパス | 鍵の説明 |
 |---|---|
-| m/0 | The first (0) child private key from the master private key (m) |
-| m/0/0 | The first grandchild private key of the first child (m/0) |
-| m/0'/0 | The first normal grandchild of the first hardened child (m/0') |
-| m/1/0 | The first grandchild private key of the second child (m/1) |
-| M/23/17/0/0 | The first great-great-grandchild public key of the first great-grandchild of the 18th grandchild of the 24th child |
+| m/0 | マスター秘密鍵（m）の最初（0）の子秘密鍵 |
+| m/0/0 | 最初の子秘密鍵（m/0）の最初（0）の孫秘密鍵 |
+| m/0'/0 | 最初の強化された子秘密鍵（m/0'）の最初（0）の通常の孫秘密鍵 |
+| m/1/0 | 2番目の子秘密鍵（m/1）の最初（0）の孫秘密鍵 |
+| M/23/17/0/0 | 24番目の子公開鍵の、18番目の孫公開鍵の、最初（0）の曽孫公開鍵の、最初（0）の玄孫公開鍵 |
 
-### Navigating the HD Wallet Tree Structure
+### HDウォレットのツリー構造をたどる
 
-The HD wallet tree structure is tremendously flexible. The flip side of this is that it also allows for unbounded complexity: each parent extended key can have four billion children—two billion normal children and two billion hardened children. Each of those children can have another four billion children, and so on. The tree can be as deep as you want, with a potentially infinite number of generations. With all that potential, it can become quite difficult to navigate these very large trees.
+　HDウォレットのツリー構造はとても柔軟性があります。しかし、その柔軟性の裏返しとして、際限のない複雑さが挙げられます。それぞれの親拡張鍵は40億個の子鍵を持つことができます。そのうちの20億個は普通の子鍵で、そのほかの20億個は強化導出された子鍵です。そして、子鍵のそれぞれが、さらに40億の子鍵を持つことができます。ユーザーの要望に応じてツリーの階層を深くすることができ、無限の世代の鍵を作ることができます。ただし、際限なく続くツリーのパスをたどるのは非常に困難です。
 
-Two BIPs offer a way to manage this potential complexity by creating standards for the structure of HD wallet trees. BIP-43 proposes the use of the first hardened child index as a special identifier that signifies the "purpose" of the tree structure. Based on BIP-43, an HD wallet should use only one level-one branch of the tree, with the index number defining the purpose of the wallet by identifying the structure and namespace of the rest of the tree. More specifically, an HD wallet using only branch `m/i′/...` is intended to signify a specific purpose, and that purpose is identified by index number *i*.
+　このためBIP-43とBIP-44という2つのBIPは、HDウォレットのツリー構造に関する標準を作ることで、この複雑さを解消しようとしています。BIP-43では、ツリー構造の「目的」を示す特別な識別子として、最初に強化子鍵のインデックス番号を使用することを提案しています。BIP-43によると、BIP-32で定義されているHDウォレットの階層（パス）構造の1階層目を「目的」として使うことにしています。ウォレットの目的を定義するインデックス番号が1階層目に示されており、その目的に応じて2階層目以下の構造と名前空間が決定されることになります。より具体的には、階層`m/i'/...`のブランチのみを使用するHDウォレットは、特定の目的に沿った使用を想定されており、その目的はインデックス番号*i*によって識別されます。
 
-Extending that specification, BIP-44 proposes a multicurrency, multiaccount structure signified by setting the "purpose" number to `44′`. All HD wallets following the BIP-44 structure are identified by the fact that they use only one branch of the tree: `m/44′/*`. BIP-44 specifies the structure as consisting of five predefined tree levels:
+　その仕様を拡張して、BIP-44は「目的」番号を`44'`に設定することで示されるマルチ通貨、マルチアカウント構造を提案しています。BIP-44の構造に従うすべてのHDウォレットは、ツリーの1つのブランチ`m/44'/*`のみを使用することで識別されます。BIP-44は、5つの事前定義されたツリーレベルで構成される構造を規定しています：
 
     m / purpose′ / coin_type′ / account′ / change / address_index
 
-The first level, `purpose′`, is always set to `44′`. The second level, `coin_type′`, specifies the type of cryptocurrency coin, allowing for multicurrency HD wallets where each currency has its own subtree under the second level. There are several currencies defined in the standards document SLIP-0044; for example, Ethereum is `m/44′/60′`, Ethereum Classic is `m/44′/61′`, Bitcoin is `m/44′/0′`, and testnet for all currencies is `m/44′/1′`.
+　第1レベルの`purpose'`は常に`44'`に設定されます。第2レベルの`coin_type'`は暗号通貨の種類を指定し、各通貨が第2レベルの下に独自のサブツリーを持つマルチ通貨HDウォレットを可能にします。標準文書SLIP-0044にはいくつかの通貨が定義されています。例えば、イーサリアムは`m/44'/60'`、イーサリアムクラシックは`m/44'/61'`、ビットコインは`m/44'/0'`、すべての通貨のテストネットは`m/44'/1'`です。
 
-The third level of the tree is `account′`, which allows users to subdivide their wallets into separate logical subaccounts for accounting or organizational purposes. For example, an HD wallet might contain two Ethereum accounts: `m/44′/60′/0′` and `m/44′/60′/1′`. Each account is the root of its own subtree.
+　ツリーの第3レベルは`account'`で、ユーザーが会計や組織の目的に合わせてウォレットを独立した論理的なサブアカウントに細分化できるようにします。例えば、HDウォレットには2つのイーサリアムアカウントが含まれることがあります：`m/44'/60'/0'`と`m/44'/60'/1'`。各アカウントはそれぞれのサブツリーのルートとなります。
 
-Because BIP-44 was created originally for Bitcoin, it contains a "quirk" that isn't relevant in the Ethereum world. On the fourth level of the path, `change`, an HD wallet has two subtrees: one for creating receiving addresses and one for creating change addresses. Only the "receive" path is used in Ethereum, as there is no necessity for a change address like there is in Bitcoin. Note that whereas the previous levels used hardened derivation, this level uses normal derivation. This is to allow the account level of the tree to export extended public keys for use in a nonsecured environment.
+　BIP-44はもともとビットコイン用に作成されたため、イーサリアムの世界では関係のない「癖」が含まれています。パスの第4レベルの`change`では、HDウォレットは2つのサブツリーを持ちます。1つは受信アドレスの作成用、もう1つはお釣りアドレスの作成用です。イーサリアムではビットコインのようなお釣りアドレスの必要がないため、「受信」パスのみが使用されます。前のレベルが強化導出を使用していたのに対し、このレベルでは通常導出が使用されることに注意してください。これは、安全でない環境で使うためにアカウントレベルの拡張公開鍵をエクスポートできるようにする目的です。
 
-Usable addresses are derived by the HD wallet as children of the fourth level, making the fifth level of the tree the `address_index`. For example, the third receiving address for Ethereum payments in the primary account would be `M/44′/60′/0′/0/2`. Table 5-6 shows a few more examples.
+　利用可能なアドレスは、HDウォレットによって第4レベルの子として導出され、ツリーの第5レベルが`address_index`になります。例えば、プライマリアカウントでのイーサリアム支払い用の3番目の受信アドレスは`M/44'/60'/0'/0/2`となります。表5-6にさらにいくつかの例を示します。
 
-**Table 5-6. BIP-44 HD wallet structure examples**
+**表5-6. BIP-44 HDウォレット構造の例**
 
-| HD path | Key described |
+| HDパス | 説明 |
 |---|---|
-| M/44′/60′/0′/0/2 | The third receiving public key for the primary Ethereum account |
-| M/44′/0′/3′/1/14 | The 15th change-address public key for the fourth Bitcoin account |
-| m/44′/2′/0′/0/1 | The second private key in the Litecoin main account, for signing transactions |
+| M/44'/60'/0'/0/2 | 最初（0'）のイーサリアムアカウントの3番目の受信用公開鍵 |
+| M/44'/0'/3'/1/14 | 4番目のビットコインアカウントの15番目のお釣り用公開鍵 |
+| m/44'/2'/0'/0/1 | トランザクションに署名するためのLitecoinメインアカウントの2番目の秘密鍵 |
 
-## Security
+## セキュリティ
 
-Let's start by introducing the concept of security versus ease of recovery. Taking these concepts to the extreme: what's the most secure seed? It's the one that no one can recover, not even you. So if the seed is created and all copies (physical or digital) are destroyed, that's the most secure seed in the world. Not great, as you wouldn't be able to recover it, but it's technically the most secure.
+　セキュリティとリカバリーのしやすさはトレードオフの関係にあります。極端な話、最も安全なシードとは何でしょうか？それは誰もリカバリーできないシード、自分自身でさえもリカバリーできないシードです。つまり、シードが作成され、すべてのコピー（物理的・デジタル的）が破壊されたなら、それは世界で最も安全なシードです。リカバリーできないので実用的ではありませんが、技術的には最も安全です。
 
-On the flip side, for ease of recovery, what's the easiest seed to recover? One that has the seed phrase written everywhere, like getting it tattooed on your body, in plain sight. That seed will be super easy to recover but not secure at all.
+　逆に、リカバリーのしやすさについて言えば、最もリカバリーしやすいシードとは何でしょうか？シードフレーズがあらゆるところに書かれている、例えば体に刺青として見える場所に入れてあるようなものです。そのシードはリカバリーが非常に簡単ですが、まったく安全ではありません。
 
-Any choice you make for your operational security (OpSec) in self-custody will likely increase either the security or the ease of recovery of your seed phrase. Increasing security typically reduces ease of recovery, and vice versa. Sometimes, you may end up reducing both, which should be avoided.
+　セルフカストディにおいてOpSec（運用セキュリティ）のために行う選択は、シードフレーズのセキュリティ強化とリカバリーのしやすさ、どちらかを向上させる方向に働きます。セキュリティを高めると通常はリカバリーのしやすさが低下し、その逆も同様です。場合によっては両方が低下してしまうこともあり、これは避けるべきです。
 
-Even with a high-security system, no setup is 100% secure. You can do everything in your power to create a perfect system, but there will still be vulnerabilities. One of the most interesting is private-key collisions: essentially generating a seed that's already been used. Since seeds in hardware wallets are generated offline and there's no database of generated seeds, it's technically possible to generate the same wallet twice. The chances of this happening are astronomically small (you're more likely to win the lottery twice in a row), but it's still a possibility.
+　高セキュリティのシステムであっても、100%安全な設定は存在しません。完璧なシステムを作るためにできる限りのことをしても、脆弱性は依然として存在します。中でも興味深い脆弱性として秘密鍵の衝突があります。これは本質的には、すでに使われているシードと同じものを偶然生成してしまうことによって発生します。ハードウェアウォレットのシードはオフラインで生成され、生成済みシードのデータベースは存在しないため、技術的には同じウォレットを2回生成することが可能です。これが起こる確率は天文学的に小さいですが（宝くじに2回連続で当たる確率よりも低い）、可能性としては存在します。
 
 > **警告**
 >
-> Often, there's no urgency in seed security. Either your seed has been stolen, in which case you're already in trouble, or it hasn't. This is especially true for Bitcoin wallets. For Ethereum, it is still the case, but there are situations where acting fast can save funds—for example, removing approvals to dangerous smart contracts. If you receive any urgent messages about your seed, it's probably a scam.
+> シードのセキュリティについては、多くの場合、急いで対処する必要はありません。シードが盗まれていればすでに手遅れですし、盗まれていなければ何も問題はないからです。これは特にビットコインウォレットに当てはまります。イーサリアムでも基本的には同様ですが、危険なスマートコントラクトへの承認を取り消すなど、迅速に行動すれば資金を守れるケースもあります。シードについて緊急の対応を求めるメッセージを受け取った場合、それはおそらく詐欺です。
 
-Complex security mechanisms for hiding your seed are not a best practice. Although they may seem foolproof at first, professionals in the field can often recover these types of seeds with the right tools. And if it's so complex that even professionals can't recover it, there's a good chance you won't be able to when needed.
+　シードを隠すための複雑なセキュリティメカニズムはベストプラクティスではありません。一見完璧に見えるかもしれませんが、その分野の専門家は適切なツールを使えばこの種のシードをリカバリーできることが多いです。そして、専門家でもリカバリーできないほど複雑であれば、必要なときに自分自身でもリカバリーできない可能性が高いです。
 
-Another non–best practice is relying on obscurity for security. Your system should have as few "secret" components as possible, with the seed itself being the main one. If revealing parts of your system causes it to collapse, it's not secure.
+　もう1つの避けるべきプラクティスは、セキュリティを隠蔽に頼ることです。システムには「秘密」のコンポーネントをできるだけ少なくし、秘密にすべきものはシード自体に限定すべきです。システムの一部を公開するとシステムが崩壊するのであれば、それは安全ではありません。
 
-A best practice is to follow what most others do. Trying to invent new systems or, worse, creating everything from scratch is wrong. It's not secure, and the majority of people don't have the technical skills to do it. Keep things simple. Simplicity is absolutely a best practice.
+　ベストプラクティスは、他の多くの人がやっていることに従うことです。新しいシステムを発明しようとしたり、さらに悪いことにすべてをゼロから作ろうとするのは間違いです。安全ではありませんし、ほとんどの人にはそれを行う技術的スキルがありません。シンプルに保ちましょう。シンプルさは間違いなくベストプラクティスです。
 
-Making a backup of your seed is probably the most important best practice. Whether it's a hardware wallet or a browser wallet, a backup is essential. Backup storage should (a) withstand natural disasters, (b) be geographically separate from your hardware wallet, (c) be in a secure place, and (d) have tamper-evident packaging. Dividing your seed across multiple pieces of paper is not a best practice. It gives a false sense of security.
+　シードのバックアップを作成することは、おそらく最も重要なベストプラクティスです。ハードウェアウォレットであれブラウザウォレットであれ、バックアップは不可欠です。バックアップの保管場所は、(a) 自然災害に耐えられること、(b) ハードウェアウォレットとは地理的に離れていること、(c) 安全な場所であること、(d) 改ざんの痕跡が分かるパッケージであること、が求められます。シードを複数の紙に分割することはベストプラクティスではありません。誤った安心感を与えるだけです。
 
 > **ヒント**
 >
-> If you don't have a secure place to store your seed, consider using a passphrase. The passphrase adds an extra layer of protection by being combined with your seed during the key-generation process. You can even store the passphrase digitally since it's useless without the seed. If someone gets your seed but not your passphrase, they won't be able to access your funds for a certain amount of time; this is because the passphrase can be brute-forced if the attacker has the seed.
+> シードを保管する安全な場所がない場合は、パスフレーズの使用を検討してください。パスフレーズは鍵生成プロセス中にシードと組み合わされることで、追加の保護層を提供します。パスフレーズはシードなしでは無意味なので、デジタルで保存することもできます。誰かがシードを入手してもパスフレーズを入手しなければ、一定期間は資金にアクセスできません。ただし、攻撃者がシードを持っていればパスフレーズは時間をかけてブルートフォースで解読される可能性があります。
 
-Everyone's needs are different, and their security requirements will vary accordingly. But you should always follow best practices. Your needs may change over time, so stay aware and adjust your OpSec if needed.
+　人によってニーズは異なり、セキュリティ要件もそれに応じて変わります。しかし、常にベストプラクティスに従うべきです。ニーズは時間とともに変化する可能性があるため、常に注意を払い、必要に応じてOpSecを調整してください。
 
-After setting up your hardware wallet, test your ability to recover the seed. Do this at least once every 12 months, ensuring that your backup works and is accessible.
+　ハードウェアウォレットをセットアップした後、シードをリカバリーする能力をテストしてください。少なくとも12か月に1回はこれを行い、バックアップが機能し、アクセス可能であることを確認してください。
 
-What does a secure system look like? A trusted hardware wallet (like Trezor), at least one safe backup (never saved digitally), and a plan for inheritance in case something happens to you.
+　安全なシステムとはどのようなものでしょうか？信頼できるハードウェアウォレット（Trezorなど）、少なくとも1つの安全なバックアップ（デジタルで保存しないこと）、そしてあなたに何かあった場合の相続計画です。
 
 > **注記**
 >
-> Inheritance is a very complicated topic. We recommend reading *Cryptoasset Inheritance Planning: A Simple Guide for Owners* by Pamela Morgan (Merkle Bloom).
+> 相続は非常に複雑なトピックです。パメラ・モーガン著『*Cryptoasset Inheritance Planning: A Simple Guide for Owners*』（Merkle Bloom）を読むことをお勧めします。
 
-## Improving on User Experience
+## ユーザーエクスペリエンスの改善
 
-As we mentioned earlier, at a high level, a wallet is a software application that serves as the primary user interface to Ethereum. So for most of Ethereum's users, the wallet is most of the user experience. For years, it has not really been improved. For example, the most popular browser wallet at the time of writing is MetaMask, which has not evolved that much since its inception; a close second, Rabby, has recently emerged. We will now examine a few updates to wallets that could drastically improve the user experience.
+　前述のように、広義にはウォレットとはイーサリアムへの主要なユーザーインターフェイスとして機能するソフトウェアアプリケーションです。そのため、イーサリアムのユーザーの大部分にとって、ウォレットがユーザーエクスペリエンスのほぼすべてです。しかし、長年にわたりウォレットのUXはほとんど改善されてきませんでした。例えば、執筆時点で最も人気のあるブラウザウォレットはMetaMaskですが、誕生以来それほど進化していません。僅差の2番手としてRabbyが最近登場しました。ここでは、ユーザーエクスペリエンスを劇的に改善しうるウォレットのアップデートについて検討します。
 
-### Account Abstraction
+### アカウントアブストラクション
 
-Account abstraction (AA) on Ethereum is a way to make user accounts more flexible and easier to use. Normally, there are two types of accounts in Ethereum, as described in Chapter 2: EOAs and smart contract accounts. AA combines the benefits of both types. It allows regular accounts (EOAs) to behave more like smart contracts, meaning users can set up custom rules for how their accounts work, such as adding security features or allowing multiple people to sign transactions.
+　イーサリアムにおけるアカウントアブストラクション（AA）は、ユーザーアカウントをより柔軟で使いやすくするための仕組みです。通常、第2章で説明したように、イーサリアムにはEOAとスマートコントラクトアカウントの2種類のアカウントがあります。AAはこの両方の利点を組み合わせたものです。通常のアカウント（EOA）がスマートコントラクトのように振る舞えるようになり、セキュリティ機能の追加や複数人によるトランザクション署名の許可など、アカウントの動作にカスタムルールを設定できます。
 
-With AA, Ethereum can become more user-friendly and flexible. For example, you could recover a lost account without relying solely on a private key, or you could pay transaction fees in any token, not just ether.
+　AAにより、イーサリアムはより使いやすく柔軟になります。例えば、秘密鍵だけに頼らずに紛失したアカウントをリカバリーしたり、イーサだけでなく任意のトークンでトランザクション手数料を支払ったりできるようになります。
 
-There have been multiple proposals to implement AA. The main distinction is that one group of proposals tried to implement AA without changing the Ethereum protocol. Another group of proposals, which will be implemented in the Pectra upgrade, will end up changing the Ethereum protocol.
+　AAを実装するための提案は複数あります。主な違いとして、一方の提案グループはイーサリアムプロトコルを変更せずにAAを実装しようとしたのに対し、もう一方の提案グループはイーサリアムプロトコル自体を変更するもので、Pectraアップグレードで実装される予定です。
 
-Let's look at the main EIPs and Ethereum Requests for Comments (ERCs) for AA. Keep in mind that these proposals are evolving rapidly, and by the time this book is published, the AA landscape may have changed significantly. Nevertheless, it's still useful to explore what has been implemented and what is planned for the near future.
+　AAに関する主なEIPとEthereum Requests for Comments（ERC）を見ていきましょう。これらの提案は急速に進化しており、本書が出版される頃にはAAの状況は大きく変わっている可能性があることに留意してください。それでも、何が実装され、近い将来何が計画されているかを把握しておくことは有益です。
 
 > **ヒント**
 >
-> It is important to understand the difference between an ERC, an EIP, and a Rollup Improvement Proposal (RIP). Essentially, EIPs and RIPs are improvements that center on changes in the Ethereum networks, whereas ERCs are application-related changes that do not have any impact on core network capability.
+> ERC、EIP、およびRollup Improvement Proposal（RIP）の違いを理解することが重要です。基本的に、EIPとRIPはイーサリアムネットワークの変更を中心とした改善であるのに対し、ERCはコアネットワークの機能に影響を与えないアプリケーション関連の変更です。
 
 #### ERC-4337
 
-ERC-4337 is an advancement in the Ethereum blockchain that aims to make user accounts more versatile, secure, and user-friendly. Unlike typical upgrades that alter the Ethereum protocol, ERC-4337 introduces new functionality through smart contracts and off-chain components. As of September 2024, the primary on-chain implementation of AA is ERC-4337.
+　ERC-4337は、ユーザーアカウントをより多機能で安全かつ使いやすくすることを目的としたイーサリアムの技術的進歩です。イーサリアムプロトコルを変更する一般的なアップグレードとは異なり、ERC-4337はスマートコントラクトとオフチェーンコンポーネントを通じて新しい機能を導入します。2024年9月時点で、AAの主要なオンチェーン実装はERC-4337です。
 
-As we said in Chapter 2, traditional Ethereum accounts are divided into two types: EOAs, controlled solely by private keys, and contract accounts, which operate through smart contracts. EOAs dominate user wallets today because they are simple and economical; however, they are also limited in functionality and prone to security risks. Losing a private key can mean permanent loss of funds, and EOAs are not customizable for security features like multisignature setups or account-recovery options. Contract accounts can incorporate these security measures and more, yet their complexity and higher transaction fees have prevented their widespread use by everyday users. ERC-4337 overcomes this by enabling EOAs to function as smart contracts, merging the simplicity of EOAs with the security and flexibility of contract accounts.
+　第2章で述べたように、従来のイーサリアムアカウントは2種類に分けられます。秘密鍵のみで制御されるEOAと、スマートコントラクトを通じて動作するコントラクトアカウントです。
 
-The implementation of ERC-4337 introduces *UserOperations* to handle transactions differently, as shown in Figure 5-5. Rather than directly broadcasting each transaction to the blockchain, users submit UserOperations to a high-level mempool, where transactions are temporarily stored. Special participants, known as *bundlers*, collect and process these UserOperations, packaging them into a single Ethereum transaction. This process reduces network congestion and allows multiple operations to be processed in a more efficient, bundled manner. ERC-4337 also establishes a new role called *paymasters*. Typically, Ethereum transactions require the payment of gas fees in ETH, but paymasters make it possible for users to cover gas fees with alternative tokens or even to have a third-party sponsor pay the fees on their behalf. This shift eliminates a significant barrier, especially for newcomers who may not hold ETH, making the Ethereum network more inclusive and accessible.
+　EOAはシンプルで経済的であるため現在ユーザーウォレットの主流ですが、機能が限定的でセキュリティリスクにもさらされやすいという問題があります。秘密鍵を紛失すると資金を永久に失う可能性があり、マルチシグ設定やアカウントリカバリーオプションなどのセキュリティ機能をカスタマイズすることもできません。
+
+　一方、コントラクトアカウントはこれらのセキュリティ対策を組み込めますが、その複雑さとトランザクション手数料の高さから一般ユーザーへの普及が進んでいませんでした。ERC-4337は、EOAにスマートコントラクトの機能を持たせることで、EOAのシンプルさとコントラクトアカウントのセキュリティ・柔軟性を融合させます。
+
+　ERC-4337の実装では、図5-5に示すように、トランザクションを異なる方法で処理する*UserOperation*が導入されます。各トランザクションを直接ブロックチェーンにブロードキャストするのではなく、ユーザーはUserOperationを高レベルのメムプールに送信し、そこでトランザクションが一時的に保存されます。*バンドラー*と呼ばれる特別な参加者がこれらのUserOperationを収集・処理し、1つのイーサリアムトランザクションにまとめます。これによりネットワークの輻輳が軽減され、複数のオペレーションをより効率的に処理できるようになります。
+
+　また、ERC-4337では*ペイマスター*という新しい役割も導入されます。通常、イーサリアムのトランザクションではETHでガス代を支払う必要がありますが、ペイマスターにより代替トークンでのガス代支払いや、第三者によるガス代の代理支払いが可能になります。これにより、ETHを保有していない新規ユーザーにとっての大きな障壁が取り除かれ、イーサリアムネットワークがより利用しやすくなります。
 
 ![ERC-4337 implementation diagram](images/ch5/maet_0505.png)
 
-Figure 5-5. ERC-4337 implementation diagram
+図5-5. ERC-4337の実装図
 
-Instead of using the traditional public mempool, which hosts pending transactions for EOAs, UserOperations are sent to a specialized *UserOperation mempool*: a higher-level mempool specifically designed for these operations. Bundlers monitor the UserOperation mempool, collecting multiple UserOperations to package them into a single "classic" transaction. They start by verifying each UserOperation's validity through the EntryPoint methods. After validation, the bundler submits this bundled transaction directly to the next proposed block, bypassing the regular mempool. Bundlers can either act as block builders themselves or collaborate with block builders to add the transaction to the blockchain.
+　従来のパブリックメムプールではEOAの保留中のトランザクションを扱いますが、UserOperationはこれらのオペレーション専用に設計された*UserOperationメムプール*に送信されます。バンドラーはこのUserOperationメムプールを監視し、複数のUserOperationを収集して1つの「従来型」トランザクションにまとめます。まずEntryPointメソッドを通じて各UserOperationの有効性を検証し、検証後、バンドルしたトランザクションを通常のメムプールをバイパスして次の提案ブロックに直接送信します。バンドラーは自らブロックビルダーとして機能することも、ブロックビルダーと連携してトランザクションをブロックチェーンに追加することもできます。
 
 #### EIP-2938
 
-While ERC-4337 focuses on AA at a high level via smart contracts without changing Ethereum's core, EIP-2938 goes a step further by proposing that AA be embedded within the protocol layer itself. This lower-level approach allows for even more direct and flexible interactions among users, smart contracts, and applications by fundamentally changing how the EVM treats accounts. Through EIP-2938, users could handle operations without traditional EOAs, removing reliance on private-key-based accounts and enabling a greater diversity of account management systems, such as multisignature accounts or social recovery accounts, directly on Ethereum's protocol level.
+　ERC-4337がイーサリアムのコアを変更せずにスマートコントラクトを通じてAAを実現するのに対し、EIP-2938はさらに一歩進んで、AAをプロトコル層自体に組み込むことを提案しています。このアプローチは、EVMがアカウントを扱う方法を根本的に変更することで、ユーザー、スマートコントラクト、アプリケーション間のより直接的で柔軟なやり取りを可能にします。EIP-2938により、ユーザーは従来のEOAなしでオペレーションを処理でき、秘密鍵ベースのアカウントへの依存を排除し、マルチシグアカウントやソーシャルリカバリーアカウントなど、より多様なアカウント管理システムをイーサリアムのプロトコルレベルで直接実現できます。
 
-The main difference between EIP-2938 and some existing AA proposals lies in the focus on integrating abstraction directly into the protocol, rather than layering it on top. With EIP-2938, Ethereum would support "operations" rather than "transactions," where each operation could represent a more versatile, customizable transaction type. EIP-2938 can redefine Ethereum's transactions as programmable objects, supporting a broader spectrum of use cases. By treating accounts and transactions as inherently programmable, it expands Ethereum's utility beyond standard payments and contract interactions, fitting perfectly with the increasingly complex applications being built on the network.
+　EIP-2938と既存のAA提案の主な違いは、アブストラクションをプロトコルの上にレイヤーとして載せるのではなく、プロトコルに直接統合する点にあります。EIP-2938では、イーサリアムは「トランザクション」ではなく「オペレーション」をサポートし、各オペレーションはより多機能でカスタマイズ可能なトランザクションタイプとなります。EIP-2938はイーサリアムのトランザクションをプログラム可能なオブジェクトとして再定義し、より広範なユースケースに対応します。アカウントとトランザクションを本質的にプログラム可能なものとして扱うことで、標準的な支払いやコントラクトとのやり取りを超えてイーサリアムの有用性を拡張し、ネットワーク上で構築される高度なアプリケーションにも対応できます。
 
 #### RIP-7560
 
-The RIP-7560 proposal integrates EIP-2938 and ERC-4337 into a unified approach for native AA, splitting Ethereum's transaction scope into validation, execution, and post-transaction steps. By separating transaction validation into distinct processes for authorization and payment of gas fees, it enables one contract to sponsor gas fees for another account's transaction. This approach maintains compatibility with ERC-4337's ecosystem while working toward the goal of fully native AA.
+　RIP-7560提案は、EIP-2938とERC-4337をネイティブAAのための統一的なアプローチに統合し、イーサリアムのトランザクションスコープを検証、実行、トランザクション後のステップに分割します。トランザクションの検証を認可とガス代の支払いに分離することで、あるコントラクトが別のアカウントのトランザクションのガス代をスポンサーすることが可能になります。このアプローチは、完全なネイティブAAの実現を目指しつつ、ERC-4337のエコシステムとの互換性を維持します。
 
-ERC-4337 introduces AA at the application level, but it comes with limitations due to its out-of-protocol design. These drawbacks include extra gas costs, limited censorship resistance, a dependency on nonstandard RPC methods, and restrictions that limit compatibility with existing contract expectations. Native AA, as proposed in EIP-2938, presents a more robust alternative by building these features directly into the protocol. However, EIP-2938 doesn't fully align with ERC-4337's structure, which has been widely tested and implemented without protocol changes.
+　ERC-4337はアプリケーションレベルでAAを導入していますが、プロトコル外の設計であるため制限があります。具体的には、追加のガスコスト、限定的な検閲耐性、非標準RPCメソッドへの依存、既存コントラクトとの互換性の制約などです。EIP-2938で提案されたネイティブAAは、これらの機能をプロトコルに直接組み込むことでより堅牢な代替手段を提示しますが、プロトコル変更なしで広くテスト・実装されてきたERC-4337の構造と完全には一致しません。
 
-By combining EIP-2938's built-in protocol-level features with the practical insights gained from ERC-4337, this proposal brings together the best of both approaches. This hybrid approach aims to lower gas costs, improve the reliability of transactions by making them more resistant to censorship, and ensure compatibility with current and future Ethereum contracts. Gradually moving from EOAs to smart contract accounts would also reduce risks tied to private keys, making Ethereum more secure and easier to use. Importantly, this setup ensures that those already using ERC-4337 can smoothly adopt these new features.
+　EIP-2938の組み込みプロトコルレベル機能とERC-4337から得られた実践的な知見を組み合わせることで、この提案は両方のアプローチの長所を統合します。このハイブリッドアプローチは、ガスコストの削減、検閲耐性の向上によるトランザクションの信頼性改善、現在および将来のイーサリアムコントラクトとの互換性確保を目指しています。EOAからスマートコントラクトアカウントへの段階的な移行により秘密鍵に関連するリスクも軽減され、イーサリアムがより安全で使いやすくなります。また、すでにERC-4337を使用しているユーザーがこれらの新機能をスムーズに採用できることも重要な点です。
 
-Figure 5-6 represents the transaction flow for AA as outlined in RIP-7560. The process incorporates several key contracts that handle validation, deployment, and execution, creating a streamlined, modular approach to managing user accounts and transactions on the Ethereum blockchain.
+図5-6は、RIP-7560で概説されたAAのトランザクションフローを表しています。このプロセスは、検証、デプロイメント、実行を処理する主要なコントラクトを組み込み、イーサリアムブロックチェーン上でユーザーアカウントとトランザクションを効率的かつモジュラーに管理します。
 
 ![RIP-7560 transaction flow](images/ch5/maet_0506.png)
 
-Figure 5-6. RIP-7560 transaction flow
+図5-6. RIP-7560のトランザクションフロー
 
-The flow begins with a nonce check by the Nonce Manager Contract to ensure that the transaction is unique and hasn't been replayed. This is a crucial step for transaction integrity because it prevents double-spending or accidental repeats. If the nonce is valid, the system moves forward; otherwise, the transaction is halted.
+　フローは、Nonce Managerコントラクトによるナンスチェックから始まり、トランザクションが一意でありリプレイされていないことを確認します。これは二重支払いや偶発的な繰り返しを防ぐための重要なステップです。ナンスが有効であればシステムは先に進み、そうでなければトランザクションは停止されます。
 
-Next, the process checks if the user's Account Contract (a smart wallet) already exists. If not, the Deployer Contract steps in to create this wallet, allowing the user to participate in transactions. Once it is deployed, or if it is already in place, the Account Contract itself performs a validation check to confirm that the transaction is legitimate and aligns with the contract's logic. This ensures that only authorized actions proceed, adding a layer of security and customization to each user's wallet.
+　次に、ユーザーのAccountコントラクト（スマートウォレット）がすでに存在するかどうかをチェックします。存在しない場合、Deployerコントラクトがウォレットを作成し、ユーザーがトランザクションに参加できるようにします。デプロイ済み、またはすでに存在する場合は、Accountコントラクト自体が検証チェックを実行し、トランザクションが正当でコントラクトのロジックに整合していることを確認します。これにより、承認されたアクションのみが実行され、各ユーザーのウォレットにセキュリティとカスタマイズの層が加わります。
 
-An interesting feature of this flow is the optional involvement of a Paymaster Contract. If specified, this contract can cover the gas fees for the transaction or offer alternative payment methods. When a paymaster is involved, it undergoes its own validation process to ensure it can legitimately cover the transaction costs. This flexibility allows for sponsorship models and potentially reduces the burden of transaction fees on users.
+　このフローの特徴的な点は、Paymasterコントラクトをオプションで関与させられることです。指定された場合、このコントラクトはトランザクションのガス代を負担したり、代替の支払い方法を提供したりできます。ペイマスターが関与する場合は、トランザクションコストを正当に負担できることを確認するための独自の検証プロセスを経ます。この柔軟性によりスポンサーシップモデルが可能になり、ユーザーのトランザクション手数料の負担を軽減できる可能性があります。
 
-Once all validations are complete, the Ethereum Execution Layer begins processing the transaction. During execution, an Execution Frame is used to handle the transaction details and monitor its progression. After execution, if a paymaster was involved, it performs any necessary postprocessing to finalize the transaction sponsorship.
+　すべての検証が完了すると、イーサリアム実行層がトランザクションの処理を開始します。実行中は、Execution Frameがトランザクションの詳細処理と進行の監視に使用されます。実行後、ペイマスターが関与していた場合は、トランザクションのスポンサーシップを完了するために必要な後処理を実行します。
 
 #### EIP-5806
 
-EIP-5806 introduces a new transaction type, enabling EOAs to run custom code through a "delegate call" mechanism.
+　EIP-5806は新しいトランザクションタイプを導入し、「デリゲートコール」メカニズムを通じてEOAがカスタムコードを実行できるようにします。
 
-Currently, EOAs can only deploy contracts or send "call" transactions, limiting user interactions with the blockchain. This restriction affects usability since EOAs cannot perform tasks like batching multiple actions into one transaction or executing complex operations. While AA could solve these issues, its adoption path remains uncertain, and not all users can migrate because of costs and nontransferable asset custody.
+　現在、EOAはコントラクトのデプロイまたは「コール」トランザクションの送信しかできず、ブロックチェーンとのやり取りが制限されています。複数のアクションを1つのトランザクションにまとめたり、複雑なオペレーションを実行したりできないため、ユーザビリティに影響があります。AAがこれらの問題を解決できる可能性はありますが、採用への道筋はまだ定まっておらず、コストや譲渡不可能な資産のカストディの問題からすべてのユーザーが移行できるわけではありません。
 
-This proposal offers a straightforward way for EOAs to execute custom code with minimal EVM changes and familiar security standards. By allowing EOAs to delegate calls to specific contracts, users gain more control and flexibility, enabling complex operations like multicall batching or secure token transfers. Unlike other AA proposals, this approach aims to improve EOA user experience without replacing existing abstraction methods, making it an accessible option for enhanced EOA functionality in the near future.
+　この提案は、最小限のEVM変更と既存のセキュリティ標準を用いて、EOAがカスタムコードを実行するためのシンプルな方法を提供します。EOAが特定のコントラクトにコールをデリゲートできるようにすることで、マルチコールバッチングや安全なトークン転送などの複雑なオペレーションが可能になります。他のAA提案とは異なり、既存のアブストラクション手法を置き換えずにEOAのユーザーエクスペリエンスを改善することを目指しており、近い将来のEOA機能強化に向けた現実的な選択肢です。
 
 #### EIP-3074
 
-EIP-3074 introduces two opcodes, `AUTH` and `AUTHCALL`, to allow EOAs to delegate control of their transactions to an "invoker" contract. The user signs a message containing the invoker and a commit (a hash of transaction values), ensuring that the invoker only processes authorized transactions. Replay protection is handled by the invoker, and users must trust this contract to avoid malicious behavior. This proposal improves transaction batching and enables flexible account delegation.
+　EIP-3074は、EOAが「インボーカー」（代理実行コントラクト）にトランザクションの制御をデリゲートできるようにする`AUTH`と`AUTHCALL`の2つのオペコードを導入します。ユーザーはインボーカーのアドレスとコミット（トランザクション値のハッシュ）を含むメッセージに署名することで、インボーカーが承認されたトランザクションのみを処理するよう保証します。リプレイ保護はインボーカーが担当し、ユーザーは悪意のある動作を避けるためにこのコントラクトを信頼する必要があります。この提案はトランザクションのバッチ処理を改善し、柔軟なアカウントデリゲーションを可能にします。
 
-`AUTH` lets users grant a smart contract permission to act on their behalf. It uses a digital signature (ECDSA) to verify this authorization, then stores the user's address for future transactions. `AUTHCALL` allows the authorized smart contract to perform transactions, such as sending tokens or interacting with other contracts. For example, if you want to swap 10 DAI for ETH, you can authorize the invoker (using `AUTH`) with one signature. The invoker will use `AUTHCALL` to approve Uniswap to spend your DAI and then execute the swap.
+　`AUTH`は、ユーザーがスマートコントラクトに自分の代わりに行動する許可を与えるためのオペコードです。デジタル署名（ECDSA）で認可を検証し、将来のトランザクションのためにユーザーのアドレスを保存します。`AUTHCALL`は、認可されたスマートコントラクトがトークンの送信や他のコントラクトとのやり取りなどのトランザクションを実行できるようにします。例えば、10 DAIをETHにスワップしたい場合、1つの署名でインボーカーを認可（`AUTH`を使用）できます。インボーカーは`AUTHCALL`を使用してUniswapにDAIの使用を承認し、スワップを実行します。
 
-Initially, replay protection and fields like value, gas, and other `AUTHCALL` arguments were also signed. The design evolved to delegate these tasks to the invoker contract, making it crucial for users to trust the invoker. Users can "commit" to particular call properties by hashing them. The invoker validates only if the committed values, such as the nonce for replay protection, match the user's commitment, as shown in Figure 5-7. This ensures that the invoker processes exactly what the user authorized.
+　当初、リプレイ保護やvalue、gas、その他の`AUTHCALL`引数などのフィールドも署名対象でした。設計が進化し、これらのタスクはインボーカーコントラクトにデリゲートされるようになったため、ユーザーがインボーカーを信頼することがより重要になりました。ユーザーは特定のコールプロパティをハッシュ化することで「コミット」できます。図5-7に示すように、インボーカーはリプレイ保護用のナンスなどコミットされた値がユーザーのコミットメントと一致する場合のみ検証を行います。これにより、インボーカーはユーザーが認可した内容だけを正確に処理します。
 
 ![EIP-3074 commitment validation](images/ch5/maet_0507.png)
 
-Figure 5-7. EIP-3074 commitment validation
+図5-7. EIP-3074のコミットメント検証
 
-The commit hash enables invokers to enforce various rules, such as allowing parallel nonces or bundling multiple calls under one signature. This enables multicall flows, such as consolidating an ERC-20 approve-transfer into a single transaction, as seen in Figure 5-8.
+　コミットハッシュにより、インボーカーは並列ナンスの許可や1つの署名での複数コールのバンドルなど、さまざまなルールを適用できます。これにより、図5-8に示すように、ERC-20のapprove-transferを1つのトランザクションに統合するなどのマルチコールフローが可能になります。
 
 ![EIP-3074 multicall flow](images/ch5/maet_0508.png)
 
-Figure 5-8. EIP-3074 multicall flow
+図5-8. EIP-3074のマルチコールフロー
 
-Additionally, it supports delegating control of the EOA to other keys by signing a commit message with the delegate's address and an access policy, which the invoker verifies before relaying calls on behalf of the EOA, as seen in Figure 5-9.
+　さらに、デリゲートのアドレスとアクセスポリシーを含むコミットメッセージに署名することで、EOAの制御を他の鍵にデリゲートすることもサポートしています。図5-9に示すように、インボーカーはEOAの代わりにコールを中継する前にこれを検証します。
 
 ![EIP-3074 delegation flow](images/ch5/maet_0509.png)
 
-Figure 5-9. EIP-3074 delegation flow
+図5-9. EIP-3074のデリゲーションフロー
 
 #### EIP-5003
 
-EIP-5003 introduces the `AUTHUSURP` opcode, which allows code deployment at an address authorized through EIP-3074, effectively removing the original EOA's signing key (when used with EIP-3607). Traditional EOAs control a lot of value on Ethereum but face limitations. There's no easy way to rotate keys, batch transactions for efficiency, or enable gas sponsorship without holding ETH. Contract accounts and AA address these issues, allowing users to customize security features, authentication methods, spending limits, key rotation, social recovery, and more. However, these benefits are mostly limited to users who actively adopt new standards through smart contract wallets and app-layer solutions, such as those proposed by ERC-4337. This leaves a substantial number of existing users, who have relied on EOAs since Ethereum's inception, with limited security and usability improvements.
+　EIP-5003は`AUTHUSURP`オペコードを導入します。これにより、EIP-3074を通じて認可されたアドレスにコードをデプロイし、（EIP-3607と併用した場合に）元のEOAの署名鍵を実質的に無効化できます。従来のEOAはイーサリアム上で多くの価値を管理していますが、鍵のローテーション、トランザクションのバッチ処理、ETHを保持せずにガス代の代理支払いを利用するといったことが容易にはできません。コントラクトアカウントとAAはこれらの問題に対処し、セキュリティ機能、認証方法、支出制限、鍵のローテーション、ソーシャルリカバリーなどのカスタマイズを可能にします。しかし、これらの利点はERC-4337のようなスマートコントラクトウォレットやアプリケーション層のソリューションを積極的に採用するユーザーに限られており、イーサリアムの誕生以来EOAに依存してきた多くの既存ユーザーにとっては、セキュリティとユーザビリティの改善が限定的なままです。
 
-While EIP-3074 offers an initial solution by enabling EOAs to delegate signing authority to a contract account, it stops short of allowing the EOA to completely revoke this original signing key. This gap introduces a security risk: even with delegated authority, the primary private key remains a potential vulnerability. If compromised, the entire account remains at risk, as there is currently no revocation option for an exposed private key. If a user's private key is leaked, either by accident or through a malicious attack, the only option is to create a new wallet and painstakingly migrate assets individually, an expensive and often incomplete process due to the immovability of certain assets within existing smart contracts.
+　EIP-3074によりEOAからコントラクトアカウントへ署名権限をデリゲートできるようになりましたが、元の署名鍵を完全に取り消すことまではできません。このギャップがセキュリティリスクを生みます。デリゲーションされた権限があっても、元の秘密鍵は潜在的な脆弱性として残ります。漏洩した秘密鍵を取り消す手段が存在しないため、アカウント全体がリスクにさらされ続けます。秘密鍵が偶発的または悪意ある攻撃によって漏洩した場合、唯一の手段は新しいウォレットを作成して資産を個別に移行することですが、既存のスマートコントラクト内の一部の資産は移動できないため、コストがかかり不完全なプロセスになりがちです。
 
-With this EIP, `AUTHUSURP` provides a secure transition path for EOA holders. It allows EOAs to fully transfer control to a smart contract, removing the original key's authority and thereby eliminating it as a security threat.
+　このEIPにより、`AUTHUSURP`はEOA保有者に安全な移行手段を提供します。EOAがスマートコントラクトに完全に制御を移譲し、元の鍵の権限を削除することで、セキュリティ上の脅威を排除できます。
 
 #### EIP-7702
 
-EIP-7702 is the main AA EIP expected to be implemented in Pectra by early 2025. (Note: this chapter was written in September and October 2024, which is why we are using future tense.) EIP-7702 introduces a "set code transaction" under EIP-2718, enabling an EOA to delegate certain code to be executed on its behalf by authorized addresses.
+　EIP-7702は、2025年初頭のPectraアップグレードで実装が予定されている、AAに関する最も重要なEIPです。（注：この章は2024年9月から10月に執筆されたため、未来形を使用しています。）EIP-7702はEIP-2718の下で「セットコードトランザクション」を導入し、EOAが認可されたアドレスに特定のコードの実行をデリゲートできるようにします。
 
 > **注記**
 >
-> EIP-2718 introduces a "typed transaction envelope" format for Ethereum, supporting multiple transaction types within the protocol. This standardized format allows backward-compatible transaction upgrades, enabling future improvements with new transaction types while maintaining existing structures. This will be explained in more detail in Chapter 6. This EIP also adjusts EIP-3607's restrictions, allowing transactions from EOAs flagged with a delegation designation. It enables secure delegation for EOAs, adding improved account-management capabilities to Ethereum.
+> EIP-2718はイーサリアムに「型付きトランザクションエンベロープ（外枠）」フォーマットを導入し、プロトコル内で複数のトランザクションタイプをサポートします。この標準化されたフォーマットにより、既存の構造を維持しながら後方互換性のあるトランザクションのアップグレードが可能になります。詳細は第6章で説明します。このEIPはEIP-3607の制限も調整し、デリゲーション指定のフラグが付いたEOAからのトランザクションを許可します。これによりEOAの安全なデリゲーションが可能になり、イーサリアムのアカウント管理機能が強化されます。
 >
-> A question arises around how users should specify the code they intend to run in their accounts. The main options are to include the bytecode directly in the transaction or to reference a pointer to the code. The simplest pointer is the address of some code deployed on chain. Direct code specification allows EOAs to execute arbitrary code within the transaction calldata. One consideration when signing a code pointer is whether that address points to the intended code on another chain; wallet maintainers can hardcode a single EIP-7702 authorization message, ensuring cross-chain code consistency.
+> ユーザーがアカウントで実行するコードをどのように指定すべきかという疑問が生じます。主なオプションは、トランザクションにバイトコードを直接含めるか、コードへのポインターを参照するかです。最もシンプルなポインターは、オンチェーンにデプロイされたコードのアドレスです。一方、直接コード指定の場合は、EOAがトランザクションのcalldata内で任意のコードを実行できます。コードポインターに署名する際の考慮事項として、そのアドレスが別のチェーン上の意図したコードを指しているかどうかがあります。ウォレットのメンテナーは単一のEIP-7702認可メッセージをハードコードすることで、クロスチェーンでのコードの一貫性を確保できます。
 
-There is an important security consideration to make. Once code is embedded in an EOA, EIP-7702 transactions may allow `msg.sender == tx.origin`, where the transaction creator is also the broadcasting address whenever the EOA code dispatches a call. Without EIP-7702, this scenario only occurs at the topmost execution layer of a transaction. Because EIP-7702 would enable transaction sponsoring, this would also be possible in other layers of execution. Consequently, this EIP breaks that invariant, affecting smart contracts that contain `require(msg.sender == tx.origin)` checks. This check serves at least three purposes:
+　重要なセキュリティ上の考慮事項があります。コードがEOAに組み込まれると、EIP-7702トランザクションでは`msg.sender == tx.origin`が成立する可能性があります。つまり、EOAコードがコールを発行するたびに、トランザクションの作成者がブロードキャストアドレスでもある状態になります。EIP-7702がなければ、このシナリオはトランザクションの最上位実行層でのみ発生します。しかしEIP-7702がトランザクションスポンサーリングを可能にするため、他の実行層でもこれが起こりえます。その結果、このEIPは従来の不変条件を崩します。`require(msg.sender == tx.origin)`チェックを含むスマートコントラクトに影響を与えます。このチェックには以下の3つの目的があります：
 
-1. Verifying that `msg.sender` is an EOA (as `tx.origin` must always be an EOA). This invariant remains unaffected by execution-layer depth; it is still possible to ensure that the `tx.origin` is the `msg.sender` if the depth of the call is 1.
+1. `msg.sender`がEOAであることの検証（`tx.origin`は常にEOAであるため）。この不変条件は実行層の深さに影響されず、コールの深さが1であれば`tx.origin`が`msg.sender`であることを確認できます。
 
-2. Preventing atomic sandwich attacks, such as flash loans, which rely on altering state before and after target contract execution within the same atomic transaction. This protection is compromised by this EIP. However, using `tx.origin` for this purpose is generally considered poor practice and can already be bypassed by miners selectively including transactions.
+2. フラッシュローンなどのアトミックサンドイッチ攻撃の防止。同じアトミックトランザクション内でターゲットコントラクトの実行前後にステートを変更する攻撃です。この保護はこのEIPにより損なわれます。ただし、この目的で`tx.origin`を使用することは一般的に悪いプラクティスとされており、マイナーがトランザクションを選択的に含めることですでに回避可能です。
 
-3. Guarding against reentrancy.
+3. リエントランシーに対する防御。
 
-Examples of the first two appear in Ethereum mainnet contracts, with the first being more common (and unaffected by this EIP). However, the third case is more vulnerable under this EIP, although no instances of reentrancy protection relying on `tx.origin` were observed during the initial review by the creators of the proposal.
+　上記のうち、1番目と2番目についてはメインネットのコントラクトに実例があります。1番目がより一般的で、このEIPの影響も受けません。一方、3番目はこのEIPにより脆弱性が増しますが、提案の作成者による初期レビューでは、`tx.origin`に依存するリエントランシー保護の事例は確認されていません。
 
 > **ヒント**
 >
-> Unlike prior versions of this EIP and similar proposals, the delegation designation can be revoked at any time by signing and submitting an EIP-7702 authorization targeting a new address, using the account's current nonce. Without such action, a delegation remains valid indefinitely.
+> このEIPの先行バージョンや類似の提案とは異なり、デリゲーション指定はいつでも取り消せます。取り消すには、アカウントの現在のナンスを使用して新しいアドレスを対象とするEIP-7702認可に署名し送信します。取り消さない限り、デリゲーションは有効なままです。
 
-There is considerable interest in adding functionality improvements to EOAs, improving usability and, in some cases, improving security. One key application is transaction sponsorship, which enables users to transact without holding ETH to cover gas fees. In traditional Ethereum transactions, gas fees are paid in ETH, which may be inconvenient for users holding only other tokens or those who are new to the ecosystem. EIP-7702 introduces a model where transaction fees can be covered by third parties, temporarily or permanently, allowing users to complete transactions without ETH. This could simplify onboarding, making Ethereum applications more accessible to new users interested in specific DApps or tokens without requiring ETH management.
+　EOAの機能を改善することへの関心は高く、ユーザビリティや場合によってはセキュリティの向上が期待されています。主要なユースケースの1つはトランザクションスポンサーシップで、ガス代を賄うためのETHを保持せずにトランザクションを実行可能にします。従来のイーサリアムトランザクションではガス代はETHで支払われますが、他のトークンのみを保持しているユーザーやエコシステムの初心者にとっては不便です。EIP-7702は、トランザクション手数料を第三者が一時的または恒久的に負担できるモデルを導入し、ETHなしでトランザクションを完了できるようにします。これによりオンボーディングが簡素化され、ETH管理を必要とせずに特定のDAppやトークンを利用したい新規ユーザーにとってイーサリアムがより利用しやすくなります。
 
-Traditional Ethereum accounts rely solely on a single private key, so losing it means losing access to the account and assets. EIP-7702's structure supports various recovery mechanisms, enabling users to regain access if they lose their private keys. Recovery mechanisms are especially valuable for security-focused users and for those who are new to blockchain and may find key management daunting. Potential recovery options include multisignature and social recovery, which allow selected contacts to assist in account restoration; this is a big step in Ethereum accounts' security and user-friendliness.
+　従来のイーサリアムアカウントは単一の秘密鍵にのみ依存しているため、紛失するとアカウントと資産へのアクセスを失います。EIP-7702の構造はさまざまなリカバリーメカニズムをサポートし、秘密鍵を紛失した場合でもアクセスを回復できるようにします。リカバリーメカニズムは、セキュリティを重視するユーザーや、鍵管理を困難に感じるブロックチェーン初心者にとって特に価値があります。リカバリーオプションとしてはマルチシグやソーシャルリカバリーがあり、選択した信頼できる相手にアカウントの復元を支援してもらうことができます。これはイーサリアムアカウントのセキュリティとユーザーフレンドリーさにおける大きな前進です。
 
-EIP-7702 also introduces batching and privilege deescalation. Batching allows multiple actions to be processed within a single atomic transaction, enabling users to complete complex workflows—such as ERC-20 approval followed by token spending—in one step rather than two. Privilege deescalation offers subkeys with restricted permissions, authorizing actions like spending a specific amount or interacting only with certain applications, to improve security by minimizing exposure in case of compromise.
+　EIP-7702はバッチ処理と権限の降格も導入します。バッチ処理により、単一のアトミックトランザクション内で複数のアクションを処理でき、ERC-20の承認に続くトークンの使用など、複雑なワークフローを2ステップではなく1ステップで完了できます。権限の降格は、特定の金額の使用や特定のアプリケーションとのやり取りのみを認可する制限付きサブキーを提供し、鍵の漏洩時の被害を最小限に抑えます。
 
-This EIP also modifies the invariants that traditionally govern account balance and nonce behaviors. It breaks the expectation that the balance of an EOA account can only decrease due to transactions from that account, and that an EOA's nonce cannot increment once transaction execution begins. These changes affect the mempool design and other EIPs. However, since the accounts are statically listed in the outer transaction, transaction-propagation rules can be adjusted to prevent forwarding of conflicting transactions. It does have forward compatibility with ERC-4337 and RIP-7560. Among other benefits, it enables EOAs to masquerade as contracts compatible with ERC-4337 bundles via the existing EntryPoint mechanism.
+　このEIPは、従来アカウント残高とナンスの動作を支配してきた不変条件も変更します。EOAアカウントの残高はそのアカウントからのトランザクションによってのみ減少するという前提、およびトランザクションの実行中にEOAのナンスはインクリメントされないという前提を破ります。これらの変更はメムプールの設計や他のEIPに影響します。ただし、デリゲーション対象のアカウントはトランザクション内に明示的に列挙されているため、競合するトランザクションの転送を防ぐようにトランザクション伝播ルールを調整できます。ERC-4337およびRIP-7560との前方互換性も備えており、EOAが既存のEntryPointメカニズムを通じてERC-4337バンドルと互換性のあるコントラクトとして振る舞うことも可能です。
 
 > **注記**
 >
-> A general design goal for state-transition changes is minimizing special cases in an EIP. Earlier iterations of this EIP resisted adding a special case for clearing an account's delegation designation. Generally, an account delegated to 0x0 behaves like a true EOA; however, most operations interacting with that account incur an additional cost. This extra cost may influence overall EIP adoption. For these reasons, a mechanism was included to allow users to restore their EOAs to their original state.
+> 状態遷移の変更における一般的な設計目標は、EIP内の特殊ケースを最小限に抑えることです。このEIPの初期バージョンでは、アカウントのデリゲーション指定をクリアするための特殊ケースの追加を避けていました。0x0にデリゲートされたアカウントは基本的に通常のEOAと同様に動作しますが、そのアカウントとのやり取りには余計なコストがかかります。この余計なコストがEIP全体の採用に影響を与える可能性があるため、ユーザーがEOAを完全に元の状態に戻せるようにしました。
 
-This EIP involves multiple security considerations, which will be the responsibility of the implementation and should be carefully evaluated. In addition to the noted `tx.origin` issue, there are three key considerations:
+　このEIPには複数のセキュリティ上の考慮事項があり、実装時に慎重に評価する必要があります。前述の`tx.origin`の問題に加えて、3つの主要な考慮事項があります：
 
-- Enabling EOAs to act like smart contracts challenges transaction propagation. Traditionally, EOAs could only send value via transactions. With this EIP, an EOA's delegated code can be invoked by anyone at any time in a transaction, preventing static balance validation by nodes; it essentially makes it harder for nodes to validate the balance of an address.
+- EOAがスマートコントラクトのように動作できるようになることで、トランザクション伝播に課題が生じます。従来、EOAはトランザクションを通じてのみ資金を送信できました。このEIPにより、EOAのデリゲートされたコードは誰でもいつでも呼び出せるようになり、ノードによる静的な残高検証を妨げます。つまり、ノードがアドレスの残高を検証することがより困難になります。
 
-- Smart contract wallet developers must consider the implications of setting code in an account without execution. Normally, contracts are deployed with initcode, initializing storage slots deterministically. This EIP omits initcode execution for delegation, so developers must verify initial calldata to prevent an observer from front-running setup with an account they control.
+- スマートコントラクトウォレットの開発者は、実行なしでアカウントにコードを設定することの影響を考慮する必要があります。通常、コントラクトはinitcodeでデプロイされ、ストレージスロットが決定論的に初期化されます。このEIPはデリゲーションでのinitcode実行を省略するため、開発者は観察者によるセットアップのフロントランニングを防ぐために初期calldataを検証する必要があります。
 
-- Replay protection (e.g., nonce handling) should be implemented by the delegate and signed. Without this, a malicious actor could reuse a signature, gaining near-complete control over the signer's EOA.
+- リプレイ保護（例：ナンスの処理）はデリゲートによって実装・署名される必要があります。これがなければ、悪意のある行為者が署名を再利用し、署名者のEOAに対するほぼ完全な制御を得る可能性があります。
 
-#### The future of account abstraction
+#### アカウントアブストラクションの将来
 
-AA on Ethereum is a complex but promising idea, with many possible paths forward. Each proposal offers a different way to make user interactions simpler and more secure. Some improve on previous proposals, such as EIP-5003 building on EIP-3074, while others, such as EIP-5806, stand alone or even lack backward compatibility. This variety reflects a search for the best solution, with the final direction likely shaped by which options users find easiest and most effective. Although the exact future is unclear, AA holds real promise for improving the experience of using Ethereum.
+　イーサリアムにおけるAAは複雑ですが有望なアイデアであり、実現に向けた道筋も多数あります。各提案はユーザーのやり取りをよりシンプルで安全にするための異なるアプローチを提供しています。EIP-3074を基盤とするEIP-5003のように先行する提案を改善するものもあれば、EIP-5806のように単独で成立するものや後方互換性を欠くものもあります。この多様性は最適な解決策の模索を反映しており、最終的な方向性はユーザーが最も使いやすく効果的だと感じる選択肢によって決まる可能性が高いです。将来の正確な姿はまだ見えませんが、AAはイーサリアムの利用体験を改善する大きな可能性を秘めています。
 
-### Social Recovery
+### ソーシャルリカバリー
 
-The primary EIP related to social recovery is EIP-2429. Titled "Secret Multisig Recovery," EIP-2429 introduces a mechanism that allows users to regain access to their wallets by assigning trusted individuals or entities as "guardians." In case a user loses their private key, they can use these guardians to help recover control of the wallet. The guardians are involved only during the recovery process, limiting their power, as shown in Figure 5-10.
+　ソーシャルリカバリーに関連する主要なEIPはEIP-2429です。「Secret Multisig Recovery」と題されたEIP-2429は、信頼できる個人や組織を「ガーディアン」として指定することで、ユーザーがウォレットへのアクセスを回復できる仕組みを導入します。ユーザーが秘密鍵を紛失した場合、ガーディアンの協力によりウォレットの制御を取り戻せます。図5-10に示すように、ガーディアンはリカバリープロセス中のみ関与し、その権限は限定されています。
 
 ![Social recovery flow](images/ch5/maet_0510.png)
 
-Figure 5-10. Social recovery flow
+図5-10. ソーシャルリカバリーのフロー
 
 > **注記**
 >
-> Vitalik Buterin released an article in 2021 that said, and we are quoting, "This gets us to my preferred method for securing a wallet: social recovery." We do not know if the situation has changed, but it still might be the case that social recovery is Buterin's preferred method.
+> Vitalik Buterinは2021年に公開した記事で、「これが私のウォレットを保護するための好ましい方法、つまりソーシャルリカバリーにたどり着く」と述べています。現在も状況が同じかは不明ですが、ソーシャルリカバリーが依然としてButerinの推奨する方法である可能性があります。
 
-For normal use, a social recovery wallet functions like a regular one, allowing the user to sign transactions with their signing key. If the key is lost, social recovery activates, enabling the user to contact guardians, who sign a transaction to update the wallet's signing key. Guardians can be trusted individuals, devices, or institutions. Guardians can remain anonymous, and to prevent attacks, their identities aren't stored on chain. In case of the user's death, guardians can coordinate to recover the user's funds.
+　通常の使用では、ソーシャルリカバリーウォレットは一般的なウォレットと同様に機能し、ユーザーは署名鍵でトランザクションに署名できます。鍵を紛失した場合はソーシャルリカバリーが起動し、ユーザーがガーディアンに連絡すると、ガーディアンがウォレットの署名鍵を更新するトランザクションに署名します。ガーディアンには信頼できる個人、デバイス、または機関を指定できます。攻撃を防ぐためにガーディアンの身元はオンチェーンに保存されず、匿名性を保てます。ユーザーが死亡した場合は、ガーディアンが連携して資金をリカバリーすることも可能です。
 
 ### ENS
 
-The Ethereum Name Service is like a Web3 version of traditional domain names, but instead of linking to websites, it connects human-readable names to Ethereum addresses. This makes dealing with long, complex blockchain addresses much easier. For instance, rather than having to send cryptocurrency to an address like `0xd8dA6BF...`, you can simply send it to something like `vitalik.eth`. This simplifies transactions and makes the whole process far less intimidating, especially for newcomers to crypto.
+　Ethereum Name Service（ENS）は従来のドメイン名のWeb3バージョンのようなものですが、ウェブサイトにリンクする代わりに、人間が読める名前をイーサリアムアドレスに紐づけます。これにより、長く複雑なブロックチェーンアドレスの扱いがはるかに簡単になります。例えば、`0xd8dA6BF...`のようなアドレスに暗号通貨を送信する代わりに、`vitalik.eth`のような名前に送信するだけで済みます。これによりトランザクションが簡素化され、特に暗号通貨の初心者にとって取り組みやすくなります。
 
-If you compare ENS to the Web2 world, it's similar to how DNS works. DNS takes IP addresses (which are hard to remember) and connects them to URLs like `google.com`, so you don't have to remember a string of numbers to visit a website. However, there's a key difference between ENS and DNS: ENS is decentralized. No central authority controls your `.eth` name once you own it. In Web2, domain names are managed by registrars and can be censored, suspended, or restricted. In ENS, you control your name entirely through your Ethereum wallet, meaning your `.eth` name is as secure as the wallet that holds it.
+　ENSをWeb2の世界と比較すると、DNSの仕組みに似ています。DNSは覚えにくいIPアドレスを`google.com`のようなURLに紐づけるため、ウェブサイトを訪れるのに数字の文字列を覚える必要がありません。しかし、ENSとDNSには重要な違いがあります。ENSは分散型であり、一度`.eth`名を所有すれば、中央の管理者がそれを制御することはありません。Web2ではドメイン名はレジストラによって管理され、検閲、停止、制限される可能性があります。ENSではイーサリアムウォレットを通じて名前を完全に制御できるため、`.eth`名はそれを保持するウォレットと同じレベルの安全性を持ちます。
 
-When you're sending or receiving crypto, using a name like `andreas.eth` instead of a long, complex Ethereum address makes everything smoother and safer. It reduces the chance of making a mistake when entering an address, which can otherwise be a big risk in a transaction.
+　暗号通貨を送受信するとき、長く複雑なイーサリアムアドレスの代わりに`andreas.eth`のような名前を使用すると、よりスムーズで安全になります。アドレスの入力ミスの可能性が減り、トランザクションにおけるリスクを軽減できます。
 
-Another cool aspect of ENS is that it provides a sense of digital identity. Just like owning a domain name for your website, having a unique `.eth` name can serve as your public identity on the blockchain.
+　ENSのもう1つの特徴は、デジタルアイデンティティを提供できる点です。ウェブサイトのドメイン名を所有するのと同じように、ユニークな`.eth`名はブロックチェーン上の公開アイデンティティとして機能します。
 
-## Conclusion
+## まとめ
 
-Wallets are the foundation of any user-facing blockchain application. They enable users to manage collections of keys and addresses. Wallets also allow users to demonstrate their ownership of ether and authorize transactions by applying digital signatures, as we will see in Chapter 6.
+　ウォレットは、ユーザー向けのあらゆるブロックチェーンアプリケーションの基盤です。ウォレットにより、ユーザーは鍵とアドレスのコレクションを管理できます。また、第6章で説明するように、ウォレットはデジタル署名を用いてイーサの所有権を証明し、トランザクションを承認する手段でもあります。
