@@ -1,0 +1,12 @@
+{
+  "Prover": {"ja": "証明者", "bold": true},
+  "Verifier": {"ja": "検証者", "bold": true},
+  "KZG proof": {"ja": "KZG証明"},
+  "Sent to": {"ja": "送信先"},
+  "p(xI) -yl": {"ja": null},
+  "p(x2) =y2": {"ja": null},
+  "y2": {"ja": null},
+  "yll": {"ja": null},
+  "TC": {"ja": null},
+  "xl": {"ja": null}
+}

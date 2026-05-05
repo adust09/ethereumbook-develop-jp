@@ -1,0 +1,8 @@
+{
+  "Verifier": {"ja": "検証者", "bold": true},
+  "Trusted": {"ja": "トラステッド"},
+  "setup": {"ja": "セットアップ"},
+  "Trusted setup": {"ja": "トラステッドセットアップ"},
+  "Elliptic curve pairing": {"ja": "楕円曲線ペアリング"},
+  "T": {"ja": null}
+}
