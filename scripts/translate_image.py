@@ -34,14 +34,47 @@ Usage:
 import argparse
 import fnmatch
 import json
+import os
+import platform
+import shutil
+import subprocess
 from collections import defaultdict
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 import easyocr
 
-FONT_BOLD = "/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc"
-FONT_REGULAR = "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc"
+
+def _resolve_font(weight: str, override: str | None = None) -> str:
+    """Resolve a CJK font path for the given weight.
+
+    Order: explicit override → macOS Hiragino → fontconfig (fc-match) → known
+    Linux Noto CJK paths. Raises if nothing matches so callers can pass --font-bold.
+    """
+    if override:
+        return override
+    if platform.system() == "Darwin":
+        return f"/System/Library/Fonts/ヒラギノ角ゴシック {'W6' if weight == 'bold' else 'W3'}.ttc"
+    if shutil.which("fc-match"):
+        spec = "Noto Sans CJK JP:weight=200" if weight == "bold" else "Noto Sans CJK JP"
+        try:
+            out = subprocess.check_output(["fc-match", "-f", "%{file}", spec], text=True).strip()
+            if out and os.path.exists(out):
+                return out
+        except subprocess.CalledProcessError:
+            pass
+    candidates = (
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc" if weight == "bold"
+        else "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+    )
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return candidate
+    raise RuntimeError(
+        f"No CJK font found for weight={weight}. Pass --font-bold/--font-regular explicitly."
+    )
 
 
 def detect_text(image_path: str) -> list[dict]:
@@ -161,7 +194,12 @@ def compute_size_groups(regions: list[dict]) -> dict:
     return {g: int(np.median(hs) * 0.55) for g, hs in grouped.items()}
 
 
-def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.Image:
+def draw_translations(
+    inpainted_bgr: np.ndarray,
+    regions: list[dict],
+    font_bold: str,
+    font_regular: str,
+) -> Image.Image:
     img_pil = Image.fromarray(cv2.cvtColor(inpainted_bgr, cv2.COLOR_BGR2RGB))
     draw = ImageDraw.Draw(img_pil)
     group_sizes = compute_size_groups(regions)
@@ -186,7 +224,7 @@ def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.I
         if "\n" in region["translation"] and allow_shrink:
             font_size = max(14, int(font_size * 0.7))
 
-        font_path = FONT_BOLD if region.get("bold") else FONT_REGULAR
+        font_path = font_bold if region.get("bold") else font_regular
         font = ImageFont.truetype(font_path, font_size)
 
         if allow_shrink:
@@ -204,7 +242,17 @@ def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.I
     return img_pil
 
 
-def translate_image(image_path: str, translation_map: dict, preview: bool = False, output_path: str = None):
+def translate_image(
+    image_path: str,
+    translation_map: dict,
+    preview: bool = False,
+    output_path: str = None,
+    font_bold: str | None = None,
+    font_regular: str | None = None,
+):
+    font_bold = _resolve_font("bold", font_bold)
+    font_regular = _resolve_font("regular", font_regular)
+
     print(f"[1/4] OCR: detecting text in {image_path}")
     detections = detect_text(image_path)
     print(f"       Found {len(detections)} text regions")
@@ -344,7 +392,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
     inpainted = restore_borders(image_path, inpainted, detections)
 
     print("[4/4] Drawing Japanese text")
-    result = draw_translations(inpainted, regions)
+    result = draw_translations(inpainted, regions, font_bold, font_regular)
 
     if preview:
         out = output_path or image_path.replace(".png", "_jp.png")
@@ -360,8 +408,18 @@ if __name__ == "__main__":
     parser.add_argument("--map", required=True, help="JSON file with translation map")
     parser.add_argument("--preview", action="store_true", help="Save as _jp.png instead of overwriting")
     parser.add_argument("--out", default=None, help="Explicit output path")
+    parser.add_argument("--font-bold", dest="font_bold", default=None,
+                        help="Override path for bold CJK font (default: auto-resolve)")
+    parser.add_argument("--font-regular", dest="font_regular", default=None,
+                        help="Override path for regular CJK font (default: auto-resolve)")
     args = parser.parse_args()
 
     with open(args.map) as f:
         tmap = json.load(f)
-    translate_image(args.image, tmap, preview=args.preview, output_path=args.out)
+    translate_image(
+        args.image, tmap,
+        preview=args.preview,
+        output_path=args.out,
+        font_bold=args.font_bold,
+        font_regular=args.font_regular,
+    )
