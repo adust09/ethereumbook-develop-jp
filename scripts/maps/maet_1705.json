@@ -1,0 +1,23 @@
+{
+  "Sortofblack box": {"ja": "ある種のブラックボックス -"},
+  "Sort of black box": {"ja": "ある種のブラックボックス -"},
+  "ready to use": {"ja": "そのまま使える"},
+  "You need to manually write and maintain it": {"ja": "手動で作成・保守する必要がある"},
+  "EVMcircuit": {"ja": "EVM回路"},
+  "EVM circuit": {"ja": "EVM回路"},
+  "RLP circuit": {"ja": "RLP回路"},
+  "MPT circuit": {"ja": "MPT回路"},
+  "Txcircuit": {"ja": "Tx回路"},
+  "Tx circuit": {"ja": "Tx回路"},
+  "zk-EVMcircuits": {"ja": "zk-EVM回路"},
+  "zk-EVM circuits": {"ja": "zk-EVM回路"},
+  "zk-VMcircuits": {"ja": "zk-VM回路"},
+  "zk-VM circuits": {"ja": "zk-VM回路"},
+  "Proof": {"ja": "証明", "bold": true},
+  "zk-EVM": {"ja": null},
+  "Zk-VM": {"ja": null},
+  "Geth": {"ja": null},
+  "__extra_mask_boxes__": [
+    [750, 388, 970, 432]
+  ]
+}
