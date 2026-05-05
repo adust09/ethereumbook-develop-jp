@@ -1,0 +1,18 @@
+{
+  "Validator A": {
+    "ja": "バリデーター A",
+    "bold": true
+  },
+  "Validator B": {
+    "ja": "バリデーター B",
+    "bold": true
+  },
+  "Validator C": {
+    "ja": "バリデーター C",
+    "bold": true
+  },
+  "Validator": {
+    "ja": "バリデーター",
+    "bold": true
+  }
+}

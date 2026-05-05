@@ -1,0 +1,15 @@
+{
+  "Attester": {
+    "ja": "アテスター",
+    "bold": true
+  },
+  "Attestation": {
+    "ja": "アテステーション"
+  },
+  "Publish": {
+    "ja": "公開"
+  },
+  "Small fee": {
+    "ja": "少額の手数料"
+  }
+}

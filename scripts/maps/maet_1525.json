@@ -1,0 +1,48 @@
+{
+  "Round 1: justification": {
+    "ja": "ラウンド1: ジャスティフィケーション",
+    "bold": true
+  },
+  "The justification is a local view of the node.": {
+    "ja": "ジャスティフィケーションはノードのローカルな視点である。"
+  },
+  "The justification is a local view of the node": {
+    "ja": "ジャスティフィケーションはノードのローカルな視点である"
+  },
+  "I like checkpoint N.": {
+    "ja": "チェックポイントNが好き。"
+  },
+  "I like checkpoint N": {
+    "ja": "チェックポイントNが好き"
+  },
+  "Node 1": {
+    "ja": "ノード1",
+    "bold": true
+  },
+  "RoundI:justification": {
+    "ja": "ラウンド1: ジャスティフィケーション",
+    "bold": true
+  },
+  "Round 1:justification": {
+    "ja": "ラウンド1: ジャスティフィケーション",
+    "bold": true
+  },
+  "Thejustification is a local view of the node": {
+    "ja": "ジャスティフィケーションはノードのローカルな視点である"
+  },
+  "like checkpoint N:": {
+    "ja": "チェックポイントNが好き。"
+  },
+  "Node1": {
+    "ja": "ノード1",
+    "bold": true
+  },
+  "like": {
+    "ja": "チェックポイントN",
+    "font_size": 30
+  },
+  "checkpoint N:": {
+    "ja": "が好き。",
+    "font_size": 30
+  }
+}

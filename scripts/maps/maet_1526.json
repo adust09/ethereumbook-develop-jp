@@ -1,0 +1,41 @@
+{
+  "Round 2: finalization": {
+    "ja": "ラウンド2: ファイナライゼーション",
+    "bold": true
+  },
+  "The finalization is a global state of the blockchain.": {
+    "ja": "ファイナライゼーションはブロックチェーンのグローバルな状態である。"
+  },
+  "The finalization is a global state of the blockchain": {
+    "ja": "ファイナライゼーションはブロックチェーンのグローバルな状態である"
+  },
+  "I heard y'all like checkpoint N.": {
+    "ja": "みんなチェックポイントNが好きだと聞いた。"
+  },
+  "I heard y'all like checkpoint N": {
+    "ja": "みんなチェックポイントNが好きと聞いた"
+  },
+  "I heard yall like checkpoint N": {
+    "ja": "みんなチェックポイントNが好きと聞いた"
+  },
+  "Node 1": {
+    "ja": "ノード1",
+    "bold": true
+  },
+  "heardy'all like checkpoint N:": {
+    "ja": "みんなチェックポイントNが好きだと聞いた。"
+  },
+  "heardyall like checkpoint N:": {
+    "ja": "みんなチェックポイントNが好きだと聞いた。"
+  },
+  "heardy'all like": {
+    "ja": "みんな～が好きだと聞いた"
+  },
+  "checkpoint N:": {
+    "ja": "チェックポイントN"
+  },
+  "Node1": {
+    "ja": "ノード1",
+    "bold": true
+  }
+}
