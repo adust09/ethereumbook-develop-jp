@@ -1,0 +1,21 @@
+{
+  "1. Interacts with": {"ja": "1. 相互作用", "font_size": 20},
+  "3. Calls": {"ja": "3. 呼び出し", "font_size": 20},
+  "Reads data from": {"ja": "データを読み取り", "font_size": 20},
+  "Attacker's contract": {"ja": "攻撃者のコントラクト", "bold": true},
+  "Contract A": {"ja": "コントラクトA", "bold": true},
+  "ContractA": {"ja": "コントラクトA", "bold": true},
+  "Contract B": {"ja": "コントラクトB", "bold": true},
+  "Triggers callback to": {"ja": "コールバックを発動", "font_size": 20},
+  "__extra_text_regions__": [
+    {"box": [880, 100, 905, 124], "ja": "4.", "font_size": 20},
+    {"box": [605, 210, 632, 230], "ja": "2.", "font_size": 20}
+  ],
+  "__extra_mask_boxes__": [
+    [868, 90, 910, 132]
+  ],
+  "__extra_mask_boxes_soft__": [
+    [745, 94, 853, 120],
+    [580, 200, 632, 235]
+  ]
+}
