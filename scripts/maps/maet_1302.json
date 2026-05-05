@@ -1,0 +1,9 @@
+{
+  "User": {"ja": "ユーザー", "bold": true, "font_size": 22},
+  "Ethereum": {"ja": "イーサリアム", "bold": true, "font_size": 22},
+  "Provides 50 ETH and 1 BTC": {"ja": "50 ETH と 1 BTC を提供", "font_size": 22},
+  "Buys BTC or ETH": {"ja": "BTC または ETH を購入", "font_size": 22, "text_offset_y": -10},
+  "__extra_preserve_boxes__": [[700, 67, 1180, 73]],
+  "Swapfees": {"ja": "スワップ手数料", "font_size": 22},
+  "Swap fees": {"ja": "スワップ手数料", "font_size": 22}
+}

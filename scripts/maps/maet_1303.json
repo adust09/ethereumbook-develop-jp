@@ -1,0 +1,8 @@
+{
+  "Lender": {"ja": "貸し手", "bold": true, "font_size": 22},
+  "Borrower": {"ja": "借り手", "bold": true, "font_size": 22},
+  "Ethereum": {"ja": "イーサリアム", "bold": true, "font_size": 22},
+  "Provides liquidity": {"ja": "流動性を提供", "font_size": 22},
+  "Requires liquidity": {"ja": "流動性を要求", "font_size": 22},
+  "Annual interest": {"ja": "年間利息", "font_size": 22}
+}

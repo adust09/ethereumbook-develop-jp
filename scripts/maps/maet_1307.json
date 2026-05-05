@@ -1,0 +1,8 @@
+{
+  "OxABC_123": {"ja": null},
+  "BSC": {"ja": null},
+  "Ethereum": {"ja": "イーサリアム", "bold": true, "font_size": 22},
+  "DEX swap": {"ja": "DEX スワップ", "font_size": 22},
+  "initiated": {"ja": "開始", "font_size": 22},
+  "finished": {"ja": "完了", "font_size": 22}
+}

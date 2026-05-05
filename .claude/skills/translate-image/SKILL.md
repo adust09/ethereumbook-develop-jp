@@ -14,7 +14,13 @@ OCR（EasyOCR）でテキスト領域を自動検出し、OpenCV の Inpainting 
 ```
 /translate-image <image_path>
 /translate-image src/images/ch11/maet_1101.png
-/translate-image ch11          # ch11の全画像を処理
+```
+
+実行は基本的に「翻訳マップ JSON」を作ってからスクリプトを叩く:
+
+```bash
+/tmp/imgtools/bin/python3 scripts/translate_image.py \
+    src/images/ch11/maet_1102.png --map maps/maet_1102.json
 ```
 
 ## Prerequisites
@@ -22,113 +28,110 @@ OCR（EasyOCR）でテキスト領域を自動検出し、OpenCV の Inpainting 
 Python venv にライブラリが必要。なければ自動セットアップ:
 ```bash
 python3 -m venv /tmp/imgtools
-/tmp/imgtools/bin/pip install Pillow opencv-python-headless easyocr
+/tmp/imgtools/bin/python3 -m pip install Pillow opencv-python-headless easyocr
 ```
 
 ## Approach: OCR + Inpainting
 
-### Why this approach?
+1. **OCR**: EasyOCR が全テキストの位置・内容を自動検出
+2. **Mask (連結成分フィルター)**: 各 OCR bbox 内の「文字形状の連結成分」だけマスクし、横長/縦長/極端なアスペクト比の連結成分（= 矢印・枠線・直線）はマスクから除外して保護する
+3. **Inpainting**: OpenCV TELEA でテキスト部分の背景を復元
+4. **Border Restoration**: 原本の枠線・矢印ピクセル（gray < 100）を inpainting 後の画像に上書き復元する。OCR テキスト bbox（+8px padding）内は除外して英文残骸の混入を防ぐ
+5. **Overlay**: 復元された背景の上に日本語テキストを描画
 
-元画像は Adobe Photoshop で作成された PNG（ソースファイル非公開）。
-テキスト部分だけを差し替えるために以下の3ステップで処理する:
+### 旧版（v1）の問題と v2 の対応
 
-1. **OCR**: EasyOCR が全テキストの位置・内容を自動検出（手動座標不要）
-2. **Inpainting**: テキストピクセルのみをマスクし、OpenCV が背景を自然に復元（矢印・枠線を壊さない）
-3. **Overlay**: 復元された背景の上に日本語テキストを描画
+| 旧版 v1 の問題 | v2 の対応 |
+|---|---|
+| `gray < 180` を bbox 全体に適用していたため bbox 内に侵入した枠線・矢印まで削除されていた | 連結成分の幅/高さ/アスペクト比で線形オブジェクトを検出して除外 |
+| `pad=6` + `dilate iterations=2` で広範囲を侵食 | `pad=2` + `dilate iterations=1` に縮小 |
+| OCR bbox 高さ依存でフォントサイズを個別計算 → 隣接ラベル間でサイズがバラバラ | 翻訳マップで `font_size` 明示指定 or `size_group` で同グループを統一 |
 
-### Key advantage
+## 翻訳マップ JSON の仕様
 
-矢印、点線、ボックス枠、アイコンなどの構造要素が自動的に保存される。
-従来の矩形塗りつぶし方式では構造要素が消えてしまう問題を根本的に解決。
+```json
+{
+  "Original Text": {
+    "ja": "翻訳テキスト",
+    "bold": true,
+    "font_size": 22,
+    "size_group": "steps",
+    "group": "step1",
+    "text_offset_x": 10,
+    "text_offset_y": -5
+  },
+  "Web3": {"ja": null},
+  "__extra_mask_boxes__": [[x1, y1, x2, y2]],
+  "__extra_mask_boxes_soft__": [[x1, y1, x2, y2]],
+  "__extra_preserve_boxes__": [[x1, y1, x2, y2]]
+}
+```
+
+### テキストフィールド
+
+| フィールド | 用途 |
+|---|---|
+| `ja` | 翻訳テキスト。`null` を指定すると preserve（マスクから除外、原文を残す） |
+| `bold` | true でヒラギノ角ゴシック W6、それ以外は W3 |
+| `font_size` | フォントサイズの明示指定。指定すると自動縮小も無効化される |
+| `size_group` | 同 group 名の region は bbox 高さの中央値でフォントサイズを統一 |
+| `group` | OCR が分割検出した断片を 1 つの翻訳としてマージ（`ja` を持つ要素が代表） |
+| `text_offset_x` | 描画位置の水平オフセット（px）。正で右、負で左にずらす |
+| `text_offset_y` | 描画位置の垂直オフセット（px）。正で下、負で上にずらす |
+
+### 特殊キー（マスク制御）
+
+| キー | 用途 |
+|---|---|
+| `__extra_mask_boxes__` | 指定領域を無条件で全マスク + inpaint 後に周辺中央値で塗装。テキスト残骸やタイトルバンドの除去に使う |
+| `__extra_mask_boxes_soft__` | 指定領域を連結成分フィルター付きでマスク。枠線を保護しつつテキストだけ消したい場合に使う |
+| `__extra_preserve_boxes__` | 指定領域をマスクから強制除外。OCR bbox と重なる枠線・矢印を保護する |
+
+### マッチング順序
+
+1. **完全一致**（大文字小文字無視）が最優先
+2. 次に `*` を含むキーで `fnmatch` グロブマッチ
+3. それ以外は skip（ログ出力のみ）
 
 ## Workflow
 
-### Step 1: OCR でテキスト検出
+### Step 1: OCR でテキスト検出を確認
 
-```python
+```bash
+/tmp/imgtools/bin/python3 -c "
 import easyocr
-reader = easyocr.Reader(['en'], gpu=False)
-results = reader.readtext(image_path)
-# results: [(bbox, text, confidence), ...]
+r = easyocr.Reader(['en'], gpu=False, verbose=False)
+for bbox, text, conf in r.readtext('src/images/ch11/maet_1102.png'):
+    print(repr(text), round(conf, 2))
+"
 ```
 
-### Step 2: 翻訳マッピングを作成
+### Step 2: 翻訳マップを作成
 
-1. OCR 結果を Claude のビジョンで確認（Read ツール）
-2. 各テキストの日本語訳を決定
-3. `src/glosary.md` を参照して用語を統一
+1. OCR 結果と画像を見比べて全テキストの翻訳を決める
+2. `src/glosary.md` を参照して用語を統一
+3. ステップ番号付きラベル（1., 2., 3., ...）には同じ `font_size` を指定して統一
+4. OCR が複数行を別テキストとして検出した場合は `group` でマージ
+5. 残したい英語（"Web3", "P2P", "AWS" 等）は `"ja": null` で preserve
 
-ルール:
-- 技術用語のカタカナ: "Oracle" → "オラクル", "Smart contract" → "スマートコントラクト"
-- 固有名詞: そのまま（"AWS", "IPFS", "ENS", "Vercel", "TradFi", "DeFi"）
-- 矢印ラベル: 自然な日本語（"Read" → "読み取り", "Loan application" → "融資の申請"）
-- OCR が複数行を別テキストとして検出した場合: マージして1つの翻訳にする
+### Step 3: 実行 → レビュー → 調整
 
-### Step 3: ピクセルレベルマスク + Inpainting
-
-```python
-import cv2, numpy as np
-
-img_cv = cv2.imread(src_path)
-gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
-mask = np.zeros(gray.shape, dtype=np.uint8)
-
-for region in regions_to_translate:
-    x1, y1, x2, y2 = region["box"]
-    # テキストピクセルのみマスク（暗いピクセル = テキスト）
-    region_gray = gray[y1:y2, x1:x2]
-    text_mask = (region_gray < 180).astype(np.uint8) * 255
-    # アンチエイリアス端をカバーするために膨張
-    kernel = np.ones((3, 3), np.uint8)
-    text_mask = cv2.dilate(text_mask, kernel, iterations=2)
-    mask[y1:y2, x1:x2] = np.maximum(mask[y1:y2, x1:x2], text_mask)
-
-# Inpainting（TELEA法、半径3）
-inpainted = cv2.inpaint(img_cv, mask, inpaintRadius=3, flags=cv2.INPAINT_TELEA)
+```bash
+/tmp/imgtools/bin/python3 scripts/translate_image.py \
+    src/images/ch11/maet_1102.png --map maps/maet_1102.json --preview
 ```
 
-### Step 4: 日本語テキスト描画
+レビュー観点:
+- 全テキストが正しく翻訳されている
+- 矢印・枠線・アイコンが保存されている（特に bbox 内に侵入していた線）
+- 番号付きラベル群でフォントサイズが揃っている
+- Inpainting のかすれ跡がない（残っていれば連結成分フィルターの閾値を緩和）
 
-```python
-from PIL import Image, ImageDraw, ImageFont
+問題があれば翻訳マップ（`font_size`、`group`、`preserve` 指定）を調整して再実行。
 
-FONT_BOLD = "/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc"
-FONT_REGULAR = "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc"
+### Step 4: 上書き保存
 
-img_pil = Image.fromarray(cv2.cvtColor(inpainted, cv2.COLOR_BGR2RGB))
-draw = ImageDraw.Draw(img_pil)
-
-for region in regions_to_translate:
-    box = region["box"]
-    cx = (box[0] + box[2]) / 2
-    cy = (box[1] + box[3]) / 2
-    box_h = box[3] - box[1]
-    font_size = max(14, int(box_h * 0.55))
-    font = ImageFont.truetype(font_path, font_size)
-    draw.text((cx, cy), region["translation"], font=font, fill=(0,0,0), anchor="mm")
-```
-
-### Step 5: レビュー
-
-1. 翻訳画像を Read ツールで表示
-2. 元画像と比較して確認:
-   - 全テキストが正しく翻訳されている
-   - 矢印・枠線・アイコンが保存されている
-   - テキストが適切にセンタリングされている
-   - Inpainting のアーティファクトがない
-3. 問題があれば翻訳マッピングやフォントサイズを調整して再実行
-
-### Step 6: 保存
-
-元ファイルを上書き保存:
-```python
-img_pil.save(original_path)
-```
-
-## サンプルスクリプト
-
-`scripts/translate_image.py` に実用的なサンプルスクリプトを用意。
-使い方: `/translate-image` スキル実行時にこのスクリプトをベースにする。
+`--preview` を外して再実行すると元ファイルを上書き。
 
 ## 翻訳不要な画像
 
@@ -145,3 +148,15 @@ img_pil.save(original_path)
 | ch11 | maet_1101〜1105 | Oracle / クロスチェーン図（5枚） |
 | ch12 | maet_1201〜1203, 1213 | DApp アーキテクチャ図（4枚） |
 | ch13 | maet_1301〜1307 | DeFi フロー図（7枚） |
+
+## トラブルシューティング
+
+| 症状 | 原因 | 対処 |
+|---|---|---|
+| 矢印・枠線が灰色化 / 消失 | bbox 内の線が連結成分フィルターで除外されない | `aspect > 8` を `> 5` に厳しくする、または `pad` を 0 に |
+| 枠線がボケている / 太さが変わる | inpainting がテキスト近傍の枠線まで平滑化した | `restore_borders()` が自動復元するが、OCR bbox と枠線が重なる場合は `__extra_preserve_boxes__` で枠線座標を明示保護する |
+| テキスト残骸の黒いドットが残る | 連結成分フィルターの最小面積閾値 (area < 3) で除外された微小ピクセル | `__extra_mask_boxes__`（unconditional）で該当領域を強制マスクする。`__extra_mask_boxes_soft__` では消えない |
+| 翻訳テキストが矢印や枠線に被る | 日本語テキストが英語より長く、描画位置が重なる | `text_offset_x` / `text_offset_y` で位置調整、または `font_size` を縮小する |
+| 番号 (1. 2. 3.) のサイズがバラバラ | OCR 検出ごとに個別計算されている | 翻訳マップで `font_size` 明示 or `size_group` で統一 |
+| 一部の OCR が拾えない (例: 数字 "4") | EasyOCR の検出漏れ | 該当領域に `preserve` boxを与えるか、隣接テキストとまとめて bbox 拡張 |
+| 翻訳が反映されない | OCR テキストとマップキーが一致していない | OCR 結果の repr を確認（半角/全角、ハイフン、コンマの違い） |

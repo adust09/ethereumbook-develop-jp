@@ -1,0 +1,11 @@
+{
+  "Execution client": {"ja": "実行クライアント", "bold": true, "font_size": 28},
+  "Consensus client": {"ja": "コンセンサスクライアント", "bold": true, "font_size": 28},
+  "Blocks": {"ja": "ブロック", "font_size": 22},
+  "PZP network": {"ja": "P2Pネットワーク", "font_size": 22},
+  "Transaction": {"ja": "トランザクション", "font_size": 18},
+  "Consensus rules": {"ja": "コンセンサスルール", "font_size": 22},
+  "Incentivization scheme": {"ja": "インセンティブ設計", "font_size": 22},
+  "State machine": {"ja": "ステートマシン", "font_size": 24},
+  "Consensus algorithm": {"ja": "コンセンサスアルゴリズム", "font_size": 22}
+}

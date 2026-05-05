@@ -1,0 +1,7 @@
+{
+  "Legacy application": {"ja": "レガシーアプリケーション", "bold": true, "font_size": 32},
+  "Logic": {"ja": "ロジック", "font_size": 26},
+  "Database": {"ja": "データベース", "font_size": 26},
+  "Unique": {"ja": "単一の\nフロントエンド", "font_size": 22, "group": "unique"},
+  "frontend": {"ja": null, "group": "unique"}
+}

@@ -1,0 +1,11 @@
+{
+  "Ethereum node": {"ja": "イーサリアムノード", "bold": true, "font_size": 24},
+  "Consensus client": {"ja": "コンセンサスクライアント", "bold": true, "font_size": 18},
+  "Execution client": {"ja": "実行クライアント", "bold": true, "font_size": 22},
+  "Web3": {"ja": "Web3\nライブラリ", "bold": true, "font_size": 22, "group": "web3lib"},
+  "library": {"ja": null, "group": "web3lib"},
+  "PZP": {"ja": "P2P", "bold": true, "font_size": 22},
+  "web3beacon": {"ja": null},
+  "web3.eth": {"ja": null},
+  "Engine API": {"ja": null}
+}

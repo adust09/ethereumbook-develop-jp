@@ -1,0 +1,15 @@
+{
+  "1": {"ja": "1. 更新", "font_size": 22, "group": "step1"},
+  "Update": {"ja": null, "group": "step1"},
+  "2. Reads the": {"ja": "2. 更新されたオラクルの\nログを読み取る", "font_size": 22, "group": "step2"},
+  "of": {"ja": null, "group": "step2"},
+  "the updated oracle": {"ja": null, "group": "step2"},
+  "logs": {"ja": null, "group": "step2"},
+  "Oracle": {"ja": "オラクル", "bold": true, "font_size": 28},
+  "Off-chain daemon": {"ja": "オフチェーンデーモン", "bold": true, "font_size": 24},
+  "Read": {"ja": "4. 読み取り", "font_size": 22, "text_offset_x": 30},
+  "3. Notifies the smart contract": {"ja": "3. オラクルが更新されたことを\nスマートコントラクトに通知", "font_size": 22, "group": "step3"},
+  "that the oracle is updated": {"ja": null, "group": "step3"},
+  "Smart contract": {"ja": "スマートコントラクト", "bold": true, "font_size": 24},
+  "__extra_mask_boxes__": [[150, 205, 195, 245]]
+}

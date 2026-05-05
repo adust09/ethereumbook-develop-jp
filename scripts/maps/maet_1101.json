@@ -1,0 +1,5 @@
+{
+  "Smart contract": {"ja": "スマートコントラクト", "bold": true, "font_size": 22},
+  "Oracle": {"ja": "オラクル", "bold": true, "font_size": 26},
+  "Read": {"ja": "読み取り", "font_size": 22}
+}
