@@ -154,11 +154,16 @@ def restore_borders(
     detections: list[dict],
     dark_thresh: int = 100,
     text_pad: int = 8,
+    extra_exclude_boxes: list[list[int]] | None = None,
 ) -> np.ndarray:
     """Inpainting でぼけた枠線・矢印を原本から復元する。
 
-    原本の暗いピクセル (gray < dark_thresh) のうち、OCR テキスト bbox の
-    外側にあるものだけを inpainted 画像に上書きコピーする。
+    原本の暗いピクセル (gray < dark_thresh) のうち、OCR テキスト bbox および
+    `extra_exclude_boxes`（hard マスク等で意図的に消したい領域）の外側に
+    あるものだけを inpainted 画像に上書きコピーする。
+
+    extra_exclude_boxes を渡さないと、`__extra_mask_boxes__` で消した
+    italic 数字などの暗いピクセルが原本から復元されてしまうので注意。
     """
     orig = cv2.imread(original_path)
     gray = cv2.cvtColor(orig, cv2.COLOR_BGR2GRAY)
@@ -168,6 +173,15 @@ def restore_borders(
     text_zone = np.zeros((h, w), dtype=np.uint8)
     for det in detections:
         x1, y1, x2, y2 = det["box"]
+        x1 = max(0, x1 - text_pad)
+        y1 = max(0, y1 - text_pad)
+        x2 = min(w, x2 + text_pad)
+        y2 = min(h, y2 + text_pad)
+        text_zone[y1:y2, x1:x2] = 1
+
+    # 追加除外領域: hard マスクで消したい領域も復元対象から外す
+    for box in extra_exclude_boxes or []:
+        x1, y1, x2, y2 = box
         x1 = max(0, x1 - text_pad)
         y1 = max(0, y1 - text_pad)
         x2 = min(w, x2 + text_pad)
@@ -389,7 +403,10 @@ def translate_image(
                 inpainted[y1:y2, x1:x2] = fill_color
 
     # 枠線・矢印の復元（inpainting で発生したボケを原本から上書き修復）
-    inpainted = restore_borders(image_path, inpainted, detections)
+    # `__extra_mask_boxes__` で消した領域は原本復元しないよう除外する
+    inpainted = restore_borders(
+        image_path, inpainted, detections, extra_exclude_boxes=extra_mask_boxes
+    )
 
     print("[4/4] Drawing Japanese text")
     result = draw_translations(inpainted, regions, font_bold, font_regular)
