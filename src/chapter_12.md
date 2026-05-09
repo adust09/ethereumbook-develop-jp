@@ -180,7 +180,7 @@ contract MyWhitelistNFT is ERC721, Ownable {
 
 　ここまでDAppの基本的な概念を見てきました。次は実際にDAppを自分で構築してみましょう。
 
-　イーサリアム上でDAppをゼロから構築するチュートリアルはオンラインに数多くありますが、[Speedrun Ethereum](https://oreil.ly/Onygc)を強くお勧めします。素早く学んですぐに構築を始めるには最も効果的な方法です。イーサリアム上でのDApp構築の知識を深めるために、Speedrun Ethereumのすべてのチャレンジを完了し、[BuidlGuidlコミュニティ](https://buidlguidl.com)に参加することをお勧めします。（なお、これらのリソースはすべて英語で提供されています。）
+　イーサリアム上でDAppをゼロから構築するチュートリアルはオンラインに数多くありますが、[Speedrun Ethereum](https://oreil.ly/Onygc)を強くお勧めします。素早く学んですぐに構築を始めるには最も効果的な方法です。イーサリアム上でのDApp構築の知識を深めるために、Speedrun Ethereumのすべてのチャレンジを完了し、[BuidlGuidlコミュニティ](https://buidlguidl.com)に参加することをお勧めします。〔訳注: これらのリソースはすべて英語で提供されている。〕
 
 　このセクションでは、非常に基本的な分散型アプリケーション、いわば「Hello World」DAppを構築します。事前の経験は不要で、必要なのはコンピュータとインターネット接続だけです。
 
