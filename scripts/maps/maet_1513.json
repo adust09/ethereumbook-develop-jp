@@ -1,7 +1,8 @@
 {
   "Priority fees": {
     "ja": "プライオリティ手数料",
-    "font_size": 22
+    "font_size": 22,
+    "text_offset_x": 80
   },
   "Newly minted ETH": {
     "ja": "新規発行されたETH"
