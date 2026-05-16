@@ -3,6 +3,6 @@
   "Trusted": {"ja": "トラステッド"},
   "setup": {"ja": "セットアップ"},
   "Trusted setup": {"ja": "トラステッドセットアップ"},
-  "Elliptic curve pairing": {"ja": "楕円曲線ペアリング"},
+  "Elliptic curve pairing": {"ja": "楕円曲線ペアリング", "color": "#c1272d"},
   "T": {"ja": null}
 }

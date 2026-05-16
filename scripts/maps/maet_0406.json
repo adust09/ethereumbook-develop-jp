@@ -1,5 +1,5 @@
 {
-  "Vote for block A": {"ja": "ブロックAに投票"},
-  "Signature aggregation": {"ja": "署名の集約", "bold": true},
+  "Vote for block A": {"ja": "ブロックAに投票", "color": "#c1272d"},
+  "Signature aggregation": {"ja": "署名の集約", "bold": true, "color": "#c1272d"},
   "Block A": {"ja": "ブロックA", "bold": true}
 }

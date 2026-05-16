@@ -1,7 +1,7 @@
 {
   "Polynomialp": {"ja": "多項式 p"},
   "Polynomial p": {"ja": "多項式 p"},
-  "KZG commitment": {"ja": "KZGコミットメント"},
+  "KZG commitment": {"ja": "KZGコミットメント", "color": "#c1272d"},
   "Sent to": {"ja": "送信先"},
   "Verifier": {"ja": "検証者", "bold": true},
   "Prover": {"ja": "証明者", "bold": true}
