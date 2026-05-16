@@ -213,7 +213,15 @@ def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.I
                 font_size -= 1
                 font = ImageFont.truetype(font_path, font_size)
 
-        draw.text((cx, cy), region["translation"], font=font, fill=(0, 0, 0), anchor="mm")
+        color = region.get("color")
+        if color is None:
+            fill = (0, 0, 0)
+        elif isinstance(color, str):
+            c = color.lstrip("#")
+            fill = (int(c[0:2], 16), int(c[2:4], 16), int(c[4:6], 16))
+        else:
+            fill = tuple(color)
+        draw.text((cx, cy), region["translation"], font=font, fill=fill, anchor="mm")
 
     return img_pil
 
@@ -285,6 +293,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             "font_size": matched.get("font_size"),
             "text_offset_x": matched.get("text_offset_x", 0),
             "text_offset_y": matched.get("text_offset_y", 0),
+            "color": matched.get("color"),
         })
         print(f"       '{det['text']}' → '{matched['ja']}'")
 
@@ -302,6 +311,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
         font_size = next((v.get("font_size") for _, v in items if v.get("ja")), None)
         text_offset_x = next((v.get("text_offset_x") for _, v in items if v.get("ja")), 0) or 0
         text_offset_y = next((v.get("text_offset_y") for _, v in items if v.get("ja")), 0) or 0
+        color = next((v.get("color") for _, v in items if v.get("ja")), None)
         if ja:
             regions.append({
                 "box": merged_box,
@@ -312,6 +322,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
                 "font_size": font_size,
                 "text_offset_x": text_offset_x,
                 "text_offset_y": text_offset_y,
+                "color": color,
             })
             print(f"       (merged '{gname}') → '{ja}'")
 
@@ -324,6 +335,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             "bold": er.get("bold", False),
             "size_group": er.get("size_group"),
             "font_size": er.get("font_size"),
+            "color": er.get("color"),
         })
         print(f"       (extra) → '{er['ja']}'")
 
