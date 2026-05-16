@@ -28,7 +28,12 @@ Usage:
         "group": "step1"        // (省略可) 複数 OCR 領域を 1 つの翻訳にマージ
       },
       // ja=null は「テキストを残す」preserve（マスクから除外）
-      "Web3": {"ja": null}
+      "Web3": {"ja": null},
+      // __skip_match_boxes__: 指定 bbox 内に収まる OCR 検出はマッチング処理を
+      // スキップし、強制的にマスク対象（soft）に回す。同じ英単語が異なる場所で
+      // 異なるサイズになる場合に、片方の領域を __extra_text_regions__ で
+      // 上書き描画するために使う。
+      "__skip_match_boxes__": [[x1, y1, x2, y2], ...]
     }
 """
 import argparse
@@ -163,7 +168,7 @@ def restore_borders(
     あるものだけを inpainted 画像に上書きコピーする。
 
     extra_exclude_boxes を渡さないと、`__extra_mask_boxes__` で消した
-    italic 数字などの暗いピクセルが原本から復元されてしまうので注意。
+    italic 数字や em ダッシュなどの暗いピクセルが原本から復元されてしまう。
     """
     orig = cv2.imread(original_path)
     gray = cv2.cvtColor(orig, cv2.COLOR_BGR2GRAY)
@@ -251,7 +256,15 @@ def draw_translations(
                 font_size -= 1
                 font = ImageFont.truetype(font_path, font_size)
 
-        draw.text((cx, cy), region["translation"], font=font, fill=(0, 0, 0), anchor="mm")
+        color = region.get("color")
+        if color is None:
+            fill = (0, 0, 0)
+        elif isinstance(color, str):
+            c = color.lstrip("#")
+            fill = (int(c[0:2], 16), int(c[2:4], 16), int(c[4:6], 16))
+        else:
+            fill = tuple(color)
+        draw.text((cx, cy), region["translation"], font=font, fill=fill, anchor="mm")
 
     return img_pil
 
@@ -280,11 +293,24 @@ def translate_image(
     # __extra_text_regions__ は OCR を経由せず座標指定で翻訳テキストを描画
     # 形式: [{"box": [x1,y1,x2,y2], "ja": "テキスト", "bold": true, "font_size": 24}, ...]
     extra_text_regions = translation_map.pop("__extra_text_regions__", [])
+    # __skip_match_boxes__: 指定 bbox に収まる OCR 検出はマッチング対象から外し、
+    # soft マスクに強制追加する（英語は消えるが日本語は描画されない）。
+    # 同じ英単語が場所ごとに異なるサイズで描画されるケースを切り分けるために、
+    # 片方の領域を __extra_text_regions__ で上書きする用途で使う。
+    skip_match_boxes = translation_map.pop("__skip_match_boxes__", [])
 
     regions = []
     preserve_boxes = []
     groups = defaultdict(list)
     for det in detections:
+        if any(
+            det["box"][0] >= sb[0] and det["box"][1] >= sb[1]
+            and det["box"][2] <= sb[2] and det["box"][3] <= sb[3]
+            for sb in skip_match_boxes
+        ):
+            extra_mask_boxes_soft.append(det["box"])
+            print(f"       '{det['text']}' → (skip-match, masked)")
+            continue
         text_lower = det["text"].lower().strip()
         matched, matched_key = None, None
         for key, value in translation_map.items():
@@ -320,6 +346,7 @@ def translate_image(
             "font_size": matched.get("font_size"),
             "text_offset_x": matched.get("text_offset_x", 0),
             "text_offset_y": matched.get("text_offset_y", 0),
+            "color": matched.get("color"),
         })
         print(f"       '{det['text']}' → '{matched['ja']}'")
 
@@ -337,6 +364,7 @@ def translate_image(
         font_size = next((v.get("font_size") for _, v in items if v.get("ja")), None)
         text_offset_x = next((v.get("text_offset_x") for _, v in items if v.get("ja")), 0) or 0
         text_offset_y = next((v.get("text_offset_y") for _, v in items if v.get("ja")), 0) or 0
+        color = next((v.get("color") for _, v in items if v.get("ja")), None)
         if ja:
             regions.append({
                 "box": merged_box,
@@ -347,6 +375,7 @@ def translate_image(
                 "font_size": font_size,
                 "text_offset_x": text_offset_x,
                 "text_offset_y": text_offset_y,
+                "color": color,
             })
             print(f"       (merged '{gname}') → '{ja}'")
 
@@ -359,6 +388,7 @@ def translate_image(
             "bold": er.get("bold", False),
             "size_group": er.get("size_group"),
             "font_size": er.get("font_size"),
+            "color": er.get("color"),
         })
         print(f"       (extra) → '{er['ja']}'")
 

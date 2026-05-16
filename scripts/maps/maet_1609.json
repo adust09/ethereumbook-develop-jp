@@ -1,0 +1,13 @@
+{
+  "Stem tree": {"ja": "Stemツリー", "bold": true},
+  "Extension": {"ja": "拡張"},
+  "Suffix tree": {"ja": "Suffixツリー", "bold": true},
+  "Data": {"ja": "データ", "bold": true},
+  "Root": {"ja": "ルート", "bold": true},
+  "value_lower": {"ja": null},
+  "value_upper": {"ja": null},
+  "Pedersen": {"ja": null},
+  "(1,stem;": {"ja": null},
+  "CI": {"ja": null},
+  "CI,C2)": {"ja": null}
+}

@@ -1,0 +1,11 @@
+{
+  "Proofs": {"ja": "証明", "font_size": 18},
+  "Proofs|": {"ja": "証明", "font_size": 18},
+  "Data": {"ja": "データ", "font_size": 18},
+  "availability": {"ja": "可用性", "font_size": 18},
+  "Off-chain": {"ja": "オフチェーン"},
+  "Off chain": {"ja": "オフチェーン"},
+  "Ethereum": {"ja": "イーサリアム", "bold": true},
+  "Rollup": {"ja": null},
+  "Validium": {"ja": null}
+}
