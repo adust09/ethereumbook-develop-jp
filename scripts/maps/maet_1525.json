@@ -39,11 +39,11 @@
   },
   "like": {
     "ja": "チェックポイントN",
-    "font_size": 30
+    "font_size": 22
   },
   "checkpoint N:": {
     "ja": "が好き。",
-    "font_size": 30
+    "font_size": 22
   },
   "__extra_mask_boxes__": [
     [
