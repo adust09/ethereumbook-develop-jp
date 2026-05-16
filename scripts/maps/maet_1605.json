@@ -3,15 +3,19 @@
   "Data": {"ja": "データ", "font_size": 20},
   "transaction": {"ja": "トランザクション", "font_size": 20},
   "Data blob": {"ja": "データブロブ", "font_size": 22},
-  "Blob contents": {"ja": "ブロブの内容", "font_size": 18},
-  "must match": {"ja": "一致しなければならない", "font_size": 14},
-  "commitment": {"ja": "コミットメント", "font_size": 18},
-  "in data": {"ja": "データ内の", "font_size": 18},
   "Node still downloads": {"ja": "ノードは引き続き", "font_size": 20},
   "and checks the full": {"ja": "ビーコンチェーン全体を", "font_size": 20},
   "andchecks the full": {"ja": "ビーコンチェーン全体を", "font_size": 20},
   "beacon chain directly": {"ja": "直接ダウンロード・検証する", "font_size": 20},
   "Nodes don't fully download data blobs. Instead they verify": {"ja": "ノードはデータブロブを完全にはダウンロードせず、間接的に検証する", "font_size": 22},
   "them indirectly through data availability sampling (DAS)": {"ja": "データ可用性サンプリング (DAS) を通じて行う", "font_size": 22},
-  "Node": {"ja": "ノード", "bold": true}
+  "Node": {"ja": "ノード", "bold": true},
+  "__skip_match_boxes__": [[0, 420, 260, 615]],
+  "__extra_text_regions__": [
+    {"box": [0, 431, 212, 467], "ja": "ブロブの内容", "font_size": 16},
+    {"box": [0, 468, 212, 500], "ja": "一致しなければならない", "font_size": 16},
+    {"box": [0, 499, 212, 535], "ja": "コミットメント", "font_size": 16},
+    {"box": [0, 531, 212, 567], "ja": "データ内の", "font_size": 16},
+    {"box": [0, 568, 212, 600], "ja": "トランザクション", "font_size": 16}
+  ]
 }
