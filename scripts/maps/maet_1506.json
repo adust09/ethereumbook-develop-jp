@@ -1,9 +1,13 @@
 {
   "I vote for B": {
-    "ja": "Bに投票"
+    "ja": "Bに投票",
+    "color": "#c1272d",
+    "bold": true
   },
   "I vote for F": {
-    "ja": "Fに投票"
+    "ja": "Fに投票",
+    "color": "#c1272d",
+    "bold": true
   },
   "Time: t+1": {
     "ja": "時刻: t+1"
@@ -15,13 +19,20 @@
     "ja": "時刻: t+1"
   },
   "vote for F": {
-    "ja": "Fに投票"
+    "ja": "Fに投票",
+    "color": "#c1272d",
+    "bold": true,
+    "text_offset_x": 30
   },
   "votefor B": {
-    "ja": "Bに投票"
+    "ja": "Bに投票",
+    "color": "#c1272d",
+    "bold": true
   },
   "vote for B": {
-    "ja": "Bに投票"
+    "ja": "Bに投票",
+    "color": "#c1272d",
+    "bold": true
   },
   "__extra_mask_boxes__": [
     [
@@ -31,8 +42,8 @@
       253
     ],
     [
-      575,
-      291,
+      594,
+      297,
       603,
       333
     ]
