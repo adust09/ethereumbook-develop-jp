@@ -31,6 +31,28 @@ python3 -m venv /tmp/imgtools
 /tmp/imgtools/bin/python3 -m pip install Pillow opencv-python-headless easyocr
 ```
 
+### 日本語フォント
+
+スクリプトは次の優先順位でフォントを解決する:
+
+1. 環境変数 `IMG_FONT_BOLD` / `IMG_FONT_REGULAR`（TTF/OTF/TTC への絶対パス）
+2. OS 別デフォルト
+   - macOS: ヒラギノ角ゴシック W6 / W3 (`/System/Library/Fonts/...`)
+   - Linux: Noto Sans CJK JP Bold / Regular (`/usr/share/fonts/...`)
+3. `fc-match` (fontconfig) によるファミリー名解決（`Noto Sans CJK JP`）
+
+Linux / CI で実行する場合は Noto を導入する:
+```bash
+sudo apt-get install -y fonts-noto-cjk fontconfig  # Debian/Ubuntu
+```
+
+別フォントを使う場合は env で上書き:
+```bash
+IMG_FONT_REGULAR=/path/to/regular.otf \
+IMG_FONT_BOLD=/path/to/bold.otf \
+/tmp/imgtools/bin/python3 scripts/translate_image.py ...
+```
+
 ## Approach: OCR + Inpainting
 
 1. **OCR**: EasyOCR が全テキストの位置・内容を自動検出
@@ -72,7 +94,7 @@ python3 -m venv /tmp/imgtools
 | フィールド | 用途 |
 |---|---|
 | `ja` | 翻訳テキスト。`null` を指定すると preserve（マスクから除外、原文を残す） |
-| `bold` | true でヒラギノ角ゴシック W6、それ以外は W3 |
+| `bold` | true で Bold ウェイト、それ以外は Regular。実フォントは Prerequisites の解決順序で決まる |
 | `font_size` | フォントサイズの明示指定。指定すると自動縮小も無効化される |
 | `size_group` | 同 group 名の region は bbox 高さの中央値でフォントサイズを統一 |
 | `group` | OCR が分割検出した断片を 1 つの翻訳としてマージ（`ja` を持つ要素が代表） |

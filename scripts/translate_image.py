@@ -18,11 +18,16 @@ Usage:
     /tmp/imgtools/bin/python3 scripts/translate_image.py \\
         src/images/ch11/maet_1102.png --map maps/maet_1102.json --preview
 
+フォント解決:
+    1. 環境変数 IMG_FONT_BOLD / IMG_FONT_REGULAR (絶対パス)
+    2. OS 別デフォルト (macOS=ヒラギノ角ゴ, Linux=Noto Sans CJK JP)
+    3. fc-match (fontconfig) によるファミリー名解決
+
 翻訳マップ JSON の仕様:
     {
       "Original Text": {
         "ja": "翻訳テキスト",
-        "bold": true,           // (省略可) ヒラギノ W6 を使う
+        "bold": true,           // (省略可) Bold ウェイトを使う
         "font_size": 22,        // (省略可) フォントサイズを明示指定（自動縮小無効）
         "size_group": "steps",  // (省略可) 同グループは bbox 高さ中央値でサイズ統一
         "group": "step1"        // (省略可) 複数 OCR 領域を 1 つの翻訳にマージ
@@ -39,14 +44,85 @@ Usage:
 import argparse
 import fnmatch
 import json
+import os
+import platform
+import shutil
+import subprocess
 from collections import defaultdict
+from functools import lru_cache
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 import easyocr
 
-FONT_BOLD = "/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc"
-FONT_REGULAR = "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc"
+# フォント解決の優先順位:
+#   1. 環境変数 IMG_FONT_BOLD / IMG_FONT_REGULAR (絶対パス)
+#   2. OS 別デフォルト候補 (macOS=ヒラギノ角ゴ, Linux=Noto Sans CJK JP)
+#   3. fc-match (fontconfig) によるファミリー名解決
+# すべて失敗したら FileNotFoundError で明確に止める。
+_DEFAULT_FONT_CANDIDATES: dict[tuple[str, str], list[str]] = {
+    ("Darwin", "bold"): [
+        "/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc",
+        "/Library/Fonts/ヒラギノ角ゴシック W6.ttc",
+    ],
+    ("Darwin", "regular"): [
+        "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc",
+        "/Library/Fonts/ヒラギノ角ゴシック W3.ttc",
+    ],
+    ("Linux", "bold"): [
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
+        "/usr/share/fonts/noto-cjk/NotoSansCJK-Bold.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansCJKjp-Bold.otf",
+    ],
+    ("Linux", "regular"): [
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansCJKjp-Regular.otf",
+    ],
+}
+
+_FC_FAMILY: dict[str, str] = {
+    "bold": "Noto Sans CJK JP:weight=bold",
+    "regular": "Noto Sans CJK JP",
+}
+
+
+@lru_cache(maxsize=4)
+def _resolve_font(weight: str) -> str:
+    env_key = f"IMG_FONT_{weight.upper()}"
+    env_val = os.environ.get(env_key)
+    if env_val:
+        if not os.path.exists(env_val):
+            raise FileNotFoundError(f"{env_key}={env_val} does not exist")
+        return env_val
+
+    system = platform.system()
+    for path in _DEFAULT_FONT_CANDIDATES.get((system, weight), []):
+        if os.path.exists(path):
+            return path
+
+    if shutil.which("fc-match"):
+        try:
+            result = subprocess.run(
+                ["fc-match", "-f", "%{file}", _FC_FAMILY[weight]],
+                capture_output=True, text=True, check=True, timeout=5,
+            )
+            path = result.stdout.strip()
+            if path and os.path.exists(path):
+                return path
+        except (subprocess.SubprocessError, OSError):
+            pass
+
+    raise FileNotFoundError(
+        f"No {weight} Japanese font found. "
+        f"Set ${env_key} to a TTF/OTF/TTC path, "
+        f"install ヒラギノ角ゴ (macOS) or Noto Sans CJK JP (Linux), "
+        f"or install fontconfig with fc-match able to resolve {_FC_FAMILY[weight]!r}."
+    )
+
+
+def _font_path(bold: bool) -> str:
+    return _resolve_font("bold" if bold else "regular")
 
 
 def detect_text(image_path: str) -> list[dict]:
@@ -200,7 +276,7 @@ def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.I
         if "\n" in region["translation"] and allow_shrink:
             font_size = max(14, int(font_size * 0.7))
 
-        font_path = FONT_BOLD if region.get("bold") else FONT_REGULAR
+        font_path = _font_path(bool(region.get("bold")))
         font = ImageFont.truetype(font_path, font_size)
 
         if allow_shrink:
