@@ -208,7 +208,15 @@ def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.I
                 font_size -= 1
                 font = ImageFont.truetype(font_path, font_size)
 
-        draw.text((cx, cy), region["translation"], font=font, fill=(0, 0, 0), anchor="mm")
+        color = region.get("color")
+        if color is None:
+            fill = (0, 0, 0)
+        elif isinstance(color, str):
+            c = color.lstrip("#")
+            fill = (int(c[0:2], 16), int(c[2:4], 16), int(c[4:6], 16))
+        else:
+            fill = tuple(color)
+        draw.text((cx, cy), region["translation"], font=font, fill=fill, anchor="mm")
 
     return img_pil
 
@@ -227,11 +235,23 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
     # __extra_text_regions__ は OCR を経由せず座標指定で翻訳テキストを描画
     # 形式: [{"box": [x1,y1,x2,y2], "ja": "テキスト", "bold": true, "font_size": 24}, ...]
     extra_text_regions = translation_map.pop("__extra_text_regions__", [])
+    # __skip_match_boxes__: 指定 bbox に収まる OCR 検出はマッチング対象から外し、
+    # soft マスクに強制追加する（英語は消えるが日本語は描画されない）。
+    # 同じ英単語が場所ごとに異なるサイズ/色で描画されるケースを切り分ける用途。
+    skip_match_boxes = translation_map.pop("__skip_match_boxes__", [])
 
     regions = []
     preserve_boxes = []
     groups = defaultdict(list)
     for det in detections:
+        if any(
+            det["box"][0] >= sb[0] and det["box"][1] >= sb[1]
+            and det["box"][2] <= sb[2] and det["box"][3] <= sb[3]
+            for sb in skip_match_boxes
+        ):
+            extra_mask_boxes_soft.append(det["box"])
+            print(f"       '{det['text']}' → (skip-match, masked)")
+            continue
         text_lower = det["text"].lower().strip()
         matched, matched_key = None, None
         for key, value in translation_map.items():
@@ -306,6 +326,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             "bold": er.get("bold", False),
             "size_group": er.get("size_group"),
             "font_size": er.get("font_size"),
+            "color": er.get("color"),
         })
         print(f"       (extra) → '{er['ja']}'")
 

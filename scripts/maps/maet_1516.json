@@ -14,5 +14,10 @@
   },
   "Slashing": {
     "ja": "スラッシング"
-  }
+  },
+  "__skip_match_boxes__": [[504, 5, 714, 92]],
+  "__extra_mask_boxes__": [[523, 27, 697, 69]],
+  "__extra_text_regions__": [
+    {"box": [504, 5, 714, 92], "ja": "アテステーション", "color": "#ffffff", "bold": true, "font_size": 26}
+  ]
 }
