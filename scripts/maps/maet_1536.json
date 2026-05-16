@@ -28,21 +28,23 @@
     "ja": "1エポック = 3スロット"
   },
   "Tepoch =": {
-    "ja": "1エポック ="
+    "ja": "1エポック = 3スロット",
+    "group": "epoch_legend",
+    "font_size": 18
   },
   "Iepoch =": {
-    "ja": "1エポック ="
+    "group": "epoch_legend"
   },
   "1epoch =": {
-    "ja": "1エポック ="
+    "group": "epoch_legend"
   },
   "3 slots": {
-    "ja": "3スロット"
+    "group": "epoch_legend"
   },
   "=3slots": {
-    "ja": "= 3スロット"
+    "group": "epoch_legend"
   },
   "= 3 slots": {
-    "ja": "= 3スロット"
+    "group": "epoch_legend"
   }
 }

@@ -9,6 +9,17 @@
   "The finalization is a global state of the blockchain": {
     "ja": "ファイナライゼーションはブロックチェーンのグローバルな状態である"
   },
+  "The finalization is a": {
+    "ja": "ファイナライゼーションはブロックチェーンのグローバルな状態である。",
+    "group": "title",
+    "font_size": 32
+  },
+  "global": {
+    "group": "title"
+  },
+  "state of theblockchain:": {
+    "group": "title"
+  },
   "I heard y'all like checkpoint N.": {
     "ja": "みんなチェックポイントNが好きだと聞いた。"
   },
