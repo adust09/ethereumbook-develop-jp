@@ -1,0 +1,15 @@
+{
+  "Prover": {"ja": "証明者", "bold": true},
+  "Verifier": {"ja": "検証者", "bold": true},
+  "Commitment": {"ja": "コミットメント"},
+  "Sent to verifier": {"ja": "検証者へ送信"},
+  "Hash function": {"ja": "ハッシュ関数"},
+  "Challenge": {"ja": "チャレンジ"},
+  "Public inputs": {"ja": "公開入力"},
+  "W": {"ja": null},
+  "__extra_mask_boxes__": [
+    [50, 510, 195, 580],
+    [780, 100, 1000, 170],
+    [780, 510, 1000, 580]
+  ]
+}

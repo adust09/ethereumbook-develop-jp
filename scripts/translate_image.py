@@ -126,11 +126,15 @@ def restore_borders(
     detections: list[dict],
     dark_thresh: int = 100,
     text_pad: int = 8,
+    protect_boxes: list = None,
 ) -> np.ndarray:
     """Inpainting でぼけた枠線・矢印を原本から復元する。
 
     原本の暗いピクセル (gray < dark_thresh) のうち、OCR テキスト bbox の
     外側にあるものだけを inpainted 画像に上書きコピーする。
+
+    protect_boxes: __extra_mask_boxes__ など、復元を抑止したい領域（OCR が
+    検出しなかった文字や em ダッシュなどを再描画しないため）。
     """
     orig = cv2.imread(original_path)
     gray = cv2.cvtColor(orig, cv2.COLOR_BGR2GRAY)
@@ -144,6 +148,11 @@ def restore_borders(
         y1 = max(0, y1 - text_pad)
         x2 = min(w, x2 + text_pad)
         y2 = min(h, y2 + text_pad)
+        text_zone[y1:y2, x1:x2] = 1
+    for box in (protect_boxes or []):
+        x1, y1, x2, y2 = box
+        x1 = max(0, x1); y1 = max(0, y1)
+        x2 = min(w, x2); y2 = min(h, y2)
         text_zone[y1:y2, x1:x2] = 1
 
     # 枠線マスク: 暗いピクセル & テキスト外
@@ -359,7 +368,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
                 inpainted[y1:y2, x1:x2] = fill_color
 
     # 枠線・矢印の復元（inpainting で発生したボケを原本から上書き修復）
-    inpainted = restore_borders(image_path, inpainted, detections)
+    inpainted = restore_borders(image_path, inpainted, detections, protect_boxes=extra_mask_boxes)
 
     print("[4/4] Drawing Japanese text")
     result = draw_translations(inpainted, regions)
