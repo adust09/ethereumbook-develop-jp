@@ -1,8 +1,8 @@
 {
-  "Sortofblack box": {"ja": "ある種のブラックボックス -"},
-  "Sort of black box": {"ja": "ある種のブラックボックス -"},
-  "ready to use": {"ja": "そのまま使える"},
-  "You need to manually write and maintain it": {"ja": "手動で作成・保守する必要がある"},
+  "Sortofblack box": {"ja": "ある種のブラックボックス - そのまま使える", "group": "left_legend", "font_size": 18},
+  "Sort of black box": {"group": "left_legend"},
+  "ready to use": {"group": "left_legend"},
+  "You need to manually write and maintain it": {"ja": "手動で作成・保守する必要がある", "font_size": 18},
   "EVMcircuit": {"ja": "EVM回路"},
   "EVM circuit": {"ja": "EVM回路"},
   "RLP circuit": {"ja": "RLP回路"},
