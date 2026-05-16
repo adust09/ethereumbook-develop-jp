@@ -36,11 +36,16 @@
   "1epoch =": {
     "ja": "1エポック ="
   },
+  "1epoch _": {
+    "ja": "1エポック = 3スロット",
+    "group": "epoch_legend",
+    "font_size": 18
+  },
   "3 slots": {
     "ja": "3スロット"
   },
   "=3slots": {
-    "ja": "= 3スロット"
+    "group": "epoch_legend"
   },
   "= 3 slots": {
     "ja": "= 3スロット"

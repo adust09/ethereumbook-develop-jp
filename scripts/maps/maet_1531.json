@@ -12,7 +12,9 @@
     "bold": true
   },
   "Validator": {
-    "ja": "バリデーター",
-    "bold": true
-  }
+    "ja": "バリデーター C",
+    "bold": true,
+    "text_offset_x": 17
+  },
+  "__extra_mask_boxes__": [[655, 483, 692, 525]]
 }

@@ -1,15 +1,23 @@
 {
   "Epoch 0": {
-    "ja": "エポック 0"
+    "ja": "エポック 0",
+    "font_size": 28
   },
   "Epoch 1": {
-    "ja": "エポック 1"
+    "ja": "エポック 1",
+    "font_size": 28
   },
   "Epoch 2": {
-    "ja": "エポック 2"
+    "ja": "エポック 2",
+    "font_size": 28
   },
   "Epoch 3": {
-    "ja": "エポック 3"
+    "ja": "エポック 3",
+    "font_size": 28
+  },
+  "Epoch3": {
+    "ja": "エポック 3",
+    "font_size": 28
   },
   "Supermajority link": {
     "ja": "スーパーマジョリティリンク"
@@ -51,6 +59,7 @@
     "ja": "= 3スロット"
   },
   "Epoch1": {
-    "ja": "エポック 1"
+    "ja": "エポック 1",
+    "font_size": 28
   }
 }
