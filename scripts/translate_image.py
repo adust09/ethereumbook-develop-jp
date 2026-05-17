@@ -45,8 +45,25 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 import easyocr
 
-FONT_BOLD = "/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc"
-FONT_REGULAR = "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc"
+import os
+
+
+def _pick_font(candidates: list[str]) -> str:
+    """Return the first existing font path from candidates."""
+    for path in candidates:
+        if os.path.exists(path):
+            return path
+    return candidates[0]
+
+
+FONT_BOLD = _pick_font([
+    "/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc",
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
+])
+FONT_REGULAR = _pick_font([
+    "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc",
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+])
 
 
 def detect_text(image_path: str) -> list[dict]:

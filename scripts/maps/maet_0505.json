@@ -1,0 +1,28 @@
+{
+  "User": {"ja": "ユーザー", "bold": true, "font_size": 26, "color": "#FFFFFF"},
+  "Bundler": {"ja": "バンドラー", "bold": true, "font_size": 26, "color": "#FFFFFF"},
+  "EntryPoint": {"ja": "EntryPoint", "bold": true, "font_size": 22},
+  "Factory": {"ja": "Factory", "bold": true, "font_size": 22},
+  "Account": {"ja": "Account", "bold": true, "font_size": 22},
+  "Paymaster": {"ja": "Paymaster", "bold": true, "font_size": 22},
+  "Contract": {"ja": "コントラクト", "bold": true, "font_size": 22},
+  "1. Create,": {"ja": "1. UserOpsを\n作成・署名", "font_size": 18, "group": "step1"},
+  "sign UserOps": {"ja": null, "group": "step1"},
+  "eth_sendUserOp;": {"ja": "2. eth_sendUserOp", "font_size": 18},
+  "3. traceCall:": {"ja": "3. traceCall:\nsimulateValidation", "font_size": 18, "group": "step3"},
+  "simulateValidation": {"ja": null, "group": "step3"},
+  "4. create (initCode)": {"ja": "4. create (initCode)", "font_size": 18},
+  "5. create": {"ja": "5. create", "font_size": 18},
+  "6. account": {"ja": "6. account", "font_size": 18},
+  "7.validateUserOp": {"ja": "7. validateUserOp", "font_size": 18},
+  "8.sendfee (fnopaymaster)": {"ja": "8. send fee（ペイマスター不在時）", "font_size": 18},
+  "9 validatePaymasterUserOp": {"ja": "9. validatePaymasterUserOp", "font_size": 18},
+  "10. Validate": {"ja": "10. ストレージ\nアクセスを検証", "font_size": 18, "group": "step10"},
+  "storage access": {"ja": null, "group": "step10"},
+  "11. add to mempool": {"ja": "11. メムプールへ追加", "font_size": 18},
+  "__extra_mask_boxes__": [
+    [50, 30, 165, 85],
+    [255, 30, 400, 85],
+    [90, 270, 135, 315]
+  ]
+}

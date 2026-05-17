@@ -1,0 +1,12 @@
+{
+  "AUTHmsg format": {"ja": "AUTHメッセージ形式", "bold": true, "font_size": 28},
+  "Type byte": {"ja": "タイプバイト", "bold": true, "font_size": 22},
+  "Chain ID": {"ja": "チェーンID", "bold": true, "font_size": 22},
+  "Nonce": {"ja": "ナンス", "bold": true, "font_size": 22},
+  "Invoker": {"ja": "インボーカー\nアドレス", "bold": true, "font_size": 20, "group": "invoker"},
+  "address": {"ja": null, "group": "invoker"},
+  "Commit": {"ja": "コミット", "bold": true, "font_size": 22, "color": "#FFFFFF"},
+  "__extra_mask_boxes__": [
+    [320, 255, 460, 320]
+  ]
+}

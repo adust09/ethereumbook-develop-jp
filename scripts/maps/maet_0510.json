@@ -1,0 +1,56 @@
+{
+  "Wallet contract": {"ja": "ウォレットコントラクト", "bold": true, "font_size": 24},
+  "Signing": {"ja": "署名\n公開鍵", "bold": true, "font_size": 20, "group": "signing_pub"},
+  "pubkey": {"ja": null, "group": "signing_pub"},
+  "Guardians'": {"ja": "ガーディアン\nアドレス", "bold": true, "font_size": 22, "group": "guard"},
+  "addresses": {"ja": null, "group": "guard"},
+  "0x12345..": {"ja": null},
+  "0x6789a.": {"ja": null},
+  "Oxbcdef": {"ja": null},
+  "0x54321..": {"ja": null},
+  "0xa9876._": {"ja": null},
+
+  "Transactions (ETH transfers;": {"ja": null},
+  "ERC 20 transfers, smart contract": {"ja": null},
+  "calls_) must come with signatures": {"ja": null},
+  "signed by the signing pubkey": {"ja": null},
+
+  "Three of five guardians": {"ja": null},
+  "can": {"ja": null},
+  "the signing": {"ja": null},
+  "change -": {"ja": null},
+
+  "Amessage signedwith": {"ja": null},
+  "thesigningkey can": {"ja": null},
+  "change guardians after": {"ja": null},
+  "delay (often one to": {"ja": null},
+  "three days)": {"ja": null},
+
+  "__extra_mask_boxes__": [
+    [0, 70, 460, 250],
+    [560, 105, 730, 220],
+    [560, 30, 1140, 130],
+    [560, 480, 850, 670]
+  ],
+  "__skip_match_boxes__": [
+    [560, 30, 1140, 160],
+    [560, 480, 850, 670]
+  ],
+
+  "__extra_text_regions__": [
+    {"box": [0, 75, 460, 110], "ja": "トランザクション（ETH送金、", "font_size": 20, "text_offset_x": 30},
+    {"box": [0, 110, 460, 140], "ja": "ERC-20送金、スマートコントラクト", "font_size": 20, "text_offset_x": 30},
+    {"box": [0, 140, 460, 175], "ja": "呼び出しなど）は署名用", "font_size": 20, "text_offset_x": 30},
+    {"box": [0, 175, 460, 210], "ja": "公開鍵で署名された署名を", "font_size": 20, "text_offset_x": 30},
+    {"box": [0, 210, 460, 245], "ja": "付ける必要がある", "font_size": 20, "text_offset_x": 30},
+
+    {"box": [855, 30, 1130, 60], "ja": "5人中3人のガーディアンが", "font_size": 18, "color": "#000000"},
+    {"box": [855, 60, 1130, 90], "ja": "署名用公開鍵を変更可能", "font_size": 18, "color": "#000000"},
+
+    {"box": [560, 480, 850, 515], "ja": "署名鍵で署名された", "font_size": 18},
+    {"box": [560, 515, 850, 550], "ja": "メッセージは、遅延", "font_size": 18},
+    {"box": [560, 550, 850, 585], "ja": "（多くの場合1～3日）", "font_size": 18},
+    {"box": [560, 585, 850, 620], "ja": "後にガーディアンを", "font_size": 18},
+    {"box": [560, 620, 850, 655], "ja": "変更できる", "font_size": 18}
+  ]
+}

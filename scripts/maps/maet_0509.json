@@ -1,0 +1,31 @@
+{
+  "AUTHmsgformat": {"ja": "AUTHメッセージ形式", "bold": true, "font_size": 28},
+  "Typebyte": {"ja": "タイプバイト", "bold": true, "font_size": 22},
+  "Chain ID": {"ja": "チェーンID", "bold": true, "font_size": 22},
+  "Nonce": {"ja": "ナンス", "bold": true, "font_size": 22},
+  "Invoker": {"ja": "インボーカー\nアドレス", "bold": true, "font_size": 20, "group": "invoker"},
+  "address": {"ja": null, "group": "invoker"},
+  "Commit": {"ja": "コミット", "bold": true, "font_size": 22, "color": "#FFFFFF"},
+  "Delegate key(s)": {"ja": "デリゲート鍵", "bold": true, "font_size": 24},
+  "Access policy": {"ja": "アクセスポリシー", "bold": true, "font_size": 24},
+  "OxIfgo9Oaae28b8a3dceadf281b0f12828e676c326": {"ja": null},
+  "0x595063172c85b1e8ac2fe74fcb6b7dc26844cc2d": {"ja": null},
+  "Oxd1cl2e58dbScd390ead9406ee2ogcObc4822ec8b": {"ja": null},
+  "Can send <": {"ja": null},
+  "ETHper day": {"ja": null},
+  "Keys expire after one month": {"ja": null},
+  "Newkeys can be added with": {"ja": null},
+  "a": {"ja": null},
+  "multisig from all existing": {"ja": null},
+  "keys": {"ja": null},
+  "__extra_mask_boxes__": [
+    [640, 255, 770, 320],
+    [880, 575, 1290, 800]
+  ],
+  "__extra_text_regions__": [
+    {"box": [880, 585, 1290, 625], "ja": "・1日あたり1ETH未満の送信が可能", "font_size": 18, "text_offset_x": -50},
+    {"box": [880, 625, 1290, 665], "ja": "・鍵は1か月で失効", "font_size": 18, "text_offset_x": -120},
+    {"box": [880, 665, 1290, 710], "ja": "・既存のすべての鍵によるマルチシグで", "font_size": 18, "text_offset_x": -30},
+    {"box": [880, 710, 1290, 750], "ja": "  新しい鍵を追加可能", "font_size": 18, "text_offset_x": -90}
+  ]
+}
