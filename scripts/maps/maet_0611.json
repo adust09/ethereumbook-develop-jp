@@ -1,0 +1,7 @@
+{
+  "Block": {"ja": "ブロック", "bold": true, "font_size": 28},
+  "txl:": {"ja": "tx1: xyzトークンを1,000枚購入", "font_size": 22, "group": "tx1desc"},
+  "buy \"": {"ja": null, "group": "tx1desc"},
+  "1,000 xyz token": {"ja": null, "group": "tx1desc"},
+  "txl": {"ja": "tx1", "font_size": 24}
+}
