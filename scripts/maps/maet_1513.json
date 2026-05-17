@@ -1,0 +1,22 @@
+{
+  "Priority fees": {
+    "ja": "プライオリティ手数料",
+    "font_size": 22,
+    "text_offset_x": 80
+  },
+  "Newly minted ETH": {
+    "ja": "新規発行されたETH"
+  },
+  "Block proposer": {
+    "ja": "ブロック提案者",
+    "bold": true
+  },
+  "Block": {
+    "ja": "ブロック",
+    "bold": true
+  },
+  "proposer": {
+    "ja": "提案者",
+    "bold": true
+  }
+}

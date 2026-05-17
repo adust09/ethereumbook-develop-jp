@@ -134,7 +134,7 @@ def restore_borders(
     外側にあるものだけを inpainted 画像に上書きコピーする。
 
     protect_boxes: __extra_mask_boxes__ など、復元を抑止したい領域（OCR が
-    検出しなかった文字や em ダッシュなどを再描画しないため）。
+    検出できなかった文字（italic I、em ダッシュ等）を再描画しないため）。
     """
     orig = cv2.imread(original_path)
     gray = cv2.cvtColor(orig, cv2.COLOR_BGR2GRAY)
@@ -242,7 +242,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
     extra_text_regions = translation_map.pop("__extra_text_regions__", [])
     # __skip_match_boxes__: 指定 bbox に収まる OCR 検出はマッチング対象から外し、
     # soft マスクに強制追加する（英語は消えるが日本語は描画されない）。
-    # 同じ英単語が場所ごとに異なるサイズで描画されるケースを切り分けるために、
+    # 同じ英単語が場所ごとに異なるサイズ/色で描画されるケースを切り分けるために、
     # 片方の領域を __extra_text_regions__ で上書きする用途で使う。
     skip_match_boxes = translation_map.pop("__skip_match_boxes__", [])
 

@@ -1,0 +1,56 @@
+{
+  "Chain A": {
+    "ja": "チェーンA",
+    "bold": true
+  },
+  "Chains B, C, and D": {
+    "ja": "チェーンB、C、D",
+    "bold": true
+  },
+  "Chains B C and D": {
+    "ja": "チェーンB、C、D",
+    "bold": true
+  },
+  "Block 0": {
+    "ja": "ブロック0"
+  },
+  "Block x": {
+    "ja": "ブロック x"
+  },
+  "Checkpoint 0": {
+    "ja": "チェックポイント 0"
+  },
+  "Checkpoint 1": {
+    "ja": "チェックポイント 1"
+  },
+  "Checkpoint 2": {
+    "ja": "チェックポイント 2"
+  },
+  "Checkpoint 3": {
+    "ja": "チェックポイント 3"
+  },
+  "Checkpoint x": {
+    "ja": "チェックポイント x"
+  },
+  "Empty block": {
+    "ja": "空ブロック"
+  },
+  "Block 1": {
+    "ja": "ブロック 1"
+  },
+  "Block 2": {
+    "ja": "ブロック 2"
+  },
+  "Block 3": {
+    "ja": "ブロック 3"
+  },
+  "Blockx": {
+    "ja": "ブロック x"
+  },
+  "Checkpoint]": {
+    "ja": "チェックポイント 1"
+  },
+  "Checkpoint2": {
+    "ja": "チェックポイント 2"
+  }
+}

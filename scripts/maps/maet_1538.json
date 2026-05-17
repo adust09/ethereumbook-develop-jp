@@ -1,0 +1,48 @@
+{
+  "Validator A": {
+    "ja": "バリデーター A",
+    "bold": true
+  },
+  "Propose": {
+    "ja": "提案"
+  },
+  "1 epoch = 3 slots": {
+    "ja": "1エポック = 3スロット"
+  },
+  "Supermajority link": {
+    "ja": "スーパーマジョリティリンク"
+  },
+  "Supermajority": {
+    "ja": "スーパーマジョリティ"
+  },
+  "link": {
+    "ja": "リンク"
+  },
+  "1epoch =3 slots": {
+    "ja": "1エポック = 3スロット"
+  },
+  "Tepoch = 3 slots": {
+    "ja": "1エポック = 3スロット"
+  },
+  "Iepoch = 3 slots": {
+    "ja": "1エポック = 3スロット"
+  },
+  "Tepoch =": {
+    "ja": "1エポック ="
+  },
+  "Iepoch =": {
+    "ja": "1エポック ="
+  },
+  "1epoch =": {
+    "ja": "1エポック ="
+  },
+  "3 slots": {
+    "ja": "3スロット"
+  },
+  "=3slots": {
+    "ja": "= 3スロット"
+  },
+  "= 3 slots": {
+    "ja": "= 3スロット"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "Stake": {
+    "ja": "ステーク"
+  },
+  "Block proposer": {
+    "ja": "ブロック提案者",
+    "bold": true
+  },
+  "Slashing": {
+    "ja": "スラッシング"
+  },
+  "Block": {
+    "ja": "ブロック",
+    "bold": true
+  },
+  "proposer": {
+    "ja": "提案者",
+    "bold": true
+  }
+}

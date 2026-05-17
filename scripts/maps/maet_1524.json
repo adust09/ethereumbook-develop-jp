@@ -1,0 +1,73 @@
+{
+  "Epoch N": {
+    "ja": "エポック N",
+    "bold": true
+  },
+  "Checkpoint N+1": {
+    "ja": "チェックポイント N+1"
+  },
+  "Checkpoint N": {
+    "ja": "チェックポイント N"
+  },
+  "Supermajority link": {
+    "ja": "スーパーマジョリティリンク"
+  },
+  "Supermajority": {
+    "ja": "スーパーマジョリティ"
+  },
+  "link": {
+    "ja": "リンク"
+  },
+  "1 epoch = 3 slots": {
+    "ja": "1エポック = 3スロット"
+  },
+  "1epoch =3 slots": {
+    "ja": "1エポック = 3スロット"
+  },
+  "Tepoch = 3 slots": {
+    "ja": "1エポック = 3スロット"
+  },
+  "Iepoch = 3 slots": {
+    "ja": "1エポック = 3スロット"
+  },
+  "Tepoch =": {
+    "ja": "1エポック ="
+  },
+  "Iepoch =": {
+    "ja": "1エポック ="
+  },
+  "1epoch =": {
+    "ja": "1エポック ="
+  },
+  "3 slots": {
+    "ja": "3スロット"
+  },
+  "=3slots": {
+    "ja": "= 3スロット"
+  },
+  "= 3 slots": {
+    "ja": "= 3スロット"
+  },
+  "Checkpoint": {
+    "ja": "チェックポイント",
+    "font_size": 22
+  },
+  "N": {
+    "ja": "N",
+    "font_size": 24
+  },
+  "N+1": {
+    "ja": "N+1",
+    "font_size": 24
+  },
+  "__extra_mask_boxes__": [[210, 80, 1380, 125]],
+  "__extra_text_regions__": [
+    {"box": [218, 82, 322, 118], "ja": "スロット 32N", "font_size": 18},
+    {"box": [382, 82, 470, 118], "ja": "32N+1", "font_size": 18},
+    {"box": [532, 82, 624, 118], "ja": "32N+2", "font_size": 18},
+    {"box": [682, 82, 774, 118], "ja": "32N+3", "font_size": 18},
+    {"box": [968, 82, 1078, 118], "ja": "32N+30", "font_size": 18},
+    {"box": [1124, 82, 1224, 118], "ja": "32N+31", "font_size": 18},
+    {"box": [1271, 82, 1375, 118], "ja": "32(N+1)", "font_size": 18}
+  ]
+}
