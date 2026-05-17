@@ -1,0 +1,8 @@
+{
+  "Delegation designator": {"ja": "デリゲーションデジグネーター", "font_size": 20},
+  "Smart": {"ja": "スマート\nコントラクトA", "bold": true, "font_size": 24, "group": "smartA"},
+  "contract A": {"ja": null, "group": "smartA"},
+  "EOA": {"ja": null, "bold": true},
+  "Transaction": {"ja": "トランザクション", "font_size": 22},
+  "Executes code at": {"ja": "次のコードを実行", "font_size": 22}
+}

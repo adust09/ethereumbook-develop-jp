@@ -1,0 +1,14 @@
+{
+  "__skip_match_boxes__": [
+    [245, 0, 500, 45],
+    [650, 0, 955, 45]
+  ],
+  "__extra_mask_boxes__": [
+    [245, 0, 500, 45],
+    [650, 0, 955, 45]
+  ],
+  "__extra_text_regions__": [
+    {"box": [245, 0, 500, 45], "ja": "ETH保有額（USD換算）", "color": "#dd2222", "bold": true, "font_size": 20},
+    {"box": [650, 0, 955, 45], "ja": "ERC-20保有額（USD換算）", "color": "#dd2222", "bold": true, "font_size": 20}
+  ]
+}
