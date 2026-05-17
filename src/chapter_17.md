@@ -1172,6 +1172,6 @@ w = [0, 1, 2, 7]
 　このテーマについてさらに読むには、以下を参照してください。
 
 - [A simple example](https://oreil.ly/jVNdu)
-- ["You Could Have Invented SNARKs"](https://oreil.ly/jiaOa) by イーサン・ブックマン
-- ["Why and How zk-SNARK Works: Definitive Explanation"](https://oreil.ly/EUUzt) by マクシム・ペトクス
+- イーサン・ブックマン著["You Could Have Invented SNARKs"](https://oreil.ly/jiaOa)
+- マクシム・ペトクス著["Why and How zk-SNARK Works: Definitive Explanation"](https://oreil.ly/EUUzt)
 - [The RareSkills Book of Zero Knowledge](https://oreil.ly/tpHrl)
