@@ -1,0 +1,18 @@
+{
+  "Ethereum Average Gas Limit Chart": {"ja": "イーサリアム平均ガス上限チャート", "bold": true},
+  "Source: Etherscan.io": {"ja": "出典: Etherscan.io"},
+  "Click and drag in the plot area to zoom in": {"ja": "プロット領域をクリック＆ドラッグで拡大"},
+  "Zoom": {"ja": "ズーム"},
+  "Im": {"ja": null},
+  "1m": {"ja": null},
+  "6m": {"ja": null},
+  "1y": {"ja": null},
+  "All": {"ja": null},
+  "Jul 30, 2015": {"ja": "2015/07/30"},
+  "Sep 16,": {"ja": "2024/09/16", "font_size": 14},
+  "Etherscan": {"ja": null},
+  "Average Gas Limit": {"ja": "平均ガス上限"},
+  "__skip_match_boxes__": [
+    [817, 65, 855, 90]
+  ]
+}

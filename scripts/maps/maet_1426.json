@@ -1,0 +1,13 @@
+{
+  "Offset": {"ja": "オフセット"},
+  "Valid": {"ja": "有効"},
+  "Yes": {"ja": "Yes"},
+  "No": {"ja": "No"},
+  "PUSHI": {"ja": null},
+  "PUSH1": {"ja": null},
+  "PUSH2": {"ja": null},
+  "PUSH3": {"ja": null},
+  "JUMP": {"ja": null},
+  "JUMPDEST": {"ja": null},
+  "ADD": {"ja": null}
+}
