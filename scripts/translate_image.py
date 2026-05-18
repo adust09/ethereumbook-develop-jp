@@ -25,7 +25,8 @@ Usage:
         "bold": true,           // (省略可) ヒラギノ W6 を使う
         "font_size": 22,        // (省略可) フォントサイズを明示指定（自動縮小無効）
         "size_group": "steps",  // (省略可) 同グループは bbox 高さ中央値でサイズ統一
-        "group": "step1"        // (省略可) 複数 OCR 領域を 1 つの翻訳にマージ
+        "group": "step1",       // (省略可) 複数 OCR 領域を 1 つの翻訳にマージ
+        "mask_mode": "bright"   // (省略可) "bright" で明るい文字（青地の白字等）をマスク
       },
       // ja=null は「テキストを残す」preserve（マスクから除外）
       "Web3": {"ja": null},
@@ -91,6 +92,13 @@ def build_mask(image_path: str, regions: list[dict], pad: int = 2) -> np.ndarray
 
     旧実装は `gray < 180` を bbox 全体に適用していたため、bbox 内に侵入した
     枠線や矢印まで削除していた。連結成分フィルターでこれを防ぐ。
+
+    region["mask_mode"]:
+      - "dark"（既定）: 暗い文字（明るい背景の上の黒字）を対象にする
+      - "bright"      : 明るい文字（青などの濃い塗りの上の白字）を対象にする。
+                        塗り内部の白字を消すとき用。横線/縦線フィルターは無効化し
+                        （単色塗りの内部に保護すべき枠線は無いため）、複数行テキストの
+                        各行が「横線」と誤判定されて残るのを防ぐ。
     """
     img_cv = cv2.imread(image_path)
     gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
@@ -105,83 +113,139 @@ def build_mask(image_path: str, regions: list[dict], pad: int = 2) -> np.ndarray
         if rh <= 0 or rw <= 0:
             continue
 
+        bright = region.get("mask_mode") == "bright"
         roi = gray[y1:y2, x1:x2]
-        bin_dark = (roi < 180).astype(np.uint8)
+        bin_fg = (roi > 170 if bright else roi < 180).astype(np.uint8)
 
-        n_labels, labels, stats, _ = cv2.connectedComponentsWithStats(bin_dark, 4)
-        char_mask = np.zeros_like(bin_dark)
+        n_labels, labels, stats, _ = cv2.connectedComponentsWithStats(bin_fg, 4)
+        char_mask = np.zeros_like(bin_fg)
 
         for i in range(1, n_labels):
             _, _, cw, ch_, area = stats[i]
             if area < 3:
                 continue
             aspect = max(cw, ch_) / max(1, min(cw, ch_))
-            if cw >= rw * 0.85 and ch_ <= rh * 0.35:
-                continue  # 横線
-            if ch_ >= rh * 0.85 and cw <= rw * 0.35:
-                continue  # 縦線
+            if not bright:
+                if cw >= rw * 0.85 and ch_ <= rh * 0.35:
+                    continue  # 横線
+                if ch_ >= rh * 0.85 and cw <= rw * 0.35:
+                    continue  # 縦線
+                # 枠線（対角線含む）の保護: 連結成分を最小外接矩形で評価し、
+                # 細長い線分（ダイヤモンドの斜辺・矢印・枠が文字 bbox を掠める
+                # 短い線分）と、疎な線分クラスタ（枠の頂点）をマスクから除外。
+                # 文字は外接矩形が太く充填率も高いので誤除外されない。
+                ys_i, xs_i = np.where(labels == i)
+                (_, (mw, mh), _) = cv2.minAreaRect(
+                    np.column_stack([xs_i, ys_i]).astype(np.float32))
+                thin = min(mw, mh)
+                extent = area / max(1, cw * ch_)
+                elong = max(mw, mh) / max(1.0, thin)
+                if thin <= 5.5 and extent <= 0.42 and elong >= 2.2 and max(cw, ch_) >= 8:
+                    continue  # 細い線分（対角線含む）
+                if extent <= 0.20 and area >= 200 and max(cw, ch_) >= 45:
+                    # 線分クラスタ（枠線に英字が融合した連結成分）。Hough で
+                    # 直線部分（枠線）を検出して保護し、直線でない塊（融合した
+                    # 文字）だけをマスクに残す。
+                    comp = (labels == i).astype(np.uint8)
+                    line_part = np.zeros_like(comp)
+                    hl = cv2.HoughLinesP(comp * 255, 1, np.pi / 180,
+                                         threshold=30, minLineLength=30, maxLineGap=4)
+                    if hl is not None:
+                        for lx1, ly1, lx2, ly2 in hl[:, 0]:
+                            cv2.line(line_part, (lx1, ly1), (lx2, ly2), 1, 7)
+                    char_mask[(comp & (1 - line_part)) == 1] = 1
+                    continue
             if aspect > 12:
                 continue  # 細長い線
             if area > rh * rw * 0.5:
                 continue  # 巨大な塗りつぶし
             char_mask[labels == i] = 1
 
-        # アンチエイリアス端カバーの軽い膨張のみ（旧 iterations=2 → 1）
+        # アンチエイリアス端カバーの膨張（bright は白字ハロー除去のため強め）
         kernel = np.ones((3, 3), np.uint8)
-        char_mask = cv2.dilate(char_mask, kernel, iterations=1)
+        char_mask = cv2.dilate(char_mask, kernel, iterations=2 if bright else 1)
         mask[y1:y2, x1:x2] = np.maximum(mask[y1:y2, x1:x2], char_mask * 255)
 
     return mask
 
 
-def inpaint_image(image_path: str, mask: np.ndarray, radius: int = 3) -> np.ndarray:
-    img_cv = cv2.imread(image_path)
-    return cv2.inpaint(img_cv, mask, radius, cv2.INPAINT_TELEA)
+def build_edge_mask(gray: np.ndarray, text_mask: np.ndarray,
+                    dark_thresh: int = 80) -> np.ndarray:
+    """図形の線（枠線・矢印・アイコン）のマスク(0/255)を返す。
+
+    暗いピクセル (gray < dark_thresh) のうち、文字マスク（+1px 膨張）に
+    含まれないものを「線」とみなす。青系の塗り (gray~88) を拾わないよう
+    閾値は低め。連結成分フィルターを通り抜けて char マスクに紛れ込んだ
+    線も、ここでは text_mask 側にしか入らないため二重には数えない。
+    """
+    dark = (gray < dark_thresh).astype(np.uint8) * 255
+    text = cv2.dilate(text_mask, np.ones((3, 3), np.uint8), iterations=1)
+    return cv2.bitwise_and(dark, cv2.bitwise_not(text))
+
+
+def inpaint_two_pass(img_cv: np.ndarray, text_mask: np.ndarray,
+                     edge_mask: np.ndarray, radius: int = 3) -> np.ndarray:
+    """枠線色のにじみを防ぐ 2 段階 inpaint。
+
+    1st pass: 線(edge_mask)を inpaint して消した画像を作る。
+    2nd pass: 線のない画像の上で文字(text_mask)を inpaint する。
+    枠線に隣接・融合した文字を消すとき、TELEA が枠線の暗色を文字跡へ
+    にじませる（smudge）のを防ぐ。線は後段で原本から復元する。
+    """
+    noline = cv2.inpaint(img_cv, edge_mask, radius, cv2.INPAINT_TELEA)
+    return cv2.inpaint(noline, text_mask, radius, cv2.INPAINT_TELEA)
 
 
 def restore_borders(
-    original_path: str,
+    original: np.ndarray,
     inpainted: np.ndarray,
-    detections: list[dict],
-    dark_thresh: int = 100,
-    text_pad: int = 8,
+    edge_mask: np.ndarray,
     protect_boxes: list = None,
 ) -> np.ndarray:
-    """Inpainting でぼけた枠線・矢印を原本から復元する。
+    """図形の線(edge_mask)を原本からシャープに復元する。
 
-    原本の暗いピクセル (gray < dark_thresh) のうち、OCR テキスト bbox の
-    外側にあるものだけを inpainted 画像に上書きコピーする。
-
-    protect_boxes: __extra_mask_boxes__ など、復元を抑止したい領域（OCR が
-    検出できなかった文字（italic I、em ダッシュ等）を再描画しないため）。
+    edge_mask は「暗いピクセル − 文字マスク」なので、文字を巻き込まずに
+    枠線・矢印だけを原本の状態へ戻せる。protect_boxes 内は復元しない。
     """
-    orig = cv2.imread(original_path)
-    gray = cv2.cvtColor(orig, cv2.COLOR_BGR2GRAY)
-    h, w = gray.shape
-
-    # テキスト除外ゾーン（OCR bbox + padding）
-    text_zone = np.zeros((h, w), dtype=np.uint8)
-    for det in detections:
-        x1, y1, x2, y2 = det["box"]
-        x1 = max(0, x1 - text_pad)
-        y1 = max(0, y1 - text_pad)
-        x2 = min(w, x2 + text_pad)
-        y2 = min(h, y2 + text_pad)
-        text_zone[y1:y2, x1:x2] = 1
+    h, w = original.shape[:2]
+    border = edge_mask.copy()
     for box in (protect_boxes or []):
         x1, y1, x2, y2 = box
-        x1 = max(0, x1); y1 = max(0, y1)
-        x2 = min(w, x2); y2 = min(h, y2)
-        text_zone[y1:y2, x1:x2] = 1
-
-    # 枠線マスク: 暗いピクセル & テキスト外
-    border = ((gray < dark_thresh).astype(np.uint8)) & (1 - text_zone)
-    kernel = np.ones((2, 2), np.uint8)
-    border = cv2.dilate(border, kernel, iterations=1)
-
+        border[max(0, y1):min(h, y2), max(0, x1):min(w, x2)] = 0
     result = inpainted.copy()
-    result[border == 1] = orig[border == 1]
+    result[border > 0] = original[border > 0]
     return result
+
+
+def build_shape_outline_mask(image_bgr: np.ndarray) -> np.ndarray:
+    """水色塗り図形の外周（黒枠線）のマスク(0/255)を返す。
+
+    edge_mask に OR して使う。文字に融合して連結成分フィルターを通り抜けた
+    枠線断片も、これにより restore（原本復元）対象に含まれる。原本ピクセルを
+    そのまま戻すので、枠線は原本どおりの太さで途切れなく復元される。
+    """
+    h, w = image_bgr.shape[:2]
+    b = image_bgr[..., 0].astype(int)
+    g = image_bgr[..., 1].astype(int)
+    r = image_bgr[..., 2].astype(int)
+    fill = ((r > 150) & (r < 228) & (g > 185) & (b > 205) & (b > r + 8)).astype(np.uint8)
+    zero = np.zeros((h, w), dtype=np.uint8)
+    if int(fill.sum()) < 3000:
+        return zero
+    # 大きな塗り領域だけを図形とみなす（濃い青シリンダー内の白字アンチ
+    # エイリアスのような小さな水色斑点を除外する）
+    n_lab, labels, stats, _ = cv2.connectedComponentsWithStats(fill, 8)
+    big = np.zeros_like(fill)
+    for i in range(1, n_lab):
+        if stats[i, cv2.CC_STAT_AREA] > 3000:
+            big[labels == i] = 1
+    if not big.any():
+        return zero
+    # closing で内側の文字穴を埋めて塗り本体に → その外側バンド ∩ 暗ピクセル
+    solid = cv2.morphologyEx(big, cv2.MORPH_CLOSE, np.ones((25, 25), np.uint8))
+    band = cv2.dilate(solid, np.ones((3, 3), np.uint8), iterations=8) & (1 - solid)
+    gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
+    return ((band == 1) & (gray < 110)).astype(np.uint8) * 255
 
 
 def compute_size_groups(regions: list[dict]) -> dict:
@@ -313,6 +377,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             "text_offset_x": matched.get("text_offset_x", 0),
             "text_offset_y": matched.get("text_offset_y", 0),
             "color": matched.get("color"),
+            "mask_mode": matched.get("mask_mode"),
         })
         print(f"       '{det['text']}' → '{matched['ja']}'")
 
@@ -331,6 +396,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
         text_offset_x = next((v.get("text_offset_x") for _, v in items if v.get("ja")), 0) or 0
         text_offset_y = next((v.get("text_offset_y") for _, v in items if v.get("ja")), 0) or 0
         color = next((v.get("color") for _, v in items if v.get("ja")), None)
+        mask_mode = next((v.get("mask_mode") for _, v in items if v.get("ja")), None)
         if ja:
             regions.append({
                 "box": merged_box,
@@ -342,6 +408,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
                 "text_offset_x": text_offset_x,
                 "text_offset_y": text_offset_y,
                 "color": color,
+                "mask_mode": mask_mode,
             })
             print(f"       (merged '{gname}') → '{ja}'")
 
@@ -355,6 +422,9 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             "size_group": er.get("size_group"),
             "font_size": er.get("font_size"),
             "color": er.get("color"),
+            "mask_mode": er.get("mask_mode"),
+            "text_offset_x": er.get("text_offset_x", 0),
+            "text_offset_y": er.get("text_offset_y", 0),
         })
         print(f"       (extra) → '{er['ja']}'")
 
@@ -381,8 +451,16 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
         x1, y1, x2, y2 = box
         mask[y1:y2, x1:x2] = 0
 
-    print("[3/4] Inpainting (TELEA)")
-    inpainted = inpaint_image(image_path, mask)
+    print("[3/4] Inpainting (TELEA, 2-pass)")
+    img_cv = cv2.imread(image_path)
+    gray_full = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
+    # 図形の線（枠線・矢印）: 暗ピクセル − 文字マスク。先に消してから文字を
+    # inpaint することで枠線色のにじみを防ぎ、最後に原本から復元する。
+    edge_mask = build_edge_mask(gray_full, mask)
+    # 水色塗り図形の枠線を edge_mask に加える。文字に融合して途切れた枠線も
+    # 原本どおりの太さで確実に復元される。
+    edge_mask = cv2.bitwise_or(edge_mask, build_shape_outline_mask(img_cv))
+    inpainted = inpaint_two_pass(img_cv, mask, edge_mask)
     # extra_mask_boxes (hard) は inpaint 後に各 box の周辺中央値で再塗装
     # （inpaint が複雑な領域で失敗した残骸を確実に消す）
     if extra_mask_boxes:
@@ -395,11 +473,17 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             sample[max(0, y1-sy1):y2-sy1, max(0, x1-sx1):x2-sx1] = 0
             sample_pixels = sample[sample.sum(axis=2) > 0]
             if len(sample_pixels) > 0:
+                # 枠線(黒)・余白(白)を除外し、塗り色だけの中央値を取る。
+                # box が枠線や図形端に近いと白黒が混じり中央値が濁るため。
+                s = sample_pixels.sum(axis=1)
+                mid = sample_pixels[(s > 90) & (s < 720)]
+                if len(mid) > len(sample_pixels) * 0.15:
+                    sample_pixels = mid
                 fill_color = np.median(sample_pixels, axis=0).astype(np.uint8)
                 inpainted[y1:y2, x1:x2] = fill_color
 
-    # 枠線・矢印の復元（inpainting で発生したボケを原本から上書き修復）
-    inpainted = restore_borders(image_path, inpainted, detections, protect_boxes=extra_mask_boxes)
+    # 枠線・矢印・図形の枠を原本からシャープに復元
+    inpainted = restore_borders(img_cv, inpainted, edge_mask, protect_boxes=extra_mask_boxes)
 
     print("[4/4] Drawing Japanese text")
     result = draw_translations(inpainted, regions)
