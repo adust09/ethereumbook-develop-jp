@@ -182,6 +182,40 @@ def restore_borders(
     return result
 
 
+def _hex_to_bgr(hex_color: str) -> tuple:
+    h = hex_color.lstrip("#")
+    return (int(h[4:6], 16), int(h[2:4], 16), int(h[0:2], 16))
+
+
+def draw_fill_shapes(img: np.ndarray, shapes: list[dict]) -> np.ndarray:
+    """色付き図形（菱形・矩形）の内側を単色で塗り直し、preserve された原文テキストを
+    覆い隠す。元の枠線は塗り色領域の外側にあるためそのまま残る。
+
+    矩形マスク + 中央値塗り（__extra_mask_boxes__）は菱形の傾いた辺を破壊するため、
+    菱形ノード内のテキスト差し替えにはこちらを使う。塗る範囲は bbox 内で「指定した
+    塗り色に一致するピクセル」の凸包とし、図形の実形状に正確に追従させる（テキストの
+    抜き穴は凸包の内側に含まれるので確実に覆える）。
+
+    形式: {"diamond": [x1,y1,x2,y2], "fill": "#RRGGBB", "tol": 60}
+          {"rect":    [x1,y1,x2,y2], "fill": "#RRGGBB"}
+    """
+    out = img.copy()
+    for sh in shapes:
+        color = _hex_to_bgr(sh["fill"])
+        box = sh.get("diamond") or sh.get("rect")
+        x1, y1, x2, y2 = box
+        if "rect" in sh:
+            cv2.rectangle(out, (x1, y1), (x2, y2), color, -1)
+            continue
+        roi = out[y1:y2, x1:x2].astype(int)
+        diff = np.abs(roi - np.array(color, dtype=int)).sum(axis=2)
+        ys, xs = np.where(diff < sh.get("tol", 60))
+        if len(xs) >= 3:
+            pts = np.column_stack([xs + x1, ys + y1]).astype(np.int32)
+            cv2.fillConvexPoly(out, cv2.convexHull(pts), color)
+    return out
+
+
 def compute_size_groups(regions: list[dict]) -> dict:
     """同一 size_group の region は bbox 高さの中央値でフォントサイズを揃える。"""
     grouped = defaultdict(list)
@@ -262,6 +296,9 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
     # 同じ英単語が場所ごとに異なるサイズ/色で描画されるケースを切り分けるために、
     # 片方の領域を __extra_text_regions__ で上書きする用途で使う。
     skip_match_boxes = translation_map.pop("__skip_match_boxes__", [])
+    # __extra_fill_shapes__: 菱形/矩形の内側を単色で塗り直して原文を覆う（枠線は保持）。
+    # 矩形マスクが傾いた辺を壊す菱形ノードのテキスト差し替えに使う。
+    extra_fill_shapes = translation_map.pop("__extra_fill_shapes__", [])
 
     regions = []
     preserve_boxes = []
@@ -398,6 +435,11 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
 
     # 枠線・矢印の復元（inpainting で発生したボケを原本から上書き修復）
     inpainted = restore_borders(image_path, inpainted, detections, protect_boxes=extra_mask_boxes)
+
+    # 色付き図形の内側を塗り直して preserve された原文を覆う（菱形ノード対策）
+    if extra_fill_shapes:
+        inpainted = draw_fill_shapes(inpainted, extra_fill_shapes)
+        print(f"       + {len(extra_fill_shapes)} fill shape(s) redrawn")
 
     print("[4/4] Drawing Japanese text")
     result = draw_translations(inpainted, regions)
