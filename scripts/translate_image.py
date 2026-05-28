@@ -196,7 +196,11 @@ def draw_fill_shapes(img: np.ndarray, shapes: list[dict]) -> np.ndarray:
     塗り色に一致するピクセル」の凸包とし、図形の実形状に正確に追従させる（テキストの
     抜き穴は凸包の内側に含まれるので確実に覆える）。
 
-    形式: {"diamond": [x1,y1,x2,y2], "fill": "#RRGGBB", "tol": 60}
+    隣接ラベルのマスク（__extra_mask_boxes__）が菱形の枠線を削ることがあるため、
+    border_width を指定すると塗り直し後に枠線も描き直して復元する。
+
+    形式: {"diamond": [x1,y1,x2,y2], "fill": "#RRGGBB", "tol": 60,
+           "border": "#000000", "border_width": 5, "border_outset": 2}
           {"rect":    [x1,y1,x2,y2], "fill": "#RRGGBB"}
     """
     out = img.copy()
@@ -213,6 +217,17 @@ def draw_fill_shapes(img: np.ndarray, shapes: list[dict]) -> np.ndarray:
         if len(xs) >= 3:
             pts = np.column_stack([xs + x1, ys + y1]).astype(np.int32)
             cv2.fillConvexPoly(out, cv2.convexHull(pts), color)
+        bw = sh.get("border_width", 0)
+        if bw:
+            bc = _hex_to_bgr(sh.get("border", "#000000"))
+            o = sh.get("border_outset", 2)
+            cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
+            hw, hh = (x2 - x1) / 2 + o, (y2 - y1) / 2 + o
+            verts = np.array(
+                [[cx, cy - hh], [cx + hw, cy], [cx, cy + hh], [cx - hw, cy]],
+                dtype=np.int32,
+            )
+            cv2.polylines(out, [verts], True, bc, bw, lineType=cv2.LINE_AA)
     return out
 
 
