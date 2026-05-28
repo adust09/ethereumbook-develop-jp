@@ -1,0 +1,65 @@
+{
+  "Last supermajority link by all validators": {
+    "ja": "全バリデーターによる直近のスーパーマジョリティリンク"
+  },
+  "Supermajority link by buggy client": {
+    "ja": "バグのあるクライアントによるスーパーマジョリティリンク"
+  },
+  "Chain A": {
+    "ja": "チェーンA",
+    "bold": true
+  },
+  "Chain B": {
+    "ja": "チェーンB",
+    "bold": true
+  },
+  "Last supermajority": {
+    "ja": "全バリデーターによる直近の"
+  },
+  "Supermajority link": {
+    "ja": "バグのあるクライアントによる"
+  },
+  "link by all validators": {
+    "ja": "スーパーマジョリティリンク"
+  },
+  "link by allvalidators": {
+    "ja": "スーパーマジョリティリンク"
+  },
+  "buggy client": {
+    "ja": "バグのあるクライアント"
+  },
+  "by": {
+    "ja": null
+  },
+  "buggy": {
+    "ja": null
+  },
+  "client": {
+    "ja": null
+  },
+  "__extra_mask_boxes__": [
+    [
+      10,
+      5,
+      300,
+      120
+    ],
+    [
+      365,
+      20,
+      635,
+      120
+    ]
+  ],
+  "__extra_text_regions__": [
+    {
+      "box": [
+        380,
+        65,
+        620,
+        110
+      ],
+      "ja": "スーパーマジョリティリンク"
+    }
+  ]
+}

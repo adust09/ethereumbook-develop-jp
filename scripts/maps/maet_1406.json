@@ -1,0 +1,15 @@
+{
+  "PUSH": {"ja": "プッシュ", "bold": true, "font_size": 28, "text_offset_x": -20},
+  "POP": {"ja": "ポップ", "bold": true, "font_size": 28, "text_offset_x": -15},
+  "SWAPI": {"ja": "スワップ1", "bold": true, "font_size": 28, "text_offset_x": -20},
+  "SWAP1": {"ja": "スワップ1", "bold": true, "font_size": 28, "text_offset_x": -20},
+  "Item 1": {"ja": "要素1"},
+  "Item 2": {"ja": "要素2"},
+  "Item 3": {"ja": "要素3"},
+  "Item": {"ja": "要素1"},
+  "Stack": {"ja": "スタック", "bold": true},
+  "__extra_mask_boxes__": [
+    [155, 335, 195, 377],
+    [155, 1295, 195, 1337]
+  ]
+}

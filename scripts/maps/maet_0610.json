@@ -1,0 +1,23 @@
+{
+  "Offline Signing": {"ja": "オフライン署名", "bold": true, "font_size": 32},
+  "Airgap": {"ja": "エアギャップ", "bold": true, "font_size": 22},
+  "QR": {"ja": "QR\nコード", "font_size": 22, "group": "qrcode"},
+  "code": {"ja": null, "group": "qrcode"},
+  "or": {"ja": "または", "font_size": 20},
+  "USB": {"ja": null, "font_size": 22},
+  "Ethereum": {"ja": "イーサリアム\nネットワーク", "font_size": 22, "group": "ethnet"},
+  "network": {"ja": null, "group": "ethnet"},
+  "Syncing": {"ja": "同期", "font_size": 22},
+  "Signing": {"ja": "署名キー", "font_size": 22, "group": "signkeys"},
+  "Keys": {"ja": null, "group": "signkeys"},
+  "__skip_match_boxes__": [
+    [990, 210, 1100, 260],
+    [970, 250, 1125, 305],
+    [445, 345, 555, 400],
+    [420, 380, 580, 445]
+  ],
+  "__extra_text_regions__": [
+    {"box": [975, 217, 1117, 299], "ja": "オフライン\nコンピュータ", "font_size": 22},
+    {"box": [425, 353, 572, 437], "ja": "オンライン\nコンピュータ", "font_size": 22}
+  ]
+}

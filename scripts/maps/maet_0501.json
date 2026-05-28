@@ -1,0 +1,15 @@
+{
+  "Grandchild": {"ja": "孫鍵", "font_size": 28},
+  "Child": {"ja": "子鍵", "font_size": 28},
+  "Master": {"ja": "マスター鍵", "font_size": 28, "group": "master", "text_offset_y": -30, "text_offset_x": -15},
+  "key": {"ja": null, "group": "master"},
+  "keys": {"ja": null},
+  "Seed": {"ja": "シード", "font_size": 28},
+  "k_m": {"ja": null},
+  "kml": {"ja": null},
+  "k m": {"ja": null},
+  "__skip_match_boxes__": [
+    [720, 60, 820, 125],
+    [550, 75, 645, 145]
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "Ethereum validator pool": {
+    "ja": "イーサリアムのバリデーターのプール",
+    "bold": true
+  },
+  "First slot": {
+    "ja": "第1スロット"
+  },
+  "Second slot": {
+    "ja": "第2スロット"
+  },
+  "Third slot": {
+    "ja": "第3スロット"
+  },
+  "Fourth slot": {
+    "ja": "第4スロット"
+  }
+}
