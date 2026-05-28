@@ -1,8 +1,8 @@
 {
-  "PUSH": {"ja": "PUSH", "bold": true},
-  "POP": {"ja": "POP", "bold": true},
-  "SWAPI": {"ja": "SWAP1", "bold": true},
-  "SWAP1": {"ja": "SWAP1", "bold": true},
+  "PUSH": {"ja": "プッシュ", "bold": true, "font_size": 28},
+  "POP": {"ja": "ポップ", "bold": true, "font_size": 28},
+  "SWAPI": {"ja": "スワップ1", "bold": true, "font_size": 28},
+  "SWAP1": {"ja": "スワップ1", "bold": true, "font_size": 28},
   "Item 1": {"ja": "要素1"},
   "Item 2": {"ja": "要素2"},
   "Item 3": {"ja": "要素3"},
