@@ -30,15 +30,16 @@
   },
   "Offset": {
     "ja": "オフセット",
-    "font_size": 28
+    "font_size": 22,
+    "text_offset_x": -3
   },
   "Value": {
     "ja": "値",
-    "font_size": 28
+    "font_size": 26
   },
   "Slot": {
     "ja": "スロット",
-    "font_size": 28
+    "font_size": 26
   },
   "60425F525F3560AB145F515500": {
     "ja": null
