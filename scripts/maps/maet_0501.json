@@ -1,7 +1,7 @@
 {
   "Grandchild": {"ja": "孫鍵", "font_size": 28},
   "Child": {"ja": "子鍵", "font_size": 28},
-  "Master": {"ja": "マスター鍵", "font_size": 28, "group": "master"},
+  "Master": {"ja": "マスター鍵", "font_size": 28, "group": "master", "text_offset_y": -30, "text_offset_x": -15},
   "key": {"ja": null, "group": "master"},
   "keys": {"ja": null},
   "Seed": {"ja": "シード", "font_size": 28},
