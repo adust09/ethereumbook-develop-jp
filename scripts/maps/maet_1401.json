@@ -1,14 +1,14 @@
 {
   "Account State": {"ja": "アカウント状態", "bold": true, "font_size": 26},
   "Block Header": {"ja": "ブロックヘッダ", "bold": true, "font_size": 22},
-  "Block no.": {"ja": "ブロック番号", "size_group": "header_bullets"},
-  "Gas Limit": {"ja": "ガスリミット", "size_group": "header_bullets"},
+  "Block no.": {"ja": "- ブロック番号", "size_group": "header_bullets", "text_align": "left", "text_offset_x": -20},
+  "Gas Limit": {"ja": "- ガスリミット", "size_group": "header_bullets", "text_align": "left", "text_offset_x": -20},
   "Codehash": {"ja": "コードハッシュ", "size_group": "header_bullets"},
   "Nonce": {"ja": "ノンス", "size_group": "header_bullets"},
-  "Logs Bloom Filter": {"ja": "ログブルームフィルター", "size_group": "header_bullets"},
-  "Difficulty; Mixhash,": {"ja": "難易度、Mixhash、", "size_group": "header_bullets"},
-  "(Stores Logs)": {"ja": "（ログを保存）", "size_group": "header_bullets"},
-  "Parent Has": {"ja": "親ハッシュ", "size_group": "header_bullets"},
+  "Logs Bloom Filter": {"ja": "- ログブルームフィルター", "size_group": "header_bullets", "text_align": "left", "text_offset_x": -17},
+  "Difficulty; Mixhash,": {"ja": "- 難易度、Mixhash、", "size_group": "header_bullets", "text_align": "left", "text_offset_x": -17},
+  "(Stores Logs)": {"ja": "（ログを保存）", "size_group": "header_bullets", "text_align": "left", "text_offset_x": 1},
+  "Parent Has": {"ja": "- 親ハッシュ", "size_group": "header_bullets", "text_align": "left", "text_offset_x": -19},
   "Storage": {"ja": null},
   "Storage _": {"ja": null, "group": "clearing"},
   "TX": {"ja": null},
@@ -104,7 +104,9 @@
     [8, 1572, 28, 1592],
     [425, 1872, 452, 1895],
     [665, 780, 695, 915],
-    [978, 780, 1005, 920]
+    [978, 780, 1005, 920],
+    [828, 88, 850, 225],
+    [1055, 88, 1080, 165]
   ],
   "__extra_text_regions__": [
     {"box": [479, 131, 585, 167], "ja": "コード\nハッシュ", "color": "#ffffff", "font_size": 18, "mask_mode": "bright"},
