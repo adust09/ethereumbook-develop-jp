@@ -1,4 +1,12 @@
 {
+  "__skip_match_boxes__": [
+    [221, 345, 303, 389],
+    [227, 415, 299, 451]
+  ],
+  "__extra_text_regions__": [
+    {"box": [221, 345, 303, 389], "ja": "オフセット", "font_size": 22, "text_offset_x": 18},
+    {"box": [227, 415, 299, 451], "ja": "値", "font_size": 22, "text_offset_x": 20}
+  ],
   "EVM": {
     "ja": null,
     "bold": true
