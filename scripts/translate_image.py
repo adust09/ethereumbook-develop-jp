@@ -264,7 +264,7 @@ def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.I
 
     for region in regions:
         box = region["box"]
-        align = region.get("text_align", "center")
+        align = region.get("text_align")
         if align == "left":
             cx = box[0] + region.get("text_offset_x", 0)
         elif align == "right":
@@ -310,12 +310,11 @@ def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.I
         else:
             fill = tuple(color)
         if align == "left":
-            anchor, multi = "lm", "left"
+            draw.text((cx, cy), region["translation"], font=font, fill=fill, anchor="lm", align="left")
         elif align == "right":
-            anchor, multi = "rm", "right"
+            draw.text((cx, cy), region["translation"], font=font, fill=fill, anchor="rm", align="right")
         else:
-            anchor, multi = "mm", "center"
-        draw.text((cx, cy), region["translation"], font=font, fill=fill, anchor=anchor, align=multi)
+            draw.text((cx, cy), region["translation"], font=font, fill=fill, anchor="mm")
 
     return img_pil
 
