@@ -12,16 +12,13 @@
     "ja": "コンテクスト情報を保存"
   },
   "Get old context info": {
-    "ja": "実行を復帰させるため",
-    "group": "getold"
+    "ja": "実行を復帰させるため"
   },
   "toreset execution": {
-    "ja": "古いコンテクスト情報を取得",
-    "group": "getold"
+    "ja": "古いコンテクスト情報を取得"
   },
   "to reset execution": {
-    "ja": "古いコンテクスト情報を取得",
-    "group": "getold"
+    "ja": "古いコンテクスト情報を取得"
   },
   "Function A": {
     "ja": "関数A",
@@ -34,7 +31,7 @@
   "Return stack": {
     "ja": "リターンスタック",
     "bold": true,
-    "font_size": 32
+    "font_size": 22
   },
   "CALLF": {
     "ja": "CALLF",
@@ -49,55 +46,55 @@
     "bold": true
   },
   "(Data) stack": {
-    "ja": "（データ）スタック",
+    "ja": "データスタック",
     "bold": true,
-    "font_size": 32
+    "font_size": 22
   },
   "Memory": {
     "ja": "メモリ",
     "bold": true,
-    "font_size": 32
+    "font_size": 22
   },
   "Storage": {
     "ja": "ストレージ",
     "bold": true,
-    "font_size": 32
+    "font_size": 22
   },
   "Item 1": {
     "ja": "要素1",
-    "font_size": 24
+    "font_size": 22
   },
   "Item 2": {
     "ja": "要素2",
-    "font_size": 24
+    "font_size": 22
   },
   "Item1": {
     "ja": "要素1",
-    "font_size": 24
+    "font_size": 22
   },
   "Slot 0": {
     "ja": "スロット0",
-    "font_size": 24
+    "font_size": 18
   },
   "Slot 1": {
     "ja": "スロット1",
-    "font_size": 24
+    "font_size": 18
   },
   "Slot 2": {
     "ja": "スロット2",
-    "font_size": 24
+    "font_size": 18
   },
   "Value 0": {
     "ja": "値0",
-    "font_size": 24
+    "font_size": 18
   },
   "Value 1": {
     "ja": "値1",
-    "font_size": 24
+    "font_size": 18
   },
   "Value 2": {
     "ja": "値2",
-    "font_size": 24
+    "font_size": 18
   },
   "00.": {
     "ja": null
