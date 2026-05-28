@@ -264,7 +264,13 @@ def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.I
 
     for region in regions:
         box = region["box"]
-        cx = (box[0] + box[2]) / 2 + region.get("text_offset_x", 0)
+        align = region.get("text_align", "center")
+        if align == "left":
+            cx = box[0] + region.get("text_offset_x", 0)
+        elif align == "right":
+            cx = box[2] + region.get("text_offset_x", 0)
+        else:
+            cx = (box[0] + box[2]) / 2 + region.get("text_offset_x", 0)
         cy = (box[1] + box[3]) / 2 + region.get("text_offset_y", 0)
         box_w = box[2] - box[0]
         box_h = box[3] - box[1]
@@ -303,7 +309,13 @@ def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.I
             fill = (int(c[0:2], 16), int(c[2:4], 16), int(c[4:6], 16))
         else:
             fill = tuple(color)
-        draw.text((cx, cy), region["translation"], font=font, fill=fill, anchor="mm")
+        if align == "left":
+            anchor, multi = "lm", "left"
+        elif align == "right":
+            anchor, multi = "rm", "right"
+        else:
+            anchor, multi = "mm", "center"
+        draw.text((cx, cy), region["translation"], font=font, fill=fill, anchor=anchor, align=multi)
 
     return img_pil
 
@@ -379,6 +391,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             "text_offset_x": matched.get("text_offset_x", 0),
             "text_offset_y": matched.get("text_offset_y", 0),
             "color": matched.get("color"),
+            "text_align": matched.get("text_align", "center"),
         })
         print(f"       '{det['text']}' → '{matched['ja']}'")
 
@@ -397,6 +410,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
         text_offset_x = next((v.get("text_offset_x") for _, v in items if v.get("ja")), 0) or 0
         text_offset_y = next((v.get("text_offset_y") for _, v in items if v.get("ja")), 0) or 0
         color = next((v.get("color") for _, v in items if v.get("ja")), None)
+        text_align = next((v.get("text_align") for _, v in items if v.get("ja")), "center")
         if ja:
             regions.append({
                 "box": merged_box,
@@ -408,6 +422,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
                 "text_offset_x": text_offset_x,
                 "text_offset_y": text_offset_y,
                 "color": color,
+                "text_align": text_align,
             })
             print(f"       (merged '{gname}') → '{ja}'")
 
@@ -425,6 +440,9 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             "font_size": er.get("font_size"),
             "color": er.get("color"),
             "no_mask": er.get("no_mask", False),
+            "text_align": er.get("text_align", "center"),
+            "text_offset_x": er.get("text_offset_x", 0),
+            "text_offset_y": er.get("text_offset_y", 0),
         })
         print(f"       (extra) → '{er['ja']}'")
 

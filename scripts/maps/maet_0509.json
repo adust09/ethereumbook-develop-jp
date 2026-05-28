@@ -23,9 +23,8 @@
     [880, 575, 1290, 800]
   ],
   "__extra_text_regions__": [
-    {"box": [880, 585, 1290, 625], "ja": "・1日あたり1ETH未満の送信が可能", "font_size": 18, "text_offset_x": -50},
-    {"box": [880, 625, 1290, 665], "ja": "・鍵は1か月で失効", "font_size": 18, "text_offset_x": -120},
-    {"box": [880, 665, 1290, 710], "ja": "・既存のすべての鍵によるマルチシグで", "font_size": 18, "text_offset_x": -30},
-    {"box": [880, 710, 1290, 750], "ja": "  新しい鍵を追加可能", "font_size": 18, "text_offset_x": -90}
+    {"box": [880, 585, 1290, 625], "ja": "・1日あたり1ETH未満の送信が可能", "font_size": 18, "text_align": "left", "text_offset_x": 30},
+    {"box": [880, 625, 1290, 665], "ja": "・鍵は1か月で失効", "font_size": 18, "text_align": "left", "text_offset_x": 30},
+    {"box": [880, 665, 1290, 750], "ja": "・既存のすべての鍵によるマルチシグで\n　新しい鍵を追加可能", "font_size": 18, "text_align": "left", "text_offset_x": 30}
   ]
 }
