@@ -1,0 +1,39 @@
+name: 誤訳報告
+description: 翻訳内容の誤りを報告する
+title: "[誤訳] "
+labels: ["mistranslation"]
+body:
+  - type: input
+    id: chapter
+    attributes:
+      label: 章
+      description: 誤訳が含まれる章とファイル名
+      placeholder: "例: 第3章 (src/chapter_3.md)"
+    validations:
+      required: true
+  - type: textarea
+    id: original
+    attributes:
+      label: 原文（英語）
+      description: 原書の該当テキストを貼り付けてください
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: 現在の翻訳
+      description: 現在の誤った翻訳テキスト
+    validations:
+      required: true
+  - type: textarea
+    id: suggested
+    attributes:
+      label: 修正案
+      description: より正確な翻訳の提案
+    validations:
+      required: true
+  - type: textarea
+    id: reason
+    attributes:
+      label: 理由
+      description: なぜ現在の翻訳が不正確か、修正案のほうが良い理由
