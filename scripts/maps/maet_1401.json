@@ -54,7 +54,7 @@
   "-V; R; S (Signed TX": {"ja": "- V, R, S（署名済みTX、\n　送信者付き）", "group": "vrs", "size_group": "caller_bullets"},
   "with SENDER)": {"ja": null, "group": "vrs"},
   "Data Bytecode": {"ja": "- データ/バイトコード", "size_group": "caller_bullets"},
-  "INIT": {"ja": "INIT", "bold": true, "size_group": "caller_bullets"},
+  "INIT": {"ja": "INIT", "size_group": "caller_bullets"},
   "Yes": {"ja": "Yes", "size_group": "yesno"},
   "No": {"ja": "No", "size_group": "yesno"},
   "Remaining*": {"ja": "残り", "font_size": 16},
@@ -98,7 +98,10 @@
     [1040, 1245, 1170, 1290],
     [1245, 1590, 1345, 1635],
     [495, 615, 530, 645],
-    [899, 1630, 915, 1646]
+    [899, 1630, 915, 1646],
+    [8, 1372, 28, 1392],
+    [8, 1497, 28, 1517],
+    [8, 1572, 28, 1592]
   ],
   "__extra_text_regions__": [
     {"box": [479, 131, 585, 167], "ja": "コード\nハッシュ", "color": "#ffffff", "font_size": 18, "mask_mode": "bright"},
