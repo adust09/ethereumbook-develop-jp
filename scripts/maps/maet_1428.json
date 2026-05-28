@@ -19,17 +19,20 @@
   "Get old context info": {
     "ja": "実行を復帰させるため",
     "color": "#C9454A",
-    "font_size": 22
+    "font_size": 22,
+    "text_offset_x": -15
   },
   "toreset execution": {
     "ja": "古いコンテクスト情報を取得",
     "color": "#C9454A",
-    "font_size": 22
+    "font_size": 22,
+    "text_offset_x": -15
   },
   "to reset execution": {
     "ja": "古いコンテクスト情報を取得",
     "color": "#C9454A",
-    "font_size": 22
+    "font_size": 22,
+    "text_offset_x": -15
   },
   "Function A": {
     "ja": "関数A",
