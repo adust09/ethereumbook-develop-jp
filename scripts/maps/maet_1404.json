@@ -1,8 +1,18 @@
 {
+  "__skip_match_boxes__": [
+    [924, 430, 1306, 486],
+    [924, 962, 1306, 1018]
+  ],
+  "__extra_preserve_boxes__": [
+    [920, 430, 974, 486],
+    [920, 962, 974, 1018]
+  ],
+  "__extra_text_regions__": [
+    {"box": [980, 430, 1306, 486], "ja": "ツリー内の総要素数", "font_size": 24},
+    {"box": [980, 962, 1306, 1018], "ja": "ツリー内の総要素数", "font_size": 24}
+  ],
   "Number of items needed": {"ja": "証明の作成に必要な"},
   "tocreate the proof": {"ja": "要素数"},
   "to create the proof": {"ja": "要素数"},
-  "Total items in the tree": {"ja": "ツリー内の総要素数"},
-  "20 Totalitems in the tree": {"ja": "20　　　　ツリー内の総要素数"},
-  "20  Totalitems in the tree": {"ja": "20　　　　ツリー内の総要素数"}
+  "Total items in the tree": {"ja": "ツリー内の総要素数"}
 }
