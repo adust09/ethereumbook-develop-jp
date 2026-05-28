@@ -1,4 +1,8 @@
 {
+  "__extra_mask_boxes__": [
+    [311, 829, 543, 867],
+    [319, 865, 543, 895]
+  ],
   "Next instruction pos": {
     "ja": "次の命令位置"
   },
@@ -14,15 +18,18 @@
   },
   "Get old context info": {
     "ja": "実行を復帰させるため",
-    "color": "#C9454A"
+    "color": "#C9454A",
+    "font_size": 22
   },
   "toreset execution": {
     "ja": "古いコンテクスト情報を取得",
-    "color": "#C9454A"
+    "color": "#C9454A",
+    "font_size": 22
   },
   "to reset execution": {
     "ja": "古いコンテクスト情報を取得",
-    "color": "#C9454A"
+    "color": "#C9454A",
+    "font_size": 22
   },
   "Function A": {
     "ja": "関数A",
