@@ -2,7 +2,7 @@
   "Mnemonic to seed": {"ja": "ニーモニックからシードへ", "bold": true, "font_size": 30},
   "Mnemonic code words": {"ja": "ニーモニックコードワード", "bold": true, "font_size": 24},
   "Salt": {"ja": "ソルト", "bold": true, "font_size": 24},
-  "(optional) passphrase": {"ja": "（任意の）パスフレーズ", "font_size": 22},
+  "(optional) passphrase": {"ja": "（任意の）パスフレーズ", "bold": true, "font_size": 22},
   "mnenonic\"": {"ja": null},
   "\"mnemonic\"": {"ja": null},
   "van defense": {"ja": null},
