@@ -1,5 +1,5 @@
 {
-  "Merkle proof": {"ja": "Merkle証明"},
+  "Merkle proof": {"ja": "マークル証明", "size_group": "legend", "bold": true},
   "Merkle Root": {"ja": "マークルルート", "bold": true},
-  "Target": {"ja": "ターゲット"}
+  "Target": {"ja": "ターゲット", "size_group": "legend", "bold": true, "text_offset_x": 41}
 }
