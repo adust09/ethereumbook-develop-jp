@@ -213,20 +213,26 @@ def draw_fill_shapes(img: np.ndarray, shapes: list[dict]) -> np.ndarray:
             continue
         roi = out[y1:y2, x1:x2].astype(int)
         diff = np.abs(roi - np.array(color, dtype=int)).sum(axis=2)
-        ys, xs = np.where(diff < sh.get("tol", 60))
-        if len(xs) >= 3:
-            # convex hull of fill-color pixels follows the real shape, but the
-            # outermost AA pixels can extend a couple of px into the border
-            # ring. Erode the mask before painting so the original border is
-            # preserved intact (no double-line artifact).
-            hull_mask = np.zeros(out.shape[:2], dtype=np.uint8)
-            pts = np.column_stack([xs + x1, ys + y1]).astype(np.int32)
-            cv2.fillConvexPoly(hull_mask, cv2.convexHull(pts), 255)
-            erode = sh.get("erode", 2)
-            if erode > 0:
-                k = np.ones((erode * 2 + 1, erode * 2 + 1), np.uint8)
-                hull_mask = cv2.erode(hull_mask, k, iterations=1)
-            out[hull_mask == 255] = color
+        fill_mask = (diff < sh.get("tol", 60)).astype(np.uint8)
+        if fill_mask.any():
+            # Use the diamond's geometric polygon (4 vertices = midpoints of
+            # the bbox edges), inset by `erode` pixels so it sits safely inside
+            # the original border and its anti-aliasing halo. Painting fill
+            # color only on pixels that are inside this inset polygon AND not
+            # already fill-color overwrites the English text glyphs without
+            # touching the border at all.
+            cx, cy = (x1 + x2) / 2 - x1, (y1 + y2) / 2 - y1
+            hw, hh = (x2 - x1) / 2, (y2 - y1) / 2
+            erode = sh.get("erode", 4)
+            hw_i, hh_i = max(0, hw - erode), max(0, hh - erode)
+            inset = np.array(
+                [[cx, cy - hh_i], [cx + hw_i, cy], [cx, cy + hh_i], [cx - hw_i, cy]],
+                dtype=np.int32,
+            )
+            inset_mask = np.zeros(roi.shape[:2], dtype=np.uint8)
+            cv2.fillConvexPoly(inset_mask, inset, 1)
+            holes = inset_mask & (1 - fill_mask)
+            out[y1:y2, x1:x2][holes == 1] = color
         bw = sh.get("border_width", 0)
         if bw:
             bc = _hex_to_bgr(sh.get("border", "#000000"))
