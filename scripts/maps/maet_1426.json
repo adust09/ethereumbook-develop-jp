@@ -1,0 +1,45 @@
+{
+  "__skip_match_boxes__": [
+    [347, 0, 519, 43],
+    [623, 391, 783, 435]
+  ],
+  "__extra_text_regions__": [
+    {"box": [347, 0, 519, 43], "ja": "オフセット = 09", "font_size": 36, "color": "#C84045"},
+    {"box": [623, 391, 783, 435], "ja": "オフセット = 15", "font_size": 36, "color": "#C84045"}
+  ],
+  "Offset": {
+    "ja": "オフセット",
+    "font_size": 32
+  },
+  "Valid": {
+    "ja": "有効",
+    "font_size": 32
+  },
+  "Yes": {
+    "ja": null
+  },
+  "No": {
+    "ja": null
+  },
+  "PUSHI": {
+    "ja": null
+  },
+  "PUSH1": {
+    "ja": null
+  },
+  "PUSH2": {
+    "ja": null
+  },
+  "PUSH3": {
+    "ja": null
+  },
+  "JUMP": {
+    "ja": null
+  },
+  "JUMPDEST": {
+    "ja": null
+  },
+  "ADD": {
+    "ja": null
+  }
+}

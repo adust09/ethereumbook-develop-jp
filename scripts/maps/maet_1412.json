@@ -1,0 +1,304 @@
+{
+  "__skip_match_boxes__": [
+    [221, 345, 303, 389],
+    [227, 415, 299, 451]
+  ],
+  "__extra_text_regions__": [
+    {"box": [221, 345, 303, 389], "ja": "オフセット", "font_size": 22, "text_offset_x": 18},
+    {"box": [227, 415, 299, 451], "ja": "値", "font_size": 22, "text_offset_x": 20}
+  ],
+  "EVM": {
+    "ja": null,
+    "bold": true
+  },
+  "Bytecode": {
+    "ja": "バイトコード",
+    "bold": true,
+    "font_size": 32
+  },
+  "Calldata": {
+    "ja": "Calldata",
+    "bold": true,
+    "font_size": 32
+  },
+  "Stack": {
+    "ja": "スタック",
+    "bold": true,
+    "font_size": 32
+  },
+  "Memory": {
+    "ja": "メモリ",
+    "bold": true,
+    "font_size": 32
+  },
+  "Storage": {
+    "ja": "ストレージ",
+    "bold": true,
+    "font_size": 32
+  },
+  "Offset": {
+    "ja": "オフセット",
+    "font_size": 22,
+    "text_offset_x": -3
+  },
+  "Value": {
+    "ja": "値",
+    "font_size": 26
+  },
+  "Slot": {
+    "ja": "スロット",
+    "font_size": 26
+  },
+  "60425F525F3560AB145F515500": {
+    "ja": null
+  },
+  "5F525F3560AB145F515500": {
+    "ja": null
+  },
+  "525F3560AB145F515500": {
+    "ja": null
+  },
+  "SF3560AB14SF515SO0": {
+    "ja": null
+  },
+  "5F3560AB145F515500": {
+    "ja": null
+  },
+  "3560AB14SFS155O0": {
+    "ja": null
+  },
+  "3560AB145F515500": {
+    "ja": null
+  },
+  "60AB14SF51SSOO": {
+    "ja": null
+  },
+  "60AB145F515500": {
+    "ja": null
+  },
+  "145F515500": {
+    "ja": null
+  },
+  "14SF515SO0": {
+    "ja": null
+  },
+  "SF515SOO": {
+    "ja": null
+  },
+  "5F515500": {
+    "ja": null
+  },
+  "515500": {
+    "ja": null
+  },
+  "5500": {
+    "ja": null
+  },
+  "00": {
+    "ja": null
+  },
+  "OOOOOab": {
+    "ja": null
+  },
+  "OOOOOOab": {
+    "ja": null
+  },
+  "OOOOOOOab": {
+    "ja": null
+  },
+  "OOOOOoOOab": {
+    "ja": null
+  },
+  "OOOooOab": {
+    "ja": null
+  },
+  "OOOooOOab": {
+    "ja": null
+  },
+  "OOOOOoOab": {
+    "ja": null
+  },
+  "Ooooo": {
+    "ja": null
+  },
+  "0oo": {
+    "ja": null
+  },
+  "Ooooooc": {
+    "ja": null
+  },
+  "0ooooo": {
+    "ja": null
+  },
+  "Oooooooc": {
+    "ja": null
+  },
+  "0ooo": {
+    "ja": null
+  },
+  "Oooooo": {
+    "ja": null
+  },
+  "Ooooooo": {
+    "ja": null
+  },
+  "OOOOOOC": {
+    "ja": null
+  },
+  "OxOO": {
+    "ja": null
+  },
+  "Oxoo": {
+    "ja": null
+  },
+  "OxoO": {
+    "ja": null
+  },
+  "OxOO__.0O": {
+    "ja": null
+  },
+  "OxOo_0O": {
+    "ja": null
+  },
+  "Ox42": {
+    "ja": null
+  },
+  "0x42": {
+    "ja": null
+  },
+  "Oxab": {
+    "ja": null
+  },
+  "OxoI": {
+    "ja": null
+  },
+  "00_00": {
+    "ja": null
+  },
+  "00...00": {
+    "ja": null
+  },
+  "OO_.00": {
+    "ja": null
+  },
+  "OO__.0O": {
+    "ja": null
+  },
+  "00_.00": {
+    "ja": null
+  },
+  "Oo_.00": {
+    "ja": null
+  },
+  "00_.01": {
+    "ja": null
+  },
+  "00_01": {
+    "ja": null
+  },
+  "00__.01": {
+    "ja": null
+  },
+  "00...01": {
+    "ja": null
+  },
+  "OO_.01": {
+    "ja": null
+  },
+  "00_02": {
+    "ja": null
+  },
+  "00_.02": {
+    "ja": null
+  },
+  "00...02": {
+    "ja": null
+  },
+  "OO_.02": {
+    "ja": null
+  },
+  "OO_IF": {
+    "ja": null
+  },
+  "Oxooooooooo": {
+    "ja": null
+  },
+  "Oxooooooooe": {
+    "ja": null
+  },
+  "Oxooooooooooc": {
+    "ja": null
+  },
+  "Oxoooooooo": {
+    "ja": null
+  },
+  "Oxoooooooooe": {
+    "ja": null
+  },
+  "Oxoooooo": {
+    "ja": null
+  },
+  "Oooooooooooooooo": {
+    "ja": null
+  },
+  "Ooooooooooooooooo": {
+    "ja": null
+  },
+  "Oooooooooooooooooo": {
+    "ja": null
+  },
+  "Ooooooooooooooooooo": {
+    "ja": null
+  },
+  "Oooooooooooooooooooo": {
+    "ja": null
+  },
+  "Oooooooooo": {
+    "ja": null
+  },
+  "Ooooooooooo": {
+    "ja": null
+  },
+  "Oooooooo": {
+    "ja": null
+  },
+  "Oooooooooooc": {
+    "ja": null
+  },
+  "Oooooooooooe": {
+    "ja": null
+  },
+  "0ooo0": {
+    "ja": null
+  },
+  "0oooo00": {
+    "ja": null
+  },
+  "0oooo000": {
+    "ja": null
+  },
+  "000000": {
+    "ja": null
+  },
+  "000001": {
+    "ja": null
+  },
+  "0oooo0": {
+    "ja": null
+  },
+  "ooooooooooooooooooooooooooooooo": {
+    "ja": null
+  },
+  "Ooooooooo": {
+    "ja": null
+  },
+  "Ooooooooo1": {
+    "ja": null
+  },
+  "OxOO_42": {
+    "ja": null
+  },
+  "OxooOOO(": {
+    "ja": null
+  }
+}
