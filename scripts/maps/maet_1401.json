@@ -70,7 +70,7 @@
   "Consume Gas": {"ja": "ガスを消費", "font_size": 16},
   "Deduct OPCODE Fee": {"ja": "OPCODE手数料を差し引く", "font_size": 16},
   "Operation Computation": {"ja": "演算の計算", "size_group": "footer_bullets"},
-  "Message Call (ETH CALL) or Contract Creation (ETH SENDTRANSACTION)": {"ja": "メッセージコール（ETH CALL）またはコントラクト作成（ETH SENDTRANSACTION）", "size_group": "footer_bullets"},
+  "Message Call (ETH CALL) or Contract Creation (ETH SENDTRANSACTION)": {"ja": "- メッセージコール（ETH CALL）またはコントラクト作成（ETH SENDTRANSACTION）", "size_group": "footer_bullets", "text_align": "left", "text_offset_x": -25},
   "Memory Usage": {"ja": "メモリ使用量", "size_group": "footer_bullets"},
   "State Machine Cycle for Bytecode Opcodes": {"ja": "バイトコードオペコードの状態マシンサイクル", "bold": true, "font_size": 20},
   "CALLER; PUSHI OXO1 , PUSH OXAo,C": {"ja": null},
@@ -101,7 +101,8 @@
     [899, 1630, 915, 1646],
     [8, 1372, 28, 1392],
     [8, 1497, 28, 1517],
-    [8, 1572, 28, 1592]
+    [8, 1572, 28, 1592],
+    [425, 1872, 452, 1895]
   ],
   "__extra_text_regions__": [
     {"box": [479, 131, 585, 167], "ja": "コード\nハッシュ", "color": "#ffffff", "font_size": 18, "mask_mode": "bright"},
