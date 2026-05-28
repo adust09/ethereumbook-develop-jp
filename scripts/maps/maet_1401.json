@@ -44,16 +44,16 @@
   "~OPCODES": {"ja": null},
   "Memory": {"ja": null},
   "LIFO": {"ja": null},
-  "Gas Limit (STARTGAS)": {"ja": "ガスリミット（STARTGAS）", "size_group": "caller_bullets"},
+  "Gas Limit (STARTGAS)": {"ja": "- ガスリミット（STARTGAS）", "size_group": "caller_bullets"},
   "Gas Price": {"ja": "ガス価格", "size_group": "caller_bullets"},
   "Update State & Logs": {"ja": "状態とログを更新", "font_size": 18},
   "To (MSG_SENDER) ,": {"ja": "To（MSG.SENDER）,", "size_group": "caller_bullets"},
   "vALUE (MSG.VALUE)": {"ja": "Value（MSG.VALUE）", "size_group": "caller_bullets"},
   "Exception": {"ja": "例外", "font_size": 18},
   "Revert TX": {"ja": "TXをリバート", "font_size": 18},
-  "-V; R; S (Signed TX": {"ja": "V, R, S（署名済みTX、\n送信者付き）", "group": "vrs", "size_group": "caller_bullets"},
+  "-V; R; S (Signed TX": {"ja": "- V, R, S（署名済みTX、\n　送信者付き）", "group": "vrs", "size_group": "caller_bullets"},
   "with SENDER)": {"ja": null, "group": "vrs"},
-  "Data Bytecode": {"ja": "データ/バイトコード", "size_group": "caller_bullets"},
+  "Data Bytecode": {"ja": "- データ/バイトコード", "size_group": "caller_bullets"},
   "INIT": {"ja": "INIT", "bold": true, "size_group": "caller_bullets"},
   "Yes": {"ja": "Yes", "size_group": "yesno"},
   "No": {"ja": "No", "size_group": "yesno"},
@@ -91,7 +91,8 @@
     [1195, 1280, 1320, 1330],
     [1040, 1245, 1170, 1330],
     [1245, 1590, 1345, 1635],
-    [495, 615, 530, 645]
+    [495, 615, 530, 645],
+    [690, 840, 840, 882]
   ],
   "__extra_mask_boxes__": [
     [1040, 1245, 1170, 1290],
@@ -112,6 +113,7 @@
     {"box": [1195, 1280, 1320, 1330], "ja": "メモリ", "color": "#ffffff", "font_size": 18, "mask_mode": "bright"},
     {"box": [1040, 1245, 1170, 1290], "ja": "LIFO\nOPCODES", "color": "#000000", "font_size": 14},
     {"box": [810, 1610, 945, 1668], "ja": "OPCODES？", "font_size": 15, "text_offset_x": -4, "text_offset_y": -10},
-    {"box": [933, 1620, 1028, 1666], "ja": "成功", "font_size": 18}
+    {"box": [933, 1620, 1028, 1666], "ja": "成功", "font_size": 18},
+    {"box": [696, 846, 836, 878], "ja": "ブロックヘッダ", "size_group": "input_bullets"}
   ]
 }
