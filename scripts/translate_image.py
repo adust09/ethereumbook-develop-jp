@@ -215,8 +215,18 @@ def draw_fill_shapes(img: np.ndarray, shapes: list[dict]) -> np.ndarray:
         diff = np.abs(roi - np.array(color, dtype=int)).sum(axis=2)
         ys, xs = np.where(diff < sh.get("tol", 60))
         if len(xs) >= 3:
+            # convex hull of fill-color pixels follows the real shape, but the
+            # outermost AA pixels can extend a couple of px into the border
+            # ring. Erode the mask before painting so the original border is
+            # preserved intact (no double-line artifact).
+            hull_mask = np.zeros(out.shape[:2], dtype=np.uint8)
             pts = np.column_stack([xs + x1, ys + y1]).astype(np.int32)
-            cv2.fillConvexPoly(out, cv2.convexHull(pts), color)
+            cv2.fillConvexPoly(hull_mask, cv2.convexHull(pts), 255)
+            erode = sh.get("erode", 2)
+            if erode > 0:
+                k = np.ones((erode * 2 + 1, erode * 2 + 1), np.uint8)
+                hull_mask = cv2.erode(hull_mask, k, iterations=1)
+            out[hull_mask == 255] = color
         bw = sh.get("border_width", 0)
         if bw:
             bc = _hex_to_bgr(sh.get("border", "#000000"))
