@@ -1,0 +1,122 @@
+{
+  "Ethereum": {"ja": null},
+  "Execution Layer": {"ja": null},
+  "Nonce Manager": {"ja": null},
+  "Deployer": {"ja": null},
+  "Account Contract": {"ja": null},
+  "Paymaster": {"ja": null},
+  "Contract": {"ja": null},
+  "Start": {"ja": null},
+  "Validate": {"ja": null},
+  "nonce": {"ja": null},
+  "Account": {"ja": null},
+  "deployed?,": {"ja": null},
+  "contract": {"ja": null},
+  "Msg Sender:": {"ja": null},
+  "AA SENDER CREATOR": {"ja": null},
+  "Deploy": {"ja": null},
+  "account": {"ja": null},
+  "transaction": {"ja": null},
+  "transaction _": {"ja": null},
+  "validation": {"ja": null},
+  "specified?": {"ja": null},
+  "paymaster": {"ja": null},
+  "Equivalent validation steps for other subsequent account abstraction transactions are executed here": {"ja": null},
+  "Execution": {"ja": null},
+  "frame": {"ja": null},
+  "execution": {"ja": null},
+  "Past": {"ja": null},
+  "End": {"ja": null},
+
+  "__extra_mask_boxes__": [
+    [0, 0, 1450, 110],
+    [85, 180, 185, 240],
+    [310, 165, 445, 260],
+    [310, 450, 590, 488],
+    [365, 408, 535, 463],
+    [620, 425, 760, 525],
+    [625, 510, 760, 560],
+    [55, 685, 215, 815],
+    [55, 1225, 1395, 1295],
+    [85, 1395, 185, 1450],
+    [55, 1430, 215, 1490],
+    [880, 1395, 1050, 1490],
+    [1195, 1635, 1390, 1770],
+    [95, 1885, 175, 1945]
+  ],
+  "__extra_mask_boxes_soft__": [
+    [507, 237, 563, 275],
+    [260, 302, 364, 344],
+    [264, 456, 310, 488],
+    [136, 594, 188, 636],
+    [1069, 781, 1123, 819],
+    [826, 849, 934, 885],
+    [275, 1001, 327, 1039],
+    [1379, 1071, 1435, 1109],
+    [147, 1141, 193, 1179],
+    [1144, 1138, 1250, 1180],
+    [269, 1659, 321, 1697],
+    [139, 1801, 185, 1834]
+  ],
+  "__extra_preserve_boxes__": [
+    [354, 293, 379, 320],
+    [128, 588, 148, 604],
+    [918, 843, 942, 862],
+    [1237, 1133, 1255, 1150],
+    [1249, 1133, 1263, 1150],
+    [138, 1133, 147, 1150],
+    [130, 1793, 147, 1808]
+  ],
+  "__extra_fill_shapes__": [
+    {"diamond": [27, 389, 238, 601], "fill": "#66BE8F", "erode": 1},
+    {"diamond": [833, 649, 1045, 860], "fill": "#E6A9AB", "erode": 1},
+    {"diamond": [1146, 937, 1357, 1148], "fill": "#FDE9D2", "erode": 1},
+    {"diamond": [27, 937, 238, 1148], "fill": "#FDE9D2", "erode": 1},
+    {"diamond": [27, 1594, 238, 1806], "fill": "#FDE9D2", "erode": 1}
+  ],
+  "__extra_text_regions__": [
+    {"box": [50, 0, 270, 105], "ja": "イーサリアム\n実行層", "bold": true, "font_size": 24},
+    {"box": [296, 0, 543, 105], "ja": "ナンスマネージャー\nコントラクト", "bold": true, "font_size": 22},
+    {"box": [616, 0, 766, 105], "ja": "デプロイヤー\nコントラクト", "bold": true, "font_size": 22},
+    {"box": [841, 0, 1113, 105], "ja": "アカウント\nコントラクト", "bold": true, "font_size": 22},
+    {"box": [1198, 0, 1372, 105], "ja": "ペイマスター\nコントラクト", "bold": true, "font_size": 22},
+
+    {"box": [85, 180, 185, 240], "ja": "開始", "bold": true, "font_size": 24, "color": "#FFFFFF"},
+    {"box": [310, 165, 445, 260], "ja": "ナンスを\n検証", "bold": true, "font_size": 22, "color": "#FFFFFF"},
+    {"box": [507, 237, 563, 275], "ja": "失敗", "font_size": 22},
+    {"box": [260, 302, 364, 344], "ja": "成功", "font_size": 22},
+
+    {"box": [55, 425, 215, 555], "ja": "アカウント\nコントラクトは\nデプロイ済み？", "bold": true, "font_size": 18, "color": "#FFFFFF", "no_mask": true},
+    {"box": [264, 456, 310, 488], "ja": "いいえ", "font_size": 22},
+    {"box": [310, 415, 590, 470], "ja": "Msg Sender:", "font_size": 20},
+    {"box": [310, 460, 590, 488], "ja": "AA_SENDER_CREATOR", "font_size": 20},
+    {"box": [620, 425, 760, 560], "ja": "アカウント\nコントラクトを\nデプロイ", "bold": true, "font_size": 18, "color": "#FFFFFF"},
+
+    {"box": [136, 594, 188, 636], "ja": "はい", "font_size": 22},
+
+    {"box": [55, 685, 215, 815], "ja": "アカウント\nコントラクトの\n検証", "bold": true, "font_size": 18},
+    {"box": [820, 700, 1030, 800], "ja": "トランザクション\nを検証", "bold": true, "font_size": 20, "no_mask": true},
+    {"box": [1069, 781, 1123, 819], "ja": "失敗", "font_size": 22},
+    {"box": [826, 849, 934, 885], "ja": "成功", "font_size": 22},
+
+    {"box": [55, 995, 220, 1095], "ja": "ペイマスター\nを指定？", "bold": true, "font_size": 20, "no_mask": true},
+    {"box": [275, 1001, 327, 1039], "ja": "はい", "font_size": 22},
+    {"box": [1170, 970, 1340, 1100], "ja": "ペイマスター\nトランザクション\nを検証", "bold": true, "font_size": 18, "no_mask": true},
+    {"box": [1379, 1071, 1435, 1109], "ja": "失敗", "font_size": 22},
+
+    {"box": [147, 1141, 193, 1179], "ja": "いいえ", "font_size": 22},
+    {"box": [1144, 1138, 1250, 1180], "ja": "成功", "font_size": 22},
+
+    {"box": [55, 1225, 1395, 1295], "ja": "後続のアカウント抽象化トランザクションについても、同等の検証ステップがここで実行される。", "font_size": 22},
+
+    {"box": [55, 1395, 215, 1490], "ja": "実行を開始", "bold": true, "font_size": 22},
+    {"box": [880, 1395, 1050, 1490], "ja": "実行フレーム", "bold": true, "font_size": 22},
+
+    {"box": [55, 1655, 220, 1755], "ja": "ペイマスター\nを指定？", "bold": true, "font_size": 20, "no_mask": true},
+    {"box": [269, 1659, 321, 1697], "ja": "はい", "font_size": 22},
+    {"box": [1195, 1665, 1380, 1770], "ja": "ペイマスター\n後処理", "bold": true, "font_size": 20},
+
+    {"box": [139, 1801, 185, 1834], "ja": "いいえ", "font_size": 22},
+    {"box": [95, 1885, 175, 1945], "ja": "終了", "bold": true, "font_size": 24, "color": "#FFFFFF"}
+  ]
+}
