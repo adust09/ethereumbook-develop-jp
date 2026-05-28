@@ -9,17 +9,17 @@
   ],
   "Offset": {
     "ja": "オフセット",
-    "font_size": 24
+    "font_size": 32
   },
   "Valid": {
     "ja": "有効",
-    "font_size": 24
+    "font_size": 32
   },
   "Yes": {
-    "ja": "Yes"
+    "ja": null
   },
   "No": {
-    "ja": "No"
+    "ja": null
   },
   "PUSHI": {
     "ja": null
