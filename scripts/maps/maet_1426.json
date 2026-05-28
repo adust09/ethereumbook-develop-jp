@@ -1,13 +1,37 @@
 {
-  "Offset": {"ja": "オフセット"},
-  "Valid": {"ja": "有効"},
-  "Yes": {"ja": "Yes"},
-  "No": {"ja": "No"},
-  "PUSHI": {"ja": null},
-  "PUSH1": {"ja": null},
-  "PUSH2": {"ja": null},
-  "PUSH3": {"ja": null},
-  "JUMP": {"ja": null},
-  "JUMPDEST": {"ja": null},
-  "ADD": {"ja": null}
+  "Offset": {
+    "ja": "オフセット",
+    "font_size": 24
+  },
+  "Valid": {
+    "ja": "有効",
+    "font_size": 24
+  },
+  "Yes": {
+    "ja": "Yes"
+  },
+  "No": {
+    "ja": "No"
+  },
+  "PUSHI": {
+    "ja": null
+  },
+  "PUSH1": {
+    "ja": null
+  },
+  "PUSH2": {
+    "ja": null
+  },
+  "PUSH3": {
+    "ja": null
+  },
+  "JUMP": {
+    "ja": null
+  },
+  "JUMPDEST": {
+    "ja": null
+  },
+  "ADD": {
+    "ja": null
+  }
 }

@@ -5,32 +5,40 @@
   },
   "Bytecode": {
     "ja": "バイトコード",
-    "bold": true
+    "bold": true,
+    "font_size": 32
   },
   "Calldata": {
     "ja": "Calldata",
-    "bold": true
+    "bold": true,
+    "font_size": 32
   },
   "Stack": {
     "ja": "スタック",
-    "bold": true
+    "bold": true,
+    "font_size": 32
   },
   "Memory": {
     "ja": "メモリ",
-    "bold": true
+    "bold": true,
+    "font_size": 32
   },
   "Storage": {
     "ja": "ストレージ",
-    "bold": true
+    "bold": true,
+    "font_size": 32
   },
   "Offset": {
-    "ja": "オフセット"
+    "ja": "オフセット",
+    "font_size": 28
   },
   "Value": {
-    "ja": "値"
+    "ja": "値",
+    "font_size": 28
   },
   "Slot": {
-    "ja": "スロット"
+    "ja": "スロット",
+    "font_size": 28
   },
   "60425F525F3560AB145F515500": {
     "ja": null
