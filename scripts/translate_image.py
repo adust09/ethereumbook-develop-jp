@@ -48,25 +48,23 @@ import easyocr
 
 import os
 
-_FONT_CANDIDATES_BOLD = [
+
+def _pick_font(candidates: list[str]) -> str:
+    """Return the first existing font path from candidates."""
+    for path in candidates:
+        if os.path.exists(path):
+            return path
+    return candidates[0]
+
+
+FONT_BOLD = _pick_font([
     "/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc",
     "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
-]
-_FONT_CANDIDATES_REGULAR = [
+])
+FONT_REGULAR = _pick_font([
     "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc",
     "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-]
-
-
-def _pick_font(paths: list[str]) -> str:
-    for p in paths:
-        if os.path.exists(p):
-            return p
-    return paths[0]
-
-
-FONT_BOLD = _pick_font(_FONT_CANDIDATES_BOLD)
-FONT_REGULAR = _pick_font(_FONT_CANDIDATES_REGULAR)
+])
 
 
 def detect_text(image_path: str) -> list[dict]:
@@ -248,6 +246,71 @@ def build_shape_outline_mask(image_bgr: np.ndarray) -> np.ndarray:
     return ((band == 1) & (gray < 110)).astype(np.uint8) * 255
 
 
+def _hex_to_bgr(hex_color: str) -> tuple:
+    h = hex_color.lstrip("#")
+    return (int(h[4:6], 16), int(h[2:4], 16), int(h[0:2], 16))
+
+
+def draw_fill_shapes(img: np.ndarray, shapes: list[dict]) -> np.ndarray:
+    """色付き図形（菱形・矩形）の内側を単色で塗り直し、preserve された原文テキストを
+    覆い隠す。元の枠線は塗り色領域の外側にあるためそのまま残る。
+
+    矩形マスク + 中央値塗り（__extra_mask_boxes__）は菱形の傾いた辺を破壊するため、
+    菱形ノード内のテキスト差し替えにはこちらを使う。塗る範囲は bbox 内で「指定した
+    塗り色に一致するピクセル」の凸包とし、図形の実形状に正確に追従させる（テキストの
+    抜き穴は凸包の内側に含まれるので確実に覆える）。
+
+    隣接ラベルのマスク（__extra_mask_boxes__）が菱形の枠線を削ることがあるため、
+    border_width を指定すると塗り直し後に枠線も描き直して復元する。
+
+    形式: {"diamond": [x1,y1,x2,y2], "fill": "#RRGGBB", "tol": 60,
+           "border": "#000000", "border_width": 5, "border_outset": 2}
+          {"rect":    [x1,y1,x2,y2], "fill": "#RRGGBB"}
+    """
+    out = img.copy()
+    for sh in shapes:
+        color = _hex_to_bgr(sh["fill"])
+        box = sh.get("diamond") or sh.get("rect")
+        x1, y1, x2, y2 = box
+        if "rect" in sh:
+            cv2.rectangle(out, (x1, y1), (x2, y2), color, -1)
+            continue
+        roi = out[y1:y2, x1:x2].astype(int)
+        diff = np.abs(roi - np.array(color, dtype=int)).sum(axis=2)
+        fill_mask = (diff < sh.get("tol", 60)).astype(np.uint8)
+        if fill_mask.any():
+            # Use the diamond's geometric polygon (4 vertices = midpoints of
+            # the bbox edges), inset by `erode` pixels so it sits safely inside
+            # the original border and its anti-aliasing halo. Painting fill
+            # color only on pixels that are inside this inset polygon AND not
+            # already fill-color overwrites the English text glyphs without
+            # touching the border at all.
+            cx, cy = (x1 + x2) / 2 - x1, (y1 + y2) / 2 - y1
+            hw, hh = (x2 - x1) / 2, (y2 - y1) / 2
+            erode = sh.get("erode", 4)
+            hw_i, hh_i = max(0, hw - erode), max(0, hh - erode)
+            inset = np.array(
+                [[cx, cy - hh_i], [cx + hw_i, cy], [cx, cy + hh_i], [cx - hw_i, cy]],
+                dtype=np.int32,
+            )
+            inset_mask = np.zeros(roi.shape[:2], dtype=np.uint8)
+            cv2.fillConvexPoly(inset_mask, inset, 1)
+            holes = inset_mask & (1 - fill_mask)
+            out[y1:y2, x1:x2][holes == 1] = color
+        bw = sh.get("border_width", 0)
+        if bw:
+            bc = _hex_to_bgr(sh.get("border", "#000000"))
+            o = sh.get("border_outset", 2)
+            cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
+            hw, hh = (x2 - x1) / 2 + o, (y2 - y1) / 2 + o
+            verts = np.array(
+                [[cx, cy - hh], [cx + hw, cy], [cx, cy + hh], [cx - hw, cy]],
+                dtype=np.int32,
+            )
+            cv2.polylines(out, [verts], True, bc, bw, lineType=cv2.LINE_AA)
+    return out
+
+
 def compute_size_groups(regions: list[dict]) -> dict:
     """同一 size_group の region は bbox 高さの中央値でフォントサイズを揃える。"""
     grouped = defaultdict(list)
@@ -265,7 +328,13 @@ def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.I
 
     for region in regions:
         box = region["box"]
-        cx = (box[0] + box[2]) / 2 + region.get("text_offset_x", 0)
+        align = region.get("text_align")
+        if align == "left":
+            cx = box[0] + region.get("text_offset_x", 0)
+        elif align == "right":
+            cx = box[2] + region.get("text_offset_x", 0)
+        else:
+            cx = (box[0] + box[2]) / 2 + region.get("text_offset_x", 0)
         cy = (box[1] + box[3]) / 2 + region.get("text_offset_y", 0)
         box_w = box[2] - box[0]
         box_h = box[3] - box[1]
@@ -304,7 +373,12 @@ def draw_translations(inpainted_bgr: np.ndarray, regions: list[dict]) -> Image.I
             fill = (int(c[0:2], 16), int(c[2:4], 16), int(c[4:6], 16))
         else:
             fill = tuple(color)
-        draw.text((cx, cy), region["translation"], font=font, fill=fill, anchor="mm")
+        if align == "left":
+            draw.text((cx, cy), region["translation"], font=font, fill=fill, anchor="lm", align="left")
+        elif align == "right":
+            draw.text((cx, cy), region["translation"], font=font, fill=fill, anchor="rm", align="right")
+        else:
+            draw.text((cx, cy), region["translation"], font=font, fill=fill, anchor="mm")
 
     return img_pil
 
@@ -328,6 +402,9 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
     # 同じ英単語が場所ごとに異なるサイズ/色で描画されるケースを切り分けるために、
     # 片方の領域を __extra_text_regions__ で上書きする用途で使う。
     skip_match_boxes = translation_map.pop("__skip_match_boxes__", [])
+    # __extra_fill_shapes__: 菱形/矩形の内側を単色で塗り直して原文を覆う（枠線は保持）。
+    # 矩形マスクが傾いた辺を壊す菱形ノードのテキスト差し替えに使う。
+    extra_fill_shapes = translation_map.pop("__extra_fill_shapes__", [])
 
     regions = []
     preserve_boxes = []
@@ -378,6 +455,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             "text_offset_y": matched.get("text_offset_y", 0),
             "color": matched.get("color"),
             "mask_mode": matched.get("mask_mode"),
+            "text_align": matched.get("text_align", "center"),
         })
         print(f"       '{det['text']}' → '{matched['ja']}'")
 
@@ -397,6 +475,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
         text_offset_y = next((v.get("text_offset_y") for _, v in items if v.get("ja")), 0) or 0
         color = next((v.get("color") for _, v in items if v.get("ja")), None)
         mask_mode = next((v.get("mask_mode") for _, v in items if v.get("ja")), None)
+        text_align = next((v.get("text_align") for _, v in items if v.get("ja")), "center")
         if ja:
             regions.append({
                 "box": merged_box,
@@ -409,10 +488,14 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
                 "text_offset_y": text_offset_y,
                 "color": color,
                 "mask_mode": mask_mode,
+                "text_align": text_align,
             })
             print(f"       (merged '{gname}') → '{ja}'")
 
     # __extra_text_regions__ をそのまま region に追加（OCR 経由しない描画）
+    # no_mask=True は mask_regions から除外する（__extra_fill_shapes__ で内部を
+    # 覆う菱形ノードなど、box 内の弱いダーク成分＝枠線 AA を inpaint で
+    # ぼかしたくないケース用）
     for er in extra_text_regions:
         regions.append({
             "box": er["box"],
@@ -423,6 +506,8 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             "font_size": er.get("font_size"),
             "color": er.get("color"),
             "mask_mode": er.get("mask_mode"),
+            "no_mask": er.get("no_mask", False),
+            "text_align": er.get("text_align", "center"),
             "text_offset_x": er.get("text_offset_x", 0),
             "text_offset_y": er.get("text_offset_y", 0),
         })
@@ -433,7 +518,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
         return
 
     print(f"[2/4] Mask (connected-component filter) for {len(regions)} regions")
-    mask_regions = list(regions)
+    mask_regions = [r for r in regions if not r.get("no_mask")]
     if extra_mask_boxes_soft:
         for box in extra_mask_boxes_soft:
             mask_regions.append({"box": box})
@@ -484,6 +569,11 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
 
     # 枠線・矢印・図形の枠を原本からシャープに復元
     inpainted = restore_borders(img_cv, inpainted, edge_mask, protect_boxes=extra_mask_boxes)
+
+    # 色付き図形の内側を塗り直して preserve された原文を覆う（菱形ノード対策）
+    if extra_fill_shapes:
+        inpainted = draw_fill_shapes(inpainted, extra_fill_shapes)
+        print(f"       + {len(extra_fill_shapes)} fill shape(s) redrawn")
 
     print("[4/4] Drawing Japanese text")
     result = draw_translations(inpainted, regions)

@@ -1,0 +1,22 @@
+{
+  "Block": {"ja": "ブロック", "bold": true, "font_size": 28},
+  "txl": {"ja": "tx1", "color": "#333333", "bold": true, "font_size": 24},
+  "__skip_match_boxes__": [
+    [40, 165, 360, 230],
+    [40, 265, 360, 335],
+    [595, 135, 680, 195],
+    [595, 335, 680, 395]
+  ],
+  "__extra_mask_boxes__": [
+    [40, 165, 360, 230],
+    [40, 265, 360, 335],
+    [595, 135, 680, 195],
+    [595, 335, 680, 395]
+  ],
+  "__extra_text_regions__": [
+    {"box": [40, 165, 360, 230], "ja": "tx0: xyzトークンを10枚購入", "color": "#ffffff", "bold": true, "font_size": 22},
+    {"box": [40, 265, 360, 335], "ja": "tx2: xyzトークンを10枚売却", "color": "#ffffff", "bold": true, "font_size": 22},
+    {"box": [595, 135, 680, 195], "ja": "tx0", "color": "#ffffff", "bold": true, "font_size": 24},
+    {"box": [595, 335, 680, 395], "ja": "tx2", "color": "#ffffff", "bold": true, "font_size": 24}
+  ]
+}
