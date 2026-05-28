@@ -59,11 +59,11 @@
     [130, 1795, 195, 1845]
   ],
   "__extra_fill_shapes__": [
-    {"diamond": [27, 389, 238, 601], "fill": "#66BE8F", "border_width": 5},
-    {"diamond": [833, 649, 1045, 860], "fill": "#E6A9AB", "border_width": 5},
-    {"diamond": [1146, 937, 1357, 1148], "fill": "#FDE9D2", "border_width": 5},
-    {"diamond": [27, 937, 238, 1148], "fill": "#FDE9D2", "border_width": 5},
-    {"diamond": [27, 1594, 238, 1806], "fill": "#FDE9D2", "border_width": 5}
+    {"diamond": [27, 389, 238, 601], "fill": "#66BE8F", "border_width": 3},
+    {"diamond": [833, 649, 1045, 860], "fill": "#E6A9AB", "border_width": 3},
+    {"diamond": [1146, 937, 1357, 1148], "fill": "#FDE9D2", "border_width": 3},
+    {"diamond": [27, 937, 238, 1148], "fill": "#FDE9D2", "border_width": 3},
+    {"diamond": [27, 1594, 238, 1806], "fill": "#FDE9D2", "border_width": 3}
   ],
   "__extra_text_regions__": [
     {"box": [50, 0, 270, 105], "ja": "イーサリアム\n実行層", "bold": true, "font_size": 24},
