@@ -1,0 +1,38 @@
+name: 画像翻訳依頼
+description: 図中のテキストの日本語化を依頼する
+title: "[画像翻訳] "
+labels: ["image-localization"]
+body:
+  - type: input
+    id: chapter
+    attributes:
+      label: 章
+      placeholder: "例: 第12章 (ch12)"
+    validations:
+      required: true
+  - type: input
+    id: image_file
+    attributes:
+      label: 画像ファイル名
+      placeholder: "例: src/images/ch12/maet_1201.png"
+    validations:
+      required: true
+  - type: textarea
+    id: text_in_image
+    attributes:
+      label: 図中の英語テキスト
+      description: 翻訳が必要なテキストを列挙してください
+    validations:
+      required: true
+  - type: textarea
+    id: proposed_translation
+    attributes:
+      label: 翻訳案
+      description: 各テキストの翻訳案（あれば）
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 確認事項
+      options:
+        - label: glosary.md の用語を使用した翻訳案を検討しました
+          required: true

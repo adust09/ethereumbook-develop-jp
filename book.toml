@@ -1,5 +1,5 @@
 [book]
-authors = ["ManInBlackie","alessandromazza98","choco-cupcake"]
-language = "en"
+authors = ["Shouki Tsuda", "Yukishige Nakajo", "Wataru Shinohara"]
+language = "ja"
 src = "src"
-title = "Mastering Ethereum"
+title = "Mastering Ethereum 日本語版"

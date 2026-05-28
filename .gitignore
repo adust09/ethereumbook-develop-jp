@@ -7,4 +7,5 @@ ethereum-book-*.json
 translate_*.py
 __pycache__/
 .claude/memory/*
+.claude/settings.local.json
 devcontainer.json
