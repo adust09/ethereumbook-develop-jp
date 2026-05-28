@@ -68,7 +68,3 @@ Claude Code を使っている場合、以下のスキルが利用できます�
 `scripts/sync_spreadsheet.py` と `scripts/reverse_sync_spreadsheet.py` は
 Google Sheets との同期スクリプトです。実行には Google サービスアカウントキーが必要で、
 **管理者のみが実行できます**。これらは GitHub Actions でも自動実行されます。
-
-## 行動規範
-
-[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) を参照してください。
