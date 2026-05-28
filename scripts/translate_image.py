@@ -406,6 +406,9 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             print(f"       (merged '{gname}') → '{ja}'")
 
     # __extra_text_regions__ をそのまま region に追加（OCR 経由しない描画）
+    # no_mask=True は mask_regions から除外する（__extra_fill_shapes__ で内部を
+    # 覆う菱形ノードなど、box 内の弱いダーク成分＝枠線 AA を inpaint で
+    # ぼかしたくないケース用）
     for er in extra_text_regions:
         regions.append({
             "box": er["box"],
@@ -415,6 +418,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
             "size_group": er.get("size_group"),
             "font_size": er.get("font_size"),
             "color": er.get("color"),
+            "no_mask": er.get("no_mask", False),
         })
         print(f"       (extra) → '{er['ja']}'")
 
@@ -423,7 +427,7 @@ def translate_image(image_path: str, translation_map: dict, preview: bool = Fals
         return
 
     print(f"[2/4] Mask (connected-component filter) for {len(regions)} regions")
-    mask_regions = list(regions)
+    mask_regions = [r for r in regions if not r.get("no_mask")]
     if extra_mask_boxes_soft:
         for box in extra_mask_boxes_soft:
             mask_regions.append({"box": box})
