@@ -1,0 +1,23 @@
+{
+  "Connect a Wallet": {"ja": null},
+  "Installed": {"ja": null},
+  "What is a Wallet?": {"ja": "ウォレットとは？"},
+  "Phantom": {"ja": null},
+  "Supported Wallets": {"ja": null},
+  "A Home for your Digital Assets": {"ja": "デジタル資産の保管庫"},
+  "Wallets are used to send, receive,": {"ja": "ウォレットは Ethereum や NFT のような\nデジタル資産の送受信・保管・表示に\n使われます。", "group": "wallet-desc"},
+  "MetaMask": {"ja": null},
+  "store, and display digital assets like": {"ja": null, "group": "wallet-desc"},
+  "Ethereum and NFTs.": {"ja": null, "group": "wallet-desc"},
+  "WalletConnect": {"ja": null},
+  "A New Way to Log In": {"ja": "新しいログイン方法"},
+  "Ledger": {"ja": null},
+  "Instead of creating new accounts and": {"ja": "ウェブサイトごとに新しいアカウントや\nパスワードを作る代わりに、\nウォレットを接続するだけで済みます。", "group": "login-desc"},
+  "passwords on every website, just": {"ja": null, "group": "login-desc"},
+  "Coinbase Wallet": {"ja": null},
+  "connect your wallet:": {"ja": null, "group": "login-desc"},
+  "Rainbow": {"ja": null},
+  "Get a Wallet": {"ja": null},
+  "Burner Wallet": {"ja": null},
+  "Learn More": {"ja": null}
+}
