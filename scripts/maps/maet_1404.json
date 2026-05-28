@@ -11,8 +11,8 @@
     {"box": [980, 430, 1306, 486], "ja": "ツリー内の総要素数", "font_size": 24},
     {"box": [980, 962, 1306, 1018], "ja": "ツリー内の総要素数", "font_size": 24}
   ],
-  "Number of items needed": {"ja": "証明の作成に必要な"},
-  "tocreate the proof": {"ja": "要素数"},
-  "to create the proof": {"ja": "要素数"},
+  "Number of items needed": {"ja": "証明の作成に必要な", "font_size": 28},
+  "tocreate the proof": {"ja": "要素数", "font_size": 28},
+  "to create the proof": {"ja": "要素数", "font_size": 28},
   "Total items in the tree": {"ja": "ツリー内の総要素数"}
 }
