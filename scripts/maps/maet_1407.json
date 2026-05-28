@@ -29,11 +29,12 @@
   },
   "Offset": {
     "ja": "オフセット",
-    "font_size": 28
+    "font_size": 22,
+    "text_offset_x": -5
   },
   "Value": {
     "ja": "値",
-    "font_size": 28
+    "font_size": 26
   },
   "Memory": {
     "ja": "メモリ",
