@@ -25,16 +25,16 @@
   "MSG_SENDER": {"ja": "MSG.SENDER", "size_group": "msg_bullets"},
   "MSG.SENDER": {"ja": "MSG.SENDER", "size_group": "msg_bullets"},
   "MSG.VALUE": {"ja": "MSG.VALUE", "size_group": "msg_bullets"},
-  "Existing State": {"ja": "既存の状態", "size_group": "input_bullets"},
-  "TX Data": {"ja": "TXデータ", "size_group": "input_bullets"},
+  "Existing State": {"ja": "- 既存の状態", "size_group": "input_bullets", "text_align": "left", "text_offset_x": -28},
+  "TX Data": {"ja": "- TXデータ", "size_group": "input_bullets", "text_align": "left", "text_offset_x": -25},
   "Receive Input |": {"ja": "TXを受信して\nEVMで実行", "group": "recv_input", "font_size": 16},
   "TX to Execute": {"ja": null, "group": "recv_input"},
   "in EVM": {"ja": null, "group": "recv_input"},
-  "Remaining Gas (STARTGAS)": {"ja": "残りガス（STARTGAS）", "size_group": "input_bullets"},
-  "TX Value in WEI (MSG.VALUE)": {"ja": "TX値（WEI、MSG.VALUE）", "size_group": "input_bullets"},
-  "Owner of Code to be Executed": {"ja": "実行コードの所有者", "size_group": "input_bullets"},
-  "-TX Sender (MSG.SENDER)": {"ja": "TX送信者（MSG.SENDER）", "size_group": "input_bullets"},
-  "Bytecode Contract to Execute": {"ja": "実行するバイトコード", "size_group": "input_bullets"},
+  "Remaining Gas (STARTGAS)": {"ja": "- 残りガス（STARTGAS）", "size_group": "input_bullets", "text_align": "left", "text_offset_x": -28},
+  "TX Value in WEI (MSG.VALUE)": {"ja": "- TX値（WEI、MSG.VALUE）", "size_group": "input_bullets", "text_align": "left", "text_offset_x": -23},
+  "Owner of Code to be Executed": {"ja": "- 実行コードの所有者", "size_group": "input_bullets", "text_align": "left", "text_offset_x": -27},
+  "-TX Sender (MSG.SENDER)": {"ja": "- TX送信者（MSG.SENDER）", "size_group": "input_bullets", "text_align": "left", "text_offset_x": -16},
+  "Bytecode Contract to Execute": {"ja": "- 実行するバイトコード", "size_group": "input_bullets", "text_align": "left", "text_offset_x": -27},
   "Smart": {"ja": "スマート\nコントラクト\nバイトコード", "group": "smart_contract", "font_size": 16},
   "Epecoce": {"ja": null, "group": "smart_contract"},
   "(TaRata)": {"ja": "ARGS\n（TXデータ）", "font_size": 16},
@@ -102,7 +102,9 @@
     [8, 1372, 28, 1392],
     [8, 1497, 28, 1517],
     [8, 1572, 28, 1592],
-    [425, 1872, 452, 1895]
+    [425, 1872, 452, 1895],
+    [665, 780, 695, 915],
+    [978, 780, 1005, 920]
   ],
   "__extra_text_regions__": [
     {"box": [479, 131, 585, 167], "ja": "コード\nハッシュ", "color": "#ffffff", "font_size": 18, "mask_mode": "bright"},
@@ -118,6 +120,6 @@
     {"box": [1040, 1245, 1170, 1290], "ja": "LIFO\nOPCODES", "color": "#000000", "font_size": 14},
     {"box": [810, 1610, 945, 1668], "ja": "OPCODES？", "font_size": 15, "text_offset_x": -4, "text_offset_y": -10},
     {"box": [933, 1620, 1028, 1666], "ja": "成功", "font_size": 18},
-    {"box": [696, 846, 836, 878], "ja": "ブロックヘッダ", "size_group": "input_bullets"}
+    {"box": [696, 846, 836, 878], "ja": "- ブロックヘッダ", "size_group": "input_bullets", "text_align": "left", "text_offset_x": -31}
   ]
 }
