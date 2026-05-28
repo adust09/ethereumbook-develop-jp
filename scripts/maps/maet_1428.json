@@ -9,16 +9,20 @@
     "ja": "次の命令位置"
   },
   "Save context info": {
-    "ja": "コンテクスト情報を保存"
+    "ja": "コンテクスト情報を保存",
+    "color": "#C9454A"
   },
   "Get old context info": {
-    "ja": "実行を復帰させるため"
+    "ja": "実行を復帰させるため",
+    "color": "#C9454A"
   },
   "toreset execution": {
-    "ja": "古いコンテクスト情報を取得"
+    "ja": "古いコンテクスト情報を取得",
+    "color": "#C9454A"
   },
   "to reset execution": {
-    "ja": "古いコンテクスト情報を取得"
+    "ja": "古いコンテクスト情報を取得",
+    "color": "#C9454A"
   },
   "Function A": {
     "ja": "関数A",
