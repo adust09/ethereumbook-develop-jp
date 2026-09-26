@@ -7,10 +7,17 @@ by Andreas M. Antonopoulos, Gavin Wood, Carlo Parisi, Alessandro Mazza,
 and Niccolò Pozzolini.
 
 Licensing terms:
-- For the first 12 months after original publication: CC BY-NC-ND 4.0
-- After that period: CC BY-SA 4.0
+- Original publication (print, O'Reilly Media): 2025-11-11
+  (ISBN 978-1098168421)
+- For the first 12 months after original publication
+  (until 2026-11-11): CC BY-NC-ND 4.0
+- From 2026-11-11 onward: CC BY-SA 4.0
 
 This translation follows the same licensing terms as the original work.
+
+Note: The upstream license states the term relative to "publication"
+without defining the reference date. The date above is derived from the
+print release date and has not been confirmed with the original authors.
 
 ---
 
