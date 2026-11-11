@@ -6,6 +6,10 @@
 
 https://adust09.github.io/ethereumbook-develop-jp/
 
+## PDF
+
+日本語版の PDF は [pdf/mastering-ethereum-2nd-ja.pdf](pdf/mastering-ethereum-2nd-ja.pdf) です。再生成するには `./scripts/build-pdf.sh` を実行してください（mdBook v0.4.36、Chrome または Chromium、Noto CJK フォントが必要です。mdBook は未導入ならスクリプトが取得します）。
+
 ## 原書について
 
 - **原書リポジトリ:** [ethereumbook/ethereumbook](https://github.com/ethereumbook/ethereumbook)
