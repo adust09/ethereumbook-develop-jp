@@ -1,0 +1,100 @@
+@page {
+  size: A4;
+  margin: 14mm 14mm 16mm 14mm;
+}
+
+html, body, #body-container, #page-wrapper, .page, #content, .content {
+  background: #ffffff !important;
+  color: #111111 !important;
+}
+
+html, body, #content, .content, p, li, td, th, blockquote, h1, h2, h3, h4, h5, h6 {
+  font-family: "Noto Sans CJK JP", "Noto Sans CJK", "Open Sans", sans-serif !important;
+}
+
+code, pre, pre code, .hljs, kbd, samp, tt {
+  font-family: "Noto Sans Mono CJK JP", "Source Code Pro", "Noto Sans Mono", monospace !important;
+}
+
+/* Hide mdBook chrome (sidebar, menu, search, copy buttons) */
+#sidebar,
+#menu-bar,
+#menu-bar-hover-placeholder,
+.nav-chapters,
+.mobile-nav-chapters,
+.sidebar-resize-handle,
+.sidebar-resize-indicator,
+button.icon-button,
+#search-wrapper,
+.searchbar-outer,
+.searchresults-outer,
+.nav-wrapper,
+#sidebar-toggle-anchor,
+.menu-title,
+.left-buttons,
+.right-buttons,
+#print-button,
+#theme-toggle,
+.fa,
+pre > .buttons {
+  display: none !important;
+}
+
+#page-wrapper.page-wrapper {
+  transform: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+#content, .page, .content {
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+img {
+  max-width: 100% !important;
+  max-height: 220mm !important;
+  height: auto !important;
+  width: auto;
+  object-fit: contain;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+figure, table {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  page-break-after: avoid;
+  color: #111 !important;
+}
+
+pre, pre code {
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  overflow-wrap: anywhere;
+  page-break-inside: auto;
+  break-inside: auto;
+}
+
+a, a:visited {
+  color: #0b5cab !important;
+  text-decoration: none;
+}
+
+* {
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+blockquote, .warning, .tip, table, pre {
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
