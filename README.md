@@ -49,5 +49,11 @@ mdbook build
 
 本翻訳は原書と同じライセンス条件に従います。
 
-- 原書出版から12か月間: [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)
-- それ以降: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+原書の出版日は 2025-11-11（O'Reilly Media 印刷版、ISBN 978-1098168421）です。
+
+- 2026-11-11 まで: [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)
+- 2026-11-11 以降: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+
+ND（改変禁止）期間中は、翻訳が二次的著作物にあたるため公開できません。
+上流のライセンス文は起算日を定義していないため、上記の日付は印刷版の発売日
+から導出したもので、原著者への確認は取れていません。
