@@ -4,7 +4,7 @@
 
 ## 公開URL
 
-https://adust09.github.io/ethereumbook-develop-jp/
+https://ethereumbook-develop-jp.shoukitsuda.workers.dev/
 
 ## PDF
 
@@ -38,6 +38,17 @@ mdbook serve
 # 静的ファイルとしてビルド
 mdbook build
 ```
+
+## デプロイ
+
+`main` への push または `Deploy mdBook site to Cloudflare` ワークフローの手動実行で、mdBook をビルドして Cloudflare Workers Static Assets に公開します。PR ではビルドだけを行い、本番にはデプロイしません。
+
+GitHub Actions の Repository Secrets に、次の2つを設定してください。
+
+- `CLOUDFLARE_ACCOUNT_ID`: 公開先の Cloudflare アカウントID
+- `CLOUDFLARE_API_TOKEN`: 同アカウントの Workers Scripts: Edit と Account Settings: Read を持つAPIトークン
+
+手元から公開する場合は、`mdbook build` の後に `npx wrangler@4.164.0 login`、`npx wrangler@4.164.0 deploy` を実行します。配信設定は `wrangler.toml` にあります。
 
 ## 貢献方法
 
