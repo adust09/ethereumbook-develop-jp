@@ -1,4 +1,5 @@
 book
+.wrangler/
 .venv/
 
 # Service account keys (reverse sync)
